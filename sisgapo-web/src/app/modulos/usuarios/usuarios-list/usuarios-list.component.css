@@ -1,0 +1,41 @@
+table {
+    width: 100%;
+}
+
+.header-app {
+    text-align: center;
+}
+
+.filtros {
+    display        : flex;
+    flex-direction : row;
+    flex-wrap      : wrap;
+    justify-content: center;
+}
+
+.inputNombre {
+    width       : 100%;
+    padding-top : 14px;
+    margin-right: 20px;
+}
+
+.inputAsignatura {
+    width       : 100%;
+    padding-top : 14px;
+    margin-right: 20px;
+}
+
+.selectStock {
+    margin-right: 10px;
+}
+
+.example-button-row button,
+.example-button-row a {
+    margin-right: 8px;
+}
+
+.botones {
+    margin-left: 20px;
+    margin-top : 20px;
+    float      : right;
+}
