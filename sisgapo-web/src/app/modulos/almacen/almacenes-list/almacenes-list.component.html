@@ -1,1 +1,70 @@
-<p>almacenes-list works!</p>
+<div class="header-app" style="margin-top:1rem;">
+    <h1 style=" font-weight: bold;">Gestión de {{appName}}</h1>
+</div>
+
+<div class="form row">
+
+    <div class="col-md-6">
+        <mat-form-field appearance="standard" style="width: 90%;">
+            <mat-label>Filtro</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" #input>
+        </mat-form-field>
+    </div>
+    <div class="col-md-1">
+        <div class="example-button-row botones ">
+            <a routerLink="/almacenes/agregar">
+                <button mat-raised-button color="primary">Agregar</button>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="mat-elevation-z8">
+
+    <table mat-table [dataSource]="dataSource" matSort>
+
+        <!-- Codigo -->
+        <ng-container matColumnDef="nIdAlmacen">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId"> Codigo </th>
+            <td mat-cell *matCellDef="let element"> {{element.nIdAlmacen}} </td>
+        </ng-container>
+
+        <!-- Nombre -->
+        <ng-container matColumnDef="sNombreZona">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaZona"> Zona </th>
+            <td mat-cell *matCellDef="let element"> {{element.sNombreZona}} </td>
+        </ng-container>
+
+        <!-- Rol -->
+        <ng-container matColumnDef="sNombreAlmacen">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaZona"> Almacen </th>
+            <td mat-cell *matCellDef="let element"> {{element.sNombreAlmacen}} </td>
+        </ng-container>
+
+        <!-- Estado -->
+        <ng-container matColumnDef="sEstado">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId"> Estado </th>
+            <td mat-cell *matCellDef="let element"> {{element.sEstado}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="Acciones">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaAcciones"> Acciones </th>
+            <td mat-cell *matCellDef="let element">
+                <div class="example-button-row ">
+                    <button mat-raised-button color="accent" style="margin-right: 8px;">Ver</button>
+                    <button mat-raised-button color="warn">Eliminar</button>
+                </div>
+
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <!-- Row shown when there is no matching data. -->
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">No se encontraron datos con el filtro "{{input.value}}"</td>
+        </tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+</div>

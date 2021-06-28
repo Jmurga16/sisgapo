@@ -14,28 +14,28 @@ table {
 }
 
 .inputNombre {
-    width       : 100%;
-    padding-top : 14px;
-    margin-right: 20px;
+    width       : 90%;    
+    padding-top: 14px;
+    margin-right: 1rem;
 }
 
 .inputAsignatura {
-    width       : 100%;
-    padding-top : 14px;
-    margin-right: 20px;
+    width       : 90%;    
+    padding-top: 14px;
+    margin-right: 1rem;
 }
 
 .selectStock {
-    margin-right: 10px;
+    margin-right: 1rem;
 }
 
 .example-button-row button,
 .example-button-row a {
-    margin-right: 8px;
+    margin-right: 0.5rem;
 }
 
 .botones {
-    margin-left: 20px;
-    margin-top : 20px;
+    margin-left: 1rem;
+    margin-top : 1rem;
     float      : right;
 }
