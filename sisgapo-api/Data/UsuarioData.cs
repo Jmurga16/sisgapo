@@ -136,7 +136,7 @@ namespace Data
                 #endregion
 
                 #region 04:Insertar | 05:Actualizar
-                else if (erp.sOpcion == "04" || erp.sOpcion == "05")
+                else if (erp.sOpcion == "04" || erp.sOpcion == "05" || erp.sOpcion == "06")
                 {
 
                     if (_Command.ExecuteNonQuery() != 0)

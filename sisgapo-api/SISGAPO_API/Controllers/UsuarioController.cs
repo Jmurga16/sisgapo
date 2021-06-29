@@ -34,7 +34,7 @@ namespace SISGAPO_API.Controllers
                 }
             }
 
-            else if (erp.sOpcion == "04" || erp.sOpcion == "05" )
+            else if (erp.sOpcion == "04" || erp.sOpcion == "05" || erp.sOpcion == "06")
             {
                 try
                 {
