@@ -23,6 +23,7 @@ import { UsuariosService } from './modulos/usuarios/usuarios.service';
 
 //Material Modules
 import { MatButtonModule } from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -38,6 +39,13 @@ import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { ZonaListComponent } from './modulos/zona/zona-list/zona-list.component';
+import { ZonaFormComponent } from './modulos/zona/zona-form/zona-form.component';
+import { ProductosComponent } from './modulos/inventario/productos/productos.component';
+import { CategoriaComponent } from './modulos/inventario/categoria/categoria.component';
+
 
 @NgModule({
   declarations: [
@@ -47,6 +55,10 @@ import { NgSelectModule } from '@ng-select/ng-select';
     AlmacenesListComponent,
     AlmacenesModalComponent,
     NavMenuComponent,
+    ZonaListComponent,
+    ZonaFormComponent,
+    ProductosComponent,
+    CategoriaComponent,
   ],
   imports: [
     AppRoutingModule,
@@ -56,13 +68,16 @@ import { NgSelectModule } from '@ng-select/ng-select';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
+    MatCardModule,
     MatCheckboxModule,
+    MatDatepickerModule,
     MatDialogModule,
     MatFormFieldModule,
     MatGridListModule,
     MatIconModule,
     MatInputModule,
     MatMenuModule,
+    MatNativeDateModule,
     MatPaginatorModule,
     MatListModule,
     MatSelectModule,
@@ -73,7 +88,13 @@ import { NgSelectModule } from '@ng-select/ng-select';
     NgbModule,
     NgSelectModule
   ],
-  providers: [AlmacenesService, UsuariosService],
+  providers: [
+    AlmacenesService, 
+    UsuariosService,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

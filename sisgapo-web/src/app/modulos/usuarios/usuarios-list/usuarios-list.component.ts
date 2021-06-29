@@ -7,7 +7,7 @@ import {
 } from "@angular/material/dialog";
 
 import { UsuariosModalComponent } from './../usuarios-modal/usuarios-modal.component'
-import { EstadoData } from './../Models/IUsuarios'
+import { ListaData } from './../Models/IUsuarios'
 //import Swal from "sweetalert2";
 
 
@@ -31,13 +31,14 @@ export class UsuariosListComponent implements OnInit {
   fRol = new FormControl();
   fEstado = new FormControl();
 
-  lEstados: EstadoData[] = [
+  lEstados: ListaData[] = [
     { valor: 2, nombre: 'Todos' },
     { valor: 1, nombre: 'Activo' },
     { valor: 0, nombre: 'Inactivo' },
   ];
 
-  lRoles: any[] = [
+  lRoles: ListaData[] = [
+    { valor: 0, nombre: 'Todos' },
     { valor: 1, nombre: 'Administrador' },
     { valor: 2, nombre: 'Supervisor' },
     { valor: 3, nombre: 'Asistente' },
@@ -46,6 +47,7 @@ export class UsuariosListComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
   displayedColumns: string[] = [
     'nIdUsuario',
+    'sNombrePersona',
     'sNombreUsuario',
     'sNombreRol',
     'sEstado',
@@ -63,11 +65,11 @@ export class UsuariosListComponent implements OnInit {
   ngOnInit(): void {
     this.url = 'https://localhost:44360/';
 
-
     this.fnListarUsuarios();
+
   }
 
-  //#region Listar Puestos
+  //#region Listar Usuarios
   async fnListarUsuarios() {
     let pParametro = [];
 
@@ -86,14 +88,42 @@ export class UsuariosListComponent implements OnInit {
   }
   //#endregion
 
+  //#region Filtrar Usuarios
+  async fnFiltrarUsuarios() {
+    let bEstado;
+        
+    bEstado = this.fEstado.value == null ? 2 : this.fEstado.value; // Estado : Todos
+
+    let pParametro = [];
+    pParametro.push(this.fNombre.value);
+    pParametro.push(this.fRol.value);
+    pParametro.push(bEstado);
+   
+    console.log(pParametro)
+
+    await this.usuariosService.LIS_Usuarios('02', pParametro, this.url).then(
+      (value: any[]) => {
+        console.log(value);
+
+        this.dataSource = new MatTableDataSource(value);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+  //#endregion
+
   //#region Abrir Modal
-  async fnAbrirModal(accion) {
+  async fnAbrirModal(accion,nIdUsuario) {
     const dialogRef = this.dialog.open(UsuariosModalComponent, {
       width: '50rem',
       disableClose: true,
       data: {
         accion: accion, //0:Nuevo , 1:Editar
-
+        nIdUsuario: nIdUsuario
       },
     });
 
@@ -101,6 +131,7 @@ export class UsuariosListComponent implements OnInit {
       console.log('despues de cerrar');
       if (result !== undefined) {
         console.log(result);
+        this.fnListarUsuarios();
       }
     });
   }

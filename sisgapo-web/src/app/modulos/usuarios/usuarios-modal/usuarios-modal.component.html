@@ -2,58 +2,134 @@
 
     <h1 mat-dialog-title class="clstitulo">{{sAccionModal}} Usuario</h1>
 
+    <form [formGroup]="formUsuario" ngNativeValidate autocomplete="off" name="Formulario" id="new-form">
 
-    <form [formGroup]="formUsuario" ngNativeValidate autocomplete="off">
-        <ng-template matStepLabel>Puesto</ng-template>
 
-        <div class="row">
+        <div class="row" style="padding-bottom: 1rem;">
             <div class="col-md-6">
                 <mat-form-field style="display:initial">
                     <mat-label>Nombres</mat-label>
-                    <input matInput type="text" formControlName="sNombres" autocomplete="off">
+                    <input matInput type="text" formControlName="sNombres" autocomplete="off" name="Nombres">
                 </mat-form-field>
             </div>
 
             <div class="col-md-6">
                 <mat-form-field style="display:initial">
                     <mat-label>Apellidos</mat-label>
-                    <input matInput type="text" formControlName="sApellidos" autocomplete="off">
+                    <input matInput type="text" formControlName="sApellidos" autocomplete="nope" name="Apellidos">
                 </mat-form-field>
             </div>
         </div>
 
 
         <div class="row">
-            <!-- <div class="col-md-3">
 
-                <ng-select placeholder="Tipo de Documento" appendTo="body" formControlName="nTipoDoc">
-                    <ng-option *ngFor="let obj of lDocumentos" [value]="obj.valor">{{obj.nombre}}</ng-option>
-                </ng-select>
 
+            <div class="col-md-3">
+                <mat-form-field class="selectMat selectResp" appearance="fill">
+                    <mat-label>Tipo Documento</mat-label>
+                    <mat-select formControlName="nTipoDoc">
+                        <mat-option *ngFor="let opc of lDocumentos" [value]="opc.valor">
+                            {{opc.nombre}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
             </div>
- -->
-            <div class="col-md-12">
+
+            <div class="col-md-3">
+
                 <mat-form-field style="display:initial">
                     <mat-label>N° Documento</mat-label>
-                    <input matInput type="text" formControlName="sNumDoc" autocomplete="off">
+                    <input matInput type="text" formControlName="sNumDoc" autocomplete="off" name="Documento">
                 </mat-form-field>
             </div>
 
-            <!-- <div class="col-md-6">
+            <div class="col-md-3">
+                <mat-form-field class="selectMat selectResp" appearance="fill">
+                    <mat-label>Sexo</mat-label>
+                    <mat-select formControlName="sSexo">
+                        <mat-option *ngFor="let opc of lSexo" [value]="opc.abrev">
+                            {{opc.nombre}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-md-3">
+                <mat-form-field class="selectMat selectResp" appearance="fill">
+                    <mat-label>Rol</mat-label>
+                    <mat-select formControlName="nIdRol">
+                        <mat-option *ngFor="let opc of lRoles" [value]="opc.valor">
+                            {{opc.nombre}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-6">
+
                 <mat-form-field style="display:initial">
                     <mat-label>Direccion</mat-label>
-                    <input matInput type="text" formControlName="sNumDoc" autocomplete="off">
+                    <input matInput type="search" formControlName="sDireccion" autocomplete="off" name="Direccion"
+                        id="Direccion" />
                 </mat-form-field>
-            </div> -->
+            </div>
+
+            <div class="col-md-3">
+                <mat-form-field style="display:initial">
+                    <mat-label>Telefono</mat-label>
+                    <input matInput type="search" formControlName="nTelefono" autocomplete="nope" name="Telefono">
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-3">
+                <mat-form-field appearance="fill" class="selectMat selectResp">
+                    <mat-label>Fecha de Nacimiento</mat-label>
+                    <input matInput type="search" [matDatepicker]="picker" formControlName="dFechaNacimiento"
+                        (dateChange)="fnCambiarFecha($event)" autocomplete="off" name="Fecha" id="Fecha">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+            </div>
 
         </div>
 
+        <div class="row">
 
-        <div class="row d-flex justify-content-center ">
-            <button type="button" mat-button (click)="fnCerrarModal()">Cancelar</button>
-            <button type="button" color="primary" mat-raised-button (click)="fnGrabar()">Grabar</button>
+            <div class="col-md-12  justify-content-center">
+
+                <mat-form-field style="display:initial">
+                    <mat-label>Contraseña</mat-label>
+                    <input matInput type="text" formControlName="sContrasenia" name="somePassword" autocomplete="off" />
+                </mat-form-field>
+
+                <!--  <mat-form-field style="display:initial">
+                    <input matInput placeholder="Contraseña" [type]="bOcultarPass ? 'password' : 'text'" 
+                        name="somePassword" formControlName="sContrasenia" autocomplete="new-password" readonly
+                        onfocus="this.removeAttribute('readonly');" />
+                    <mat-icon matSuffix (click)="bOcultarPass = !bOcultarPass">{{bOcultarPass ? 'visibility_off' :
+                        'visibility'}}</mat-icon>
+                </mat-form-field> -->
+            </div>
+
         </div>
 
+        <div class="row" style="padding-top: 1rem;">
+
+            <div class="col-md-6">
+                <button type="button" color="primary" style="width: 100%;" mat-raised-button
+                    (click)="fnGrabar()">Grabar</button>
+            </div>
+
+            <div class="col-md-6">
+                <button type="button" color="warn" style="width: 100%;" mat-raised-button
+                    (click)="fnCerrarModal()">Cancelar</button>
+            </div>
+
+        </div>
     </form>
 
 </div>
