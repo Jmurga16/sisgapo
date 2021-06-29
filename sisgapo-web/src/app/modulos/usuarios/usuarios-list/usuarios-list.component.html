@@ -9,21 +9,8 @@
 
             <mat-label>Nombre</mat-label>
 
-            <input matInput type="text">
-            <button mat-button *ngIf="libro.cDescripcion" matSuffix mat-icon-button aria-label="Clear">
-                <mat-icon>close</mat-icon>
-            </button>
-        </mat-form-field>
-    </div>
-
-
-    <div class="col-md-3">
-        <mat-form-field class="example-form-field inputAsignatura">
-
-            <mat-label>Rol</mat-label>
-
-            <input matInput type="text">
-            <button mat-button *ngIf="libro.cAsignatura" matSuffix mat-icon-button aria-label="Clear">
+            <input matInput type="text" [formControl]="fNombre">
+            <button mat-button *ngIf="fNombre.value" matSuffix mat-icon-button aria-label="Clear">
                 <mat-icon>close</mat-icon>
             </button>
         </mat-form-field>
@@ -31,11 +18,25 @@
 
 
     <div class="col-md-2">
-        <mat-form-field class="selectStock" appearance="fill">
+       
+        <mat-form-field class="selectEstado" appearance="fill">
+            <mat-label>Rol</mat-label>
+            <mat-select>
+                <mat-option *ngFor="let opc of lRoles" [value]="opc.valor">
+                    {{opc.nombre}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+    </div>
+
+
+    <div class="col-md-2">
+        <mat-form-field class="selectEstado" appearance="fill">
             <mat-label>Estado</mat-label>
             <mat-select>
-                <mat-option *ngFor="let bStock of stocks" [value]="bStock.value">
-                    {{bStock.viewValue}}
+                <mat-option *ngFor="let opc of lEstados" [value]="opc.valor">
+                    {{opc.nombre}}
                 </mat-option>
             </mat-select>
         </mat-form-field>
@@ -45,9 +46,9 @@
         <div class="example-button-row botones ">
 
             <button mat-raised-button>Consultar</button>
-            <a routerLink="/libros/agregar">
-                <button mat-raised-button color="primary">Agregar</button>
-            </a>
+
+            <button mat-raised-button color="primary" (click)="fnAbrirModal(0)">Agregar</button>
+
         </div>
     </div>
 

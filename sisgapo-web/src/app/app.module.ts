@@ -1,7 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+
+
 
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -13,6 +15,7 @@ import { AlmacenesListComponent } from './modulos/almacen/almacenes-list/almacen
 import { AlmacenesModalComponent } from './modulos/almacen/almacenes-modal/almacenes-modal.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavMenuComponent } from './nav-menu/nav-menu/nav-menu.component';
+
 
 //Services
 import { AlmacenesService } from './modulos/almacen/almacenes.service';
@@ -34,6 +37,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -50,6 +54,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     MatButtonModule,
     MatCheckboxModule,
     MatDialogModule,
@@ -66,6 +71,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     MatToolbarModule,
     NoopAnimationsModule,
     NgbModule,
+    NgSelectModule
   ],
   providers: [AlmacenesService, UsuariosService],
   bootstrap: [AppComponent],
