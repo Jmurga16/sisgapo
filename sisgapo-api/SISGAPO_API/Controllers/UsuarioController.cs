@@ -12,25 +12,51 @@ namespace SISGAPO_API.Controllers
     public class UsuarioController : Controller
     {
         UsuarioBusiness objUsuarios = new UsuarioBusiness();
-       
+
         //Obtener Todos los usuarios
         [Route("getAll")]
         [HttpPost]
         public IActionResult LIS_Usuarios(UsuarioEntity erp)
         {
             List<UsuarioEntity> lstUsuarios = new List<UsuarioEntity>();
-            try
-            {
-                var result = objUsuarios.LIS_UsuarioBusiness(erp);
+            if (erp.sOpcion == "01" || erp.sOpcion == "02" || erp.sOpcion == "03")
+            { 
+                try
+                {
+                    var result = objUsuarios.LIS_UsuarioBusiness(erp);
 
-                return Ok(result);
-                                
+                    return Ok(result);
+
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
-            catch (Exception)
+
+            else if (erp.sOpcion == "04" || erp.sOpcion == "05" )
             {
-                throw;
+                try
+                {
+                    //string[] lista;
+
+                    string result = Convert.ToString(objUsuarios.LIS_UsuarioBusiness(erp));
+
+                    //lista = result.Split('|');
+
+                    return Ok(new { mensaje = "Ok"});
+                }
+                catch (Exception )
+                {
+
+                    throw;
+                }
             }
-            
+            else
+            {
+                return null;
+            }
+
         }
 
         #region Comentar

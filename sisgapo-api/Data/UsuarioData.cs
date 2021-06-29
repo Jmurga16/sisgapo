@@ -42,6 +42,8 @@ namespace Data
             {
 
                 List<E_ListaUsuarios> lstUsuarios = new List<E_ListaUsuarios>();
+                List<E_ListaUsuarioId> unitUsuario = new List<E_ListaUsuarioId>();
+                String strResultado = "";
 
                 ConfConexion();
 
@@ -51,7 +53,7 @@ namespace Data
                 SqlCommand _Command = new SqlCommand("USP_MNT_Usuarios", conn);
                 _Command.CommandType = CommandType.StoredProcedure;
                 _Command.Parameters.Add(new SqlParameter("@sOpcion", erp.sOpcion));
-                _Command.Parameters.Add(new SqlParameter("@pParametro", ""));
+                _Command.Parameters.Add(new SqlParameter("@pParametro", erp.pParametro));
                 //_Command.Parameters.Clear();
 
                 #region Listar Todo
@@ -64,6 +66,7 @@ namespace Data
                         E_ListaUsuarios usrEnt = new E_ListaUsuarios();
 
                         usrEnt.nIdUsuario = Convert.ToInt32(reader["nIdUsuario"]);
+                        usrEnt.sNombrePersona = reader["sNombrePersona"].ToString();
                         usrEnt.sNombreUsuario = reader["sNombreUsuario"].ToString();
                         usrEnt.sNombreRol = reader["sNombreRol"].ToString();
                         usrEnt.sEstado = reader["sEstado"].ToString();
@@ -75,6 +78,76 @@ namespace Data
                     conn.Close();
 
                     return lstUsuarios;
+                }
+                #endregion
+
+                #region Listar Filtros
+                if (erp.sOpcion == "02")
+                {
+                    SqlDataReader reader = _Command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        E_ListaUsuarios usrEnt = new E_ListaUsuarios();
+
+                        usrEnt.nIdUsuario = Convert.ToInt32(reader["nIdUsuario"]);
+                        usrEnt.sNombrePersona = reader["sNombrePersona"].ToString();
+                        usrEnt.sNombreUsuario = reader["sNombreUsuario"].ToString();
+                        usrEnt.sNombreRol = reader["sNombreRol"].ToString();
+                        usrEnt.sEstado = reader["sEstado"].ToString();
+
+
+                        lstUsuarios.Add(usrEnt);
+                    }
+
+                    conn.Close();
+
+                    return lstUsuarios;
+                }
+                #endregion
+
+                #region Listar por Id
+                if (erp.sOpcion == "03")
+                {
+                    SqlDataReader reader = _Command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        E_ListaUsuarioId usrEnt = new E_ListaUsuarioId();
+                                               
+                        usrEnt.sNombres     = reader["sNombres"].ToString();
+                        usrEnt.sApellidos   = reader["sNombreUsuario"].ToString();
+                        usrEnt.nTipoDoc     = Convert.ToInt32(reader["nTipoDoc"]);
+                        usrEnt.sNumDoc      = reader["sNumDoc"].ToString();
+                        usrEnt.sSexo        = reader["sSexo"].ToString();
+                        usrEnt.nIdRol       = Convert.ToInt32(reader["nRol"]);
+                        usrEnt.sDireccion   = reader["sDireccion"].ToString();
+                        usrEnt.nTelefono    = Convert.ToInt32(reader["nTelefono"]);
+                        usrEnt.sContrasenia = reader["sContrasenia"].ToString();
+
+
+                        unitUsuario.Add(usrEnt);
+                    }
+
+                    conn.Close();
+
+                    return unitUsuario;
+                }
+                #endregion
+
+                #region 04:Insertar | 05:Actualizar
+                else if (erp.sOpcion == "04" || erp.sOpcion == "05")
+                {
+
+                    if (_Command.ExecuteNonQuery() != 0)
+                    {
+                        strResultado = "OK";
+                        
+                    }
+                    conn.Close();
+
+                    return strResultado;
+
                 }
                 #endregion
 
