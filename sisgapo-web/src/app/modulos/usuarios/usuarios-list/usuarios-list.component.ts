@@ -8,7 +8,7 @@ import {
 
 import { UsuariosModalComponent } from './../usuarios-modal/usuarios-modal.component'
 import { ListaData } from './../Models/IUsuarios'
-//import Swal from "sweetalert2";
+import Swal from "sweetalert2";
 
 
 import { MatTableDataSource } from '@angular/material/table';
@@ -135,4 +135,46 @@ export class UsuariosListComponent implements OnInit {
       }
     });
   }
+
+  //#region Eliminar
+  async fnEliminar(nIdUsuario) {
+
+    var resp = await Swal.fire({
+      title: '¿Desea eliminar el usuario?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar'
+    })
+
+    if (!resp.isConfirmed) {
+      return;
+    }
+
+    let pParametro = [];
+ 
+    pParametro.push(nIdUsuario);
+
+    console.log(pParametro)
+
+    await this.usuariosService.LIS_Usuarios('06', pParametro, this.url).then(
+      (value: any) => {
+
+        if (value.mensaje = "Ok") {
+          Swal.fire({
+            title: `Se eliminó con éxito`,
+            icon: 'success',
+            timer: 3500
+          })
+        }
+
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+  //#endregion
 }
