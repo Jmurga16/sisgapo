@@ -116,7 +116,7 @@ namespace Data
                         E_ListaUsuarioId usrEnt = new E_ListaUsuarioId();
                                                
                         usrEnt.sNombres     = reader["sNombres"].ToString();
-                        usrEnt.sApellidos   = reader["sNombreUsuario"].ToString();
+                        usrEnt.sApellidos   = reader["sApellidos"].ToString();
                         usrEnt.nTipoDoc     = Convert.ToInt32(reader["nTipoDoc"]);
                         usrEnt.sNumDoc      = reader["sNumDoc"].ToString();
                         usrEnt.sSexo        = reader["sSexo"].ToString();
