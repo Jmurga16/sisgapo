@@ -12,7 +12,7 @@ export class UsuariosService {
 
   
   async LIS_Usuarios(sOpcion: string, pParametro: any, url: string) {
-    const urlEndPoint = url + 'getAll';
+    const urlEndPoint = url + 'UsuariosService';
     const httpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     const params = {

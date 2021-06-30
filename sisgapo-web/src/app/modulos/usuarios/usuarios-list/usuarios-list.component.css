@@ -47,3 +47,14 @@ table {
 .clsColumnaUsuario{
     width: 20%;
 }
+
+.buttonActive{
+    background-color: forestgreen;
+    color: white;
+}
+
+.example-container {
+    /*height: 38rem;*/
+    width   : 100%;
+    overflow: auto;
+  }

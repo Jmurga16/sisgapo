@@ -12,6 +12,7 @@ export class NavMenuComponent implements OnInit {
   listaNavegacion = [
     { name: 'Usuarios', route: 'usuarios', icon: 'manage_accounts' },
     { name: 'Almacenes', route: 'almacenes', icon: 'store' },
+    { name: 'Zonas', route: 'zonas', icon: 'room' },
   ];
 
   private _mobileQueryListener: () => void;

@@ -1,1 +1,35 @@
-<p>zona-list works!</p>
+<div class="header-app" style="margin-top:1rem;">
+    <h1 style=" font-weight: bold;">Gestión de Zonas</h1>
+</div>
+
+<!--Zona de botones flotantes-->
+<div class="fab-container">
+    <div>
+        <!--Para Agregar -->
+        <a routerLink="/zonas/agregar">
+            <button matTooltipPosition="left" mat-raised-button mat-mini-fab class="fab-secondary" color="primary"
+                matTooltip="Agregar"><i class="material-icons">add</i></button>
+        </a>
+    </div>
+</div>
+
+<div class="row">
+
+    <div *ngFor="let item of lAlmacenes" class="col-md-3" style="margin-bottom: 25rem;">
+
+        <mat-card class="example-card ">
+
+            <mat-card-title style="text-align: center;">{{item.sNombre}}</mat-card-title>
+            <img mat-card-image class="tamanioImagen" src={{item.sRutaImagen}}>
+
+            <mat-card-actions>
+
+                <button mat-raised-button color="accent" (click)="fnVerZona(item.nIdZona)"
+                    style="width: 100%;">Ver</button>
+
+            </mat-card-actions>
+        </mat-card>
+
+    </div>
+
+</div>

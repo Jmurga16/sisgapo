@@ -75,7 +75,6 @@ export class UsuariosListComponent implements OnInit {
 
     await this.usuariosService.LIS_Usuarios('01', pParametro, this.url).then(
       (value: any[]) => {
-        console.log(value);
 
         this.dataSource = new MatTableDataSource(value);
         this.dataSource.paginator = this.paginator;
@@ -91,19 +90,16 @@ export class UsuariosListComponent implements OnInit {
   //#region Filtrar Usuarios
   async fnFiltrarUsuarios() {
     let bEstado;
-        
+
     bEstado = this.fEstado.value == null ? 2 : this.fEstado.value; // Estado : Todos
 
     let pParametro = [];
     pParametro.push(this.fNombre.value);
     pParametro.push(this.fRol.value);
     pParametro.push(bEstado);
-   
-    console.log(pParametro)
 
     await this.usuariosService.LIS_Usuarios('02', pParametro, this.url).then(
       (value: any[]) => {
-        console.log(value);
 
         this.dataSource = new MatTableDataSource(value);
         this.dataSource.paginator = this.paginator;
@@ -117,7 +113,7 @@ export class UsuariosListComponent implements OnInit {
   //#endregion
 
   //#region Abrir Modal
-  async fnAbrirModal(accion,nIdUsuario) {
+  async fnAbrirModal(accion, nIdUsuario) {
     const dialogRef = this.dialog.open(UsuariosModalComponent, {
       width: '50rem',
       disableClose: true,
@@ -128,19 +124,29 @@ export class UsuariosListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('despues de cerrar');
       if (result !== undefined) {
-        console.log(result);
         this.fnListarUsuarios();
       }
     });
   }
 
   //#region Eliminar
-  async fnEliminar(nIdUsuario) {
+  async fnCambiarEstado(nIdUsuario, bEstado) {
+
+    let sTitulo, sRespuesta;
+
+    if (bEstado == 0) {
+      sTitulo = '¿Desea eliminar el usuario?'
+      sRespuesta = 'Se eliminó el usuario con éxito'
+    }
+    else{
+      sTitulo = '¿Desea activar el usuario?'
+      sRespuesta = 'Se activó el usuario con éxito'
+    }
+    
 
     var resp = await Swal.fire({
-      title: '¿Desea eliminar el usuario?',
+      title: sTitulo,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -154,21 +160,21 @@ export class UsuariosListComponent implements OnInit {
     }
 
     let pParametro = [];
- 
-    pParametro.push(nIdUsuario);
 
-    console.log(pParametro)
+    pParametro.push(nIdUsuario);
+    pParametro.push(bEstado);
 
     await this.usuariosService.LIS_Usuarios('06', pParametro, this.url).then(
       (value: any) => {
 
         if (value.mensaje = "Ok") {
           Swal.fire({
-            title: `Se eliminó con éxito`,
+            title: sRespuesta,
             icon: 'success',
             timer: 3500
           })
         }
+        this.fnFiltrarUsuarios();
 
       },
       (error) => {

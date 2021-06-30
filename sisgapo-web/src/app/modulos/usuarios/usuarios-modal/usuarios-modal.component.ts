@@ -67,9 +67,6 @@ export class UsuariosModalComponent implements OnInit {
     this.url = 'https://localhost:44360/';
     this.sAccionModal = this.data.accion == 0 ? "Agregar" : "Editar";
 
-    console.log(this.data)
-
-
     this.formUsuario = this.fB.group({
       nIdUsuario: [0, Validators.required],
       sNombres: ["", Validators.required],
@@ -86,10 +83,9 @@ export class UsuariosModalComponent implements OnInit {
 
     if (this.data.accion == 1) {
       this.nIdUsuario = this.data.nIdUsuario;
+      this.formUsuario.get("nIdUsuario").setValue(this.nIdUsuario)
       this.fnCargarDatos();
     }
-
-
 
   }
 
@@ -98,12 +94,8 @@ export class UsuariosModalComponent implements OnInit {
     let pParametro = [];
     pParametro.push(this.nIdUsuario);
 
-    console.log(pParametro)
-
     await this.usuariosService.LIS_Usuarios('03', pParametro, this.url).then(
       (value: any[]) => {
-
-        console.log(value);
 
         this.formUsuario.get("sNombres").setValue(value[0].sNombres)
         this.formUsuario.get("sApellidos").setValue(value[0].sApellidos)
@@ -115,7 +107,7 @@ export class UsuariosModalComponent implements OnInit {
         this.formUsuario.get("nTelefono").setValue(value[0].nTelefono)
         //this.formUsuario.get("dFechaNacimiento").setValue(value[0].dFechaNacimiento)
         this.formUsuario.get("sContrasenia").setValue(value[0].sContrasenia)
-        this.formUsuario.get("nIdUsuario").setValue(value[0].nIdUsuario)
+
 
         //this.formUsuario.get("dFechaNacimiento").setValue(value[0].dFechaNacimiento);
         //this.dFechaNacimiento = this.fnConvertirFecha(value[0].dFechaNacimiento,1)
@@ -154,7 +146,6 @@ export class UsuariosModalComponent implements OnInit {
     pParametro.push(this.formUsuario.get("sContrasenia").value);
     pParametro.push(this.formUsuario.get("nIdUsuario").value);
 
-    console.log(pParametro)
 
     await this.usuariosService.LIS_Usuarios(pOpcion, pParametro, this.url).then(
       (value: any) => {
@@ -165,7 +156,7 @@ export class UsuariosModalComponent implements OnInit {
             icon: 'success',
             timer: 3500
           }).then(() => {
-            this.fnCerrarModal();
+            this.fnCerrarModal(1);
           });
         }
 
@@ -179,8 +170,6 @@ export class UsuariosModalComponent implements OnInit {
 
   //#region Cambiar Fecha Nacimiento
   async fnCambiarFecha(event) {
-
-    console.log(event)
 
     let sDia, sMes, sAnio, sFecha
     if (event.value.getDate() < 10) {
@@ -197,8 +186,6 @@ export class UsuariosModalComponent implements OnInit {
     sAnio = event.value.getFullYear()
 
     this.dFechaNacimiento = sAnio + '-' + sMes + '-' + sDia
-
-    console.log(this.dFechaNacimiento)
 
   }
   //#endregion Cambiar Fecha Entrega
@@ -232,8 +219,13 @@ export class UsuariosModalComponent implements OnInit {
   //#endregion
 
   //#region Cerrar
-  fnCerrarModal() {
-    this.dialogRef.close();
+  fnCerrarModal(result) {
+    if (result == 1) {
+      this.dialogRef.close(result);
+    }
+    else {
+      this.dialogRef.close();
+    }
   }
   //#endregion
 
