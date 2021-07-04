@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Business;
+using Entity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -7,82 +9,64 @@ using System.Threading.Tasks;
 
 namespace SISGAPO_API.Controllers
 {
-    //[ApiController]
+    [Route("AlmacenesService")]
+    [ApiController]
     public class AlmacenController : Controller
     {
-        // GET: AlmacenController
-        public ActionResult Index()
-        {
-            return View();
-        }
 
-        // GET: AlmacenController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
+        AlmacenBusiness objAlmacen = new AlmacenBusiness();
+        
+        #region Almacen
 
-        // GET: AlmacenController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: AlmacenController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public IActionResult CrudAlmacen(GeneralEntity genEnt) // fnServAlmacenes
         {
-            try
+
+            if (genEnt.sOpcion == "01" || genEnt.sOpcion == "02" || genEnt.sOpcion == "03" || genEnt.sOpcion == "04")
             {
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    var vRes = objAlmacen.BusinessAlmacen(genEnt);
+
+                    return Ok(vRes);
+                }
+                catch (Exception)
+                {
+
+                    throw;
+
+                }
             }
-            catch
+
+            else if (genEnt.sOpcion == "05" || genEnt.sOpcion == "06" || genEnt.sOpcion == "07")
             {
-                return View();
+                try
+                {
+                    string[] listaRes;
+
+                    string sResultado = Convert.ToString(objAlmacen.BusinessAlmacen(genEnt));
+                    listaRes = sResultado.Split('|');
+
+                    return Ok(new { cod = listaRes[0], mensaje = listaRes[1] });
+                }
+                catch (Exception )
+                {
+
+                    throw;
+
+                }
             }
+
+            else
+            {
+                return null;
+            }
+
         }
 
-        // GET: AlmacenController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
+        #endregion
 
-        // POST: AlmacenController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
 
-        // GET: AlmacenController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
 
-        // POST: AlmacenController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }
