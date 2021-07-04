@@ -47,7 +47,12 @@ table {
     width: 30%;
 }
 
-
 .clsColumnaAcciones{
     width: 10%;
 }
+
+.buttonActive{
+    background-color: forestgreen;
+    color: white;
+}
+

@@ -12,9 +12,7 @@
     </div>
     <div class="col-md-1">
         <div class="example-button-row botones ">
-            <a routerLink="/almacenes/agregar">
-                <button mat-raised-button color="primary">Agregar</button>
-            </a>
+            <button mat-raised-button color="primary" (click)="fnAbrirModal(0,0)">Agregar</button>
         </div>
     </div>
 </div>
@@ -51,8 +49,12 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaAcciones"> Acciones </th>
             <td mat-cell *matCellDef="let element">
                 <div class="example-button-row ">
-                    <button mat-raised-button color="accent" style="margin-right: 8px;">Ver</button>
-                    <button mat-raised-button color="warn">Eliminar</button>
+                    <button mat-raised-button color="accent" style="margin-right: 8px;"
+                        (click)="fnAbrirModal(1,element.nIdAlmacen)">Editar</button>
+                    <button *ngIf="element.sEstado=='Activo'" mat-raised-button color="warn"
+                        (click)="fnCambiarEstado(element.nIdAlmacen,0)">Eliminar</button>
+                    <button *ngIf="element.sEstado=='Inactivo'" mat-raised-button class="buttonActive"
+                        (click)="fnCambiarEstado(element.nIdAlmacen,1)">Activar</button>
                 </div>
 
             </td>
@@ -66,5 +68,5 @@
             <td class="mat-cell" colspan="4">No se encontraron datos con el filtro "{{input.value}}"</td>
         </tr>
     </table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
 </div>

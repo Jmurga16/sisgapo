@@ -1,1 +1,66 @@
-<p>almacenes-modal works!</p>
+<div>
+
+    <h1 mat-dialog-title class="clstitulo">{{sAccionModal}} Almacen</h1>
+
+    <form [formGroup]="formAlmacen" ngNativeValidate autocomplete="off" name="Formulario" id="new-form">
+
+        <div class="row" style="padding-bottom: 1rem;">
+            <div class="col-md-6">
+                <mat-form-field style="display:initial">
+                    <mat-label>Nombre</mat-label>
+                    <input matInput type="text" formControlName="sNombreAlmacen" autocomplete="off" name="Nombre">
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-6">
+                <mat-form-field style="display:initial">
+                    <mat-label>Dirección</mat-label>
+                    <input matInput type="text" formControlName="sDireccion" autocomplete="nope" name="Direccion">
+                </mat-form-field>
+            </div>
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-md-6">
+                <mat-form-field class="selectMat selectResp" appearance="fill">
+                    <mat-label>Zona</mat-label>
+                    <mat-select formControlName="nIdZona">
+                        <mat-option *ngFor="let opc of lZonas" [value]="opc.nIdZona">
+                            {{opc.sNombreZona}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-6">
+                <mat-form-field class="selectMat selectResp" appearance="fill">
+                    <mat-label>Supervisor</mat-label>
+                    <mat-select formControlName="nIdSupervisor">
+                        <mat-option *ngFor="let opc of lSupervisores" [value]="opc.nIdSupervisor">
+                            {{opc.sNombrePersona}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+        </div>
+
+
+        <div class="row" style="padding-top: 1rem;">
+
+            <div class="col-md-6">
+                <button type="button" color="primary" style="width: 100%;" mat-raised-button
+                    (click)="fnGrabar()">Grabar</button>
+            </div>
+
+            <div class="col-md-6">
+                <button type="button" color="warn" style="width: 100%;" mat-raised-button
+                    (click)="fnCerrarModal(0)">Cancelar</button>
+            </div>
+
+        </div>
+    </form>
+
+</div>

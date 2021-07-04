@@ -46,7 +46,7 @@ INSERT INTO TBL_LOGIN(nIdUsuario,sNombreUsuario,sContrasenia)
 	VALUES(2,'alex.quispe','123456')
 GO
 
---TABLA LOGIN
+--TABLA ALMACEN
 INSERT INTO TBL_ALMACEN(sNombre,sDireccion,nIdSupervisor,nIdZona,bEstado)
 	VALUES('Satipo','Calle Satipo 1',2,1,1)
 GO
