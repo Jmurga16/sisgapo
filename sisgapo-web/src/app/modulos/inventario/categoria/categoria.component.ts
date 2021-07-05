@@ -20,7 +20,7 @@ export class CategoriaComponent implements OnInit {
   nIdUsuario: number;
 
 
-  dataSource: MatTableDataSource<any>;
+  dsCategoria: MatTableDataSource<any>;
 
   displayedColumns: string[] = [
     'nIdCategoria',
@@ -38,7 +38,7 @@ export class CategoriaComponent implements OnInit {
     private inventarioService: InventarioService,
     public dialog: MatDialog,
   ) {
-    this.dataSource = new MatTableDataSource();
+    this.dsCategoria = new MatTableDataSource();
     this.url = 'https://localhost:44360/';
   }
 
@@ -49,17 +49,17 @@ export class CategoriaComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.dsCategoria.paginator = this.paginator;
+    this.dsCategoria.sort = this.sort;
   }
 
   //#region Filtro
   fnFiltrarTabla(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.dsCategoria.filter = filterValue.trim().toLowerCase();
 
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+    if (this.dsCategoria.paginator) {
+      this.dsCategoria.paginator.firstPage();
     }
   }
   //#endregion
@@ -71,9 +71,9 @@ export class CategoriaComponent implements OnInit {
     await this.inventarioService.fnServCategoria('01', pParametro, this.url).then(
       (value: any[]) => {
 
-        this.dataSource = new MatTableDataSource(value);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        this.dsCategoria = new MatTableDataSource(value);
+        this.dsCategoria.paginator = this.paginator;
+        this.dsCategoria.sort = this.sort;
       },
       (error) => {
         console.log(error);

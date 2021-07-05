@@ -40,7 +40,7 @@ export class UsuariosListComponent implements OnInit {
     { valor: 3, nombre: 'Asistente' },
   ];
 
-  dataSource: MatTableDataSource<any>;
+  dsUsuarios: MatTableDataSource<any>;
   displayedColumns: string[] = [
     'nIdUsuario',
     'sNombrePersona',
@@ -72,9 +72,9 @@ export class UsuariosListComponent implements OnInit {
     await this.usuariosService.LIS_Usuarios('01', pParametro, this.url).then(
       (data: any[]) => {
 
-        this.dataSource = new MatTableDataSource(data);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        this.dsUsuarios = new MatTableDataSource(data);
+        this.dsUsuarios.paginator = this.paginator;
+        this.dsUsuarios.sort = this.sort;
       },
       (error) => {
         console.log(error);
@@ -116,9 +116,9 @@ export class UsuariosListComponent implements OnInit {
     await this.usuariosService.LIS_Usuarios('02', pParametro, this.url)
       .then((value: any[]) => {
 
-        this.dataSource = new MatTableDataSource(value);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        this.dsUsuarios = new MatTableDataSource(value);
+        this.dsUsuarios.paginator = this.paginator;
+        this.dsUsuarios.sort = this.sort;
       },
         (error) => {
           console.log(error);
@@ -127,20 +127,18 @@ export class UsuariosListComponent implements OnInit {
   }
   //#endregion
 
-
-
   //#region Eliminar/Activar
   async fnCambiarEstado(nIdUsuario, bEstado) {
 
     let sTitulo, sRespuesta;
 
-    if (bEstado == 0) {
-      sTitulo = '¿Desea eliminar el usuario?'
-      sRespuesta = 'Se eliminó el usuario con éxito'
-    }
-    else {
+    if (bEstado == 1) {
       sTitulo = '¿Desea activar el usuario?'
       sRespuesta = 'Se activó el usuario con éxito'
+    }
+    else {      
+      sTitulo = '¿Desea eliminar el usuario?'
+      sRespuesta = 'Se eliminó el usuario con éxito'
     }
 
     var resp = await Swal.fire({
@@ -158,7 +156,6 @@ export class UsuariosListComponent implements OnInit {
     }
 
     let pParametro = [];
-
     pParametro.push(nIdUsuario);
     pParametro.push(bEstado);
 

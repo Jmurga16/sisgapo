@@ -17,7 +17,7 @@ export class AlmacenesListComponent implements OnInit {
   url: string;
   nIdUsuario: number;
   appName: string;
-  dataSource: MatTableDataSource<any>;
+  dsAlmacenes: MatTableDataSource<any>;
   displayedColumns: string[] = [
     'nIdAlmacen',
     'sNombreZona',
@@ -33,7 +33,7 @@ export class AlmacenesListComponent implements OnInit {
     public dialog: MatDialog,
   ) {
     this.appName = 'Almacenes';
-    this.dataSource = new MatTableDataSource();
+    this.dsAlmacenes = new MatTableDataSource();
     this.url = 'https://localhost:44360/';
   }
 
@@ -43,10 +43,10 @@ export class AlmacenesListComponent implements OnInit {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.dsAlmacenes.filter = filterValue.trim().toLowerCase();
 
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+    if (this.dsAlmacenes.paginator) {
+      this.dsAlmacenes.paginator.firstPage();
     }
   }
 
@@ -73,9 +73,9 @@ export class AlmacenesListComponent implements OnInit {
     let pParametro = [];
     await this.almacenesService.fnServAlmacenes('01', pParametro, this.url).then(
       (value: any[]) => {
-        this.dataSource = new MatTableDataSource(value);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        this.dsAlmacenes = new MatTableDataSource(value);
+        this.dsAlmacenes.paginator = this.paginator;
+        this.dsAlmacenes.sort = this.sort;
       },
       (error) => {
         console.log(error);
@@ -86,18 +86,13 @@ export class AlmacenesListComponent implements OnInit {
 
 
 
-  //#region Eliminar/Activar
+  //#region Cambiar estado
   async fnCambiarEstado(nIdUsuario, bEstado) {
     let sTitulo, sRespuesta;
-    if (bEstado == 0) {
-      sTitulo = '¿Desea eliminar el almacén?'
-      sRespuesta = 'Se eliminó el almacén con éxito'
-    }
-    else {
-      sTitulo = '¿Desea activar el almacén?'
-      sRespuesta = 'Se activó el almacén con éxito'
-    }
 
+    sTitulo = bEstado == 0 ? '¿Desea eliminar el almacén?' : '¿Desea activar el almacén?'
+    sRespuesta = bEstado == 0 ? 'Se eliminó el almacén con éxito' : 'Se activó el almacén con éxito'
+    
     var resp = await Swal.fire({
       title: sTitulo,
       icon: 'question',
@@ -111,11 +106,12 @@ export class AlmacenesListComponent implements OnInit {
       return;
     }
     let pParametro = [];
+
     pParametro.push(nIdUsuario);
     pParametro.push(bEstado);
     await this.almacenesService.fnServAlmacenes('07', pParametro, this.url).then(
-      (value: any) => {
-        if (value.mensaje == "Ok") {
+      (data: any) => {
+        if (data.mensaje == "Ok") {
           Swal.fire({
             title: sRespuesta,
             icon: 'success',
@@ -132,7 +128,7 @@ export class AlmacenesListComponent implements OnInit {
   //#endregion Eliminar/Activar
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.dsAlmacenes.paginator = this.paginator;
+    this.dsAlmacenes.sort = this.sort;
   }
 }

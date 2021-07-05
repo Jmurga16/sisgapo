@@ -101,10 +101,7 @@ export class UsuariosModalComponent implements OnInit {
         this.formUsuario.get("nIdRol").setValue(value[0].nIdRol)
         this.formUsuario.get("sDireccion").setValue(value[0].sDireccion)
         this.formUsuario.get("nTelefono").setValue(value[0].nTelefono)        
-        this.formUsuario.get("sContrasenia").setValue(value[0].sContrasenia)
-        /* this.formUsuario.get("dFechaNacimiento").setValue(value[0].dFechaNacimiento);
-        this.dFechaNacimiento = this.fnConvertirFecha(value[0].dFechaNacimiento,1) */
-
+        this.formUsuario.get("sContrasenia").setValue(value[0].sContrasenia)        
       },
       (error) => {
         console.log(error);
