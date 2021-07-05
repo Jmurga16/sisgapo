@@ -1,11 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule,ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-
-
-
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from '@angular/common/http';
+import { NoopAnimationsModule,BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -13,7 +10,6 @@ import { UsuariosListComponent } from './modulos/usuarios/usuarios-list/usuarios
 import { UsuariosModalComponent } from './modulos/usuarios/usuarios-modal/usuarios-modal.component';
 import { AlmacenesListComponent } from './modulos/almacen/almacenes-list/almacenes-list.component';
 import { AlmacenesModalComponent } from './modulos/almacen/almacenes-modal/almacenes-modal.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavMenuComponent } from './nav-menu/nav-menu/nav-menu.component';
 
 

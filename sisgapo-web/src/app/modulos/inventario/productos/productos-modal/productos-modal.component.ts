@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { InventarioService } from "./../../inventario.service";
 
 @Component({
   selector: 'app-productos-modal',
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProductosModalComponent implements OnInit {
 
-  constructor() { }
+  url:string;
+
+
+  constructor(
+    private inventarioService: InventarioService,
+  ) { }
 
   ngOnInit(): void {
+    this.url = 'https://localhost:44360/';
   }
 
 }

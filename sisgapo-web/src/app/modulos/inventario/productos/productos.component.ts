@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { InventarioService } from '../inventario.service';
 
 @Component({
   selector: 'app-productos',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProductosComponent implements OnInit {
 
-  constructor() { }
+  url:string;
+
+  constructor(
+    private inventarioService: InventarioService
+    ) { }
 
   ngOnInit(): void {
+    this.url = 'https://localhost:44360/';
   }
 
 }

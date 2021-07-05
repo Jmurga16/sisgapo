@@ -1,10 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UsuariosService } from '../usuarios.service';
-import {
-  MatDialog,
-  MAT_DIALOG_DATA,
-  MatDialogRef,
-} from "@angular/material/dialog";
+import {  MatDialog} from "@angular/material/dialog";
 
 import { UsuariosModalComponent } from './../usuarios-modal/usuarios-modal.component'
 import { ListaData } from './../Models/IUsuarios'
@@ -14,7 +10,7 @@ import Swal from "sweetalert2";
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
-import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 
 
 @Component({
@@ -74,9 +70,9 @@ export class UsuariosListComponent implements OnInit {
     let pParametro = [];
 
     await this.usuariosService.LIS_Usuarios('01', pParametro, this.url).then(
-      (value: any[]) => {
+      (data: any[]) => {
 
-        this.dataSource = new MatTableDataSource(value);
+        this.dataSource = new MatTableDataSource(data);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
       },
@@ -90,16 +86,16 @@ export class UsuariosListComponent implements OnInit {
   //#region Filtrar Usuarios
   async fnFiltrarUsuarios() {
     let bEstado;
-
-    bEstado = this.fEstado.value == null ? 2 : this.fEstado.value; // Estado : Todos
+    
+    bEstado = this.fEstado.value == null ? 2 : this.fEstado.value; 
 
     let pParametro = [];
     pParametro.push(this.fNombre.value);
     pParametro.push(this.fRol.value);
     pParametro.push(bEstado);
 
-    await this.usuariosService.LIS_Usuarios('02', pParametro, this.url).then(
-      (value: any[]) => {
+    await this.usuariosService.LIS_Usuarios('02', pParametro, this.url)
+    .then( (value: any[]) => {
 
         this.dataSource = new MatTableDataSource(value);
         this.dataSource.paginator = this.paginator;
@@ -129,8 +125,9 @@ export class UsuariosListComponent implements OnInit {
       }
     });
   }
+  //#endregion
 
-  //#region Eliminar
+  //#region Eliminar/Activar
   async fnCambiarEstado(nIdUsuario, bEstado) {
 
     let sTitulo, sRespuesta;
@@ -139,11 +136,11 @@ export class UsuariosListComponent implements OnInit {
       sTitulo = '¿Desea eliminar el usuario?'
       sRespuesta = 'Se eliminó el usuario con éxito'
     }
-    else{
+    else {
       sTitulo = '¿Desea activar el usuario?'
       sRespuesta = 'Se activó el usuario con éxito'
     }
-    
+
 
     var resp = await Swal.fire({
       title: sTitulo,
@@ -167,7 +164,7 @@ export class UsuariosListComponent implements OnInit {
     await this.usuariosService.LIS_Usuarios('06', pParametro, this.url).then(
       (value: any) => {
 
-        if (value.mensaje = "Ok") {
+        if (value.mensaje == "Ok") {
           Swal.fire({
             title: sRespuesta,
             icon: 'success',
@@ -183,4 +180,5 @@ export class UsuariosListComponent implements OnInit {
     );
   }
   //#endregion
+
 }

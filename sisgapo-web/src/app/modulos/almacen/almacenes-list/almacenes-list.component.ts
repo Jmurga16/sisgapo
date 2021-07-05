@@ -1,14 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlmacenesService } from '../almacenes.service';
 import { AlmacenesModalComponent } from './../almacenes-modal/almacenes-modal.component'
-
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-
 import Swal from "sweetalert2";
-
 
 @Component({
   selector: 'app-almacenes-list',
@@ -20,9 +17,7 @@ export class AlmacenesListComponent implements OnInit {
   url: string;
   nIdUsuario: number;
   appName: string;
-
   dataSource: MatTableDataSource<any>;
-
   displayedColumns: string[] = [
     'nIdAlmacen',
     'sNombreZona',
@@ -30,7 +25,6 @@ export class AlmacenesListComponent implements OnInit {
     'sEstado',
     'Acciones',
   ];
-
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -43,10 +37,8 @@ export class AlmacenesListComponent implements OnInit {
     this.url = 'https://localhost:44360/';
   }
 
-  ngOnInit(): void {
-    
+  ngOnInit(): void {    
     this.fnListarAlmacenes();
-
   }
 
   ngAfterViewInit() {
@@ -63,14 +55,11 @@ export class AlmacenesListComponent implements OnInit {
     }
   }
 
-
   //#region Listar Usuarios
   async fnListarAlmacenes() {
     let pParametro = [];
-
     await this.almacenesService.fnServAlmacenes('01', pParametro, this.url).then(
       (value: any[]) => {
-
         this.dataSource = new MatTableDataSource(value);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
@@ -80,8 +69,7 @@ export class AlmacenesListComponent implements OnInit {
       }
     );
   }
-  //#endregion
-
+  //#endregion Listar Usuarios
 
   //#region Abrir Modal
   async fnAbrirModal(accion, nIdAlmacen) {
@@ -93,21 +81,17 @@ export class AlmacenesListComponent implements OnInit {
         nIdAlmacen: nIdAlmacen
       },
     });
-
     dialogRef.afterClosed().subscribe((result) => {
       if (result !== undefined) {
         this.fnListarAlmacenes();
       }
     });
   }
-  //#endregion
-
+  //#endregion Abrir Modal
 
   //#region Eliminar/Activar
   async fnCambiarEstado(nIdUsuario, bEstado) {
-
     let sTitulo, sRespuesta;
-
     if (bEstado == 0) {
       sTitulo = '¿Desea eliminar el almacén?'
       sRespuesta = 'Se eliminó el almacén con éxito'
@@ -116,7 +100,6 @@ export class AlmacenesListComponent implements OnInit {
       sTitulo = '¿Desea activar el almacén?'
       sRespuesta = 'Se activó el almacén con éxito'
     }
-
 
     var resp = await Swal.fire({
       title: sTitulo,
@@ -127,20 +110,15 @@ export class AlmacenesListComponent implements OnInit {
       confirmButtonText: 'Aceptar',
       cancelButtonText: 'Cancelar'
     })
-
     if (!resp.isConfirmed) {
       return;
     }
-
     let pParametro = [];
-
     pParametro.push(nIdUsuario);
     pParametro.push(bEstado);
-
     await this.almacenesService.fnServAlmacenes('07', pParametro, this.url).then(
       (value: any) => {
-
-        if (value.mensaje = "Ok") {
+        if (value.mensaje == "Ok") {
           Swal.fire({
             title: sRespuesta,
             icon: 'success',
@@ -148,16 +126,11 @@ export class AlmacenesListComponent implements OnInit {
           })
         }
         this.fnListarAlmacenes();
-
       },
       (error) => {
         console.log(error);
       }
     );
   }
-  //#endregion
-
+  //#endregion Eliminar/Activar
 }
-
-
-

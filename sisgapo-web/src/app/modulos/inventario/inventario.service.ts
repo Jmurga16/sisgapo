@@ -17,7 +17,7 @@ export class InventarioService {
       pParametro: pParametro.join('|')
     };
 
-    return await this.http.post(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();
+    return this.http.post(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();
   }
 
   async fnServProducto(sOpcion: string, pParametro: any, url: string) {
@@ -29,7 +29,7 @@ export class InventarioService {
       pParametro: pParametro.join('|')
     };
 
-    return await this.http.post(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();
+    return this.http.post(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();
   }
 
 }

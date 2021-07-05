@@ -99,7 +99,7 @@ export class CategoriaModalComponent implements OnInit {
     await this.inventarioService.fnServCategoria(pOpcion, pParametro, this.url).then(
       (value: any) => {
 
-        if (value.cod = 1) {
+        if (value.cod == 1) {
           Swal.fire({
             title: `Se registró con éxito`,
             icon: 'success',

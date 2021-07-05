@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import {Routes,RouterModule} from '@angular/router'
-import { CommonModule } from '@angular/common';
 import {UsuariosListComponent} from './modulos/usuarios/usuarios-list/usuarios-list.component'
 import {AlmacenesListComponent} from './modulos/almacen/almacenes-list/almacenes-list.component'
 import { ZonaListComponent } from './modulos/zona/zona-list/zona-list.component'

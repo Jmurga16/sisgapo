@@ -17,17 +17,17 @@ export class NavMenuComponent implements OnInit {
   isShowing = false;
 
   listaNav = [
-    { id: 1, name: 'Usuarios',  route: 'usuarios', icon: 'manage_accounts', subMenu: 0, mostrar: false },
+    { id: 1, name: 'Usuarios', route: 'usuarios', icon: 'manage_accounts', subMenu: 0, mostrar: false },
     { id: 2, name: 'Almacenes', route: 'almacenes', icon: 'store', subMenu: 0, mostrar: false },
-    { id: 3, name: 'Zonas',     route: 'zonas', icon: 'room', subMenu: 0, mostrar: false },
-    { id: 4, name: 'Inventario',route: 'zonas', icon: 'view_in_ar', subMenu: 2, mostrar: false },
+    { id: 3, name: 'Zonas', route: 'zonas', icon: 'room', subMenu: 0, mostrar: false },
+    { id: 4, name: 'Inventario', route: 'zonas', icon: 'view_in_ar', subMenu: 2, mostrar: false },
   ];
 
   listaSubNav = [
     { idHijo: 1, idPadre: 2, name: 'SubAlmacen1', route: 'zonas', icon: 'false' },
-    { idHijo: 2, idPadre: 2, name: 'SubAlmacen2', route: 'zonas',icon: 'false' },
-    { idHijo: 3, idPadre: 4, name: 'Categoria'  , route: 'categoria',icon: 'category' },
-    { idHijo: 4, idPadre: 4, name: 'Productos'  , route: 'productos',icon: 'inventory_2' },
+    { idHijo: 2, idPadre: 2, name: 'SubAlmacen2', route: 'zonas', icon: 'false' },
+    { idHijo: 3, idPadre: 4, name: 'Categoria', route: 'categoria', icon: 'category' },
+    { idHijo: 4, idPadre: 4, name: 'Productos', route: 'productos', icon: 'inventory_2' },
   ];
 
 
@@ -46,18 +46,18 @@ export class NavMenuComponent implements OnInit {
   ) {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
-    this.mobileQuery.addListener(this._mobileQueryListener);
+    this.mobileQuery.addEventListener('change', this._mobileQueryListener);
   }
 
   ngOnDestroy(): void {
-    this.mobileQuery.removeListener(this._mobileQueryListener);
+    this.mobileQuery.removeEventListener('change', this._mobileQueryListener);
   }
 
   shouldRun = true;
 
   ngOnInit(): void {
-    console.log(this.listaNav)
-   }
+    console.log('1')
+  }
 
   fnRuteo(ruta) {
 
@@ -69,8 +69,17 @@ export class NavMenuComponent implements OnInit {
 
   fnMostrar(index) {
 
-    this.listaNav[index].mostrar=!(this.listaNav[index].mostrar);
-    
+    let bEstado: boolean;
+
+    if (this.listaNav[index].mostrar == true) {
+      bEstado = false;
+    }
+    else {
+      bEstado = true;
+    }
+
+    this.listaNav[index].mostrar = bEstado
+   
   }
 
 }

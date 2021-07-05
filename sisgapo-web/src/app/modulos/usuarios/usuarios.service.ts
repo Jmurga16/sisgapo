@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuariosService {
 
-  //url:string='https://localhost:/'
+
   constructor(private http: HttpClient) { }
 
   
@@ -20,7 +20,7 @@ export class UsuariosService {
       pParametro: pParametro.join('|')
     };
 
-    return await this.http.post(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();
+    return this.http.post(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();
   }
 
 }

@@ -1,5 +1,4 @@
 import { Component, OnInit, Inject } from "@angular/core";
-
 import {
   FormGroup,
   FormBuilder,
@@ -9,7 +8,6 @@ import {
   MAT_DIALOG_DATA,
   MatDialogRef,
 } from "@angular/material/dialog";
-
 import { AlmacenesService } from "./../almacenes.service";
 import { AlmacenData, ZonaData, SupervisorData } from './../Models/IAlmacen'
 import Swal from "sweetalert2";
@@ -145,7 +143,7 @@ export class AlmacenesModalComponent implements OnInit {
     await this.almacenesService.fnServAlmacenes(pOpcion, pParametro, this.url).then(
       (value: any) => {
 
-        if (value.cod = 1) {
+        if (value.cod == 1) {
           Swal.fire({
             title: `Se registró con éxito`,
             icon: 'success',

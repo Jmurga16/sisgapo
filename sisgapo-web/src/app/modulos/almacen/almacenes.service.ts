@@ -17,7 +17,7 @@ export class AlmacenesService {
       pParametro: pParametro.join('|')
     };
 
-    return await this.http.post(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();
+    return this.http.post(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();
   }
 
 }

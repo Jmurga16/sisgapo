@@ -140,7 +140,7 @@ export class CategoriaComponent implements OnInit {
     await this.inventarioService.fnServCategoria('05', pParametro, this.url).then(
       (value: any) => {
 
-        if (value.mensaje = "Ok") {
+        if (value.mensaje == "Ok") {
           Swal.fire({
             title: sRespuesta,
             icon: 'success',

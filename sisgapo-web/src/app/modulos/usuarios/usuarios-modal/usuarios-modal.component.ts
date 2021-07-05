@@ -1,19 +1,15 @@
-import {
-  MatDialog,
+import {  
   MAT_DIALOG_DATA,
   MatDialogRef,
 } from "@angular/material/dialog";
-import {
-  FormControl,
+import {  
   FormGroup,
   FormBuilder,
   Validators,
 } from "@angular/forms";
-import { Component, OnInit, Inject, ViewChild } from "@angular/core";
+import { Component, OnInit, Inject } from "@angular/core";
 import { UsuariosService } from "./../usuarios.service";
-import { UsuarioData } from './../Models/IUsuarios'
-import { ListaData } from './../Models/IUsuarios'
-import { GeneroData } from './../Models/IUsuarios'
+import { UsuarioData, ListaData, GeneroData } from './../Models/IUsuarios'
 import { DateAdapter, MAT_DATE_FORMATS } from "@angular/material/core";
 import { AppDateAdapter, APP_DATE_FORMATS } from "src/app/shared/services/AppDateAdapter";
 
@@ -104,13 +100,10 @@ export class UsuariosModalComponent implements OnInit {
         this.formUsuario.get("sSexo").setValue(value[0].sSexo)
         this.formUsuario.get("nIdRol").setValue(value[0].nIdRol)
         this.formUsuario.get("sDireccion").setValue(value[0].sDireccion)
-        this.formUsuario.get("nTelefono").setValue(value[0].nTelefono)
-        //this.formUsuario.get("dFechaNacimiento").setValue(value[0].dFechaNacimiento)
+        this.formUsuario.get("nTelefono").setValue(value[0].nTelefono)        
         this.formUsuario.get("sContrasenia").setValue(value[0].sContrasenia)
-
-
-        //this.formUsuario.get("dFechaNacimiento").setValue(value[0].dFechaNacimiento);
-        //this.dFechaNacimiento = this.fnConvertirFecha(value[0].dFechaNacimiento,1)
+        /* this.formUsuario.get("dFechaNacimiento").setValue(value[0].dFechaNacimiento);
+        this.dFechaNacimiento = this.fnConvertirFecha(value[0].dFechaNacimiento,1) */
 
       },
       (error) => {
@@ -150,7 +143,7 @@ export class UsuariosModalComponent implements OnInit {
     await this.usuariosService.LIS_Usuarios(pOpcion, pParametro, this.url).then(
       (value: any) => {
 
-        if (value.mensaje = "Ok") {
+        if (value.mensaje == "Ok") {
           Swal.fire({
             title: `Se registró con éxito`,
             icon: 'success',
