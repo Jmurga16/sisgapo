@@ -43,7 +43,7 @@ export class CategoriaComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
+
     this.fnListarCategorias()
 
   }
@@ -82,31 +82,10 @@ export class CategoriaComponent implements OnInit {
   }
   //#endregion
 
-  //#region Abrir Modal
-  async fnAbrirModal(accion, nIdCategoria) {
-    const dialogRef = this.dialog.open(CategoriaModalComponent, {
-      width: '50rem',
-      disableClose: true,
-      data: {
-        accion: accion, //0:Nuevo , 1:Editar
-        nIdCategoria: nIdCategoria
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result !== undefined) {
-        this.fnListarCategorias();
-      }
-    });
-  }
-  //#endregion
-
   //#region Eliminar/Activar
   async fnCambiarEstado(nIdUsuario, bEstado) {
 
     let sTitulo, sRespuesta;
-
-
 
     if (bEstado == 0) {
       sTitulo = '¿Desea eliminar la categoría?'
@@ -116,7 +95,6 @@ export class CategoriaComponent implements OnInit {
       sTitulo = '¿Desea activar el usuario?'
       sRespuesta = 'Se activó la categoría con éxito'
     }
-
 
     var resp = await Swal.fire({
       title: sTitulo,
@@ -157,4 +135,24 @@ export class CategoriaComponent implements OnInit {
     );
   }
   //#endregion
+
+  //#region Abrir Modal
+  async fnAbrirModal(accion, nIdCategoria) {
+    const dialogRef = this.dialog.open(CategoriaModalComponent, {
+      width: '50rem',
+      disableClose: true,
+      data: {
+        accion: accion, //0:Nuevo , 1:Editar
+        nIdCategoria: nIdCategoria
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined) {
+        this.fnListarCategorias();
+      }
+    });
+  }
+  //#endregion
+
 }

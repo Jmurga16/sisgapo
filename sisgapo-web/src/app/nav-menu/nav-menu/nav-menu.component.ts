@@ -71,7 +71,7 @@ export class NavMenuComponent implements OnInit {
 
     let bEstado: boolean;
 
-    if (this.listaNav[index].mostrar == true) {
+    if (this.listaNav[index].mostrar) {
       bEstado = false;
     }
     else {
@@ -79,7 +79,7 @@ export class NavMenuComponent implements OnInit {
     }
 
     this.listaNav[index].mostrar = bEstado
-   
+
   }
 
 }

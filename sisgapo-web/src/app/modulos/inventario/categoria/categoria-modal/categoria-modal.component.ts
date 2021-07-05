@@ -46,7 +46,7 @@ export class CategoriaModalComponent implements OnInit {
       nIdCategoria: [0, Validators.required],
       sNombre: ["", Validators.required],
       sDescripcion: ["", Validators.required],
-      
+
     });
 
     if (this.data.accion == 1) {
@@ -56,26 +56,6 @@ export class CategoriaModalComponent implements OnInit {
     }
 
   }
-
-
-  //#region Cargar Datos para Editar
-  async fnCargarDatos() {
-    let pParametro = [];
-    pParametro.push(this.nIdCategoria);
-
-    await this.inventarioService.fnServCategoria('02', pParametro, this.url).then(
-      (value: any[]) => {
-
-        this.formCategoria.get("sNombre").setValue(value[0].sNombre)
-        this.formCategoria.get("sDescripcion").setValue(value[0].sDescripcion)
-  
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-  }
-  //#endregion 
 
 
   //#region Grabar
@@ -116,6 +96,24 @@ export class CategoriaModalComponent implements OnInit {
     );
   }
   //#endregion
+
+
+  //#region Cargar Datos
+  async fnCargarDatos() {
+    let pParametro = [];
+    pParametro.push(this.nIdCategoria);
+
+    await this.inventarioService.fnServCategoria('02', pParametro, this.url).then(
+      (value: any[]) => {
+        this.formCategoria.get("sNombre").setValue(value[0].sNombre)
+        this.formCategoria.get("sDescripcion").setValue(value[0].sDescripcion)
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+  //#endregion 
 
 
   //#region Cerrar

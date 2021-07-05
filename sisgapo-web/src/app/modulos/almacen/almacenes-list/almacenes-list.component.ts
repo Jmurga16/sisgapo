@@ -37,13 +37,8 @@ export class AlmacenesListComponent implements OnInit {
     this.url = 'https://localhost:44360/';
   }
 
-  ngOnInit(): void {    
+  ngOnInit(): void {
     this.fnListarAlmacenes();
-  }
-
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
   }
 
   applyFilter(event: Event) {
@@ -54,22 +49,6 @@ export class AlmacenesListComponent implements OnInit {
       this.dataSource.paginator.firstPage();
     }
   }
-
-  //#region Listar Usuarios
-  async fnListarAlmacenes() {
-    let pParametro = [];
-    await this.almacenesService.fnServAlmacenes('01', pParametro, this.url).then(
-      (value: any[]) => {
-        this.dataSource = new MatTableDataSource(value);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-  }
-  //#endregion Listar Usuarios
 
   //#region Abrir Modal
   async fnAbrirModal(accion, nIdAlmacen) {
@@ -88,6 +67,24 @@ export class AlmacenesListComponent implements OnInit {
     });
   }
   //#endregion Abrir Modal
+
+  //#region Listar Usuarios
+  async fnListarAlmacenes() {
+    let pParametro = [];
+    await this.almacenesService.fnServAlmacenes('01', pParametro, this.url).then(
+      (value: any[]) => {
+        this.dataSource = new MatTableDataSource(value);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+  //#endregion Listar Usuarios
+
+
 
   //#region Eliminar/Activar
   async fnCambiarEstado(nIdUsuario, bEstado) {
@@ -133,4 +130,9 @@ export class AlmacenesListComponent implements OnInit {
     );
   }
   //#endregion Eliminar/Activar
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
 }

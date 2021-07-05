@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UsuariosService } from '../usuarios.service';
-import {  MatDialog} from "@angular/material/dialog";
+import { MatDialog } from "@angular/material/dialog";
 
 import { UsuariosModalComponent } from './../usuarios-modal/usuarios-modal.component'
 import { ListaData } from './../Models/IUsuarios'
@@ -83,31 +83,6 @@ export class UsuariosListComponent implements OnInit {
   }
   //#endregion
 
-  //#region Filtrar Usuarios
-  async fnFiltrarUsuarios() {
-    let bEstado;
-    
-    bEstado = this.fEstado.value == null ? 2 : this.fEstado.value; 
-
-    let pParametro = [];
-    pParametro.push(this.fNombre.value);
-    pParametro.push(this.fRol.value);
-    pParametro.push(bEstado);
-
-    await this.usuariosService.LIS_Usuarios('02', pParametro, this.url)
-    .then( (value: any[]) => {
-
-        this.dataSource = new MatTableDataSource(value);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-  }
-  //#endregion
-
   //#region Abrir Modal
   async fnAbrirModal(accion, nIdUsuario) {
     const dialogRef = this.dialog.open(UsuariosModalComponent, {
@@ -127,6 +102,33 @@ export class UsuariosListComponent implements OnInit {
   }
   //#endregion
 
+  //#region Filtrar Usuarios
+  async fnFiltrarUsuarios() {
+    let bEstado;
+
+    bEstado = this.fEstado.value == null ? 2 : this.fEstado.value;
+
+    let pParametro = [];
+    pParametro.push(this.fNombre.value);
+    pParametro.push(this.fRol.value);
+    pParametro.push(bEstado);
+
+    await this.usuariosService.LIS_Usuarios('02', pParametro, this.url)
+      .then((value: any[]) => {
+
+        this.dataSource = new MatTableDataSource(value);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      },
+        (error) => {
+          console.log(error);
+        }
+      );
+  }
+  //#endregion
+
+
+
   //#region Eliminar/Activar
   async fnCambiarEstado(nIdUsuario, bEstado) {
 
@@ -140,7 +142,6 @@ export class UsuariosListComponent implements OnInit {
       sTitulo = '¿Desea activar el usuario?'
       sRespuesta = 'Se activó el usuario con éxito'
     }
-
 
     var resp = await Swal.fire({
       title: sTitulo,
@@ -179,6 +180,6 @@ export class UsuariosListComponent implements OnInit {
       }
     );
   }
-  //#endregion
+  //#endregion Eliminar
 
 }

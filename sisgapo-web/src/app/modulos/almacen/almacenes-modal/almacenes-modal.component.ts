@@ -62,6 +62,18 @@ export class AlmacenesModalComponent implements OnInit {
 
   }
 
+  
+  //#region Cerrar
+  fnCerrarModal(result) {
+    if (result == 1) {
+      this.dialogRef.close(result);
+    }
+    else {
+      this.dialogRef.close();
+    }
+  }
+  //#endregion Cerrar
+
   //#region Listar Usuarios
   async fnListarZonas() {
     let pParametro = [];
@@ -79,7 +91,6 @@ export class AlmacenesModalComponent implements OnInit {
   }
   //#endregion
 
-
   //#region Listar Supervisores
   async fnListarSupervisor() {
     let pParametro = [];
@@ -96,7 +107,6 @@ export class AlmacenesModalComponent implements OnInit {
     );
   }
   //#endregion
-
 
   //#region Cargar Datos para Editar
   async fnCargarDatos() {
@@ -119,13 +129,12 @@ export class AlmacenesModalComponent implements OnInit {
   }
   //#endregion 
 
-
   //#region Grabar
   async fnGrabar() {
-
+    let sTitulo = 'Ingrese todos los campos.'
     if (this.formAlmacen.invalid) {
       return Swal.fire({
-        title: `Ingrese todos los campos.`,
+        title: sTitulo,
         icon: 'warning',
         timer: 1500
       });
@@ -158,18 +167,6 @@ export class AlmacenesModalComponent implements OnInit {
         console.log(error);
       }
     );
-  }
-  //#endregion
-
-
-  //#region Cerrar
-  fnCerrarModal(result) {
-    if (result == 1) {
-      this.dialogRef.close(result);
-    }
-    else {
-      this.dialogRef.close();
-    }
   }
   //#endregion
 
