@@ -1,78 +1,20 @@
---POBLACION DE DATOS
-USE DB_SISGAPO
-GO
-
---TABLA DOCUMENTOS
-INSERT INTO TBL_DOCUMENTO(sNombreDoc)
-	VALUES('DNI')
-INSERT INTO TBL_DOCUMENTO(sNombreDoc)
-	VALUES('CARNET EXT.')
-GO
-
---TABLA ROLES
-INSERT INTO TBL_ROL(sNombreRol)
-	VALUES('Administrador')
-INSERT INTO TBL_ROL(sNombreRol)
-	VALUES('Supervisor')
-INSERT INTO TBL_ROL(sNombreRol)
-	VALUES('Asistente')
-GO
-
---TABLA ZONAS
-INSERT INTO TBL_ZONA(sNombre,sRutaImagen)
-	VALUES('Junin','https://ddcjunin.files.wordpress.com/2021/01/cropped-portadawp.png')
-INSERT INTO TBL_ZONA(sNombre,sRutaImagen)
-	VALUES('Ancash','https://camisetasdefutbol.pe/wp-content/uploads/camisetas-deportivas-futbol-ancash.jpg')
-INSERT INTO TBL_ZONA(sNombre,sRutaImagen)
-	VALUES('Lima','https://i.ytimg.com/vi/TrLBLghtnc4/maxresdefault.jpg')
-GO
-
---TABLA USUARIOS
-INSERT INTO TBL_USUARIO
-		(sNombres,sApellidos,nTipoDoc,sNumDoc,sSexo,nRol,sDireccion,nTelefono,dFechaNacimiento,bEstado)
-VALUES('Administrador',null,1,'80808080','M',1,'Calle Satipo 1', 989898989,'1990-1-1',1)
-GO
-
-INSERT INTO TBL_USUARIO
-		(sNombres,sApellidos,nTipoDoc,sNumDoc,sSexo,nRol,sDireccion,nTelefono,dFechaNacimiento,bEstado)
-VALUES('Alex','Quispe',1,'70807080','M',2,'Calle Salaverry 1', 989898989,'1997-5-7',1)
-GO
-
---TABLA LOGIN
-INSERT INTO TBL_LOGIN(nIdUsuario,sNombreUsuario,sContrasenia)
-	VALUES(1,'admin','123456')
-GO
-INSERT INTO TBL_LOGIN(nIdUsuario,sNombreUsuario,sContrasenia)
-	VALUES(2,'alex.quispe','123456')
-GO
-
---TABLA ALMACEN
-INSERT INTO TBL_ALMACEN(sNombre,sDireccion,nIdSupervisor,nIdZona,bEstado)
-	VALUES('Satipo','Calle Satipo 1',2,1,1)
-GO
-
-INSERT INTO TBL_ALMACEN(sNombre,sDireccion,nIdSupervisor,nIdZona,bEstado)
-	VALUES('Almacen Fisico 1 - Ancash','Calle Huaylas 101',2,1,1)
-GO
-
-
 --TABLA CATEGORIA
 INSERT INTO TBL_CATEGORIA(sNombre,sDescripcion, bEstado)
-	VALUES('Caf√© Org√°nico','Tipo de caf√© producido sin la ayuda de sustancias qu√≠micas artificiales',1)
+	VALUES('CafÈ Org·nico','Tipo de cafÈ producido sin la ayuda de sustancias quÌmicas artificiales',1)
 GO
 INSERT INTO TBL_CATEGORIA(sNombre,sDescripcion, bEstado)
-	VALUES('Frutos Secos','En su composici√≥n natural tienen menos de un 50 % de agua',1)
+	VALUES('Frutos Secos','En su composiciÛn natural tienen menos de un 50 % de agua',1)
 GO
 
 --TABLA PRODUCTO
 INSERT INTO TBL_PRODUCTO(sNombre, bEstado)
-	VALUES('Caf√© Org√°nico: The Bean Coffee Company - Tostado Medio',1)
+	VALUES('CafÈ Org·nico: The Bean Coffee Company - Tostado Medio',1)
 GO
 INSERT INTO TBL_PRODUCTO(sNombre, bEstado)
-	VALUES('Caf√© Org√°nico: Seatle¬¥s Best Coffee - Tostado Oscuro',1)
+	VALUES('CafÈ Org·nico: Seatle¥s Best Coffee - Tostado Oscuro',1)
 GO
 INSERT INTO TBL_PRODUCTO(sNombre, bEstado)
-	VALUES('Caf√© Org√°nico de Per√∫: AmazonFresh',1)
+	VALUES('CafÈ Org·nico de Per˙: AmazonFresh',1)
 GO
 
 INSERT INTO TBL_PRODUCTO(sNombre, bEstado)
@@ -122,12 +64,12 @@ INSERT INTO TBL_DET_PRODUCTO(nIdProducto,sDescripcion, nIdUnidadMedida, nCantida
 GO
 
 INSERT INTO TBL_DET_PRODUCTO(nIdProducto,sDescripcion, nIdUnidadMedida, nCantidad, nPrecio, nIdLote)
-	VALUES(2,'Los granos de caf√© se tuestan a mano en peque√±os lotes para garantizar el caf√© m√°s fresco posible',
+	VALUES(2,'Los granos de cafÈ se tuestan a mano en pequeÒos lotes para garantizar el cafÈ m·s fresco posible',
 			3,10,8,2)
 GO
 
 INSERT INTO TBL_DET_PRODUCTO(nIdProducto,sDescripcion, nIdUnidadMedida, nCantidad, nPrecio, nIdLote)
-	VALUES(3,'Caf√© peruano tostado medio fragante con un final suave',4,12,18,3)
+	VALUES(3,'CafÈ peruano tostado medio fragante con un final suave',4,12,18,3)
 GO
 
 INSERT INTO TBL_DET_PRODUCTO(nIdProducto,sDescripcion, nIdUnidadMedida, nCantidad, nPrecio, nIdLote)

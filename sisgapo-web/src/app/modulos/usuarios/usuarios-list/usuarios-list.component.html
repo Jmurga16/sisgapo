@@ -60,36 +60,36 @@
 
         <!-- Codigo -->
         <ng-container matColumnDef="nIdUsuario">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId"> Codigo </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId" id="Codigo"> Codigo </th>
             <td mat-cell *matCellDef="let element"> {{element.nIdUsuario}} </td>
         </ng-container>
 
         <!-- Nombre -->
         <ng-container matColumnDef="sNombrePersona">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaUsuario"> Nombre </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaUsuario" id="Nombre"> Nombre </th>
             <td mat-cell *matCellDef="let element"> {{element.sNombrePersona}} </td>
         </ng-container>
 
         <!-- Nombre -->
         <ng-container matColumnDef="sNombreUsuario">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaUsuario"> Usuario </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaUsuario" id="Usuario"> Usuario </th>
             <td mat-cell *matCellDef="let element"> {{element.sNombreUsuario}} </td>
         </ng-container>
 
         <!-- Rol -->
         <ng-container matColumnDef="sNombreRol">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId"> Rol </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId" id="Rol"> Rol </th>
             <td mat-cell *matCellDef="let element"> {{element.sNombreRol}} </td>
         </ng-container>
 
         <!-- Estado -->
         <ng-container matColumnDef="sEstado">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId"> Estado </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId" id="Estado"> Estado </th>
             <td mat-cell *matCellDef="let element"> {{element.sEstado}} </td>
         </ng-container>
 
         <ng-container matColumnDef="Acciones">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId"> Acciones </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId" id="Accion"> Acciones </th>
             <td mat-cell *matCellDef="let element">
                 <div class="example-button-row " *ngIf="element.nIdUsuario!=1">
                     <button mat-raised-button color="accent" style="margin-right: 8px;"

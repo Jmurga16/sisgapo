@@ -1,0 +1,38 @@
+table {
+    width: 100%;
+}
+
+.header-app {
+    text-align: center;
+}
+.example-button-row button,
+.example-button-row a {
+    margin-right: 0.5rem;
+}
+
+.botones {
+    margin-left: 1rem;
+    margin-top : 1.2rem;
+    float      : right;
+}
+
+.clsColumnaId{
+    width: 10%;
+}
+.clsColumnaNombre{
+    width: 30%;
+}
+
+.clsColumnaDesc{
+    width: 35%;
+}
+
+.clsColumnaAcciones{
+    width: 15%;
+}
+
+.buttonActive{
+    background-color: forestgreen;
+    color: white;
+}
+

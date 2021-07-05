@@ -19,6 +19,7 @@ import { NavMenuComponent } from './nav-menu/nav-menu/nav-menu.component';
 
 //Services
 import { AlmacenesService } from './modulos/almacen/almacenes.service';
+import { InventarioService } from './modulos/inventario/inventario.service';
 import { UsuariosService } from './modulos/usuarios/usuarios.service';
 
 //Material Modules
@@ -45,6 +46,8 @@ import { ZonaListComponent } from './modulos/zona/zona-list/zona-list.component'
 import { ZonaFormComponent } from './modulos/zona/zona-form/zona-form.component';
 import { ProductosComponent } from './modulos/inventario/productos/productos.component';
 import { CategoriaComponent } from './modulos/inventario/categoria/categoria.component';
+import { CategoriaModalComponent } from './modulos/inventario/categoria/categoria-modal/categoria-modal.component';
+import { ProductosModalComponent } from './modulos/inventario/productos/productos-modal/productos-modal.component';
 
 
 @NgModule({
@@ -59,6 +62,8 @@ import { CategoriaComponent } from './modulos/inventario/categoria/categoria.com
     ZonaFormComponent,
     ProductosComponent,
     CategoriaComponent,
+    CategoriaModalComponent,
+    ProductosModalComponent,
   ],
   imports: [
     AppRoutingModule,
@@ -90,6 +95,7 @@ import { CategoriaComponent } from './modulos/inventario/categoria/categoria.com
   ],
   providers: [
     AlmacenesService, 
+    InventarioService,
     UsuariosService,
     MatDatepickerModule,
     MatNativeDateModule,

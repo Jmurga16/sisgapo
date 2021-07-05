@@ -19,9 +19,7 @@ export class AlmacenesListComponent implements OnInit {
 
   url: string;
   nIdUsuario: number;
-
-  appName: string = 'Almacenes';
-  usuarios: any = [];
+  appName: string;
 
   dataSource: MatTableDataSource<any>;
 
@@ -40,13 +38,13 @@ export class AlmacenesListComponent implements OnInit {
     private almacenesService: AlmacenesService,
     public dialog: MatDialog,
   ) {
+    this.appName = 'Almacenes';
     this.dataSource = new MatTableDataSource();
+    this.url = 'https://localhost:44360/';
   }
 
   ngOnInit(): void {
-
-    this.url = 'https://localhost:44360/';
-
+    
     this.fnListarAlmacenes();
 
   }
@@ -105,18 +103,18 @@ export class AlmacenesListComponent implements OnInit {
   //#endregion
 
 
-  //#region Eliminar
+  //#region Eliminar/Activar
   async fnCambiarEstado(nIdUsuario, bEstado) {
 
     let sTitulo, sRespuesta;
 
     if (bEstado == 0) {
-      sTitulo = '¿Desea eliminar el usuario?'
-      sRespuesta = 'Se eliminó el usuario con éxito'
+      sTitulo = '¿Desea eliminar el almacén?'
+      sRespuesta = 'Se eliminó el almacén con éxito'
     }
     else {
-      sTitulo = '¿Desea activar el usuario?'
-      sRespuesta = 'Se activó el usuario con éxito'
+      sTitulo = '¿Desea activar el almacén?'
+      sRespuesta = 'Se activó el almacén con éxito'
     }
 
 

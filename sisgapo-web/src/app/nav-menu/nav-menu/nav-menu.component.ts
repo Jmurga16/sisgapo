@@ -1,13 +1,35 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-nav-menu',
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css'],
 })
+
 export class NavMenuComponent implements OnInit {
   mobileQuery: MediaQueryList;
+
+  isExpanded = true;
+  showSubmenu: boolean = false;
+  showSubSubMenu: boolean = false;
+  isShowing = false;
+
+  listaNav = [
+    { id: 1, name: 'Usuarios',  route: 'usuarios', icon: 'manage_accounts', subMenu: 0, mostrar: false },
+    { id: 2, name: 'Almacenes', route: 'almacenes', icon: 'store', subMenu: 0, mostrar: false },
+    { id: 3, name: 'Zonas',     route: 'zonas', icon: 'room', subMenu: 0, mostrar: false },
+    { id: 4, name: 'Inventario',route: 'zonas', icon: 'view_in_ar', subMenu: 2, mostrar: false },
+  ];
+
+  listaSubNav = [
+    { idHijo: 1, idPadre: 2, name: 'SubAlmacen1', route: 'zonas', icon: 'false' },
+    { idHijo: 2, idPadre: 2, name: 'SubAlmacen2', route: 'zonas',icon: 'false' },
+    { idHijo: 3, idPadre: 4, name: 'Categoria'  , route: 'categoria',icon: 'category' },
+    { idHijo: 4, idPadre: 4, name: 'Productos'  , route: 'productos',icon: 'inventory_2' },
+  ];
+
 
   listaNavegacion = [
     { name: 'Usuarios', route: 'usuarios', icon: 'manage_accounts' },
@@ -17,7 +39,11 @@ export class NavMenuComponent implements OnInit {
 
   private _mobileQueryListener: () => void;
 
-  constructor(changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
+  constructor(
+    changeDetectorRef: ChangeDetectorRef,
+    media: MediaMatcher,
+    private router: Router
+  ) {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
@@ -29,5 +55,22 @@ export class NavMenuComponent implements OnInit {
 
   shouldRun = true;
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log(this.listaNav)
+   }
+
+  fnRuteo(ruta) {
+
+    let sRuta = `/${ruta}`
+
+    this.router.navigateByUrl(sRuta);
+
+  }
+
+  fnMostrar(index) {
+
+    this.listaNav[index].mostrar=!(this.listaNav[index].mostrar);
+    
+  }
+
 }
