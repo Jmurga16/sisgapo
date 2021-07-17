@@ -1,5 +1,6 @@
 ﻿using Data;
 using Entity;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,8 @@ namespace Business
 {
     public class ZonaBusiness
     {
-        ZonaData zonaData = new ZonaData();
-
+        private readonly ZonaData zonaData = new ZonaData();
+        
         public List<ZonaEntity> LIS_ZonaBusiness()
         {
             return zonaData.LIS_ZonaData();

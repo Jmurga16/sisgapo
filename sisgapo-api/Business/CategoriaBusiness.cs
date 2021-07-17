@@ -1,5 +1,6 @@
 ﻿using Data;
 using Entity;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,9 @@ namespace Business
 {
     public class CategoriaBusiness
     {
-        CategoriaData categoriaData = new CategoriaData();
+        private readonly CategoriaData categoriaData = new CategoriaData();
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
 
         public object BusinessCategoria(GeneralEntity genEnt)
         {
@@ -20,9 +23,9 @@ namespace Business
                 return categoriaData.DataCategoria(genEnt);
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                logger.Error(e);
                 throw;
 
             }

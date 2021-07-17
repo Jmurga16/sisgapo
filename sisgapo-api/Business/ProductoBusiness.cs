@@ -1,5 +1,6 @@
 ﻿using Data;
 using Entity;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,22 +11,22 @@ namespace Business
 {
     public class ProductoBusiness
     {
-        //ProductoData productoData = new ProductoData();
+        private readonly ProductoData productoData = new ProductoData();
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
+        public object BusinessProducto(GeneralEntity genEnt)
+        {
+            try
+            {
 
-        //public object BusinessProducto(GeneralEntity genEnt)
-        //{
-        //    try
-        //    {
+                return 1;
 
-        //        return productoData.DataProducto(genEnt);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e);
+                throw;
 
-        //    }
-        //    catch (Exception)
-        //    {
-
-        //        throw;
-
-        //    }
-        //}
+            }
+        }
     }
 }

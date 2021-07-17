@@ -1,5 +1,6 @@
 ﻿using Data;
 using Entity;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,9 @@ namespace Business
     public class AlmacenBusiness
     {
 
-        AlmacenData almacenData = new AlmacenData();
+        private readonly AlmacenData almacenData = new AlmacenData();
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
 
         public object BusinessAlmacen(GeneralEntity genEnt)
         {
@@ -21,9 +24,9 @@ namespace Business
                 return almacenData.DataAlmacen(genEnt);
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                logger.Error(e);
                 throw;
 
             }
