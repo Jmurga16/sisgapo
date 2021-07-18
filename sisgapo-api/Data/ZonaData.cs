@@ -1,5 +1,6 @@
 ﻿using Entity;
 using Microsoft.Extensions.Configuration;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,6 +15,7 @@ namespace Data
 
     public class ZonaData
     {
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
         private string conf;
         public string ConfConexion()
         {
@@ -28,9 +30,9 @@ namespace Data
                 IConfiguration configuration = builder.Build();
                 conf = configuration["ConnectionStrings:connectionString"];
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                logger.Error(e);
                 throw;
             }
             return conf;
@@ -56,7 +58,7 @@ namespace Data
                 _Command.Parameters.Add(new SqlParameter("@nIdZona", 0));
                 _Command.Parameters.Add(new SqlParameter("@sNombre", ""));
                 _Command.Parameters.Add(new SqlParameter("@sRutaImagen", ""));
-                //_Command.Parameters.Clear();
+               
 
                 SqlDataReader reader = _Command.ExecuteReader();
 
@@ -75,7 +77,8 @@ namespace Data
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message, ex);
+                logger.Error(ex);
+                throw;
             }
 
             return lstZonas;
@@ -101,7 +104,7 @@ namespace Data
                 _Command.Parameters.Add(new SqlParameter("@nIdZona", nIdZona));
                 _Command.Parameters.Add(new SqlParameter("@sNombre", ""));
                 _Command.Parameters.Add(new SqlParameter("@sRutaImagen", ""));
-                //_Command.Parameters.Clear();
+             
 
                 SqlDataReader reader = _Command.ExecuteReader();
 
@@ -121,7 +124,8 @@ namespace Data
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message, ex);
+                logger.Error(ex);
+                throw;
             }
 
             return lstZonas;
@@ -159,7 +163,8 @@ namespace Data
             catch (Exception ex)
             {
                 strResultado = "";
-                throw new Exception(ex.Message, ex);
+                logger.Error(ex);
+                throw;
             }
 
             return strResultado;

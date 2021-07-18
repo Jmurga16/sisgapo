@@ -1,4 +1,5 @@
 ﻿using Entity;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,8 +11,9 @@ namespace Data
 {
     public class CategoriaData
     {
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
         #region Conexion
-        private Conexion oCon;
+        private readonly Conexion oCon;
         public CategoriaData()
         {
             oCon = new Conexion(1);
@@ -25,103 +27,98 @@ namespace Data
 
             string msj = string.Empty;
 
-            #region 01. Lista de Categorias
-            if (genEnt.sOpcion == "01")
+            switch (genEnt.sOpcion)
             {
-                try
-                {
-                    List<E_ListaCategorias> listaCategorias = new List<E_ListaCategorias>();
-                    using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro))
+                #region 01. Lista de Categorias
+                case "01":
+                    try
                     {
-                        if (dr != null)
+                        List<EntListaCategorias> listaCategorias = new List<EntListaCategorias>();
+                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro))
                         {
-                            while (dr.Read())
+                            if (dr != null)
                             {
-                                E_ListaCategorias catEnt = new E_ListaCategorias();
+                                while (dr.Read())
+                                {
+                                    EntListaCategorias catEnt = new EntListaCategorias();
 
 
-                                catEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));
-                                catEnt.sNombre      = Convert.ToString(dr["sNombre"]);
-                                catEnt.sDescripcion = Convert.ToString(dr["sDescripcion"]);
-                                catEnt.sEstado      = Convert.ToString(dr["sEstado"]);
+                                    catEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));
+                                    catEnt.sNombre = Convert.ToString(dr["sNombre"]);
+                                    catEnt.sDescripcion = Convert.ToString(dr["sDescripcion"]);
+                                    catEnt.sEstado = Convert.ToString(dr["sEstado"]);
 
 
-                                listaCategorias.Add(catEnt);
+                                    listaCategorias.Add(catEnt);
 
+                                }
                             }
+                            return listaCategorias;
                         }
-                        return listaCategorias;
                     }
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            }
-            #endregion
-
-
-            #region 02. Categoria por Id
-            if (genEnt.sOpcion == "02")
-            {
-                try
-                {
-                    List<E_ListaCategorias> listaCategorias = new List<E_ListaCategorias>();
-                    using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro))
+                    catch (Exception e)
                     {
-                        if (dr != null)
-                        {
-                            while (dr.Read())
-                            {
-                                E_ListaCategorias catEnt = new E_ListaCategorias();
-
-
-                                catEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));
-                                catEnt.sNombre      = Convert.ToString(dr["sNombre"]);
-                                catEnt.sDescripcion = Convert.ToString(dr["sDescripcion"]);
-                                catEnt.bEstado      = Boolean.Parse(Convert.ToString(dr["bEstado"]));
-
-                                listaCategorias.Add(catEnt);
-
-                            }
-                        }
-                        return listaCategorias;
+                        logger.Error(e);
+                        throw;
                     }
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                #endregion
+
+                #region 02. Categoria por Id
+                case "02":
+                    try
+                    {
+                        List<EntListaCategorias> listaCategorias = new List<EntListaCategorias>();
+                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro))
+                        {
+                            if (dr != null)
+                            {
+                                while (dr.Read())
+                                {
+                                    EntListaCategorias catEnt = new EntListaCategorias();
+
+
+                                    catEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));
+                                    catEnt.sNombre = Convert.ToString(dr["sNombre"]);
+                                    catEnt.sDescripcion = Convert.ToString(dr["sDescripcion"]);
+                                    catEnt.bEstado = Boolean.Parse(Convert.ToString(dr["bEstado"]));
+
+                                    listaCategorias.Add(catEnt);
+
+                                }
+                            }
+                            return listaCategorias;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        logger.Error(e);
+                        throw;
+                    }
+                #endregion
+
+                #region 03. Insertar | 04. Actualizar | 05. Eliminar(Logica) -- Categorias
+                case "03":
+                case "04":
+                case "05":
+                    try
+                    {
+                        string sResultado = Convert.ToString(oCon.EjecutarEscalar("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro));
+                        msj = sResultado;
+                    }
+                    catch (Exception ex)
+                    {
+                        msj = ex.Message;
+                    }
+                    return msj;
+                #endregion
+
+                default:
+                    return null;
             }
-            #endregion
-
-
-
-            #region 03. Insertar | 04. Actualizar | 05. Eliminar(Logica) -- Categorias
-            else if (genEnt.sOpcion == "03" || genEnt.sOpcion == "04" || genEnt.sOpcion == "05")
-            {
-                try
-                {
-                    string sResultado = Convert.ToString(oCon.EjecutarEscalar("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro));
-                    msj = sResultado;
-                }
-                catch (Exception ex)
-                {
-                    msj = ex.Message;
-                }
-                return msj;
-            }
-            #endregion
-
-
-            else
-            {
-                return null;
-            }
+                                                                   
 
         }
         #endregion
-
 
     }
 }

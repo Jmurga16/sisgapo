@@ -2,6 +2,7 @@
 using Entity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +15,9 @@ namespace SISGAPO_API.Controllers
     public class AlmacenController : Controller
     {
 
-        AlmacenBusiness objAlmacen = new AlmacenBusiness();
-        
+        private readonly AlmacenBusiness objInventario = new AlmacenBusiness();
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         #region Almacen
 
         [HttpPost]
@@ -26,13 +28,14 @@ namespace SISGAPO_API.Controllers
             {
                 try
                 {
-                    var vRes = objAlmacen.BusinessAlmacen(genEnt);
+                    var vRes = objInventario.BusinessAlmacen(genEnt);
 
                     return Ok(vRes);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
 
+                    logger.Error(e);
                     throw;
 
                 }
@@ -44,14 +47,15 @@ namespace SISGAPO_API.Controllers
                 {
                     string[] listaRes;
 
-                    string sResultado = Convert.ToString(objAlmacen.BusinessAlmacen(genEnt));
+                    string sResultado = Convert.ToString(objInventario.BusinessAlmacen(genEnt));
                     listaRes = sResultado.Split('|');
 
                     return Ok(new { cod = listaRes[0], mensaje = listaRes[1] });
                 }
-                catch (Exception )
+                catch (Exception e)
                 {
 
+                    logger.Error(e);
                     throw;
 
                 }

@@ -12,7 +12,7 @@ namespace Entity
 
     }
     
-    public class E_ListaAlmacenes
+    public class EListaAlmacenes
     {
         public int nIdAlmacen { get; set; }
         public string sNombreZona { get; set; }
@@ -21,7 +21,7 @@ namespace Entity
         
     }
 
-    public class E_ListaAlmacenId
+    public class EListaAlmacenId
     {
         public int nIdAlmacen { get; set; }
         public string sNombre { get; set; }
@@ -33,13 +33,13 @@ namespace Entity
     }
 
 
-    public class E_ListaZonas
+    public class EListaZonas
     {
         public int nIdZona { get; set; }
         public string sNombreZona { get; set; }        
     }
 
-    public class E_ListaSupervisores
+    public class EListaSupervisores
     {
         public int nIdSupervisor { get; set; }
         public string sNombrePersona { get; set; }

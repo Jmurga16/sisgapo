@@ -11,12 +11,12 @@ namespace Entity
 
     }
 
-    public class E_Request_Usuario
+    public class EntRequestUsuario
     {
         public string sOpcion { get; set; }
     }
 
-    public class E_ListaUsuarios
+    public class EntListaUsuarios
     {
         public int nIdUsuario { get; set; }
         public string sNombrePersona { get; set; }
@@ -25,7 +25,7 @@ namespace Entity
         public string sEstado { get; set; }
     }
 
-    public class E_ListaUsuarioId
+    public class EntListaUsuarioId
     {        
         public string sNombres { get; set; }
         public string sApellidos { get; set; }
@@ -34,8 +34,7 @@ namespace Entity
         public string sSexo { get; set; }
         public int nIdRol { get; set; }
         public string sDireccion { get; set; }
-        public int nTelefono { get; set; }
-        //public DateTime dFechaNacimiento { get; set; }        
+        public int nTelefono { get; set; }       
         public string sContrasenia { get; set; }
     }
 

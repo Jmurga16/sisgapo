@@ -1,5 +1,6 @@
 ﻿using Entity;
 using Microsoft.Extensions.Configuration;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,9 +13,10 @@ namespace Data
 {
     public class AlmacenData
     {
-
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
         #region Conexion
         private readonly Conexion oCon;
+        
         public AlmacenData()
         {
             oCon = new Conexion(1);
@@ -34,14 +36,13 @@ namespace Data
                 case "01":
                     try
                     {
-                        List<E_ListaAlmacenes> listaAlmacenes = new List<E_ListaAlmacenes>();
+                        List<EListaAlmacenes> listaAlmacenes = new List<EListaAlmacenes>();
                         using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
                         {
-                            if (dr != null)
-                            {
+                            if (dr != null) { 
                                 while (dr.Read())
                                 {
-                                    E_ListaAlmacenes almEnt = new E_ListaAlmacenes();
+                                    EListaAlmacenes almEnt = new EListaAlmacenes();
 
 
                                     almEnt.nIdAlmacen = Int32.Parse(Convert.ToString(dr["nIdAlmacen"]));
@@ -59,8 +60,9 @@ namespace Data
                         }
                         
                     }
-                    catch (Exception)
+                    catch (Exception exc1)
                     {
+                        logger.Error(exc1);
                         throw;
                     }
                 #endregion
@@ -69,14 +71,14 @@ namespace Data
                 case "02":
                     try
                     {
-                        List<E_ListaAlmacenId> listaAlmacenes = new List<E_ListaAlmacenId>();
+                        List<EListaAlmacenId> listaAlmacenes = new List<EListaAlmacenId>();
                         using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
                         {
                             if (dr != null)
                             {
                                 while (dr.Read())
                                 {
-                                    E_ListaAlmacenId almEnt = new E_ListaAlmacenId();
+                                    EListaAlmacenId almEnt = new EListaAlmacenId();
 
                                     almEnt.nIdAlmacen = Int32.Parse(Convert.ToString(dr["nIdAlmacen"]));
                                     almEnt.sNombre = Convert.ToString(dr["sNombre"]);
@@ -92,8 +94,9 @@ namespace Data
                             return listaAlmacenes;
                         }
                     }
-                    catch (Exception)
+                    catch (Exception exc2)
                     {
+                        logger.Error(exc2);
                         throw;
                     }
                 #endregion
@@ -102,14 +105,14 @@ namespace Data
                 case "03":
                     try
                     {
-                        List<E_ListaZonas> listaZonas = new List<E_ListaZonas>();
+                        List<EListaZonas> listaZonas = new List<EListaZonas>();
                         using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
                         {
                             if (dr != null)
                             {
                                 while (dr.Read())
                                 {
-                                    E_ListaZonas zonEnt = new E_ListaZonas();
+                                    EListaZonas zonEnt = new EListaZonas();
 
                                     zonEnt.nIdZona = Int32.Parse(Convert.ToString(dr["nIdZona"]));
                                     zonEnt.sNombreZona = Convert.ToString(dr["sNombreZona"]);
@@ -121,8 +124,9 @@ namespace Data
                             return listaZonas;
                         }
                     }
-                    catch (Exception)
+                    catch (Exception exc3)
                     {
+                        logger.Error(exc3);
                         throw;
                     }
                 #endregion
@@ -131,14 +135,14 @@ namespace Data
                 case "04":
                     try
                     {
-                        List<E_ListaSupervisores> listaSupervisores = new List<E_ListaSupervisores>();
+                        List<EListaSupervisores> listaSupervisores = new List<EListaSupervisores>();
                         using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
                         {
                             if (dr != null)
                             {
                                 while (dr.Read())
                                 {
-                                    E_ListaSupervisores almEnt = new E_ListaSupervisores();
+                                    EListaSupervisores almEnt = new EListaSupervisores();
 
                                     almEnt.nIdSupervisor = Int32.Parse(Convert.ToString(dr["nIdSupervisor"]));
                                     almEnt.sNombrePersona = Convert.ToString(dr["sNombrePersona"]);
@@ -150,8 +154,9 @@ namespace Data
                             return listaSupervisores;
                         }
                     }
-                    catch (Exception)
+                    catch (Exception exc4)
                     {
+                        logger.Error(exc4);
                         throw;
                     }
                 #endregion
@@ -176,6 +181,11 @@ namespace Data
 
         }
         #endregion
+
+        //public object opcion(IDataReader dr)
+        //{
+
+        //}
 
 
     }

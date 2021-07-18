@@ -10,7 +10,7 @@ namespace Entity
     {
     }
 
-    public class E_ListaCategorias
+    public class EntListaCategorias
     {
         public int nIdCategoria { get; set; }
         public string sNombre { get; set; }

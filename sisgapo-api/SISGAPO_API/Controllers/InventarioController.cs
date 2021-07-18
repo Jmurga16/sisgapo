@@ -1,6 +1,7 @@
 ﻿using Business;
 using Entity;
 using Microsoft.AspNetCore.Mvc;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,8 @@ namespace SISGAPO_API.Controllers
     [ApiController]
     public class InventarioController : Controller
     {
-        CategoriaBusiness objAlmacen = new CategoriaBusiness();
+        private readonly CategoriaBusiness objInventario = new CategoriaBusiness();
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         #region Categoria
 
@@ -24,13 +26,14 @@ namespace SISGAPO_API.Controllers
             {
                 try
                 {
-                    var vRes = objAlmacen.BusinessCategoria(genEnt);
+                    var vRes = objInventario.BusinessCategoria(genEnt);
 
                     return Ok(vRes);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
 
+                    logger.Error(e);
                     throw;
 
                 }
@@ -42,14 +45,15 @@ namespace SISGAPO_API.Controllers
                 {
                     string[] listaRes;
 
-                    string sResultado = Convert.ToString(objAlmacen.BusinessCategoria(genEnt));
+                    string sResultado = Convert.ToString(objInventario.BusinessCategoria(genEnt));
                     listaRes = sResultado.Split('|');
 
                     return Ok(new { cod = listaRes[0], mensaje = listaRes[1] });
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
 
+                    logger.Error(e);
                     throw;
 
                 }

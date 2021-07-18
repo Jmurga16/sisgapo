@@ -1,5 +1,6 @@
 ﻿using Microsoft.ApplicationBlocks.Data;
 using Microsoft.Extensions.Configuration;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,8 +16,9 @@ namespace Data
     {
 
         #region Variables
-        private String oSqlConnIN;
+        private readonly String oSqlConnIN;
         private readonly SqlTransaction sqlTransaction = null;
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
         #endregion
 
 
@@ -34,14 +36,11 @@ namespace Data
                     IConfiguration configuration = builder.Build();
                     oSqlConnIN = configuration["ConnectionStrings:connectionString"];
                 }
-                else
-                {
-
-                }
+               
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                logger.Error(e);
                 throw;
             }
             
@@ -90,7 +89,7 @@ namespace Data
                     }
                 }
                 if (i != valores.Length)
-                    throw new Exception("La cantidad de parámetros ingresados no coincide con las del procedimiento.");
+                    throw new ArgumentException("La cantidad de parámetros ingresados no coincide con las del procedimiento.");
             }
 
             //Se verifica si existe una Transaccion de BD activa
@@ -124,10 +123,10 @@ namespace Data
         private DataSet ObtenerParametros(string vProcedure)
         {
             object vSquema = DBNull.Value;
-            if (vProcedure.IndexOf('.') > 0)
+            if (vProcedure.IndexOf('.') >= 0)
             {
                 vSquema = vProcedure.Substring(0, vProcedure.IndexOf('.'));
-                vProcedure = vProcedure.Substring(vProcedure.IndexOf('.') + 1); ;
+                vProcedure = vProcedure.Substring(vProcedure.IndexOf('.') + 1);
             }
 
             SqlParameter[] sqlParameters = { new SqlParameter("@procedure_name", SqlDbType.NChar, 256),
@@ -170,7 +169,7 @@ namespace Data
 
         }
 
-        private SqlDbType f_obtenerSQLType(string sNombreTipo)
+        private static SqlDbType f_obtenerSQLType(string sNombreTipo)
         {
             SqlDbType tTipo;
 

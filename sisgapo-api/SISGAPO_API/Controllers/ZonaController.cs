@@ -1,6 +1,7 @@
 ﻿using Business;
 using Entity;
 using Microsoft.AspNetCore.Mvc;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,9 @@ namespace SISGAPO_API.Controllers
     [Route("api/[controller]")]
     public class ZonaController : Controller
     {
-        ZonaBusiness objZonas = new ZonaBusiness();
+        private readonly ZonaBusiness objZonas = new ZonaBusiness();
         List<ZonaEntity> lstZonas = new List<ZonaEntity>();
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
         string strZona = "";
        
 
@@ -27,8 +29,9 @@ namespace SISGAPO_API.Controllers
                 lstZonas = objZonas.LIS_ZonaBusiness();
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                logger.Error(e);
                 throw;
             }
             return lstZonas;
@@ -44,8 +47,9 @@ namespace SISGAPO_API.Controllers
                 lstZonas = objZonas.LIS_ZonaUnicoBusiness(id);
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                logger.Error(e);
                 throw;
             }
             return lstZonas;
@@ -60,8 +64,9 @@ namespace SISGAPO_API.Controllers
             {
                 strZona = objZonas.CREATE_ZonaBusiness(objZonaEnt);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                logger.Error(e);
                 throw;
             }
             return strZona;
