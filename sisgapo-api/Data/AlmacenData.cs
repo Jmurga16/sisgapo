@@ -23,8 +23,8 @@ namespace Data
         }
         #endregion
 
-        List<EListaAlmacenes> listaAlmacenes = new List<EListaAlmacenes>();
-        List<EListaAlmacenId> listaAlmacenId = new List<EListaAlmacenId>();
+        private readonly List<EListaAlmacenes> listaAlmacenes = new List<EListaAlmacenes>();
+        private readonly List<EListaAlmacenId> listaAlmacenId = new List<EListaAlmacenId>();
 
         #region Almacen
         public object DataAlmacen(GeneralEntity genEnt)
