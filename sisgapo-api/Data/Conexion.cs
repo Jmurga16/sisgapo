@@ -58,7 +58,7 @@ namespace Data
             catch (Exception ex)
             {
                 Console.Write("Error: " + ex.Message);
-                return null;
+                throw;
             }
         }
         #endregion
@@ -123,7 +123,7 @@ namespace Data
         private DataSet ObtenerParametros(string vProcedure)
         {
             object vSquema = DBNull.Value;
-            if (vProcedure.IndexOf('.') >= 0)
+            if (vProcedure.Contains("."))
             {
                 vSquema = vProcedure.Substring(0, vProcedure.IndexOf('.'));
                 vProcedure = vProcedure.Substring(vProcedure.IndexOf('.') + 1);

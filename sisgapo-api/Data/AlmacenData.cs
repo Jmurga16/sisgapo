@@ -39,7 +39,7 @@ namespace Data
                         List<EListaAlmacenes> listaAlmacenes = new List<EListaAlmacenes>();
                         using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
                         {
-                            if (dr != null) { 
+                            
                                 while (dr.Read())
                                 {
                                     EListaAlmacenes almEnt = new EListaAlmacenes();
@@ -54,7 +54,7 @@ namespace Data
                                     listaAlmacenes.Add(almEnt);
 
                                 }
-                            }
+                            
                             return listaAlmacenes;
                             
                         }
@@ -74,8 +74,7 @@ namespace Data
                         List<EListaAlmacenId> listaAlmacenes = new List<EListaAlmacenId>();
                         using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
                         {
-                            if (dr != null)
-                            {
+                           
                                 while (dr.Read())
                                 {
                                     EListaAlmacenId almEnt = new EListaAlmacenId();
@@ -90,7 +89,7 @@ namespace Data
                                     listaAlmacenes.Add(almEnt);
 
                                 }
-                            }
+                            
                             return listaAlmacenes;
                         }
                     }
@@ -108,8 +107,7 @@ namespace Data
                         List<EListaZonas> listaZonas = new List<EListaZonas>();
                         using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
                         {
-                            if (dr != null)
-                            {
+                          
                                 while (dr.Read())
                                 {
                                     EListaZonas zonEnt = new EListaZonas();
@@ -120,7 +118,7 @@ namespace Data
                                     listaZonas.Add(zonEnt);
 
                                 }
-                            }
+                            
                             return listaZonas;
                         }
                     }
@@ -137,9 +135,7 @@ namespace Data
                     {
                         List<EListaSupervisores> listaSupervisores = new List<EListaSupervisores>();
                         using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
-                        {
-                            if (dr != null)
-                            {
+                        {                         
                                 while (dr.Read())
                                 {
                                     EListaSupervisores almEnt = new EListaSupervisores();
@@ -150,7 +146,7 @@ namespace Data
                                     listaSupervisores.Add(almEnt);
 
                                 }
-                            }
+                            
                             return listaSupervisores;
                         }
                     }
@@ -181,11 +177,6 @@ namespace Data
 
         }
         #endregion
-
-        //public object opcion(IDataReader dr)
-        //{
-
-        //}
 
 
     }

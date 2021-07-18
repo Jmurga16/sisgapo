@@ -20,6 +20,7 @@ namespace Data
         }
         #endregion
 
+       
 
         #region Categoria
         public object DataCategoria(GeneralEntity genEnt)
@@ -36,8 +37,6 @@ namespace Data
                         List<EntListaCategorias> listaCategorias = new List<EntListaCategorias>();
                         using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro))
                         {
-                            if (dr != null)
-                            {
                                 while (dr.Read())
                                 {
                                     EntListaCategorias catEnt = new EntListaCategorias();
@@ -52,7 +51,7 @@ namespace Data
                                     listaCategorias.Add(catEnt);
 
                                 }
-                            }
+                            
                             return listaCategorias;
                         }
                     }
@@ -70,22 +69,20 @@ namespace Data
                         List<EntListaCategorias> listaCategorias = new List<EntListaCategorias>();
                         using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro))
                         {
-                            if (dr != null)
+                            
+                            while(dr.Read())
                             {
-                                while (dr.Read())
-                                {
-                                    EntListaCategorias catEnt = new EntListaCategorias();
+                                EntListaCategorias catEnt = new EntListaCategorias();
 
+                                catEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));
+                                catEnt.sNombre = Convert.ToString(dr["sNombre"]);
+                                catEnt.sDescripcion = Convert.ToString(dr["sDescripcion"]);
+                                catEnt.bEstado = Boolean.Parse(Convert.ToString(dr["bEstado"]));
 
-                                    catEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));
-                                    catEnt.sNombre = Convert.ToString(dr["sNombre"]);
-                                    catEnt.sDescripcion = Convert.ToString(dr["sDescripcion"]);
-                                    catEnt.bEstado = Boolean.Parse(Convert.ToString(dr["bEstado"]));
+                                listaCategorias.Add(catEnt);
 
-                                    listaCategorias.Add(catEnt);
-
-                                }
-                            }
+                            } 
+                 
                             return listaCategorias;
                         }
                     }
@@ -115,10 +112,14 @@ namespace Data
                 default:
                     return null;
             }
-                                                                   
+
 
         }
         #endregion
 
+       
+    
     }
+
+
 }
