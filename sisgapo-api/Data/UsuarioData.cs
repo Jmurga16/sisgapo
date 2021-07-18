@@ -58,8 +58,8 @@ namespace Data
                 _Command.Parameters.Add(new SqlParameter("@pParametro", erp.pParametro));
                
 
-                #region Listar Todo
-                if (erp.sOpcion == "01")
+                #region Listar Todo || Listar con Filtro
+                if (erp.sOpcion == "01" || erp.sOpcion == "02")
                 {
                     SqlDataReader reader = _Command.ExecuteReader();
 

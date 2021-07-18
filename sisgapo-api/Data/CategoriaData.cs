@@ -66,7 +66,7 @@ namespace Data
                 case "02":
                     try
                     {
-                        List<EntListaCategorias> listaCategorias = new List<EntListaCategorias>();
+                        List<EntListaCategorias> listaCategoriaId = new List<EntListaCategorias>();
                         using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro))
                         {
                             
@@ -75,15 +75,15 @@ namespace Data
                                 EntListaCategorias catEnt = new EntListaCategorias();
 
                                 catEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));
-                                catEnt.sNombre = Convert.ToString(dr["sNombre"]);
                                 catEnt.sDescripcion = Convert.ToString(dr["sDescripcion"]);
+                                catEnt.sNombre = Convert.ToString(dr["sNombre"]);                                
                                 catEnt.bEstado = Boolean.Parse(Convert.ToString(dr["bEstado"]));
 
-                                listaCategorias.Add(catEnt);
+                                listaCategoriaId.Add(catEnt);
 
                             } 
                  
-                            return listaCategorias;
+                            return listaCategoriaId;
                         }
                     }
                     catch (Exception e)

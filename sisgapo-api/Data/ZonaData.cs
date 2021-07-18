@@ -92,8 +92,9 @@ namespace Data
 
             try
             {
-                string sOpcion = "02";
+                
                 ConfConexion();
+                string sOpcion = "02";
 
                 var conn = new SqlConnection(conf);
                 conn.Open();
@@ -106,15 +107,15 @@ namespace Data
                 _Command.Parameters.Add(new SqlParameter("@sRutaImagen", ""));
              
 
-                SqlDataReader reader = _Command.ExecuteReader();
+                SqlDataReader dreader = _Command.ExecuteReader();
 
-                while (reader.Read())
+                while (dreader.Read())
                 {
                     ZonaEntity zonaEnt = new ZonaEntity();
 
-                    zonaEnt.nIdZona = Convert.ToInt32(reader["nIdZona"]);
-                    zonaEnt.sNombre = reader["sNombre"].ToString();
-                    zonaEnt.sRutaImagen = reader["sRutaImagen"].ToString();
+                    zonaEnt.nIdZona = Convert.ToInt32(dreader["nIdZona"]);
+                    zonaEnt.sNombre = dreader["sNombre"].ToString();
+                    zonaEnt.sRutaImagen = dreader["sRutaImagen"].ToString();
 
 
                     lstZonas.Add(zonaEnt);
