@@ -82,31 +82,7 @@ namespace Data
                     return lstUsuarios;
                 }
                 #endregion
-
-                #region Listar Filtros
-                if (erp.sOpcion == "02")
-                {
-                    SqlDataReader reader = _Command.ExecuteReader();
-
-                    while (reader.Read())
-                    {
-                        EntListaUsuarios usrEnt = new EntListaUsuarios();
-
-                        usrEnt.nIdUsuario = Convert.ToInt32(reader["nIdUsuario"]);
-                        usrEnt.sNombrePersona = reader["sNombrePersona"].ToString();
-                        usrEnt.sNombreUsuario = reader["sNombreUsuario"].ToString();
-                        usrEnt.sNombreRol = reader["sNombreRol"].ToString();
-                        usrEnt.sEstado = reader["sEstado"].ToString();
-
-
-                        lstUsuarios.Add(usrEnt);
-                    }
-
-                    conn.Close();
-
-                    return lstUsuarios;
-                }
-                #endregion
+                               
 
                 #region Listar por Id
                 if (erp.sOpcion == "03")
@@ -115,19 +91,19 @@ namespace Data
 
                     while (reader.Read())
                     {
-                        EntListaUsuarioId usrEnt = new EntListaUsuarioId();
+                        EntListaUsuarioId usrEntId = new EntListaUsuarioId();
                                                
-                        usrEnt.sNombres     = reader["sNombres"].ToString();
-                        usrEnt.sApellidos   = reader["sApellidos"].ToString();
-                        usrEnt.nTipoDoc     = Convert.ToInt32(reader["nTipoDoc"]);
-                        usrEnt.sNumDoc      = reader["sNumDoc"].ToString();
-                        usrEnt.sSexo        = reader["sSexo"].ToString();
-                        usrEnt.nIdRol       = Convert.ToInt32(reader["nRol"]);
-                        usrEnt.sDireccion   = reader["sDireccion"].ToString();
-                        usrEnt.nTelefono    = Convert.ToInt32(reader["nTelefono"]);
-                        usrEnt.sContrasenia = reader["sContrasenia"].ToString();
+                        usrEntId.sNombres     = reader["sNombres"].ToString();
+                        usrEntId.sApellidos   = reader["sApellidos"].ToString();
+                        usrEntId.nTipoDoc     = Convert.ToInt32(reader["nTipoDoc"]);
+                        usrEntId.sNumDoc      = reader["sNumDoc"].ToString();
+                        usrEntId.sSexo        = reader["sSexo"].ToString();
+                        usrEntId.nIdRol       = Convert.ToInt32(reader["nRol"]);
+                        usrEntId.sDireccion   = reader["sDireccion"].ToString();
+                        usrEntId.nTelefono    = Convert.ToInt32(reader["nTelefono"]);
+                        usrEntId.sContrasenia = reader["sContrasenia"].ToString();
 
-                        unitUsuario.Add(usrEnt);
+                        unitUsuario.Add(usrEntId);
                     }
 
                     conn.Close();

@@ -23,23 +23,26 @@ namespace Data
         }
         #endregion
 
+        List<EListaAlmacenes> listaAlmacenes = new List<EListaAlmacenes>();
+        List<EListaAlmacenId> listaAlmacenId = new List<EListaAlmacenId>();
 
         #region Almacen
         public object DataAlmacen(GeneralEntity genEnt)
         {
 
             string msj = string.Empty;
-
-            switch (genEnt.sOpcion)
+            try
             {
-                #region 01. Lista de Almacenes
-                case "01":
-                    try
-                    {
-                        List<EListaAlmacenes> listaAlmacenes = new List<EListaAlmacenes>();
+                            
+                switch (genEnt.sOpcion)
+                {
+              
+                    #region 01. Lista de Almacenes
+                    case "01":
+                                                    
                         using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
                         {
-                            
+                        
                                 while (dr.Read())
                                 {
                                     EListaAlmacenes almEnt = new EListaAlmacenes();
@@ -54,126 +57,102 @@ namespace Data
                                     listaAlmacenes.Add(almEnt);
 
                                 }
-                            
-                            return listaAlmacenes;
-                            
-                        }
                         
-                    }
-                    catch (Exception exc1)
-                    {
-                        logger.Error(exc1);
-                        throw;
-                    }
-                #endregion
-                    
-                #region 02. Almacen por Id
-                case "02":
-                    try
-                    {
-                        List<EListaAlmacenId> listaAlmacenes = new List<EListaAlmacenId>();
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
-                        {
-                           
-                                while (dr.Read())
-                                {
-                                    EListaAlmacenId almEnt = new EListaAlmacenId();
-
-                                    almEnt.nIdAlmacen = Int32.Parse(Convert.ToString(dr["nIdAlmacen"]));
-                                    almEnt.sNombre = Convert.ToString(dr["sNombre"]);
-                                    almEnt.sDireccion = Convert.ToString(dr["sDireccion"]);
-                                    almEnt.nIdZona = Int32.Parse(Convert.ToString(dr["nIdZona"]));
-                                    almEnt.bEstado = Boolean.Parse(Convert.ToString(dr["bEstado"]));
-                                    almEnt.nIdSupervisor = Int32.Parse(Convert.ToString(dr["nIdSupervisor"]));
-
-                                    listaAlmacenes.Add(almEnt);
-
-                                }
-                            
                             return listaAlmacenes;
+                        
                         }
-                    }
-                    catch (Exception exc2)
-                    {
-                        logger.Error(exc2);
-                        throw;
-                    }
-                #endregion
+                    #endregion
+                    
+                    #region 02. Almacen por Id
+                    case "02":
+                      
+                       using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
+                       {
+                       
+                               while (dr.Read())
+                               {
+                                   EListaAlmacenId almEnt = new EListaAlmacenId();
 
-                #region 03. Lista de Zonas
-                case "03":
-                    try
-                    {
-                        List<EListaZonas> listaZonas = new List<EListaZonas>();
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
-                        {
-                          
-                                while (dr.Read())
-                                {
-                                    EListaZonas zonEnt = new EListaZonas();
+                                   almEnt.nIdAlmacen = Int32.Parse(Convert.ToString(dr["nIdAlmacen"]));
+                                   almEnt.sNombre = Convert.ToString(dr["sNombre"]);
+                                   almEnt.sDireccion = Convert.ToString(dr["sDireccion"]);
+                                   almEnt.nIdZona = Int32.Parse(Convert.ToString(dr["nIdZona"]));
+                                   almEnt.bEstado = Boolean.Parse(Convert.ToString(dr["bEstado"]));
+                                   almEnt.nIdSupervisor = Int32.Parse(Convert.ToString(dr["nIdSupervisor"]));
 
-                                    zonEnt.nIdZona = Int32.Parse(Convert.ToString(dr["nIdZona"]));
-                                    zonEnt.sNombreZona = Convert.ToString(dr["sNombreZona"]);
+                               listaAlmacenId.Add(almEnt);
 
-                                    listaZonas.Add(zonEnt);
+                               }
+                       
+                           return listaAlmacenId;
+                       }
+                       
+                    #endregion
 
-                                }
-                            
-                            return listaZonas;
-                        }
-                    }
-                    catch (Exception exc3)
-                    {
-                        logger.Error(exc3);
-                        throw;
-                    }
-                #endregion
+                    #region 03. Lista de Zonas
+                    case "03":
+                       
+                       List<EListaZonas> listaZonas = new List<EListaZonas>();
+                       using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
+                       {
+                       
+                               while (dr.Read())
+                               {
+                                   EListaZonas zonEnt = new EListaZonas();
 
-                #region 04. Lista de Supervisores
-                case "04":
-                    try
-                    {
-                        List<EListaSupervisores> listaSupervisores = new List<EListaSupervisores>();
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
-                        {                         
-                                while (dr.Read())
-                                {
-                                    EListaSupervisores almEnt = new EListaSupervisores();
+                                   zonEnt.nIdZona = Int32.Parse(Convert.ToString(dr["nIdZona"]));
+                                   zonEnt.sNombreZona = Convert.ToString(dr["sNombreZona"]);
 
-                                    almEnt.nIdSupervisor = Int32.Parse(Convert.ToString(dr["nIdSupervisor"]));
-                                    almEnt.sNombrePersona = Convert.ToString(dr["sNombrePersona"]);
+                                   listaZonas.Add(zonEnt);
 
-                                    listaSupervisores.Add(almEnt);
+                               }
+                       
+                           return listaZonas;
+                       }
+                       
+                        
+                    #endregion
 
-                                }
-                            
-                            return listaSupervisores;
-                        }
-                    }
-                    catch (Exception exc4)
-                    {
-                        logger.Error(exc4);
-                        throw;
-                    }
-                #endregion
+                    #region 04. Lista de Supervisores
+                    case "04":
+                       
+                       List<EListaSupervisores> listaSupervisores = new List<EListaSupervisores>();
+                       using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
+                       {                         
+                               while (dr.Read())
+                               {
+                                   EListaSupervisores almEnt = new EListaSupervisores();
 
-                #region 05. Insertar | 06. Actualizar | 07. Eliminar(Logica) -- Almacenes
-                case "05": case "06": case "07":
-                    try
-                    {
+                                   almEnt.nIdSupervisor = Int32.Parse(Convert.ToString(dr["nIdSupervisor"]));
+                                   almEnt.sNombrePersona = Convert.ToString(dr["sNombrePersona"]);
+
+                                   listaSupervisores.Add(almEnt);
+
+                               }
+                       
+                           return listaSupervisores;
+                       }
+                                        
+                    #endregion
+
+                    #region 05. Insertar | 06. Actualizar | 07. Eliminar(Logica) -- Almacenes
+                    case "05": case "06": case "07":
+                        
                         string sResultado = Convert.ToString(oCon.EjecutarEscalar("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro));
                         msj = sResultado;
-                    }
-                    catch (Exception ex)
-                    {
-                        msj = ex.Message;
-                    }
-                    return msj;
-                #endregion
+                                             
+                        return msj;
+                    #endregion
 
-                default:
-                    return null;
-            }                    
+                    default:
+                        return null;
+                }
+            }
+            catch (Exception exc4)
+            {
+                logger.Error(exc4);
+                throw;
+            }
 
         }
         #endregion
