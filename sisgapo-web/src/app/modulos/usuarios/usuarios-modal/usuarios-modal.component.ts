@@ -140,7 +140,7 @@ export class UsuariosModalComponent implements OnInit {
     await this.usuariosService.LIS_Usuarios(pOpcion, pParametro, this.url).then(
       (value: any) => {
 
-        if (value.mensaje == "Ok") {
+        if (value.mensaje == "OK") {
           Swal.fire({
             title: `Se registró con éxito`,
             icon: 'success',

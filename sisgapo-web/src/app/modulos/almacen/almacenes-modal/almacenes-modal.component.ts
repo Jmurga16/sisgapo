@@ -112,10 +112,10 @@ export class AlmacenesModalComponent implements OnInit {
   async fnCargarDatos() {
     let pParametro = [];
     pParametro.push(this.nIdAlmacen);
-
+    
     await this.almacenesService.fnServAlmacenes('02', pParametro, this.url).then(
       (value: any[]) => {
-
+        
         this.formAlmacen.get("sNombreAlmacen").setValue(value[0].sNombre)
         this.formAlmacen.get("sDireccion").setValue(value[0].sDireccion)
         this.formAlmacen.get("nIdZona").setValue(value[0].nIdZona)

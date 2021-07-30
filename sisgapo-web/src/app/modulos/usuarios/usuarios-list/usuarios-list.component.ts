@@ -162,7 +162,7 @@ export class UsuariosListComponent implements OnInit {
     await this.usuariosService.LIS_Usuarios('06', pParametro, this.url).then(
       (value: any) => {
 
-        if (value.mensaje == "Ok") {
+        if (value.mensaje == "OK") {
           Swal.fire({
             title: sRespuesta,
             icon: 'success',

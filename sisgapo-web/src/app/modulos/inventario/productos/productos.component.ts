@@ -12,10 +12,12 @@ export class ProductosComponent implements OnInit {
 
   constructor(
     private inventarioService: InventarioService
-    ) { }
+    ) { 
+      this.url = 'https://localhost:44360/';
+    }
 
   ngOnInit(): void {
-    this.url = 'https://localhost:44360/';
+   
   }
 
 }
