@@ -1,42 +1,54 @@
 import { NgModule } from '@angular/core';
-import {Routes,RouterModule} from '@angular/router'
-import {UsuariosListComponent} from './modulos/usuarios/usuarios-list/usuarios-list.component'
-import {AlmacenesListComponent} from './modulos/almacen/almacenes-list/almacenes-list.component'
+import { Routes, RouterModule } from '@angular/router'
+import { UsuariosListComponent } from './modulos/usuarios/usuarios-list/usuarios-list.component'
+import { AlmacenesListComponent } from './modulos/almacen/almacenes-list/almacenes-list.component'
 import { ZonaListComponent } from './modulos/zona/zona-list/zona-list.component'
 import { ZonaFormComponent } from './modulos/zona/zona-form/zona-form.component'
 import { CategoriaComponent } from './modulos/inventario/categoria/categoria.component'
 import { ProductosComponent } from './modulos/inventario/productos/productos.component'
+import { LoginComponent } from './login/login.component';
+import { NavMenuComponent } from './nav-menu/nav-menu/nav-menu.component';
+import { InicioComponent } from './inicio/inicio.component';
 
-const routes:Routes=[
+
+const routes: Routes = [
   {
-    path:'',
-    redirectTo:'',
-    pathMatch:'full'
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full'
   },
   {
-    path:'usuarios',
-    component:UsuariosListComponent
-  },{
-    path:'almacenes',
-    component:AlmacenesListComponent
-  },{
-    path:'zonas',
-    component:ZonaListComponent
-  },{
-    path:'zonas/agregar',
-    component:ZonaFormComponent
+    path: 'login',
+    component: NavMenuComponent
   },
   {
-    path:'zonas/editar/:id',
-    component:ZonaFormComponent
+    path: 'inicio',
+    component: InicioComponent
   },
   {
-    path:'categoria',
-    component:CategoriaComponent
+    path: 'usuarios',
+    component: UsuariosListComponent
+  }, {
+    path: 'almacenes',
+    component: AlmacenesListComponent
+  }, {
+    path: 'zonas',
+    component: ZonaListComponent
+  }, {
+    path: 'zonas/agregar',
+    component: ZonaFormComponent
   },
   {
-    path:'productos',
-    component:ProductosComponent
+    path: 'zonas/editar/:id',
+    component: ZonaFormComponent
+  },
+  {
+    path: 'categoria',
+    component: CategoriaComponent
+  },
+  {
+    path: 'productos',
+    component: ProductosComponent
   },
 
 

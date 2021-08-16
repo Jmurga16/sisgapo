@@ -43,3 +43,9 @@ h1.example-app-name {
 .submenu.expanded {
   transform: scaleY(1);
 }
+
+.btnCerrarSesion{
+  margin-left: auto;  
+  color: white;
+  text-decoration: none;
+}

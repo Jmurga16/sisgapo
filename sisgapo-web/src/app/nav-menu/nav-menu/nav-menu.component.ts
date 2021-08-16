@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { Router } from "@angular/router";
 
@@ -10,6 +10,8 @@ import { Router } from "@angular/router";
 
 export class NavMenuComponent implements OnInit {
   mobileQuery: MediaQueryList;
+  Rol: number;
+  @Output() salida: EventEmitter<any> = new EventEmitter();
 
   isExpanded = true;
   showSubmenu: boolean = false;
@@ -47,6 +49,7 @@ export class NavMenuComponent implements OnInit {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addEventListener('change', this._mobileQueryListener);
+
   }
 
   ngOnDestroy(): void {
@@ -57,6 +60,17 @@ export class NavMenuComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('1')
+    this.Rol = (parseInt(localStorage.getItem("Rol")));
+
+    console.log('Rol en nav')
+    console.log(this.Rol)
+
+    if (!(this.Rol > 0)) {
+      this.Rol = 0
+      console.log(this.Rol)
+      //this.router.navigate(['/', 'login']);
+    }
+
   }
 
   fnRuteo(ruta) {
@@ -81,5 +95,15 @@ export class NavMenuComponent implements OnInit {
     this.listaNav[index].mostrar = bEstado
 
   }
+  fnClean() {
+    this.salida.emit(0);
+    localStorage.clear();
+    this.Rol = 0;
+  }
+
+  fnSetEvent(event) {
+    this.Rol = event;
+  }
 
 }
+

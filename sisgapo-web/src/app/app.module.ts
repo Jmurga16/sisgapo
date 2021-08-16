@@ -44,6 +44,8 @@ import { ProductosComponent } from './modulos/inventario/productos/productos.com
 import { CategoriaComponent } from './modulos/inventario/categoria/categoria.component';
 import { CategoriaModalComponent } from './modulos/inventario/categoria/categoria-modal/categoria-modal.component';
 import { ProductosModalComponent } from './modulos/inventario/productos/productos-modal/productos-modal.component';
+import { LoginComponent } from './login/login.component';
+import { InicioComponent } from './inicio/inicio.component';
 
 
 @NgModule({
@@ -60,6 +62,8 @@ import { ProductosModalComponent } from './modulos/inventario/productos/producto
     CategoriaComponent,
     CategoriaModalComponent,
     ProductosModalComponent,
+    LoginComponent,
+    InicioComponent,
   ],
   imports: [
     AppRoutingModule,

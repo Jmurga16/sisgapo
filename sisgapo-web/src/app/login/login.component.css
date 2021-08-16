@@ -1,0 +1,86 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 14px;
+}
+
+.contenedor {
+    width     : 49%;
+    height    : auto;
+    text-align: center;
+}
+
+
+.imgLogin {
+    height      : 25%;
+    width       : 25%;
+    margin      : 2rem;
+    margin-left : auto;
+    margin-right: auto;
+}
+
+.imgLogo {
+    height      : 20%;
+    width       : 20%;
+    margin-left : auto;
+    margin-right: auto;
+}
+
+.txtBienvenido {
+    font-size: 4rem;
+    color    : #3F51B5;
+
+}
+
+.rotate {
+
+    -webkit-transform: rotateX(180deg);
+    transform        : rotateX(180deg);
+}
+
+.formLogin {
+    text-align: center;
+}
+
+.txtLogo {
+
+    font-size     : 8rem;
+    color         : #3F51B5;
+    font-family   : Roboto Mono;
+    font-style    : normal;
+    font-weight   : normal;
+    font-size     : 64px;
+    line-height   : 85px;
+    letter-spacing: 0.1em;
+}
+
+.containerWaveBottomRight {
+    right   : 0px;
+    bottom  : 0px;
+    position: absolute;
+    width: 40%;
+}
+
+
+.containerWaveBottomLeft {
+    left    : 0px;
+    bottom  : 0px;
+    position: absolute;
+    width   : 49%;
+    height  : 40%;
+
+}
+
+.containerWaveTopLeft {
+    left    : 0px;
+    top     : 0px;
+    position: absolute;
+    width   : 49%;
+    height  : 40%;
+}
+
+.divLogo {
+    margin: auto;
+}
