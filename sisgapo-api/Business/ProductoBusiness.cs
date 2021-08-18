@@ -11,14 +11,15 @@ namespace Business
 {
     public class ProductoBusiness
     {
-        
+        private readonly ProductoData productoData = new ProductoData();
+
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
         public object BusinessProducto(GeneralEntity genEnt)
         {
             try
             {
 
-                return 1;
+                return productoData.DataProducto(genEnt);
 
             }
             catch (Exception e)
