@@ -5,3 +5,46 @@ table {
 .header-app {
     text-align: center;
 }
+
+.example-button-row button,
+.example-button-row a {
+    margin-right: 0.5rem;
+}
+
+.botones {
+    margin-left: 1rem;
+    margin-top : 1.2rem;
+    float      : right;
+}
+
+.clsColumnaId{
+    width: 7%;
+}
+.clsColumnaNombre{
+    width: 12%;
+}
+
+.clsProducto{
+    width: 14%;
+}
+
+.clsColumnaCantidad{
+    width: 8%;
+}
+
+.clsColumnaAcciones{
+    width: 15%;
+}
+
+.clsQanty{
+    padding-left: 1rem;
+}
+
+.buttonActive{
+    background-color: forestgreen;
+    color: white;
+}
+
+/* .selectEstado {
+    margin-right: 1rem;
+} */
