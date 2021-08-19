@@ -145,10 +145,43 @@ namespace Data
 
                     #endregion
 
-                    #region 05. Insertar | 06. Actualizar | 07. Eliminar(Logica) -- Almacenes
+                    #region 05. Lista de Productos por Id
                     case "05":
+
+                        List<EListaProductosById> listaProductosId = new List<EListaProductosById>();
+                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro))
+                        {
+
+                            while (dr.Read())
+                            {
+                                EListaProductosById prodEnt = new EListaProductosById();
+
+                                prodEnt.nIdCatProd = Int32.Parse(Convert.ToString(dr["nIdCatProd"]));
+                                prodEnt.nIdAlmacen = Int32.Parse(Convert.ToString(dr["nIdAlmacen"]));                                
+                                prodEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));                                
+                                prodEnt.nIdProducto = Int32.Parse(Convert.ToString(dr["nIdProducto"]));
+                                prodEnt.sNombreProducto = Convert.ToString(dr["sNombreProducto"]);      
+                                prodEnt.nCantidad = Int32.Parse(Convert.ToString(dr["nCantidad"]));
+                                prodEnt.nIdUnidadMedida = Int32.Parse(Convert.ToString(dr["nIdUnidadMedida"]));                                
+                                prodEnt.nPrecio = Int32.Parse(Convert.ToString(dr["nPrecio"]));
+                                prodEnt.dFechaFab = Convert.ToString(dr["dFechaFab"]);                                
+                                prodEnt.dFechaVenc = Convert.ToString(dr["dFechaVenc"]);
+                                
+
+                                listaProductosId.Add(prodEnt);
+
+                            }
+
+                            return listaProductosId;
+                        }
+
+
+                    #endregion
+
+                    #region 06. Insertar | 07. Actualizar | 08. Eliminar(Logica) -- Almacenes
                     case "06":
                     case "07":
+                    case "08":
 
                         string sResultado = Convert.ToString(oCon.EjecutarEscalar("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro));
                         msj = sResultado;

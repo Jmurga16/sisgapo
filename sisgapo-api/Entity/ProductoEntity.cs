@@ -46,4 +46,20 @@ namespace Entity
         public string sEstado { get; set; }
     }
 
+    public class EListaProductosById
+    {
+        public int nIdCatProd { get; set; }
+        public int nIdAlmacen { get; set; }       
+        public int nIdCategoria { get; set; }        
+        public int nIdProducto { get; set; }
+        public string sNombreProducto { get; set; }
+        public int nIdDetProd { get; set; }
+        public int nCantidad { get; set; }
+        public int nIdUnidadMedida { get; set; }
+        public int nPrecio { get; set; }
+        public string dFechaFab { get; set; }
+        public string dFechaVenc { get; set; }
+        
+    }
+
 }
