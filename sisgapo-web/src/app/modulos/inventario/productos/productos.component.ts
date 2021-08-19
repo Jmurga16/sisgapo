@@ -131,18 +131,19 @@ export class ProductosComponent implements OnInit {
   fnCleanFilter(){
     this.fAlmacen.setValue('')
     this.fCategoria.setValue('')
+    this.fnListarProductos();
   }
   //#endregion
 
 
   //#region Abrir Modal
-  async fnAbrirModal(accion, nIdCategoria) {
+  async fnAbrirModal(accion, nIdCatProd) {
     const dialogRef = this.dialog.open(ProductosModalComponent, {
       width: '50rem',
       disableClose: true,
       data: {
         accion: accion, //0:Nuevo , 1:Editar
-        nIdCategoria: nIdCategoria
+        nIdCatProd: nIdCatProd
       },
     });
 
@@ -188,7 +189,7 @@ export class ProductosComponent implements OnInit {
     pParametro.push(nIdUsuario);
     pParametro.push(bEstado);
 
-    await this.inventarioService.fnServProducto('07', pParametro, this.url).then(
+    await this.inventarioService.fnServProducto('08', pParametro, this.url).then(
       (value: any) => {
 
         if (value.cod == 1) {
@@ -211,4 +212,9 @@ export class ProductosComponent implements OnInit {
 
 
 
+}
+
+export interface ProductoData {
+  accion: number;
+  nIdCatProd:number;
 }

@@ -131,11 +131,44 @@ BEGIN
 		
 	END
 
-	ELSE IF @sOpcion = '05'  --INSERTAR CATEGORÍAS
+  ELSE IF @sOpcion = '05'  --LISTAR PRODUCTO POR ID
+	BEGIN
+    BEGIN
+      SET @nIdCatProd = (SELECT valor FROM @tParametro WHERE id = 1);
+    END
+
+		BEGIN
+
+			SELECT 
+				nIdCatProd,
+				Alm.nIdAlmacen,				
+				Cat.nIdCategoria,				
+				Prod.nIdProducto,
+				DetProd.nIdDetProd,
+				DetProd.nCantidad,
+				UM.nIdUnidadMedida,
+				DetProd.nPrecio,
+				Lot.dFechaFab,
+				Lot.dFechaVenc
+			FROM TBL_CAT_PROD Tbl
+			INNER JOIN TBL_ALMACEN		Alm		ON Alm.nIdAlmacen	= Tbl.nIdAlmacen
+			INNER JOIN TBL_CATEGORIA	Cat		ON Cat.nIdCategoria	= Tbl.nIdCategoria
+			INNER JOIN TBL_PRODUCTO		Prod	ON Prod.nIdProducto	= Tbl.nIdProducto
+			INNER JOIN TBL_DET_PRODUCTO DetProd ON DetProd.nIdProducto = Prod.nIdProducto
+			INNER JOIN TBL_LOTE			Lot		ON Lot.nIdLote	= DetProd.nIdLote
+			INNER JOIN TBL_UNIDADMEDIDA UM		ON UM.nIdUnidadMedida	= DetProd.nIdUnidadMedida
+      WHERE
+        Tbl.nIdCatProd = @nIdCatProd
+      		
+		END
+		
+	END
+
+	ELSE IF @sOpcion = '06'  --INSERTAR PRODUCTOS
 	BEGIN
 		BEGIN
 
-			SET @sNombreProducto	= (SELECT valor FROM @tParametro WHERE id = 1);
+      SET @sNombreProducto	= (SELECT valor FROM @tParametro WHERE id = 1);
       SET @nIdAlmacen	      = (SELECT valor FROM @tParametro WHERE id = 2);
       SET @nIdCategoria	    = (SELECT valor FROM @tParametro WHERE id = 3);
       SET @nIdUnidadMedida	= (SELECT valor FROM @tParametro WHERE id = 4);
@@ -182,7 +215,7 @@ BEGIN
 	END
 	   
 	   
-	ELSE IF @sOpcion = '06'  -- EDITAR CATEGORÍAS
+	ELSE IF @sOpcion = '07'  -- EDITAR PRODUCTOS
 	BEGIN
 		BEGIN
 			SET @sNombreProducto	= (SELECT valor FROM @tParametro WHERE id = 1);
@@ -235,7 +268,7 @@ BEGIN
 	END;                            
 
                                                            
-	ELSE IF @sOpcion = '07'  -- ELIMINAR/ACTIVAR
+	ELSE IF @sOpcion = '08'  -- ELIMINAR/ACTIVAR
 	BEGIN  
 		BEGIN
 			SET @nIdProducto	= (SELECT valor FROM @tParametro WHERE id = 1);	
