@@ -144,6 +144,7 @@ BEGIN
 				Alm.nIdAlmacen,				
 				Cat.nIdCategoria,				
 				Prod.nIdProducto,
+        Prod.sNombre AS 'sNombreProducto',
 				DetProd.nIdDetProd,
 				DetProd.nCantidad,
 				UM.nIdUnidadMedida,
@@ -228,7 +229,7 @@ BEGIN
       SET @dFechaVenc	      = (SELECT valor FROM @tParametro WHERE id = 8);
 			SET @sDescripcion		  = (SELECT valor FROM @tParametro WHERE id = 9);
       SET @nIdProducto		  = (SELECT valor FROM @tParametro WHERE id = 10);
-      SET @nIdCatProd		    = (SELECT valor FROM @tParametro WHERE id = 10);
+      SET @nIdCatProd		    = (SELECT valor FROM @tParametro WHERE id = 11);
 		END	
                               
 			UPDATE [TBL_PRODUCTO]                           
