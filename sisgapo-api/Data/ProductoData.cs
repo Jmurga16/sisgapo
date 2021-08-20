@@ -20,10 +20,7 @@ namespace Data
             oCon = new Conexion(1);
         }
         #endregion
-
-        //private readonly List<EListaAlmacenes> listaAlmacenes = new List<EListaAlmacenes>();
-        //private readonly List<EListaAlmacenId> listaAlmacenId = new List<EListaAlmacenId>();
-
+        
         private readonly List<EListaProductos> listaProductos = new List<EListaProductos>();
 
         #region Producto

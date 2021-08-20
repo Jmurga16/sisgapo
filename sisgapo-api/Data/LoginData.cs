@@ -26,8 +26,6 @@ namespace Data
         public object DataLogin(LoginEntity logEnt)
         {
 
-            string msj = string.Empty;
-
             try
             {
                 List<ResultEntity> listaLogin = new List<ResultEntity>();
