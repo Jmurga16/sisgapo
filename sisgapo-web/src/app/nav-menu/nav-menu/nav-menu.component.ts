@@ -62,13 +62,9 @@ export class NavMenuComponent implements OnInit {
     console.log('1')
     this.Rol = (parseInt(localStorage.getItem("Rol")));
 
-    console.log('Rol en nav')
-    console.log(this.Rol)
-
-    if (!(this.Rol > 0)) {
+    if (this.Rol<= 0) {
       this.Rol = 0
-      console.log(this.Rol)
-      //this.router.navigate(['/', 'login']);
+      console.log(this.Rol)      
     }
 
   }

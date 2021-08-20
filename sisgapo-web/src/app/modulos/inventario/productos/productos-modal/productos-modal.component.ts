@@ -77,8 +77,8 @@ export class ProductosModalComponent implements OnInit {
 
     if (this.data.accion == 1) {
       this.nIdCatProd = this.data.nIdCatProd;
-      //this.formProducto.get("nIdCatProd").setValue(this.nIdCatProd)
-      //this.fnCargarDatos();
+      this.formProducto.get("nIdCatProd").setValue(this.nIdCatProd)
+      this.fnCargarDatos();
     }
 
   }
@@ -222,21 +222,15 @@ export class ProductosModalComponent implements OnInit {
   }
   //#endregion
 
-  //#region Cambiar Fecha Nacimiento
+
+  //#region Cambiar Fecha
   async fnCambiarFecha(event, nTipo) {
 
     let sDia, sMes, sAnio, sFecha
-    if (event.value.getDate() < 10) {
-      sDia = "0" + event.value.getDate()
-    } else {
-      sDia = event.value.getDate()
-    }
-    if ((event.value.getMonth() + 1) < 10) {
-      sMes = "0" + (event.value.getMonth() + 1)
-    }
-    else {
-      sMes = event.value.getMonth() + 1
-    }
+
+    sDia= (event.value.getDate() < 10) ? "0" + event.value.getDate() : event.value.getDate();    
+    sMes= ((event.value.getMonth() + 1) < 10) ? "0" + (event.value.getMonth() + 1) : event.value.getMonth() + 1
+   
     sAnio = event.value.getFullYear()
 
     if (nTipo == 1) {
@@ -248,7 +242,7 @@ export class ProductosModalComponent implements OnInit {
 
 
   }
-  //#endregion Cambiar Fecha Entrega
+  //#endregion Cambiar Fecha
 
 
   //#region Conversión de Fechas

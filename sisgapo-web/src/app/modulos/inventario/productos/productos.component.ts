@@ -157,17 +157,17 @@ export class ProductosComponent implements OnInit {
 
 
   //#region Eliminar/Activar
-  async fnCambiarEstado(nIdUsuario, bEstado) {
+  async fnCambiarEstado(nIdCatProd, bEstado) {
 
     let sTitulo, sRespuesta;
 
     if (bEstado == 0) {
-      sTitulo = '¿Desea eliminar la categoría?'
-      sRespuesta = 'Se eliminó la categoría con éxito'
+      sTitulo = '¿Desea eliminar el Producto?'
+      sRespuesta = 'Se eliminó el Producto con éxito'
     }
     else {
-      sTitulo = '¿Desea activar el usuario?'
-      sRespuesta = 'Se activó la categoría con éxito'
+      sTitulo = '¿Desea activar el Producto?'
+      sRespuesta = 'Se activó el Producto con éxito'
     }
 
     var resp = await Swal.fire({
@@ -186,7 +186,7 @@ export class ProductosComponent implements OnInit {
 
     let pParametro = [];
 
-    pParametro.push(nIdUsuario);
+    pParametro.push(nIdCatProd);
     pParametro.push(bEstado);
 
     await this.inventarioService.fnServProducto('08', pParametro, this.url).then(

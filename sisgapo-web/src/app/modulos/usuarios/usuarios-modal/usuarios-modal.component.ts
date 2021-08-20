@@ -161,7 +161,7 @@ export class UsuariosModalComponent implements OnInit {
   //#region Cambiar Fecha Nacimiento
   async fnCambiarFecha(event) {
 
-    let sDia, sMes, sAnio, sFecha
+    let sDia, sMes, sAnio;
     if (event.value.getDate() < 10) {
       sDia = "0" + event.value.getDate()
     } else {
@@ -178,7 +178,7 @@ export class UsuariosModalComponent implements OnInit {
     this.dFechaNacimiento = sAnio + '-' + sMes + '-' + sDia
 
   }
-  //#endregion Cambiar Fecha Entrega
+  //#endregion Cambiar Fecha Nacimiento
 
   //#region Conversión de Fechas
   fnConvertirFecha(FechaParametro, nTipo) {
@@ -186,7 +186,7 @@ export class UsuariosModalComponent implements OnInit {
     let sDia, sMes, sAnio, sFecha
     var sCadena
 
-    // Datetime a String(YYYY-mm-dd)
+    // DateTime a (YYYY-mm-dd)
     if (nTipo == 1) {
 
       if (FechaParametro != '') {

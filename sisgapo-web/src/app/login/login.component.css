@@ -46,12 +46,11 @@ body {
 
 .txtLogo {
 
-    font-size     : 8rem;
+    font-size     : 4rem;
     color         : #3F51B5;
-    font-family   : Roboto Mono;
+    
     font-style    : normal;
-    font-weight   : normal;
-    font-size     : 64px;
+    font-weight   : normal;   
     line-height   : 85px;
     letter-spacing: 0.1em;
 }

@@ -92,7 +92,7 @@ export class CategoriaComponent implements OnInit {
       sRespuesta = 'Se eliminó la categoría con éxito'
     }
     else {
-      sTitulo = '¿Desea activar el usuario?'
+      sTitulo = '¿Desea activar la categoría?'
       sRespuesta = 'Se activó la categoría con éxito'
     }
 
