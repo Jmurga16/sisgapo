@@ -36,6 +36,8 @@ namespace Entity
         public string sDireccion { get; set; }
         public int nTelefono { get; set; }       
         public string sContrasenia { get; set; }
+        public DateTime dFechaNacimiento { get; set; }
+        public string dFechaNac { get; set; }
     }
 
 }

@@ -102,6 +102,8 @@ namespace Data
                         usrEntId.sDireccion   = reader["sDireccion"].ToString();
                         usrEntId.nTelefono    = Convert.ToInt32(reader["nTelefono"]);
                         usrEntId.sContrasenia = reader["sContrasenia"].ToString();
+                        usrEntId.dFechaNac    = reader["dFechaNac"].ToString();
+                        usrEntId.dFechaNacimiento = Convert.ToDateTime(reader["dFechaNacimiento"]);
 
                         unitUsuario.Add(usrEntId);
                     }
