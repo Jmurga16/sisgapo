@@ -100,6 +100,7 @@ export class ZonaFormComponent implements OnInit {
 
   }
 
+  //#region Al cambiar ruta de Imagen
   changeImagen() {
 
     if (this.fRutaImagen.value == '') {
@@ -111,18 +112,19 @@ export class ZonaFormComponent implements OnInit {
     }
 
   }
+  //#endregion
 
+  //#region Validar Imagen
   async fnValidarImagen() {
-    let bValido: boolean = true;
+    let bValido: boolean;
     var imagen = this.fRutaImagen.value
     var extension = imagen.substr(-4)
-   
+
 
     if (extension == '.png' || extension == '.jpg') {
       bValido = true;
     }
     else {
-      
       bValido = false;
       this.fRutaImagen.setValue('');
       this.sRutaImagen = 'https://www.allianceplast.com/wp-content/uploads/2017/11/no-image.png'
@@ -136,7 +138,7 @@ export class ZonaFormComponent implements OnInit {
     return bValido;
 
   }
-
+  //#endregion
 
 
 }

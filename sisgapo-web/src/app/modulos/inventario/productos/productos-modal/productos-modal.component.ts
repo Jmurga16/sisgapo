@@ -74,7 +74,7 @@ export class ProductosModalComponent implements OnInit {
     this.fnListarCategorias();
     this.fnListarUnidadMedida();
 
-
+    //Cargar datos a editar
     if (this.data.accion == 1) {
       this.nIdCatProd = this.data.nIdCatProd;
       this.formProducto.get("nIdCatProd").setValue(this.nIdCatProd)
@@ -147,7 +147,7 @@ export class ProductosModalComponent implements OnInit {
       (value: any[]) => {
 
         this.lCategorias = value;
-      
+
       },
       (error) => {
         console.log(error);
@@ -228,9 +228,9 @@ export class ProductosModalComponent implements OnInit {
 
     let sDia, sMes, sAnio, sFecha
 
-    sDia= (event.value.getDate() < 10) ? "0" + event.value.getDate() : event.value.getDate();    
-    sMes= ((event.value.getMonth() + 1) < 10) ? "0" + (event.value.getMonth() + 1) : event.value.getMonth() + 1
-   
+    //Evaluacion de Dia, Mes y Año
+    sDia = (event.value.getDate() < 10) ? "0" + event.value.getDate() : event.value.getDate();
+    sMes = ((event.value.getMonth() + 1) < 10) ? "0" + (event.value.getMonth() + 1) : event.value.getMonth() + 1
     sAnio = event.value.getFullYear()
 
     if (nTipo == 1) {
@@ -240,14 +240,13 @@ export class ProductosModalComponent implements OnInit {
       this.dFechaVenc = sAnio + '-' + sMes + '-' + sDia
     }
 
-
   }
   //#endregion Cambiar Fecha
 
 
   //#region Conversión de Fechas
   fnConvertirFecha(FechaParametro, nTipo) {
-
+    //Declaracion de dia, mes, año y fecha
     let sDia, sMes, sAnio, sFecha
     var sCadena
 

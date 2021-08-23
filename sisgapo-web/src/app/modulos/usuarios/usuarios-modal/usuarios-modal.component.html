@@ -1,7 +1,7 @@
 <div>
 
     <h1 mat-dialog-title class="clstitulo">{{sAccionModal}} Usuario</h1>
-
+    <!-- Formulario-->
     <form [formGroup]="formUsuario" ngNativeValidate autocomplete="off" name="Formulario" id="new-form">
 
 
@@ -42,8 +42,8 @@
 
                 <mat-form-field style="display:initial">
                     <mat-label>N° Documento</mat-label>
-                    <input matInput type="number" max="99999999" maxlength="8" required formControlName="sNumDoc" autocomplete="off"
-                        name="Documento">
+                    <input matInput type="number" max="99999999" maxlength="8" required formControlName="sNumDoc"
+                        autocomplete="off" name="Documento">
                 </mat-form-field>
             </div>
 
@@ -84,8 +84,8 @@
             <div class="col-md-3">
                 <mat-form-field style="display:initial">
                     <mat-label>Telefono</mat-label>
-                    <input matInput type="number" max="999999999" required formControlName="nTelefono" autocomplete="nope"
-                        name="Telefono">
+                    <input matInput type="number" max="999999999" required formControlName="nTelefono"
+                        autocomplete="nope" name="Telefono">
                 </mat-form-field>
             </div>
 
@@ -108,8 +108,8 @@
 
                 <mat-form-field style="display:initial">
                     <mat-label>Contraseña</mat-label>
-                    <input matInput type="password" formControlName="sContrasenia" name="somePassword" autocomplete="new-password"
-                    #password />
+                    <input matInput type="password" formControlName="sContrasenia" name="somePassword"
+                        autocomplete="new-password" #password />
                 </mat-form-field>
 
             </div>

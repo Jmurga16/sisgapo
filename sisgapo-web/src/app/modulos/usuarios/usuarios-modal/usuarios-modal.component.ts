@@ -78,6 +78,7 @@ export class UsuariosModalComponent implements OnInit {
       sContrasenia: ["", Validators.required],
     });
 
+    //Cargar los Datos en caso de edicion
     if (this.data.accion == 1) {
       this.nIdUsuario = this.data.nIdUsuario;
       this.formUsuario.get("nIdUsuario").setValue(this.nIdUsuario)
@@ -93,20 +94,18 @@ export class UsuariosModalComponent implements OnInit {
 
     await this.usuariosService.LIS_Usuarios('03', pParametro, this.url).then(
       (value: any[]) => {
-        
+
         this.formUsuario.get("sNombres").setValue(value[0].sNombres)
         this.formUsuario.get("sApellidos").setValue(value[0].sApellidos)
-        this.formUsuario.get("nTipoDoc").setValue(value[0].nTipoDoc)       
+        this.formUsuario.get("nTipoDoc").setValue(value[0].nTipoDoc)
         this.formUsuario.get("sSexo").setValue(value[0].sSexo)
         this.formUsuario.get("nIdRol").setValue(value[0].nIdRol)
         this.formUsuario.get("sDireccion").setValue(value[0].sDireccion)
-        
         this.formUsuario.get("sNumDoc").setValue(value[0].sNumDoc)
         this.formUsuario.get("nTelefono").setValue(value[0].nTelefono)
         this.formUsuario.get("sContrasenia").setValue(value[0].sContrasenia)
-
         this.formUsuario.get("dFechaNacimiento").setValue(value[0].dFechaNacimiento)
-        this.dFechaNacimiento=value[0].dFechaNac
+        this.dFechaNacimiento = value[0].dFechaNac
 
       },
       (error) => {
@@ -116,9 +115,11 @@ export class UsuariosModalComponent implements OnInit {
   }
   //#endregion 
 
-  //#region Grabar
+
+  //#region Grabar Usuario
   async fnGrabar() {
 
+    //Validar que todos los campos tengan datos
     if (this.formUsuario.invalid) {
       return Swal.fire({
         title: `Ingrese todos los campos.`,
@@ -127,7 +128,8 @@ export class UsuariosModalComponent implements OnInit {
       });
     }
 
-    if ((await this.fnValidar()) == false) {
+    //Validaciones especificas de algunos campos
+    if (!(await this.fnValidar())) {
       return
     }
 
@@ -174,17 +176,20 @@ export class UsuariosModalComponent implements OnInit {
   async fnCambiarFecha(event) {
 
     let sDia, sMes, sAnio;
+    //Evaluar dia
     if (event.value.getDate() < 10) {
       sDia = "0" + event.value.getDate()
     } else {
       sDia = event.value.getDate()
     }
+    //Evaluar mes
     if ((event.value.getMonth() + 1) < 10) {
       sMes = "0" + (event.value.getMonth() + 1)
     }
     else {
       sMes = event.value.getMonth() + 1
     }
+    //Evaluar año
     sAnio = event.value.getFullYear()
 
     this.dFechaNacimiento = sAnio + '-' + sMes + '-' + sDia
@@ -224,6 +229,7 @@ export class UsuariosModalComponent implements OnInit {
 
   //#region Cerrar
   fnCerrarModal(result) {
+    //Cerrar modal con resultado
     if (result == 1) {
       this.dialogRef.close(result);
     }
@@ -238,15 +244,17 @@ export class UsuariosModalComponent implements OnInit {
   async fnValidar() {
     let bValidar: boolean = true;
 
-    if(await this.fnValidarDocumento()==false){
-      bValidar=false;
+    //Validar digitos del DNI
+    if (!(await this.fnValidarDocumento())) {
+      bValidar = false;
       return bValidar
-    };
+    }
 
-    if(await this.fnValidarTelefono()==false){
-      bValidar=false;
+    //Validar digitos de Telefono
+    if (!(await this.fnValidarTelefono())) {
+      bValidar = false;
       return bValidar
-    };
+    }
 
     return bValidar;
 
@@ -258,9 +266,9 @@ export class UsuariosModalComponent implements OnInit {
   fnValidarDocumento() {
     let bValido: boolean = true;
 
-    let nDocumento=this.formUsuario.controls.sNumDoc.value
+    let nDocumento = this.formUsuario.controls.sNumDoc.value
 
-    if (nDocumento> 99999999 || nDocumento < 10000000) {
+    if (nDocumento > 99999999 || nDocumento < 10000000) {
       bValido = false;
       Swal.fire({
         title: `El campo N° Documento debe tener 8 digitos.`,
@@ -280,10 +288,10 @@ export class UsuariosModalComponent implements OnInit {
 
     let nTelefono = this.formUsuario.controls.nTelefono.value
 
-    if (nTelefono> 999999999 || nTelefono < 100000000) {
+    if (nTelefono > 999999999 || nTelefono < 900000000) {
       bValido = false;
       Swal.fire({
-        title: `El campo de Telefono debe tener 9 digitos.`,
+        title: `El campo de Telefono debe tener 9 digitos y empezar con 9.`,
         icon: 'warning',
         timer: 1500
       });
