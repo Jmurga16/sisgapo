@@ -59,12 +59,13 @@ export class NavMenuComponent implements OnInit {
   shouldRun = true;
 
   ngOnInit(): void {
-    console.log('1')
+    
     this.Rol = (parseInt(localStorage.getItem("Rol")));
-
-    if (this.Rol<= 0) {
-      this.Rol = 0
-      console.log(this.Rol)      
+    if (this.Rol> 0) {
+      return
+    }
+    else{
+      this.Rol=0;
     }
 
   }

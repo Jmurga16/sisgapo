@@ -36,7 +36,6 @@ export class ZonaListComponent implements OnInit {
     this.zonaService.getZonas().subscribe(
       (res:any)=>{
         
-        console.log(res);
         this.lAlmacenes=res;
       
       },

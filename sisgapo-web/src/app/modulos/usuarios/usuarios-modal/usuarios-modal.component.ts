@@ -1,8 +1,8 @@
-import {  
+import {
   MAT_DIALOG_DATA,
   MatDialogRef,
 } from "@angular/material/dialog";
-import {  
+import {
   FormGroup,
   FormBuilder,
   Validators,
@@ -32,6 +32,7 @@ export class UsuariosModalComponent implements OnInit {
   formUsuario: FormGroup
   sAccionModal: string;
   dFechaNacimiento: any;
+  dFechaHoy = new Date();
 
   bOcultarPass = false;
 
@@ -92,16 +93,21 @@ export class UsuariosModalComponent implements OnInit {
 
     await this.usuariosService.LIS_Usuarios('03', pParametro, this.url).then(
       (value: any[]) => {
-
+        
         this.formUsuario.get("sNombres").setValue(value[0].sNombres)
         this.formUsuario.get("sApellidos").setValue(value[0].sApellidos)
-        this.formUsuario.get("nTipoDoc").setValue(value[0].nTipoDoc)
-        this.formUsuario.get("sNumDoc").setValue(value[0].sNumDoc)
+        this.formUsuario.get("nTipoDoc").setValue(value[0].nTipoDoc)       
         this.formUsuario.get("sSexo").setValue(value[0].sSexo)
         this.formUsuario.get("nIdRol").setValue(value[0].nIdRol)
         this.formUsuario.get("sDireccion").setValue(value[0].sDireccion)
-        this.formUsuario.get("nTelefono").setValue(value[0].nTelefono)        
-        this.formUsuario.get("sContrasenia").setValue(value[0].sContrasenia)        
+        
+        this.formUsuario.get("sNumDoc").setValue(value[0].sNumDoc)
+        this.formUsuario.get("nTelefono").setValue(value[0].nTelefono)
+        this.formUsuario.get("sContrasenia").setValue(value[0].sContrasenia)
+
+        this.formUsuario.get("dFechaNacimiento").setValue(value[0].dFechaNacimiento)
+        this.dFechaNacimiento=value[0].dFechaNac
+
       },
       (error) => {
         console.log(error);
@@ -120,6 +126,11 @@ export class UsuariosModalComponent implements OnInit {
         timer: 1500
       });
     }
+
+    if ((await this.fnValidar()) == false) {
+      return
+    }
+
 
     let pParametro = [];
     let pOpcion = this.data.accion == 0 ? '04' : '05'; // 04-> Insertar / 05-> Editar
@@ -158,6 +169,7 @@ export class UsuariosModalComponent implements OnInit {
   }
   //#endregion
 
+
   //#region Cambiar Fecha Nacimiento
   async fnCambiarFecha(event) {
 
@@ -179,6 +191,7 @@ export class UsuariosModalComponent implements OnInit {
 
   }
   //#endregion Cambiar Fecha Nacimiento
+
 
   //#region Conversión de Fechas
   fnConvertirFecha(FechaParametro, nTipo) {
@@ -208,6 +221,7 @@ export class UsuariosModalComponent implements OnInit {
   }
   //#endregion
 
+
   //#region Cerrar
   fnCerrarModal(result) {
     if (result == 1) {
@@ -218,6 +232,68 @@ export class UsuariosModalComponent implements OnInit {
     }
   }
   //#endregion
+
+
+  //#region Validaciones
+  async fnValidar() {
+    let bValidar: boolean = true;
+
+    if(await this.fnValidarDocumento()==false){
+      bValidar=false;
+      return bValidar
+    };
+
+    if(await this.fnValidarTelefono()==false){
+      bValidar=false;
+      return bValidar
+    };
+
+    return bValidar;
+
+  }
+  //#endregion
+
+
+  //#region Validar DNI
+  fnValidarDocumento() {
+    let bValido: boolean = true;
+
+    let nDocumento=this.formUsuario.controls.sNumDoc.value
+
+    if (nDocumento> 99999999 || nDocumento < 10000000) {
+      bValido = false;
+      Swal.fire({
+        title: `El campo N° Documento debe tener 8 digitos.`,
+        icon: 'warning',
+        timer: 1500
+      });
+    }
+
+    return bValido
+  }
+  //#endregion
+
+
+  //#region Validar DNI
+  fnValidarTelefono() {
+    let bValido: boolean = true;
+
+    let nTelefono = this.formUsuario.controls.nTelefono.value
+
+    if (nTelefono> 999999999 || nTelefono < 100000000) {
+      bValido = false;
+      Swal.fire({
+        title: `El campo de Telefono debe tener 9 digitos.`,
+        icon: 'warning',
+        timer: 1500
+      });
+    }
+
+    return bValido
+  }
+  //#endregion
+
+
 
 }
 

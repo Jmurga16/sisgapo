@@ -9,14 +9,16 @@
             <div class="col-md-6">
                 <mat-form-field style="display:initial">
                     <mat-label>Nombres</mat-label>
-                    <input matInput type="text" formControlName="sNombres" autocomplete="off" name="Nombres">
+                    <input matInput type="text" maxlength="50" onkeydown="return /[a-zA-ZñÑá-úÁ-Ú ]/i.test(event.key)"
+                        formControlName="sNombres" autocomplete="nope" name="Nombres">
                 </mat-form-field>
             </div>
 
             <div class="col-md-6">
                 <mat-form-field style="display:initial">
                     <mat-label>Apellidos</mat-label>
-                    <input matInput type="text" formControlName="sApellidos" autocomplete="nope" name="Apellidos">
+                    <input matInput type="text" maxlength="50" onkeydown="return /[a-zA-ZñÑá-úÁ-Ú ]/i.test(event.key)"
+                        formControlName="sApellidos" autocomplete="nope" name="Apellidos">
                 </mat-form-field>
             </div>
         </div>
@@ -40,7 +42,8 @@
 
                 <mat-form-field style="display:initial">
                     <mat-label>N° Documento</mat-label>
-                    <input matInput type="text" formControlName="sNumDoc" autocomplete="off" name="Documento">
+                    <input matInput type="number" max="99999999" maxlength="8" required formControlName="sNumDoc" autocomplete="off"
+                        name="Documento">
                 </mat-form-field>
             </div>
 
@@ -81,7 +84,8 @@
             <div class="col-md-3">
                 <mat-form-field style="display:initial">
                     <mat-label>Telefono</mat-label>
-                    <input matInput type="search" formControlName="nTelefono" autocomplete="nope" name="Telefono">
+                    <input matInput type="number" max="999999999" required formControlName="nTelefono" autocomplete="nope"
+                        name="Telefono">
                 </mat-form-field>
             </div>
 
@@ -89,7 +93,8 @@
                 <mat-form-field appearance="fill" class="selectMat selectResp">
                     <mat-label>Fecha de Nacimiento</mat-label>
                     <input matInput type="search" [matDatepicker]="picker" formControlName="dFechaNacimiento"
-                        (dateChange)="fnCambiarFecha($event)" autocomplete="off" name="Fecha" id="Fecha">
+                        (dateChange)="fnCambiarFecha($event)" autocomplete="off" name="Fecha" id="Fecha"
+                        [max]="dFechaHoy">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
@@ -103,9 +108,10 @@
 
                 <mat-form-field style="display:initial">
                     <mat-label>Contraseña</mat-label>
-                    <input matInput type="text" formControlName="sContrasenia" name="somePassword" autocomplete="off" />
+                    <input matInput type="password" formControlName="sContrasenia" name="somePassword" autocomplete="new-password"
+                    #password />
                 </mat-form-field>
-           
+
             </div>
 
         </div>

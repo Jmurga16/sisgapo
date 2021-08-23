@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { ZonaService } from '../zona.service';
 import { ActivatedRoute, Router } from "@angular/router";
 import { ZonaData } from '../Models/IZona';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-zona-form',
@@ -66,6 +67,24 @@ export class ZonaFormComponent implements OnInit {
     //eliminar datos al guardar :
     delete this.lZona.nIdZona;
 
+    if (this.fNombre.value == '' || this.fNombre.value == undefined) {
+      return Swal.fire({
+        title: `Complete el campo Nombre.`,
+        icon: 'warning',
+        timer: 3500
+      });
+    }
+    if (this.fRutaImagen.value == '' || this.fRutaImagen.value == undefined) {
+      return Swal.fire({
+        title: `Complete el campo Ruta de Imagen.`,
+        icon: 'warning',
+        timer: 3500
+      });
+    }
+    if (!this.fnValidarImagen) {
+      return;
+    }
+
     this.lZona.sNombre = this.fNombre.value
     this.lZona.sRutaImagen = this.fRutaImagen.value
 
@@ -88,9 +107,36 @@ export class ZonaFormComponent implements OnInit {
     }
     else {
       this.sRutaImagen = this.fRutaImagen.value
+      this.fnValidarImagen();
     }
 
   }
+
+  async fnValidarImagen() {
+    let bValido: boolean = true;
+    var imagen = this.fRutaImagen.value
+    var extension = imagen.substr(-4)
+   
+
+    if (extension == '.png' || extension == '.jpg') {
+      bValido = true;
+    }
+    else {
+      
+      bValido = false;
+      this.fRutaImagen.setValue('');
+      this.sRutaImagen = 'https://www.allianceplast.com/wp-content/uploads/2017/11/no-image.png'
+      Swal.fire({
+        title: `Formato de Imagen No Válida.`,
+        icon: 'warning',
+        timer: 3500
+      });
+    }
+
+    return bValido;
+
+  }
+
 
 
 }
