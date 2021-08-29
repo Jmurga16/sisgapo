@@ -13,14 +13,17 @@ namespace Business
     {
         private readonly LoginData loginData = new LoginData();
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
-
+        private object result;
 
         public object BusinessAlmacen(LoginEntity logEnt)
         {
             try
             {
 
-                return loginData.DataLogin(logEnt);
+
+                result = loginData.DataLogin(logEnt);
+
+                return result;
 
             }
             catch (Exception e)
