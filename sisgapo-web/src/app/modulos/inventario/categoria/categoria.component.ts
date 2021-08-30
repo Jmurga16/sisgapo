@@ -64,6 +64,7 @@ export class CategoriaComponent implements OnInit {
   }
   //#endregion
 
+
   //#region Listar Usuarios
   async fnListarCategorias() {
     let pParametro = [];
@@ -81,6 +82,7 @@ export class CategoriaComponent implements OnInit {
     );
   }
   //#endregion
+
 
   //#region Eliminar/Activar
   async fnCambiarEstado(nIdUsuario, bEstado) {
@@ -136,6 +138,7 @@ export class CategoriaComponent implements OnInit {
   }
   //#endregion
 
+
   //#region Abrir Modal
   async fnAbrirModal(accion, nIdCategoria) {
     const dialogRef = this.dialog.open(CategoriaModalComponent, {
@@ -155,4 +158,5 @@ export class CategoriaComponent implements OnInit {
   }
   //#endregion
 
+  
 }

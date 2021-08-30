@@ -83,6 +83,7 @@ export class UsuariosListComponent implements OnInit {
   }
   //#endregion
 
+
   //#region Abrir Modal
   async fnAbrirModal(accion, nIdUsuario) {
     const dialogRef = this.dialog.open(UsuariosModalComponent, {
@@ -101,6 +102,7 @@ export class UsuariosListComponent implements OnInit {
     });
   }
   //#endregion
+
 
   //#region Filtrar Usuarios
   async fnFiltrarUsuarios() {
@@ -127,6 +129,7 @@ export class UsuariosListComponent implements OnInit {
   }
   //#endregion
 
+  
   //#region Eliminar/Activar
   async fnCambiarEstado(nIdUsuario, bEstado) {
 

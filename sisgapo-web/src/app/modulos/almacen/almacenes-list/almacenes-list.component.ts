@@ -68,6 +68,7 @@ export class AlmacenesListComponent implements OnInit {
   }
   //#endregion Abrir Modal
 
+
   //#region Listar Usuarios
   async fnListarAlmacenes() {
     let pParametro = [];
@@ -83,7 +84,6 @@ export class AlmacenesListComponent implements OnInit {
     );
   }
   //#endregion Listar Usuarios
-
 
 
   //#region Cambiar estado

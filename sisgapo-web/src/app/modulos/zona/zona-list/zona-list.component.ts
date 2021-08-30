@@ -20,16 +20,17 @@ export class ZonaListComponent implements OnInit {
 
     this.fnGetZonas();
 
-
   }
 
+  //#region Ver Zona
   public fnVerZona(nIdZona) {
 
     let sRuta = `zonas/editar/${nIdZona}`
-
     this.router.navigateByUrl(sRuta);
 
   }
+  //#endregion
+
 
   //#region Obtener Zonas
   fnGetZonas(){
@@ -44,4 +45,5 @@ export class ZonaListComponent implements OnInit {
   }
   //#endregion
 
+  
 }

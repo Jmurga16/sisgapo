@@ -42,9 +42,9 @@ export class ProductosModalComponent implements OnInit {
   dFechaVenc: any;
 
   constructor(
-    private inventarioService: InventarioService,
     public dialogRef: MatDialogRef<ProductosModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ProductoData,
+    private inventarioService: InventarioService,
     private fB: FormBuilder,
 
   ) {

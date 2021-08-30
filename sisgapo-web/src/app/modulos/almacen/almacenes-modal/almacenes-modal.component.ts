@@ -74,6 +74,7 @@ export class AlmacenesModalComponent implements OnInit {
   }
   //#endregion Cerrar
 
+
   //#region Listar Usuarios
   async fnListarZonas() {
     let pParametro = [];
@@ -91,6 +92,7 @@ export class AlmacenesModalComponent implements OnInit {
   }
   //#endregion
 
+
   //#region Listar Supervisores
   async fnListarSupervisor() {
     let pParametro = [];
@@ -107,6 +109,7 @@ export class AlmacenesModalComponent implements OnInit {
     );
   }
   //#endregion
+
 
   //#region Cargar Datos para Editar
   async fnCargarDatos() {
@@ -129,6 +132,7 @@ export class AlmacenesModalComponent implements OnInit {
   }
   //#endregion 
 
+  
   //#region Grabar
   async fnGrabar() {
     let sTitulo = 'Ingrese todos los campos.'

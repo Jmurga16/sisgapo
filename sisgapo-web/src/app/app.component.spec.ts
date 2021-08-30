@@ -41,12 +41,12 @@ describe('AppComponent', () => {
     expect(compiled.querySelector('.content span').textContent).toContain('SISGAPO-Front app is running!');
   }); */
 
-  it('La variable active de estar en true', () => {
+  it('La variable active debe estar en true', () => {
     let myVar:boolean = appComponent.active;
     expect(myVar).toBeTruthy();
   })
 
-  it('La variable bMostrar de estar en true', () => {
+  it('La variable bMostrar debe estar en true', () => {
     let myVar:boolean = appComponent.bMostrar;
     expect(myVar).toBeTruthy();
   })

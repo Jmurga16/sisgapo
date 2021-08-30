@@ -28,8 +28,9 @@ export class ZonaFormComponent implements OnInit {
 
   constructor(
     private zonaService: ZonaService,
+    private router: Router,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+
   ) { }
 
   ngOnInit(): void {
@@ -62,6 +63,7 @@ export class ZonaFormComponent implements OnInit {
     }
   }
 
+  //#region Guardar Zona
   fnSaveNewZona() {
 
     //eliminar datos al guardar :
@@ -99,6 +101,8 @@ export class ZonaFormComponent implements OnInit {
       );
 
   }
+  //#endregion
+
 
   //#region Al cambiar ruta de Imagen
   changeImagen() {
@@ -114,6 +118,7 @@ export class ZonaFormComponent implements OnInit {
   }
   //#endregion
 
+  
   //#region Validar Imagen
   async fnValidarImagen() {
     let bValido: boolean;
