@@ -9,20 +9,22 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
 
 export class AppComponent implements OnInit {
-  bMostrar: boolean;
+  bMostrar: boolean = true;
   title = 'SISGAPO-Front';
+  active: boolean = true;
   Rol: number
 
   constructor(
     private cdr: ChangeDetectorRef
   ) {
-
+    this.active = true;
   }
 
   ngOnInit() {
-    this.Rol = (parseInt(localStorage.getItem("Rol")));
+    //this.Rol = (parseInt(localStorage.getItem("Rol")));
 
     this.cdr.detectChanges();
+
 
   }
 
