@@ -1,3 +1,4 @@
+<!--Titulo de Gestion de Zonas-->
 <div class="header-app" style="margin-top:1rem;">
     <h1 style=" font-weight: bold;">Gestión de Zonas</h1>
 </div>
@@ -13,20 +14,20 @@
     </div>
 </div>
 
+
 <div class="row">
 
-    <div *ngFor="let item of lAlmacenes" class="col-md-3" style="margin-bottom: 25rem;">
+    <div *ngFor="let item of lZonas" class="col-md-3" style="margin-bottom: 25rem;">
 
         <mat-card class="example-card ">
-
+            <!--Imagen de Lista-->
             <mat-card-title style="text-align: center;">{{item.sNombre}}</mat-card-title>
             <img mat-card-image alt="item.sNombre" class="tamanioImagen" src={{item.sRutaImagen}}>
 
+            <!--Boton de Ver-->
             <mat-card-actions>
-
                 <button mat-raised-button color="accent" (click)="fnVerZona(item.nIdZona)"
                     style="width: 100%;">Ver</button>
-
             </mat-card-actions>
         </mat-card>
 

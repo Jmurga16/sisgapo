@@ -4,9 +4,7 @@ import { ZonaService } from '../zona.service';
 
 
 import { HttpClient } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-
 
 
 describe('ZonaListComponent', () => {

@@ -10,21 +10,33 @@ import { ZonaService } from '../zona.service';
 })
 export class ZonaListComponent implements OnInit {
 
-  lAlmacenes: ZonaData[];
+  //#region Variables
+  lZonas: ZonaData[];
+  //#endregion
 
+  
+  //#region Constructor
   constructor(
     private zonaService: ZonaService,
-    private router: Router) { }
+    private router: Router) {
 
+  }
+  //#endregion
+
+
+  //#region OnInit
   ngOnInit(): void {
 
+    //Obtener las zonas 
     this.fnGetZonas();
 
   }
+  //#endregion
+
 
   //#region Ver Zona
   public fnVerZona(nIdZona) {
-
+    //Ir a la zona escogida
     let sRuta = `zonas/editar/${nIdZona}`
     this.router.navigateByUrl(sRuta);
 
@@ -33,17 +45,19 @@ export class ZonaListComponent implements OnInit {
 
 
   //#region Obtener Zonas
-  fnGetZonas(){
+  fnGetZonas() {
+    //Llamar al servicio para obtener las zonas
     this.zonaService.getZonas().subscribe(
-      (res:any)=>{
-        
-        this.lAlmacenes=res;
-      
+      (res: any) => {
+
+        //Llenar la lista de zonas
+        this.lZonas = res;
+
       },
-      err=>console.error(err)
+      err => console.error(err)
     )
   }
   //#endregion
 
-  
+
 }

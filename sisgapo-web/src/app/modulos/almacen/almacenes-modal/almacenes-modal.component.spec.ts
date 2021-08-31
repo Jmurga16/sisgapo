@@ -4,7 +4,7 @@ import { AlmacenesService } from './../almacenes.service';
 import { FormBuilder, } from "@angular/forms";
 import { HttpClient } from '@angular/common/http';
 
-import { MAT_DIALOG_DATA, MatDialogRef, } from "@angular/material/dialog";
+import { MatDialogRef, } from "@angular/material/dialog";
 
 import { AlmacenData } from './../Models/IAlmacen'
 

@@ -4,8 +4,7 @@ import { LoginComponent } from './login.component';
 import { LoginService } from './login.service';
 import { Router } from "@angular/router";
 
-import { HttpClientModule } from '@angular/common/http';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 describe('LoginComponent', () => {
 

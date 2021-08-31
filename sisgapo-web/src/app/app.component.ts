@@ -21,10 +21,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    //this.Rol = (parseInt(localStorage.getItem("Rol")));
-
+  
     this.cdr.detectChanges();
-
 
   }
 

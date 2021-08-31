@@ -35,25 +35,29 @@ export class AlmacenesModalComponent implements OnInit {
     private almacenesService: AlmacenesService,
     private fB: FormBuilder,
   ) {
+    //Traemos la URL del Back
     this.url = 'https://localhost:44360/';
   }
 
   ngOnInit(): void {
 
+    //Definimos la accion Agregar o Editar
     this.sAccionModal = this.data.accion == 0 ? "Agregar" : "Editar";
 
+    //Creamos el formulario reactivo 'formAlmacen'
     this.formAlmacen = this.fB.group({
       nIdAlmacen: [0, Validators.required],
       sNombreAlmacen: ["", Validators.required],
       sDireccion: ["", Validators.required],
       nIdZona: ["", Validators.required],
       nIdSupervisor: ["", Validators.required]
-
     });
 
+    //Traemos los combos de zonas y supervisores
     this.fnListarZonas();
     this.fnListarSupervisor();
 
+    //En caso ya tenga datos
     if (this.data.accion == 1) {
       this.nIdAlmacen = this.data.nIdAlmacen;
       this.formAlmacen.get("nIdAlmacen").setValue(this.nIdAlmacen)
@@ -65,9 +69,11 @@ export class AlmacenesModalComponent implements OnInit {
 
   //#region Cerrar
   fnCerrarModal(result) {
+    //Resultado 1 es para insertar
     if (result == 1) {
       this.dialogRef.close(result);
     }
+    //Resultado indefinido solo cierra
     else {
       this.dialogRef.close();
     }
@@ -79,6 +85,7 @@ export class AlmacenesModalComponent implements OnInit {
   async fnListarZonas() {
     let pParametro = [];
 
+    //Servicio de Almacen 03: Listar Zonas
     await this.almacenesService.fnServAlmacenes('03', pParametro, this.url).then(
       (value: any[]) => {
 
@@ -97,7 +104,7 @@ export class AlmacenesModalComponent implements OnInit {
   async fnListarSupervisor() {
     let pParametro = [];
 
-    //Servicio de Almacen 04: Listar
+    //Servicio de Almacen 04: Listar Supervisores
     await this.almacenesService.fnServAlmacenes('04', pParametro, this.url).then(
       (value: any[]) => {
 
@@ -122,6 +129,7 @@ export class AlmacenesModalComponent implements OnInit {
     await this.almacenesService.fnServAlmacenes('02', pParametro, this.url).then(
       (value: any[]) => {
 
+        //Llenar los datos precargados
         this.formAlmacen.get("sNombreAlmacen").setValue(value[0].sNombre)
         this.formAlmacen.get("sDireccion").setValue(value[0].sDireccion)
         this.formAlmacen.get("nIdZona").setValue(value[0].nIdZona)

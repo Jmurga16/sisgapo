@@ -14,6 +14,7 @@ import Swal from "sweetalert2";
 })
 export class AlmacenesListComponent implements OnInit {
 
+  //#region Variables
   url: string;
   nIdUsuario: number;
   appName: string;
@@ -27,31 +28,48 @@ export class AlmacenesListComponent implements OnInit {
   ];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  //#endregion
 
+  
+  //#region Constructor
   constructor(
     private almacenesService: AlmacenesService,
     public dialog: MatDialog,
   ) {
+    //Definicion de Titulo
     this.appName = 'Almacenes';
+    //Inicializar Tabla
     this.dsAlmacenes = new MatTableDataSource();
+    //Definicion URL
     this.url = 'https://localhost:44360/';
   }
+  //#endregion
 
+
+  //#region Iniciar
   ngOnInit(): void {
     this.fnListarAlmacenes();
   }
+  //#endregion
 
+
+  //#region Filtrado de Almacenes
   applyFilter(event: Event) {
+    //Leer el filtro
     const filterValue = (event.target as HTMLInputElement).value;
     this.dsAlmacenes.filter = filterValue.trim().toLowerCase();
 
+    //Si hay paginacion
     if (this.dsAlmacenes.paginator) {
       this.dsAlmacenes.paginator.firstPage();
     }
   }
+  //#endregion
+
 
   //#region Abrir Modal
   async fnAbrirModal(accion, nIdAlmacen) {
+    //Constante para abrir el modal
     const dialogRef = this.dialog.open(AlmacenesModalComponent, {
       width: '50rem',
       disableClose: true,
@@ -60,8 +78,11 @@ export class AlmacenesListComponent implements OnInit {
         nIdAlmacen: nIdAlmacen
       },
     });
+    //Luego de Cerrar el modal
     dialogRef.afterClosed().subscribe((result) => {
+      //Si el result al cerrar modal es diferente de indefinido
       if (result !== undefined) {
+        //Se lista los almacenes nuevamente
         this.fnListarAlmacenes();
       }
     });
@@ -69,11 +90,13 @@ export class AlmacenesListComponent implements OnInit {
   //#endregion Abrir Modal
 
 
-  //#region Listar Usuarios
+  //#region Listar Almacenes
   async fnListarAlmacenes() {
     let pParametro = [];
+    //Llamar al servicio para listar todos los almacenes
     await this.almacenesService.fnServAlmacenes('01', pParametro, this.url).then(
       (value: any[]) => {
+        //Listar todos los almacenes en la tabla
         this.dsAlmacenes = new MatTableDataSource(value);
         this.dsAlmacenes.paginator = this.paginator;
         this.dsAlmacenes.sort = this.sort;
@@ -83,16 +106,19 @@ export class AlmacenesListComponent implements OnInit {
       }
     );
   }
-  //#endregion Listar Usuarios
+  //#endregion Listar Almacenes
 
 
-  //#region Cambiar estado
+  //#region Cambiar Estado
   async fnCambiarEstado(nIdUsuario, bEstado) {
     let sTitulo, sRespuesta;
 
+    //Asignar Titulo de Mensaje 
     sTitulo = bEstado == 0 ? '¿Desea eliminar el almacén?' : '¿Desea activar el almacén?'
+    //Asignar Respuesta segun cambio
     sRespuesta = bEstado == 0 ? 'Se eliminó el almacén con éxito' : 'Se activó el almacén con éxito'
-    
+
+    //Mensaje de confirmacion
     var resp = await Swal.fire({
       title: sTitulo,
       icon: 'question',
@@ -102,15 +128,24 @@ export class AlmacenesListComponent implements OnInit {
       confirmButtonText: 'Aceptar',
       cancelButtonText: 'Cancelar'
     })
+
+    //Si se responde no
     if (!resp.isConfirmed) {
       return;
     }
-    let pParametro = [];
 
+    //Definicion parametros
+    let pParametro = [];
+    //Dar parametros
+    //Identificador de Usuario
     pParametro.push(nIdUsuario);
+    //Estado a cambiar
     pParametro.push(bEstado);
+
+    //Llamar al servicio de almacenes para cambiar estado : 07
     await this.almacenesService.fnServAlmacenes('07', pParametro, this.url).then(
       (data: any) => {
+        //Si la respuesta de la bbdd es 'ok' entonces procede
         if (data.mensaje == "Ok") {
           Swal.fire({
             title: sRespuesta,
@@ -118,17 +153,24 @@ export class AlmacenesListComponent implements OnInit {
             timer: 3500
           })
         }
+        //Se lista nuevamente los almacenes
         this.fnListarAlmacenes();
       },
       (error) => {
+        //Mensaje en caso de error(solo consola)
         console.log(error);
       }
     );
   }
   //#endregion Eliminar/Activar
 
+
+  //#region Despues de la vista de inicio
   ngAfterViewInit() {
+    //Paginar y Ordenar
     this.dsAlmacenes.paginator = this.paginator;
     this.dsAlmacenes.sort = this.sort;
   }
+  //#endregion
+
 }
