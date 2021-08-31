@@ -1,8 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule,ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { NoopAnimationsModule,BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpTestingController } from '@angular/common/http/testing';
+import { NoopAnimationsModule, BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -20,7 +21,7 @@ import { UsuariosService } from './modulos/usuarios/usuarios.service';
 
 //Material Modules
 import { MatButtonModule } from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -36,7 +37,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
-import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ZonaListComponent } from './modulos/zona/zona-list/zona-list.component';
 import { ZonaFormComponent } from './modulos/zona/zona-form/zona-form.component';
@@ -92,15 +93,16 @@ import { InicioComponent } from './inicio/inicio.component';
     NoopAnimationsModule,
     NgbModule,
     NgSelectModule
+
   ],
   providers: [
-    AlmacenesService, 
+    AlmacenesService,
     InventarioService,
     UsuariosService,
     MatDatepickerModule,
     MatNativeDateModule,
-    
+
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

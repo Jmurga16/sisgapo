@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
 
     this.url = 'https://localhost:44360/';
-    console.log(this.Rol);
+   
     localStorage.clear();
   }
 
@@ -39,13 +39,10 @@ export class LoginComponent implements OnInit {
           if (value[0].result > 0) {
 
             localStorage.setItem('Rol', value[0].nIdRol);
-
             this.Rol = (parseInt(localStorage.getItem("Rol")));
             this.logeado.emit(this.Rol);
-
             this.router.navigate(['/', 'inicio']);
-
-
+            
           }
         }
         else {
@@ -55,8 +52,6 @@ export class LoginComponent implements OnInit {
             timer: 3500
           });
         }
-        console.log("Rol activo")
-        console.log(this.Rol)
 
       },
       (error) => {
