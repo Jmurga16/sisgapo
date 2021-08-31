@@ -79,12 +79,19 @@ BEGIN
 		END	
 
 		BEGIN
+			IF((SELECT COUNT(*) FROM TBL_CATEGORIA)<1)
+			BEGIN
+				INSERT INTO [TBL_CATEGORIA]
+						(sNombre,  sDescripcion, bEstado)
+				VALUES(@sNombre, @sDescripcion,  1)
 
-			INSERT INTO [TBL_CATEGORIA]
-					  (sNombre,  sDescripcion, bEstado)
-			VALUES(@sNombre, @sDescripcion,  1)
-
-			SELECT '1|Se registró con éxito'
+				SELECT '1|Se registró con éxito'
+			END
+			ELSE
+			BEGIN
+				SELECT '0|Categoría ya registrada'
+			END
+			
       		
 		END
 		

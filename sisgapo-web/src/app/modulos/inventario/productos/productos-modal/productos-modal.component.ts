@@ -185,6 +185,9 @@ export class ProductosModalComponent implements OnInit {
         timer: 1500
       });
     }
+    if(await this.fnValidarNum()==false){
+      return
+    }
 
     let pParametro = [];
     let pOpcion = this.data.accion == 0 ? '06' : '07'; // 06-> Insertar / 07-> Editar
@@ -239,7 +242,7 @@ export class ProductosModalComponent implements OnInit {
     else if (nTipo == 2) {
       this.dFechaVenc = sAnio + '-' + sMes + '-' + sDia
     }
-
+   
   }
   //#endregion Cambiar Fecha
 
@@ -272,6 +275,25 @@ export class ProductosModalComponent implements OnInit {
   }
   //#endregion
 
+   //#region Validar Numeros
+   fnValidarNum() {
+    let bValido: boolean = true;
+
+    let nCantidad = this.formProducto.controls.nCantidad.value
+    let nPrecio = this.formProducto.controls.nPrecio.value
+
+    if (nCantidad < 0 || nPrecio < 0) {
+      bValido = false;
+      Swal.fire({
+        title: `No se permiten cantidades negativas.`,
+        icon: 'warning',
+        timer: 1500
+      });
+    }
+
+    return bValido
+  }
+  //#endregion
 
 
 }

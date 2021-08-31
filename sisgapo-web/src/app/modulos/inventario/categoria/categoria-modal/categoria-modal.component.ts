@@ -88,6 +88,13 @@ export class CategoriaModalComponent implements OnInit {
             this.fnCerrarModal(1);
           });
         }
+        else if(value.cod==0){
+          Swal.fire({
+            title: `No se puede repetir nombre de categoría`,
+            icon: 'error',
+            timer: 3500
+          })
+        }
 
       },
       (error) => {
