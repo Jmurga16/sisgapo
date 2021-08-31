@@ -1,3 +1,5 @@
+/*Titulo*/
+
 table {
     width: 100%;
 }
@@ -6,12 +8,16 @@ table {
     text-align: center;
 }
 
+/*Filtro*/
+
 .filtros {
     display        : flex;
     flex-direction : row;
     flex-wrap      : wrap;
     justify-content: center;
 }
+
+/*Inputs*/
 
 .inputNombre {
     width       : 90%;    
@@ -29,20 +35,14 @@ table {
     margin-right: 1rem;
 }
 
-.example-button-row button,
-.example-button-row a {
-    margin-right: 0.5rem;
-}
 
-.botones {
-    margin-left: 1rem;
-    margin-top : 1.2rem;
-    float      : right;
-}
+
+/*Columnas de la tabla*/
 
 .clsColumnaId{
     width: 12.5%;
 }
+
 .clsColumnaZona{
     width: 30%;
 }
@@ -51,8 +51,20 @@ table {
     width: 15%;
 }
 
+/*Botones*/
+
+.botones {
+    margin-left: 1rem;
+    margin-top : 1.2rem;
+    float      : right;
+}
 .buttonActive{
     background-color: forestgreen;
     color: white;
+}
+
+.example-button-row button,
+.example-button-row a {
+    margin-right: 0.5rem;
 }
 

@@ -1,9 +1,9 @@
 <div>
-
+    <!--Titulo-->
     <h1 mat-dialog-title class="clstitulo">{{sAccionModal}} Almacen</h1>
-
+    <!--Formulario-->
     <form [formGroup]="formAlmacen" ngNativeValidate autocomplete="off" name="Formulario" id="new-form">
-
+        <!--Formulario: Nombre-->
         <div class="row" style="padding-bottom: 1rem;">
             <div class="col-md-6">
                 <mat-form-field style="display:initial">
@@ -11,7 +11,7 @@
                     <input matInput type="text" formControlName="sNombreAlmacen" autocomplete="off" name="Nombre">
                 </mat-form-field>
             </div>
-
+            <!--Formulario: Direccion-->
             <div class="col-md-6">
                 <mat-form-field style="display:initial">
                     <mat-label>Dirección</mat-label>
@@ -22,7 +22,7 @@
 
 
         <div class="row">
-
+            <!--Formulario: Zona-->
             <div class="col-md-6">
                 <mat-form-field class="selectMat selectResp" appearance="fill">
                     <mat-label>Zona</mat-label>
@@ -33,7 +33,7 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-
+            <!--Formulario: Supervisor-->
             <div class="col-md-6">
                 <mat-form-field class="selectMat selectResp" appearance="fill">
                     <mat-label>Supervisor</mat-label>
@@ -47,14 +47,14 @@
 
         </div>
 
-
+        <!--Botonera-->
         <div class="row" style="padding-top: 1rem;">
-
+            <!--Guardar-->
             <div class="col-md-6">
                 <button type="button" color="primary" style="width: 100%;" mat-raised-button
                     (click)="fnGrabar()">Grabar</button>
             </div>
-
+            <!--Cancelar-->
             <div class="col-md-6">
                 <button type="button" color="warn" style="width: 100%;" mat-raised-button
                     (click)="fnCerrarModal(0)">Cancelar</button>

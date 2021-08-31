@@ -62,7 +62,7 @@ export class AlmacenesModalComponent implements OnInit {
 
   }
 
-  
+
   //#region Cerrar
   fnCerrarModal(result) {
     if (result == 1) {
@@ -97,6 +97,7 @@ export class AlmacenesModalComponent implements OnInit {
   async fnListarSupervisor() {
     let pParametro = [];
 
+    //Servicio de Almacen 04: Listar
     await this.almacenesService.fnServAlmacenes('04', pParametro, this.url).then(
       (value: any[]) => {
 
@@ -114,16 +115,18 @@ export class AlmacenesModalComponent implements OnInit {
   //#region Cargar Datos para Editar
   async fnCargarDatos() {
     let pParametro = [];
+    //Parametro el Identificador del Almacen
     pParametro.push(this.nIdAlmacen);
-    
+
+    //Servicio de Almacen 02: Cargar por Id
     await this.almacenesService.fnServAlmacenes('02', pParametro, this.url).then(
       (value: any[]) => {
-        
+
         this.formAlmacen.get("sNombreAlmacen").setValue(value[0].sNombre)
         this.formAlmacen.get("sDireccion").setValue(value[0].sDireccion)
         this.formAlmacen.get("nIdZona").setValue(value[0].nIdZona)
         this.formAlmacen.get("nIdSupervisor").setValue(value[0].nIdSupervisor)
-        
+
       },
       (error) => {
         console.log(error);
@@ -132,10 +135,13 @@ export class AlmacenesModalComponent implements OnInit {
   }
   //#endregion 
 
-  
+
   //#region Grabar
   async fnGrabar() {
+    //Definir mensaje
     let sTitulo = 'Ingrese todos los campos.'
+
+    //Validar formulario de almacen
     if (this.formAlmacen.invalid) {
       return Swal.fire({
         title: sTitulo,
@@ -147,15 +153,18 @@ export class AlmacenesModalComponent implements OnInit {
     let pParametro = [];
     let pOpcion = this.data.accion == 0 ? '05' : '06'; // 05-> Insertar / 06-> Editar
 
+    //Llenar formulario
     pParametro.push(this.formAlmacen.get("sNombreAlmacen").value);
     pParametro.push(this.formAlmacen.get("sDireccion").value);
     pParametro.push(this.formAlmacen.get("nIdSupervisor").value);
-    pParametro.push(this.formAlmacen.get("nIdZona").value);    
+    pParametro.push(this.formAlmacen.get("nIdZona").value);
     pParametro.push(this.nIdAlmacen);
 
+    //Llamar servicio de almacenes 05 / 06
     await this.almacenesService.fnServAlmacenes(pOpcion, pParametro, this.url).then(
       (value: any) => {
 
+        //Si es válido, retornar mensaje de exito
         if (value.cod == 1) {
           Swal.fire({
             title: `Se registró con éxito`,
