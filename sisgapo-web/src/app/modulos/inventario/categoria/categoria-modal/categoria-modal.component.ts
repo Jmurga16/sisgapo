@@ -22,7 +22,6 @@ import Swal from "sweetalert2";
 })
 export class CategoriaModalComponent implements OnInit {
 
-  url: string;
   nIdUsuario: number;
   nIdCategoria: number;
   formCategoria: FormGroup
@@ -36,7 +35,6 @@ export class CategoriaModalComponent implements OnInit {
     private inventarioService: InventarioService,
     private fB: FormBuilder,
   ) {
-    this.url = 'https://localhost:44360/';
   }
 
   ngOnInit(): void {
@@ -76,7 +74,7 @@ export class CategoriaModalComponent implements OnInit {
     pParametro.push(this.formCategoria.get("sDescripcion").value);
     pParametro.push(this.nIdCategoria);
 
-    await this.inventarioService.fnServCategoria(pOpcion, pParametro, this.url).then(
+    await this.inventarioService.fnServCategoria(pOpcion, pParametro).then(
       (value: any) => {
 
         if (value.cod == 1) {
@@ -110,7 +108,7 @@ export class CategoriaModalComponent implements OnInit {
     let pParametro = [];
     pParametro.push(this.nIdCategoria);
 
-    await this.inventarioService.fnServCategoria('02', pParametro, this.url).then(
+    await this.inventarioService.fnServCategoria('02', pParametro).then(
       (value: any[]) => {
         this.formCategoria.get("sNombre").setValue(value[0].sNombre)
         this.formCategoria.get("sDescripcion").setValue(value[0].sDescripcion)

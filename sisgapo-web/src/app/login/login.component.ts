@@ -15,7 +15,6 @@ export class LoginComponent implements OnInit {
   sPassword = new FormControl();
   @Output() logeado: EventEmitter<any> = new EventEmitter();
 
-  url: string;
   Rol: number;
 
   constructor(
@@ -23,8 +22,6 @@ export class LoginComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit(): void {
-
-    this.url = 'https://localhost:44360/';
    
     localStorage.clear();
   }
@@ -32,7 +29,7 @@ export class LoginComponent implements OnInit {
   async fnLogin() {
     let sNombreUsuario = this.sUser.value;
     let sContrasenia = this.sPassword.value;
-    await this.loginService.LoginServ(sNombreUsuario, sContrasenia, this.url).then(
+    await this.loginService.LoginServ(sNombreUsuario, sContrasenia).then(
       (value: any = []) => {
 
         if (value.length > 0) {

@@ -1,26 +1,31 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {ZonaData} from './Models/IZona';
+import { HttpClient } from '@angular/common/http';
+import { ZonaData } from './Models/IZona';
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ZonaService {
 
-  API_URI='https://localhost:44360/api'
+  url: string = environment.API_URL_INV
 
-  constructor( private http:HttpClient) { }
+  API_URI: string
 
-  getZonas(){
+  constructor(private http: HttpClient) {
+    this.API_URI = this.url + 'api'
+  }
+
+  getZonas() {
     return this.http.get(`${this.API_URI}/zona`)
   }
 
-  getOne(id:string){
+  getOne(id: string) {
     return this.http.get(`${this.API_URI}/zona/editar/${id}`);
   }
 
-  saveZona(zona: ZonaData){
-    return this.http.post(`${this.API_URI}/zona`,zona);
+  saveZona(zona: ZonaData) {
+    return this.http.post(`${this.API_URI}/zona`, zona);
   }
 
 

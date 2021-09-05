@@ -18,7 +18,6 @@ import { FormControl } from '@angular/forms';
 })
 export class ProductosComponent implements OnInit {
 
-  url:string;
   nIdUsuario: number;
   listaAlmacenes=[]
   listaCategorias=[]
@@ -49,7 +48,7 @@ export class ProductosComponent implements OnInit {
     public dialog: MatDialog,
     ) { 
       this.dsProducto = new MatTableDataSource();
-      this.url = 'https://localhost:44360/';
+      
     }
 
   ngOnInit(): void {
@@ -76,7 +75,7 @@ export class ProductosComponent implements OnInit {
    async fnListarAlmacenes() {
     let pParametro = [];
 
-    await this.inventarioService.fnServProducto('01', pParametro, this.url).then(
+    await this.inventarioService.fnServProducto('01', pParametro).then(
       (value: any[]) => {
 
         this.listaAlmacenes=value;
@@ -94,7 +93,7 @@ export class ProductosComponent implements OnInit {
    async fnListarCategorias() {
     let pParametro = [];
 
-    await this.inventarioService.fnServProducto('02', pParametro, this.url).then(
+    await this.inventarioService.fnServProducto('02', pParametro).then(
       (value: any[]) => {
 
         this.listaCategorias=value;
@@ -112,7 +111,7 @@ export class ProductosComponent implements OnInit {
   async fnListarProductos() {
     let pParametro = [];
 
-    await this.inventarioService.fnServProducto('03', pParametro, this.url).then(
+    await this.inventarioService.fnServProducto('03', pParametro).then(
       (value: any[]) => {
 
         this.dsProducto = new MatTableDataSource(value);
@@ -189,7 +188,7 @@ export class ProductosComponent implements OnInit {
     pParametro.push(nIdCatProd);
     pParametro.push(bEstado);
 
-    await this.inventarioService.fnServProducto('08', pParametro, this.url).then(
+    await this.inventarioService.fnServProducto('08', pParametro).then(
       (value: any) => {
 
         if (value.cod == 1) {

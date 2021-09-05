@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { AlmacenesService } from '../almacenes.service';
 import { AlmacenesModalComponent } from './../almacenes-modal/almacenes-modal.component'
 import { MatTableDataSource } from '@angular/material/table';
@@ -15,7 +15,6 @@ import Swal from "sweetalert2";
 export class AlmacenesListComponent implements OnInit {
 
   //#region Variables
-  url: string;
   nIdUsuario: number;
   appName: string;
   dsAlmacenes: MatTableDataSource<any>;
@@ -34,14 +33,13 @@ export class AlmacenesListComponent implements OnInit {
   //#region Constructor
   constructor(
     private almacenesService: AlmacenesService,
-    public dialog: MatDialog,
+    public dialog: MatDialog
   ) {
     //Definicion de Titulo
     this.appName = 'Almacenes';
     //Inicializar Tabla
     this.dsAlmacenes = new MatTableDataSource();
-    //Definicion URL
-    this.url = 'https://localhost:44360/';
+    
   }
   //#endregion
 
@@ -94,7 +92,7 @@ export class AlmacenesListComponent implements OnInit {
   async fnListarAlmacenes() {
     let pParametro = [];
     //Llamar al servicio para listar todos los almacenes
-    await this.almacenesService.fnServAlmacenes('01', pParametro, this.url).then(
+    await this.almacenesService.fnServAlmacenes('01', pParametro).then(
       (value: any[]) => {
         //Listar todos los almacenes en la tabla
         this.dsAlmacenes = new MatTableDataSource(value);
@@ -143,7 +141,7 @@ export class AlmacenesListComponent implements OnInit {
     pParametro.push(bEstado);
 
     //Llamar al servicio de almacenes para cambiar estado : 07
-    await this.almacenesService.fnServAlmacenes('07', pParametro, this.url).then(
+    await this.almacenesService.fnServAlmacenes('07', pParametro).then(
       (data: any) => {
         //Si la respuesta de la bbdd es 'ok' entonces procede
         if (data.mensaje == "Ok") {

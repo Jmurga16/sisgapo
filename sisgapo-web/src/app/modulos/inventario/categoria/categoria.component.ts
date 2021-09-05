@@ -16,7 +16,7 @@ import Swal from "sweetalert2";
 })
 export class CategoriaComponent implements OnInit {
 
-  url: string;
+  
   nIdUsuario: number;
 
 
@@ -39,7 +39,7 @@ export class CategoriaComponent implements OnInit {
     public dialog: MatDialog,
   ) {
     this.dsCategoria = new MatTableDataSource();
-    this.url = 'https://localhost:44360/';
+    
   }
 
   ngOnInit(): void {
@@ -69,7 +69,7 @@ export class CategoriaComponent implements OnInit {
   async fnListarCategorias() {
     let pParametro = [];
 
-    await this.inventarioService.fnServCategoria('01', pParametro, this.url).then(
+    await this.inventarioService.fnServCategoria('01', pParametro).then(
       (value: any[]) => {
 
         this.dsCategoria = new MatTableDataSource(value);
@@ -117,7 +117,7 @@ export class CategoriaComponent implements OnInit {
     pParametro.push(nIdUsuario);
     pParametro.push(bEstado);
 
-    await this.inventarioService.fnServCategoria('05', pParametro, this.url).then(
+    await this.inventarioService.fnServCategoria('05', pParametro).then(
       (value: any) => {
 
         if (value.mensaje == "Ok") {

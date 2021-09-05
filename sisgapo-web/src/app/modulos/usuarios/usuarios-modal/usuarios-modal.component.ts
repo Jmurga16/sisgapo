@@ -27,7 +27,7 @@ import Swal from "sweetalert2";
 })
 export class UsuariosModalComponent implements OnInit {
 
-  url: string;
+  
   nIdUsuario: number;
   formUsuario: FormGroup
   sAccionModal: string;
@@ -61,7 +61,6 @@ export class UsuariosModalComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.url = 'https://localhost:44360/';
     this.sAccionModal = this.data.accion == 0 ? "Agregar" : "Editar";
 
     this.formUsuario = this.fB.group({
@@ -92,7 +91,7 @@ export class UsuariosModalComponent implements OnInit {
     let pParametro = [];
     pParametro.push(this.nIdUsuario);
 
-    await this.usuariosService.LIS_Usuarios('03', pParametro, this.url).then(
+    await this.usuariosService.LIS_Usuarios('03', pParametro).then(
       (value: any[]) => {
 
         this.formUsuario.get("sNombres").setValue(value[0].sNombres)
@@ -150,7 +149,7 @@ export class UsuariosModalComponent implements OnInit {
     pParametro.push(this.formUsuario.get("nIdUsuario").value);
 
 
-    await this.usuariosService.LIS_Usuarios(pOpcion, pParametro, this.url).then(
+    await this.usuariosService.LIS_Usuarios(pOpcion, pParametro).then(
       (value: any) => {
 
         if (value.mensaje == "OK") {

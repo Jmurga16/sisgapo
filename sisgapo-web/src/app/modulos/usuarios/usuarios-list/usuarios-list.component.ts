@@ -21,7 +21,6 @@ import { FormControl } from '@angular/forms';
 export class UsuariosListComponent implements OnInit {
   appName: string = 'Usuarios';
   usuarios: any = [];
-  url: string;
 
   fNombre = new FormControl();
   fRol = new FormControl();
@@ -59,7 +58,6 @@ export class UsuariosListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.url = 'https://localhost:44360/';
 
     this.fnListarUsuarios();
 
@@ -69,7 +67,7 @@ export class UsuariosListComponent implements OnInit {
   async fnListarUsuarios() {
     let pParametro = [];
 
-    await this.usuariosService.LIS_Usuarios('01', pParametro, this.url).then(
+    await this.usuariosService.LIS_Usuarios('01', pParametro).then(
       (data: any[]) => {
 
         this.dsUsuarios = new MatTableDataSource(data);
@@ -115,7 +113,7 @@ export class UsuariosListComponent implements OnInit {
     pParametro.push(this.fRol.value);
     pParametro.push(bEstado);
 
-    await this.usuariosService.LIS_Usuarios('02', pParametro, this.url)
+    await this.usuariosService.LIS_Usuarios('02', pParametro)
       .then((value: any[]) => {
 
         this.dsUsuarios = new MatTableDataSource(value);
@@ -162,7 +160,7 @@ export class UsuariosListComponent implements OnInit {
     pParametro.push(nIdUsuario);
     pParametro.push(bEstado);
 
-    await this.usuariosService.LIS_Usuarios('06', pParametro, this.url).then(
+    await this.usuariosService.LIS_Usuarios('06', pParametro).then(
       (value: any) => {
 
         if (value.mensaje == "OK") {

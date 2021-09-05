@@ -20,7 +20,6 @@ import Swal from "sweetalert2";
 })
 export class AlmacenesModalComponent implements OnInit {
 
-  url: string;
   nIdUsuario: number;
   nIdAlmacen: number;
   formAlmacen: FormGroup
@@ -35,8 +34,7 @@ export class AlmacenesModalComponent implements OnInit {
     private almacenesService: AlmacenesService,
     private fB: FormBuilder,
   ) {
-    //Traemos la URL del Back
-    this.url = 'https://localhost:44360/';
+   
   }
 
   ngOnInit(): void {
@@ -86,7 +84,7 @@ export class AlmacenesModalComponent implements OnInit {
     let pParametro = [];
 
     //Servicio de Almacen 03: Listar Zonas
-    await this.almacenesService.fnServAlmacenes('03', pParametro, this.url).then(
+    await this.almacenesService.fnServAlmacenes('03', pParametro).then(
       (value: any[]) => {
 
         this.lZonas = value;
@@ -105,7 +103,7 @@ export class AlmacenesModalComponent implements OnInit {
     let pParametro = [];
 
     //Servicio de Almacen 04: Listar Supervisores
-    await this.almacenesService.fnServAlmacenes('04', pParametro, this.url).then(
+    await this.almacenesService.fnServAlmacenes('04', pParametro).then(
       (value: any[]) => {
 
         this.lSupervisores = value;
@@ -126,7 +124,7 @@ export class AlmacenesModalComponent implements OnInit {
     pParametro.push(this.nIdAlmacen);
 
     //Servicio de Almacen 02: Cargar por Id
-    await this.almacenesService.fnServAlmacenes('02', pParametro, this.url).then(
+    await this.almacenesService.fnServAlmacenes('02', pParametro).then(
       (value: any[]) => {
 
         //Llenar los datos precargados
@@ -169,7 +167,7 @@ export class AlmacenesModalComponent implements OnInit {
     pParametro.push(this.nIdAlmacen);
 
     //Llamar servicio de almacenes 05 / 06
-    await this.almacenesService.fnServAlmacenes(pOpcion, pParametro, this.url).then(
+    await this.almacenesService.fnServAlmacenes(pOpcion, pParametro).then(
       (value: any) => {
 
         //Si es válido, retornar mensaje de exito

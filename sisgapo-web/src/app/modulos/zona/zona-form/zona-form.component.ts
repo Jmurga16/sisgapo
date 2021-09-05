@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ZonaData } from '../Models/IZona';
 import Swal from 'sweetalert2';
 
+
 @Component({
   selector: 'app-zona-form',
   templateUrl: './zona-form.component.html',
@@ -17,6 +18,8 @@ export class ZonaFormComponent implements OnInit {
   sRutaImagen: string;
   nIdZona: number;
   bEditar: boolean = false;
+  urlNoImagen: string = '../../../../assets/no-image.png'
+
 
   fNombre = new FormControl();
   fRutaImagen = new FormControl();
@@ -133,7 +136,7 @@ export class ZonaFormComponent implements OnInit {
 
     //#region Validar imagen en blanco
     if (this.fRutaImagen.value == '') {
-      this.sRutaImagen = 'https://www.allianceplast.com/wp-content/uploads/2017/11/no-image.png'
+      this.sRutaImagen = this.urlNoImagen
     }
 
     //Validar Imagen
@@ -162,7 +165,7 @@ export class ZonaFormComponent implements OnInit {
     else {
       bValido = false;
       this.fRutaImagen.setValue('');
-      this.sRutaImagen = 'https://www.allianceplast.com/wp-content/uploads/2017/11/no-image.png'
+      this.sRutaImagen = this.urlNoImagen
       //Mensaje de no valido
       Swal.fire({
         title: `Formato de Imagen No Válida.`,

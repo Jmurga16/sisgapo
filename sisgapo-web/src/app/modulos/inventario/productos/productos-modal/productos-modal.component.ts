@@ -28,7 +28,7 @@ import { ProductoData } from "../productos.component";
 })
 export class ProductosModalComponent implements OnInit {
 
-  url: string;
+ 
   nIdUsuario: number;
   nIdCatProd: number;
   formProducto: FormGroup
@@ -48,8 +48,7 @@ export class ProductosModalComponent implements OnInit {
     private fB: FormBuilder,
 
   ) {
-    //Definicion de URL
-    this.url = 'https://localhost:44360/';
+   
   }
 
   ngOnInit(): void {
@@ -107,7 +106,7 @@ export class ProductosModalComponent implements OnInit {
     pParametro.push(this.nIdCatProd);
 
     //Llamar Servicio de Inventario 05: Precargar datos por id
-    await this.inventarioService.fnServProducto('05', pParametro, this.url).then(
+    await this.inventarioService.fnServProducto('05', pParametro).then(
       (value: any[]) => {
 
         //Cargar los formularios
@@ -142,7 +141,7 @@ export class ProductosModalComponent implements OnInit {
   async fnListarAlmacenes() {
     let pParametro = [];
 
-    await this.inventarioService.fnServProducto('01', pParametro, this.url).then(
+    await this.inventarioService.fnServProducto('01', pParametro).then(
       (value: any[]) => {
 
         this.lAlmacenes = value;
@@ -160,7 +159,7 @@ export class ProductosModalComponent implements OnInit {
   async fnListarCategorias() {
     let pParametro = [];
 
-    await this.inventarioService.fnServProducto('02', pParametro, this.url).then(
+    await this.inventarioService.fnServProducto('02', pParametro).then(
       (value: any[]) => {
 
         this.lCategorias = value;
@@ -178,7 +177,7 @@ export class ProductosModalComponent implements OnInit {
   async fnListarUnidadMedida() {
     let pParametro = [];
 
-    await this.inventarioService.fnServProducto('04', pParametro, this.url).then(
+    await this.inventarioService.fnServProducto('04', pParametro).then(
       (value: any[]) => {
 
         this.lUnidadMedida = value;
@@ -225,7 +224,7 @@ export class ProductosModalComponent implements OnInit {
     pParametro.push(this.formProducto.get("nIdCatProd").value);
 
     //Llamar al servicio de Insertar
-    await this.inventarioService.fnServProducto(pOpcion, pParametro, this.url).then(
+    await this.inventarioService.fnServProducto(pOpcion, pParametro).then(
       (value: any) => {
 
         //Si se registra con exito

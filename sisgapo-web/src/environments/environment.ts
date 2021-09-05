@@ -1,5 +1,6 @@
 
 export const environment = {
-  production: false
+  production: false,
+  API_URL_INV:"https://localhost:44360/",
 };
 
