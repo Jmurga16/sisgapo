@@ -6,7 +6,8 @@ CREATE PROCEDURE [dbo].[USP_MNT_Categorias]
 	@sOpcion VARCHAR(2) = '',   
 	@pParametro VARCHAR(max)
                                                                                    
-AS     
+AS
+
 
 BEGIN
 

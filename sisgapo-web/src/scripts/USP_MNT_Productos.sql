@@ -6,7 +6,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
                                    
-ALTER PROCEDURE [dbo].[USP_MNT_Productos]          
+CREATE PROCEDURE [dbo].[USP_MNT_Productos]          
             
 	@sOpcion VARCHAR(2) = '',   
 	@pParametro VARCHAR(max)
