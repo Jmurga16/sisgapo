@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace Business
 {
-    public class LoginBusiness
+    public class ClienteBusiness
     {
-        private readonly LoginData loginData = new LoginData();
+        private readonly ClienteData clienteData = new ClienteData();
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
-        
-        public object BusinessAlmacen(LoginEntity logEnt)
+
+        public object BusinessCliente(GeneralEntity genEnt)
         {
             try
             {
 
-                return loginData.DataLogin(logEnt);
+                return clienteData.DataCliente(genEnt);
 
             }
             catch (Exception e)
@@ -29,5 +29,6 @@ namespace Business
 
             }
         }
+
     }
 }

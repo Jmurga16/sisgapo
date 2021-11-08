@@ -46,6 +46,13 @@ namespace SISGAPO_API
                 options.AllowAnyHeader();
             });
 
+            //app.UseCors(options =>
+            //{
+            //    options.WithOrigins("https://yellow-meadow-0e36f1a10.azurestaticapps.net");
+            //    options.AllowAnyMethod();
+            //    options.AllowAnyHeader();
+            //});
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

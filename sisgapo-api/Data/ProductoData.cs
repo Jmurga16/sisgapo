@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -179,6 +181,31 @@ namespace Data
                     case "06":
                     case "07":
                     case "08":
+
+                        #region Correo : Cambiar las "XX" por "06" y poner correos
+                        if (genEnt.sOpcion=="XX")
+                        {
+                            string EmailOrigen = "@gmail.com";
+                            string EmailDestino = "";
+                            string Contrasenia = "";
+
+                            string sAsunto = "Producto Nuevo";
+                            string sMensaje = "Un producto nuevo ha sido agregado";
+
+                            MailMessage mailMessage = new MailMessage(EmailOrigen,EmailDestino,sAsunto,sMensaje);
+                                                    
+
+                            using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
+                            {
+                                smtp.Credentials = new NetworkCredential(EmailOrigen, Contrasenia);
+                                smtp.UseDefaultCredentials = false;
+                                smtp.EnableSsl = true;
+                                smtp.Send(mailMessage);
+                                smtp.Dispose();
+                            }
+                            
+                        }
+                        #endregion
 
                         string sResultado = Convert.ToString(oCon.EjecutarEscalar("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro));
                         msj = sResultado;
