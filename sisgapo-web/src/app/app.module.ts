@@ -46,6 +46,8 @@ import { CategoriaModalComponent } from './modulos/inventario/categoria/categori
 import { ProductosModalComponent } from './modulos/inventario/productos/productos-modal/productos-modal.component';
 import { LoginComponent } from './login/login.component';
 import { InicioComponent } from './inicio/inicio.component';
+import { ClientesListComponent } from './modulos/cliente/clientes-list/clientes-list.component';
+import { ClientesModalComponent } from './modulos/cliente/clientes-modal/clientes-modal.component';
 
 
 @NgModule({
@@ -64,6 +66,8 @@ import { InicioComponent } from './inicio/inicio.component';
     ProductosModalComponent,
     LoginComponent,
     InicioComponent,
+    ClientesListComponent,
+    ClientesModalComponent,
   ],
   imports: [
     AppRoutingModule,

@@ -80,7 +80,7 @@ BEGIN
 		END	
 
 		BEGIN
-			IF((SELECT COUNT(*) FROM TBL_CATEGORIA)<1)
+			IF((SELECT COUNT(*) FROM TBL_CATEGORIA WHERE sNombre=@sNombre)<1)
 			BEGIN
 				INSERT INTO [TBL_CATEGORIA]
 						(sNombre,  sDescripcion, bEstado)

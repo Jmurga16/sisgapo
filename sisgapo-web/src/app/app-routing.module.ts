@@ -6,6 +6,7 @@ import { ZonaListComponent } from './modulos/zona/zona-list/zona-list.component'
 import { ZonaFormComponent } from './modulos/zona/zona-form/zona-form.component'
 import { CategoriaComponent } from './modulos/inventario/categoria/categoria.component'
 import { ProductosComponent } from './modulos/inventario/productos/productos.component'
+import { ClientesListComponent } from './modulos/cliente/clientes-list/clientes-list.component'
 
 import { NavMenuComponent } from './nav-menu/nav-menu/nav-menu.component';
 import { InicioComponent } from './inicio/inicio.component';
@@ -50,7 +51,10 @@ const routes: Routes = [
     path: 'productos',
     component: ProductosComponent
   },
-
+  {
+    path: 'clientes',
+    component: ClientesListComponent
+  },
 
 
 ];

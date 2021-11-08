@@ -23,6 +23,7 @@ export class NavMenuComponent implements OnInit {
     { id: 2, name: 'Almacenes', route: 'almacenes', icon: 'store', subMenu: 0, mostrar: false },
     { id: 3, name: 'Zonas', route: 'zonas', icon: 'room', subMenu: 0, mostrar: false },
     { id: 4, name: 'Inventario', route: 'zonas', icon: 'view_in_ar', subMenu: 2, mostrar: false },
+    { id: 5, name: 'Tracking', route: 'clientes', icon: 'gps_fixed', subMenu: 0, mostrar: false },
   ];
 
   listaSubNav = [
