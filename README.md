@@ -68,7 +68,7 @@ Todas con la contraseña `123456`.
 | Usuario | Rol |
 |---|---|
 | `admin` | Administrador |
-| `alex.quispe` | Supervisor |
+| `jose.m` | Supervisor |
 | `lucia.fernandez` | Asistente |
 
 > Las contraseñas se guardan en texto plano, como en el diseño original de 2021. Está

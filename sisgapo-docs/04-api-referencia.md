@@ -119,7 +119,7 @@ Procedimiento: `USP_MNT_Almacenes`.
 Ordena por `bEstado DESC, nIdZona`: los activos primero.
 
 **Respuesta de `03`** — `[{ "nIdZona": 1, "sNombreZona": "Junín" }]`
-**Respuesta de `04`** — `[{ "nIdSupervisor": 2, "sNombrePersona": "Alex Quispe Cruz" }]`
+**Respuesta de `04`** — `[{ "nIdSupervisor": 2, "sNombrePersona": "Jose M" }]`
 
 **Respuesta de `05`, `06`, `07`** — `{ "cod": "1", "mensaje": "Se registró con éxito" }`
 

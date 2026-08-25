@@ -183,7 +183,7 @@ Quedan documentados y priorizados.
 **La duda.** El seed original tenía 3 zonas, 2 usuarios, 2 almacenes y 5 productos. ¿Copiarlo
 tal cual (fiel al original) o ampliarlo (mejor para demo)?
 
-**Decisión: ampliarlo** a 5 zonas, 6 usuarios, 5 almacenes, 4 categorías y 12 productos.
+**Decisión: ampliarlo** a 5 zonas, 7 usuarios, 5 almacenes, 4 categorías y 12 productos.
 
 **Por qué.** Es para una demo. Una tabla con dos filas hace que la paginación, los filtros y
 la ordenación parezcan decorativos; con doce, se ven trabajando. Incluí a propósito **un
@@ -194,7 +194,7 @@ También actualicé las fechas de lote a 2026–2027. Las originales (2021) most
 inventario vencido, lo que en una demo se lee como un error.
 
 **Qué me hizo dudar.** Los datos originales son parte del registro histórico. Lo resolví
-conservando su estructura, sus nombres reales (Alex Quispe sigue ahí) y su temática de café
+conservando su estructura, los nombres del seed original y su temática de café
 orgánico: es el mismo seed, con más filas.
 
 Cambié las URL de imágenes de zona: las originales apuntaban a blogs y sitios de terceros que
