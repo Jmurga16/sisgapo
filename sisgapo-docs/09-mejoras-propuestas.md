@@ -14,22 +14,27 @@ implementados. Estas mejoras son sobre calidad, no sobre funcionalidad que falte
 
 ## Resumen
 
-| # | Mejora | Esfuerzo | Demo | Portafolio | Reco. |
-|---|---|---|---|---|---|
-| M-01 | Contraseñas hasheadas | 2 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ |
-| M-02 | Autenticación JWT + guards | 6 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ |
-| M-03 | Reescribir `Conexion.cs` + DI | 3 h | ⭐⭐ | ⭐⭐⭐⭐ | ✅ |
-| M-04 | Corregir §C-02 y §C-03 | 2 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ✅ |
-| M-05 | Limpiar código muerto | 30 min | ⭐ | ⭐⭐⭐ | ✅ |
-| M-06 | Sustituir `pParametro` por JSON | 2 días | ⭐ | ⭐⭐⭐⭐ | 🤔 |
-| M-07 | Actualizar Angular | 3–5 días | ⭐⭐ | ⭐⭐⭐ | 🤔 |
-| M-08 | Pruebas reales | 2–3 días | ⭐ | ⭐⭐⭐⭐⭐ | 🤔 |
-| M-09 | Múltiples lotes por producto | 2 días | ⭐⭐⭐ | ⭐⭐⭐ | 🤔 |
-| M-10 | Lógica de T-SQL a C# | 4–6 días | ⭐⭐ | ⭐⭐⭐⭐⭐ | 🤔 |
-| M-11 | Reportes y panel | 3 días | ⭐⭐⭐⭐ | ⭐⭐⭐ | 🤔 |
-| M-12 | Movimientos de inventario | 4 días | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ❌ |
-| M-13 | Módulo de proveedores (PN3) | 5 días | ⭐⭐ | ⭐⭐ | ❌ |
-| M-14 | Reescritura completa | 3–4 semanas | ⭐⭐⭐ | ⭐⭐⭐⭐ | ❌ |
+> **Estado a 25 de agosto de 2026.** Cinco de estas mejoras ya están aplicadas y
+> verificadas: M-03 (parcial: `Conexion.cs` reescrito, sin inyección de dependencias
+> todavía), M-04, M-05, M-11 y la parte de rendimiento que no estaba en esta lista. El
+> detalle de cada una, con las mediciones, está en `06-hallazgos.md`.
+
+| # | Mejora | Esfuerzo | Demo | Portafolio | Reco. | Estado |
+|---|---|---|---|---|---|---|
+| M-01 | Contraseñas hasheadas | 2 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ | pendiente |
+| M-02 | Autenticación JWT + guards | 6 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ | pendiente |
+| M-03 | Reescribir `Conexion.cs` + DI | 3 h | ⭐⭐ | ⭐⭐⭐⭐ | ✅ | **parcial** |
+| M-04 | Corregir §C-02 y §C-03 | 2 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ✅ | **hecho** |
+| M-05 | Limpiar código muerto | 30 min | ⭐ | ⭐⭐⭐ | ✅ | **hecho** |
+| M-06 | Sustituir `pParametro` por JSON | 2 días | ⭐ | ⭐⭐⭐⭐ | 🤔 | pendiente |
+| M-07 | Actualizar Angular | 3–5 días | ⭐⭐ | ⭐⭐⭐ | 🤔 | pendiente |
+| M-08 | Pruebas reales | 2–3 días | ⭐ | ⭐⭐⭐⭐⭐ | 🤔 | pendiente |
+| M-09 | Múltiples lotes por producto | 2 días | ⭐⭐⭐ | ⭐⭐⭐ | 🤔 | pendiente |
+| M-10 | Lógica de T-SQL a C# | 4–6 días | ⭐⭐ | ⭐⭐⭐⭐⭐ | 🤔 | pendiente |
+| M-11 | Reportes y panel | 3 días | ⭐⭐⭐⭐ | ⭐⭐⭐ | 🤔 | **hecho** |
+| M-12 | Movimientos de inventario | 4 días | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ❌ | pendiente |
+| M-13 | Módulo de proveedores (PN3) | 5 días | ⭐⭐ | ⭐⭐ | ❌ | pendiente |
+| M-14 | Reescritura completa | 3–4 semanas | ⭐⭐⭐ | ⭐⭐⭐⭐ | ❌ | pendiente |
 
 ---
 
@@ -149,6 +154,13 @@ Comprobación: `curl` sin token debe devolver 401, y `localStorage.setItem('Rol'
 consola ya no debe dar acceso a nada.
 
 ## ✅ M-03 · Reescribir `Conexion.cs` e introducir inyección de dependencias
+
+> **Hecho a medias.** `Conexion.cs` ya está reescrito con ADO.NET plano: fuera el
+> descubrimiento de firmas en tiempo de ejecución, fuera `Microsoft.ApplicationBlocks.Data`
+> y una llamada a la base por escritura en vez de dos. Lo que **no** se hizo es la
+> inyección de dependencias: los controllers siguen instanciando su capa de negocio con
+> `new` en un campo, así que el código sigue sin poder probarse con dobles. Es el
+> prerrequisito de M-08 y de la migración a .NET 8.
 
 **Resuelve:** `06-hallazgos.md` §D-03, §D-04, §D-05, §S-06 · **Esfuerzo:** 3 h
 

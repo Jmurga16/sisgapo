@@ -25,7 +25,7 @@ En orden de impacto:
 
 | # | Elemento | Por qué funciona |
 |---|---|---|
-| 1 | **`06-hallazgos.md`** | 29 hallazgos priorizados de tu propio código. Demuestra criterio y honestidad, que es lo difícil de fingir |
+| 1 | **`06-hallazgos.md`** | 36 hallazgos priorizados de tu propio código, con lo corregido marcado y verificado. Demuestra criterio y honestidad, que es lo difícil de fingir |
 | 2 | **`docker compose up`** funcionando | Un comando y el sistema entero arranca. Elimina toda fricción de la demo |
 | 3 | La aplicación en vivo | Cinco módulos CRUD completos, con datos realistas |
 | 4 | **`07-migracion-tier-free.md`** | Análisis de costos y decisiones de infraestructura. Lenguaje que un cliente entiende |
@@ -72,7 +72,7 @@ punto a favor.
 
 Aquí es donde ganas la reunión. Abre `06-hallazgos.md`:
 
-> "Al recuperarlo hice una revisión completa: 29 hallazgos, clasificados en seguridad,
+> "Al recuperarlo hice una revisión completa: 36 hallazgos, clasificados en seguridad,
 > correctitud y deuda técnica, y priorizados. Los ocho bloqueantes son estos."
 
 Elige **dos** y cuéntalos bien:
@@ -129,11 +129,13 @@ enlace está frío, arranca Docker mientras se despierta y no pierdes el ritmo.
 ## 5. Antes de cada demo — lista de comprobación
 
 **Una vez, la primera vez**
-- [ ] Repositorios en GitHub, públicos, **sin secretos** (`07-migracion-tier-free.md` fase 0)
-- [ ] `README.md` en cada repositorio, con captura de pantalla y enlace a `sisgapo-docs/`
-- [ ] Los tres bugs visibles corregidos (§C-02, §C-03, §C-08)
-- [ ] `docker compose up` probado desde cero en una máquina limpia
-- [ ] Base de datos poblada con `sql/03-seed.sql` (5 zonas, 5 almacenes, 12 productos)
+- [x] Repositorio público en GitHub, **sin secretos** — verificado también en el historial
+- [x] `README.md` en la raíz, con el arranque en tres pasos
+- [x] Los bugs visibles corregidos (§C-02, §C-03, §C-08, §C-12 a §C-18)
+- [x] `docker compose up` probado desde cero
+- [x] Base de datos poblada (5 zonas, 5 almacenes, 4 categorías, 12 productos)
+- [ ] Captura de pantalla del panel en el README
+- [ ] Recorrido completo en el navegador, con la consola abierta y en móvil
 
 **Cinco minutos antes de cada reunión**
 - [ ] Abrir el enlace público para despertar el App Service y la base de datos
@@ -142,43 +144,26 @@ enlace está frío, arranca Docker mientras se despierta y no pierdes el ritmo.
 - [ ] Tener `06-hallazgos.md` abierto en otra pestaña
 - [ ] Si vas a crear registros durante la demo, hazlo una vez antes para verificar que no falla
 
-## 6. Cómo debe verse el README del repositorio
+## 6. El README del repositorio
 
-Es lo primero que abre cualquiera. Tres párrafos y una captura, no más:
+Es lo primero que abre cualquiera, y ya está escrito: [`README.md`](../README.md) en la
+raíz del monorepo. Tiene lo que hace falta —qué es, el arranque en tres pasos, las
+credenciales de demostración y el índice de la documentación— y una advertencia explícita
+de que la aplicación no se despliega en internet mientras la autenticación siga abierta.
 
-```markdown
-# SISGAPO — Sistema de Gestión de Almacén de Productos Orgánicos
+Lo que le falta para la demo:
 
-Sistema web de gestión de inventario multi-almacén: usuarios y roles, zonas,
-almacenes con supervisor asignado, categorías y productos con control de lotes
-y fechas de vencimiento.
+- **Una captura del panel de control.** Es lo que hace que alguien siga leyendo. Guárdala
+  en `docs/` y enlázala desde el README.
+- **El enlace a la demo en vivo**, cuando exista.
 
-**Desarrollado en 2021** (UNMSM, Ingeniería de Sistemas) y recuperado en 2026:
-migrado a .NET 8, documentado y desplegado en infraestructura de costo cero.
+Y un párrafo que conviene no quitar nunca, porque es el que convierte un repositorio
+antiguo en una muestra de trabajo actual:
 
-🔗 **Demo:** https://...   ·   👤 `admin` / `123456`
-📄 **Documentación técnica y auditoría:** [sisgapo-docs/](sisgapo-docs/)
-
-![Captura](docs/captura.png)
-
-## Stack
-Angular 9 · ASP.NET Core 8 · SQL Server · Docker
-
-## Arrancar en local
-    docker compose up
-
-Aplicación en http://localhost:4200, API en http://localhost:5000/swagger
-
-## Sobre este proyecto
-Al recuperarlo hice una auditoría completa: **29 hallazgos** documentados y
-priorizados en [06-hallazgos.md](sisgapo-docs/06-hallazgos.md), incluidos varios
-bugs funcionales que reproduje contra SQL Server 2022. El plan de modernización
-y el análisis de costos están en
-[07-migracion-tier-free.md](sisgapo-docs/07-migracion-tier-free.md).
-```
-
-Ese último apartado es el que convierte un repositorio antiguo en una muestra de trabajo
-actual.
+> Al recuperarlo hice una auditoría completa: 36 hallazgos documentados y priorizados en
+> `sisgapo-docs/06-hallazgos.md`, incluidos varios bugs funcionales que reproduje contra
+> SQL Server 2022 antes de corregirlos. El registro de decisiones —qué elegí, qué descarté
+> y por qué— está en `sisgapo-docs/10-decisiones.md`.
 
 ## 7. Lo que no conviene hacer
 

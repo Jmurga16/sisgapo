@@ -159,8 +159,10 @@ datos por id. Al guardar, elige el código de operación con un ternario:
 let pOpcion = this.data.accion == 0 ? '05' : '06';   // 05 alta / 06 edición
 ```
 
-`ZonaFormComponent` rompe el patrón: es una página completa en vez de un modal, y —como
-documenta `06-hallazgos.md` §C-03— **su modo edición no edita**: siempre inserta.
+`ZonaFormComponent` rompe el patrón: es una página completa en vez de un modal. Hasta
+2026 tenía además un defecto grave —su modo edición no editaba, siempre insertaba—,
+documentado en `06-hallazgos.md` §C-03 y ya corregido: ahora llama a `updateZona()` cuando
+la ruta trae `:id`, y el módulo tiene actualización y baja lógica en las tres capas.
 
 También arrastra un error de validación que es un clásico de JavaScript:
 
@@ -179,7 +181,9 @@ siempre da `false` y **la validación de formato de imagen nunca se ejecuta**. D
 ## 7. Interfaz y estilos
 
 - **Angular Material 9** como base: `MatTable`, `MatDialog`, `MatSidenav`, `MatPaginator`, `MatDatepicker`, `MatSelect`.
-- **Bootstrap 5.0.2** para la retícula y utilidades.
+- **Bootstrap 5.0.2**, del que solo se cargan *reboot* y *grid*: la aplicacion usa
+  unicamente `row`, `col-md-*` y `justify-content-center`. Cargar el framework completo
+  costaba 96 KB de CSS bloqueante sin usarlos.
 - **`@ng-bootstrap` 6.2.0**, que está hecho para Bootstrap 4 → desajuste de versión.
 - **`@ng-select`** para los desplegables con búsqueda.
 - **SweetAlert2** para confirmaciones y avisos.
@@ -244,18 +248,25 @@ y borrar el workflow sobrante. Ver `07-migracion-tier-free.md` §6.
 
 ## 10. Resumen de problemas del frontend
 
-| # | Problema | Gravedad | Dónde |
-|---|---|---|---|
-| 1 | Ninguna ruta protegida | 🔴 | `app-routing.module.ts` |
-| 2 | Editar zona crea un duplicado | 🔴 | `zona-form.component.ts` |
-| 3 | Editar producto envía 10 parámetros de 11 | 🔴 | `productos-modal.component.ts` |
-| 4 | Sesión = un número en `localStorage` | 🔴 | `login.component.ts` |
-| 5 | El rol no filtra menús ni acciones | 🟠 | `nav-menu.component.ts` |
-| 6 | `if (!this.fnValidarImagen)` sin `()` | 🟠 | `zona-form.component.ts` |
-| 7 | Sin interceptor HTTP ni manejo de errores | 🟠 | los 4 servicios |
-| 8 | Workflow con `output_location` incorrecto | 🟠 | `.github/workflows/` |
-| 9 | URL cableada en `InicioComponent` | 🟡 | `inicio.component.ts` |
-| 10 | `.toPromise()` deprecado | 🟡 | los 4 servicios |
-| 11 | 8 `.spec.ts` sin adaptar | 🟡 | todo el proyecto |
-| 12 | Un solo módulo, sin carga diferida | 🟡 | `app.module.ts` |
-| 13 | Tres sistemas de estilos conviviendo | 🟡 | `styles.css` |
+| # | Problema | Gravedad | Dónde | Estado |
+|---|---|---|---|---|
+| 1 | Ninguna ruta protegida | 🔴 | `app-routing.module.ts` | pendiente |
+| 2 | Editar zona crea un duplicado | 🔴 | `zona-form.component.ts` | corregido |
+| 3 | Editar producto envía 10 parámetros de 11 | 🔴 | `productos-modal.component.ts` | corregido |
+| 4 | Sesión = un número en `localStorage` | 🔴 | `login.component.ts` | pendiente |
+| 5 | El formulario de acceso no responde al clic con la ventana baja | 🔴 | `login.component.css` | corregido |
+| 6 | El rol no filtra menús ni acciones | 🟠 | `nav-menu.component.ts` | pendiente |
+| 7 | `if (!this.fnValidarImagen)` sin `()` | 🟠 | `zona-form.component.ts` | corregido |
+| 8 | Sin diseño para móvil en la pantalla de acceso | 🟠 | `login.component.css` | corregido |
+| 9 | Los filtros de Productos no filtraban | 🟠 | `productos.component.ts` | corregido |
+| 10 | Sin interceptor HTTP ni manejo de errores | 🟠 | los 4 servicios | pendiente |
+| 11 | Workflow con `output_location` incorrecto | 🟠 | `.github/workflows/` | corregido |
+| 12 | URL cableada en `InicioComponent` | 🟡 | `inicio.component.ts` | corregido |
+| 13 | Errores silenciosos al iniciar sesión | 🟡 | `login.component.ts` | corregido |
+| 14 | `.toPromise()` deprecado | 🟡 | los 4 servicios | pendiente |
+| 15 | 8 `.spec.ts` sin adaptar | 🟡 | todo el proyecto | pendiente |
+| 16 | Un solo módulo, sin carga diferida | 🟡 | `app.module.ts` | pendiente |
+| 17 | Tres sistemas de estilos conviviendo | 🟡 | `styles.css` | mitigado — Bootstrap reducido a grid |
+
+Los pendientes de gravedad alta son los dos de sesión y rol: van juntos con la
+autenticación. El resto se documenta en `06-hallazgos.md` con su reproducción.

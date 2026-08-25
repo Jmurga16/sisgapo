@@ -77,8 +77,7 @@ lo cual es una fortaleza para una demo: no hay pantallas a medias.
 |---|---|---|
 | .NET | 5.0 | **Fin de soporte: 8 de mayo de 2022** |
 | ASP.NET Core Web API | 5.0 | Patrón `Startup.cs` clásico |
-| `Microsoft.ApplicationBlocks.Data` | 2.0.0 | *SqlHelper* de Enterprise Library (~2005). Solo .NET Framework |
-| `System.Data.SqlClient` | 4.8.2 | **2 CVE conocidos** (uno de severidad alta) |
+| `Microsoft.Data.SqlClient` | 5.1.6 | Sustituye a `System.Data.SqlClient` 4.8.2, que tenia 2 CVE |
 | `Swashbuckle.AspNetCore` | 5.6.3 | Swagger, solo habilitado en Development |
 | `NLog` | 4.7.10 | **Sin archivo de configuración** → no escribe nada |
 | `Microsoft.EntityFrameworkCore.SqlServer` | 5.0.1 | **Referenciado pero jamás usado** |
@@ -151,12 +150,12 @@ existiendo y qué se está facturando. Es posible que ya no estés pagando nada.
 
 ```
 dotnet build SISGAPO_Back.sln
-→ Build succeeded. 18 Warning(s), 0 Error(s). (3.7 s)
+→ Build succeeded. 2 Warning(s), 0 Error(s). (3.2 s)
 ```
 
 Warnings relevantes:
 - `NETSDK1138` — `net5.0` fuera de soporte.
-- `NU1903` / `NU1902` — `System.Data.SqlClient` 4.8.2 con vulnerabilidades **alta** y moderada.
+- ~~`NU1903` / `NU1902`~~ — resueltos al migrar a `Microsoft.Data.SqlClient`.
 - `NU1701` ×6 — paquetes de .NET Framework restaurados contra `net5.0`
   (`Microsoft.ApplicationBlocks.Data`, `Microsoft.AspNet.WebApi.*`).
 
@@ -191,7 +190,7 @@ desplegar la demo.** Verificado en Node 22.23.1.
 En términos prácticos: **la API es completamente pública.** Cualquiera con la URL puede
 listar, crear y borrar usuarios. Ver `06-hallazgos.md` §S-03 y §S-04.
 
-### Hay secretos en el repositorio
+### Habia secretos en la copia local, no en el repositorio
 
 - `sisgapo-api/SISGAPO_API/appsettings.json:11` — cadena de conexión completa con servidor,
   usuario (`ink`) y contraseña en claro.
@@ -207,6 +206,8 @@ limpiarlas primero (incluido el historial de git, si lo hay).
 ```
 sisgapo-api  → fatal: not a git repository
 sisgapo-web  → fatal: not a git repository
+
+[Resuelto en agosto de 2026: monorepo unico con los dos historiales importados.]
 ```
 
 Existen workflows de GitHub Actions en `sisgapo-web/.github/workflows/`, así que en algún

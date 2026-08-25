@@ -15,9 +15,9 @@ presentable—, no a un despliegue en producción:
 | Grupo | 🔴 | 🟠 | 🟡 | Total |
 |---|---|---|---|---|
 | Seguridad | 4 | 4 | 1 | 9 |
-| Correctitud | 5 | 8 | 2 | 15 |
+| Correctitud | 6 | 9 | 3 | 18 |
 | Deuda técnica | 0 | 4 | 5 | 9 |
-| **Total** | **9** | **16** | **8** | **33** |
+| **Total** | **10** | **17** | **9** | **36** |
 
 Cuatro de los de correctitud (C-12 a C-15) salieron **al aplicar los arreglos**, no en la
 revisión inicial. Es lo normal: el primero de ellos tapaba a los otros tres.
@@ -44,19 +44,24 @@ ejecutándolo** contra SQL Server 2022 en Docker y, donde aplica, por HTTP contr
 | C-13 · El modal de edición de producto no precarga nada | ✅ Corregido (hallazgo nuevo) |
 | C-14 · Los filtros de Productos no filtran | ✅ Corregido (hallazgo nuevo) |
 | C-15 · Eliminar un producto usa el identificador equivocado | ✅ Corregido (hallazgo nuevo) |
+| C-16 · El formulario de acceso no se puede pulsar si la ventana es baja | ✅ Corregido (hallazgo nuevo) |
+| C-17 · La pantalla de acceso no tiene diseño para móvil | ✅ Corregido (hallazgo nuevo) |
+| C-18 · Errores silenciosos al iniciar sesión | ✅ Corregido (hallazgo nuevo) |
 | S-01 · Credenciales en el repositorio | ✅ Corregido — y **verificado que nunca estuvieron en el historial de Git** |
 | S-08 · Mezcla de HTTP/HTTPS y CORS que no cuadra | ✅ Corregido — orígenes por configuración |
 | D-04 · Configuración leída del disco en cada petición | ✅ Corregido — `ConfiguracionBD`, una vez por proceso |
 | D-09 · Restos de andamiaje y archivos generados | ✅ Limpiado |
 | S-02 · Contraseñas en texto plano | ⏳ Pendiente — fase de autenticación |
 | S-03 / S-04 · Sin autenticación ni rutas protegidas | ⏳ Pendiente — aplazado a propósito |
-| S-05 / S-06 · Paquetes sin mantenimiento o con CVE | ⏳ Pendiente — va con la migración a .NET 8 |
+| S-05 · `System.Data.SqlClient` con CVE | ✅ Corregido — migrado a `Microsoft.Data.SqlClient` 5.1.6 |
+| S-06 · `Microsoft.ApplicationBlocks.Data` sin mantenimiento | ✅ Eliminado del proyecto |
 | S-07 · El delimitador `\|` no se escapa | ⏳ Pendiente |
 | C-06 · El nombre de usuario siempre lleva sufijo | ⏳ Pendiente |
 | C-10 · El único test no puede pasar | ⚠️ Test eliminado; sin pruebas reales todavía |
 | D-01 / D-02 · .NET 5 y Angular 9 fuera de soporte | ⏳ Pendiente |
 | D-03 · Sin inyección de dependencias | ⏳ Pendiente |
-| D-05 / D-06 / D-07 / D-08 | ⏳ Pendiente |
+| D-05 · Consulta de metadatos en cada escritura | ✅ Corregido — una llamada a la base en vez de dos |
+| D-06 / D-07 / D-08 | ⏳ Pendiente |
 
 ---
 
@@ -433,7 +438,7 @@ y aquí se hizo al revés.
   mientras el resto de entidades son `public`.
 
 **Estado actual:** el módulo **no** forma parte del árbol de trabajo — ver
-`10-decisiones.md` §D-18, donde se explica por qué se dejó fuera y cómo recuperarlo en un
+`10-decisiones.md` §D-19, donde se explica por qué se dejó fuera y cómo recuperarlo en un
 solo comando.
 
 **Lo que sí era código muerto de verdad**, y se eliminó: `SISGAPO_API/WeatherForecast.cs`
@@ -514,6 +519,63 @@ estarlo, dar de baja un producto da de baja **otro**.
 
 Estaba enmascarado por C-12: como la opción `08` ni siquiera llegaba a ejecutarse, el
 identificador equivocado nunca tuvo ocasión de hacer daño.
+
+### 🔴 C-16 · El formulario de acceso no se puede pulsar si la ventana es baja
+
+`sisgapo-web/src/app/login/login.component.css`
+
+Reproducible al abrir las herramientas de desarrollo del navegador: el botón **Ingresar**
+y los dos campos dejan de responder al clic. Con la ventana a pantalla completa funcionan.
+
+La causa son las tres ondas decorativas del fondo:
+
+```css
+.containerWaveBottomRight {
+    right   : 0px;
+    bottom  : 0px;
+    position: absolute;   /* ← sin ancestro posicionado */
+    width   : 40%;
+}
+```
+
+`position: absolute` sin ningún ancestro posicionado ancla el elemento al **bloque
+contenedor inicial**, cuya altura es la del viewport. Al abrir la consola el viewport se
+encoge, la onda sube, y su caja —que es un rectángulo, aunque el dibujo sea una curva—
+queda por encima del formulario e intercepta los clics.
+
+Es un bug difícil de atribuir: no hay error en consola, el botón simplemente no hace nada,
+y depende del tamaño de la ventana.
+
+**Arreglo, por los dos lados:** `pointer-events: none` en las tres ondas —un adorno no debe
+capturar un clic nunca— y `position: relative` en el contenedor del layout, para que las
+ondas se anclen a él y no al viewport. Se añadió también `aria-hidden="true"`, que es lo
+correcto para un elemento decorativo.
+
+### 🟠 C-17 · La pantalla de acceso no tiene diseño para móvil
+
+Los dos paneles estaban fijos a `width: 49%` sin ninguna media query, así que en un
+teléfono el formulario quedaba comprimido en media pantalla, con el título a `4rem`
+desbordando el ancho.
+
+**Arreglo:** los paneles se apilan por debajo de 900 px, la ilustración del panel de marca
+se oculta por debajo de 600 px, y los títulos escalan con `clamp()`. Se añadió además una
+media query por **altura**: con menos de 620 px de alto las dos ilustraciones se ocultan,
+de modo que el formulario entra sin scroll — el mismo caso que provocaba §C-16.
+
+### 🟡 C-18 · Errores silenciosos al iniciar sesión
+
+`login.component.ts` tenía tres huecos:
+
+- Con usuario o contraseña vacíos se llamaba igual al servidor, que respondía
+  «Credenciales Incorrectas» — un mensaje engañoso cuando lo que falta es rellenar el
+  formulario.
+- El `else` que muestra el error solo cubría el arreglo vacío. Si el servidor devolvía una
+  fila con `result = 0`, la pantalla se quedaba muda.
+- Un fallo de red hacía `console.log(error)` y nada más: para el usuario, el botón no hacía
+  nada.
+
+Los tres muestran ahora un mensaje. Es el mismo patrón que §C-05: **rechazar una operación
+en silencio es peor que fallar**.
 
 ---
 
@@ -641,6 +703,71 @@ leer el código.
 - `.sonarqube/` y `.vs/` versionados en el repositorio.
 
 Limpiar esto son 20 minutos y quita ruido de la primera impresión.
+
+---
+
+## Rendimiento — medido antes y despues
+
+Lo de esta seccion se midio ejecutandolo, no se estimo.
+
+| Metrica | Antes | Despues | Cambio |
+|---|---|---|---|
+| CSS que bloquea el primer render | 213 KB | 117 KB | **-96 KB** |
+| JS que descarga un navegador moderno | 935 KB | 935 KB | sin cambio |
+| Artefacto total del build de produccion | 2,4 MB | 1,1 MB | **-54 %** |
+| Tiempo de `ng build --prod` | 36 s | 25 s | **-31 %** |
+| Avisos de compilacion del backend | 12 | 2 | **-83 %** |
+| Viajes a la base de datos por escritura | 2 | 1 | **-50 %** |
+
+**Que se cambio y por que funciona:**
+
+1. **Una llamada a la base por escritura, no dos.** `Conexion.EjecutarEscalar` ejecutaba
+   `sp_procedure_params_rowset` antes de cada escritura para descubrir la firma del
+   procedimiento en tiempo de ejecucion, sin cache. Esa firma se conoce en tiempo de
+   compilacion: ahora esta declarada en un diccionario. Es la unica mejora de esta lista
+   que afecta a la latencia de una operacion real.
+
+2. **Bootstrap completo, a solo *reboot* + *grid*.** La aplicacion usa exactamente ocho
+   clases de Bootstrap: `row`, `col-md-{1,2,3,5,6,12}` y `justify-content-center`. Se
+   comprobo extrayendo todas las clases de las plantillas y cruzandolas con las que define
+   cada archivo de Bootstrap: no se pierde ninguna. Son 96 KB menos de CSS bloqueante, que
+   es justo lo que retrasa la primera pintura.
+
+3. **Fuera los bundles ES5.** El criterio `> 0.5 %` de cuota global metia en la lista de
+   objetivos a UC Browser, Baidu y Opera Mobile, que no soportan modulos ES2015. Mientras
+   estuvieran, Angular generaba un segundo juego completo de bundles —`main-es5` de
+   1.039 KB mas `polyfills-es5` de 130 KB— que **ningun navegador moderno descarga**: la
+   carga diferencial los sirve solo con `<script nomodule>`.
+   Conviene ser preciso con lo que esto mejora: **no reduce lo que descarga un visitante**;
+   reduce el artefacto a la mitad y el tiempo de compilacion en un tercio. Revertirlo es
+   quitar cinco lineas de `browserslist`.
+
+4. **Se elimino `Microsoft.ApplicationBlocks.Data`.** Era el *SqlHelper* del Data Access
+   Application Block, de alrededor de 2005: un ensamblado solo para .NET Framework. Como
+   `Conexion.cs` era su unico consumidor, reescribirlo con ADO.NET plano lo saca del
+   proyecto entero, y con el seis avisos `NU1701`.
+
+5. **`System.Data.SqlClient` a `Microsoft.Data.SqlClient` 5.1.6.** Es el paquete sucesor y
+   mantiene la API; el cambio fueron tres `using`. Elimina los avisos `NU1902` y `NU1903`.
+   Ojo con el cambio de comportamiento: desde la version 4 el cifrado esta activado por
+   defecto, asi que la cadena de conexion necesita `TrustServerCertificate=True` contra un
+   SQL Server local con certificado autofirmado.
+
+6. **Presupuestos de tamano en `angular.json`.** El build avisa si el bundle inicial pasa
+   de 1,1 MB. No arregla nada por si solo; hace visible la proxima regresion.
+
+**Lo que queda sobre la mesa, por orden de retorno:**
+
+- **Carga diferida por modulo.** El bundle inicial son 898 KB de JavaScript porque los 15
+  componentes se declaran en un unico `NgModule`. Partirlo con `loadChildren` dejaria la
+  pantalla de acceso en una fraccion de eso. Es la mejora de rendimiento mas grande que
+  queda, y tambien la mas invasiva.
+- **`OnPush` en los componentes de lista**, que hoy usan deteccion de cambios por defecto
+  con `MatTableDataSource`.
+- **Indice sobre `TBL_LOTE.dFechaVenc`**, que el panel filtra en tres de sus cuatro
+  consultas. Con doce filas no se nota; con doce mil, si.
+- **`caniuse-lite` esta desactualizado** y el build lo avisa. Actualizarlo toca el archivo
+  de bloqueo de dependencias, asi que conviene hacerlo en un cambio aparte.
 
 ---
 
