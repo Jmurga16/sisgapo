@@ -1,47 +1,67 @@
 # Documentación de SISGAPO
 
 **SISGAPO** — Sistema de Gestión de Almacén de Productos Orgánicos.
-Sistema web de inventario multi-almacén desarrollado en 2021 (UNMSM, Ing. de Sistemas).
+Sistema web de inventario multi-almacén, desarrollado en 2021 (UNMSM, Ingeniería de
+Sistemas) y recuperado en 2026.
 
-Estado actual: **código funcional, infraestructura desmantelada.**
-Objetivo: **convertirlo en demo de portafolio con costo US$ 0/mes.**
+Estado: **funciona en local con un comando.** La infraestructura original de Azure ya no
+existe; la base de datos se reconstruye desde los scripts de `sql/`.
 
 ---
 
 ## Por dónde empezar
 
-**Si vienes a entender el sistema:** `01` → `02` → `03`.
-**Si vienes a ponerlo a correr:** `07-migracion-tier-free.md`, sección "Ruta rápida".
-**Si vienes a mostrarlo a un cliente:** `08-plan-demo.md`.
-**Si quieres saber qué está mal:** `06-hallazgos.md`.
+| Si vienes a… | Empieza por |
+|---|---|
+| Ponerlo a correr | el [README de la raíz](../README.md) |
+| Escribir código | [`00-convenciones.md`](00-convenciones.md) |
+| Entender el sistema | `01` → `02` → `03` |
+| Saber qué está mal | [`06-hallazgos.md`](06-hallazgos.md) |
+| Presentarlo | [`08-plan-demo.md`](08-plan-demo.md) |
 
 ## Índice
 
 | # | Documento | Contenido |
 |---|---|---|
-| 01 | [Análisis general](01-analisis-general.md) | Contexto de negocio, alcance funcional (12 casos de uso), stack, estado real, métricas del código |
-| 02 | [Arquitectura](02-arquitectura.md) | Capas, flujo completo de un request, el patrón `sOpcion`/`pParametro`, diagramas |
-| 03 | [Modelo de datos](03-modelo-de-datos.md) | 11 tablas, relaciones, los 6 stored procedures, y **cómo recrear la BD desde cero** |
-| 04 | [Referencia de API](04-api-referencia.md) | 6 endpoints, contratos de request/response, catálogo completo de códigos `sOpcion` |
-| 05 | [Frontend](05-frontend.md) | Módulos Angular, rutas, servicios, componentes, estado de la sesión |
-| 06 | [Hallazgos](06-hallazgos.md) | 29 hallazgos clasificados: seguridad, correctitud, deuda técnica |
-| 07 | [Migración a tier free](07-migracion-tier-free.md) | **Plan paso a paso para llegar a US$ 0/mes** |
-| 08 | [Plan de demo](08-plan-demo.md) | Cómo presentar el proyecto: guion, checklist, qué decir y qué no |
+| 00 | [Convenciones](00-convenciones.md) | Notación, capas, el contrato `sOpcion`/`pParametro`, reglas de datos y estilo |
+| 01 | [Análisis general](01-analisis-general.md) | Contexto de negocio, alcance funcional, stack, estado real, métricas |
+| 02 | [Arquitectura](02-arquitectura.md) | Capas, flujo completo de un request, diagramas |
+| 03 | [Modelo de datos](03-modelo-de-datos.md) | Tablas, relaciones, procedimientos y cómo recrear la base |
+| 04 | [Referencia de API](04-api-referencia.md) | Endpoints, contratos y catálogo completo de códigos `sOpcion` |
+| 05 | [Frontend](05-frontend.md) | Módulos Angular, rutas, servicios, componentes, sesión |
+| 06 | [Hallazgos](06-hallazgos.md) | **La auditoría: 33 hallazgos de seguridad, correctitud y deuda técnica** |
+| 07 | [Migración a tier free](07-migracion-tier-free.md) | Plan paso a paso para llegar a US$ 0/mes |
+| 08 | [Plan de demo](08-plan-demo.md) | Cómo presentar el proyecto: guion y qué decir |
 | 09 | [Mejoras propuestas](09-mejoras-propuestas.md) | Roadmap más allá del alcance original, con estimaciones |
-| 10 | [Decisiones](10-decisiones.md) | Registro de decisiones: qué dudé, qué elegí y por qué |
+| 10 | [Decisiones](10-decisiones.md) | Registro de decisiones tomadas y alternativas descartadas |
 
 También en esta carpeta:
+
+- [`sql/`](sql/) — esquema, procedimientos y datos de demostración. Es la versión
+  mantenida y verificada; los originales de 2021 siguen en `sisgapo-web/src/scripts/`
+  como registro, y no se pueden ejecutar.
 - `Documento de Especificación de CUS.docx` — documento original de casos de uso (2021).
 
-## Resumen ejecutivo en 10 líneas
+## El sistema en diez líneas
 
-1. Es un CRUD de inventario bien delimitado: usuarios, zonas, almacenes, categorías y productos.
-2. Backend .NET 5 en 4 proyectos por capas. Frontend Angular 9. Toda la lógica de negocio vive en 6 stored procedures de T-SQL.
-3. **La infraestructura de Azure ya no existe:** ni el servidor SQL ni los App Services resuelven por DNS. No hay datos que migrar.
-4. Por lo tanto no es una "migración" sino una **reconstrucción desde los scripts SQL** — y esos scripts están rotos (falta una columna, un SP usa `ALTER`, dos archivos duplican objetos).
-5. El backend **compila hoy** sin errores. El frontend **compila hoy** con `NODE_OPTIONS=--openssl-legacy-provider`. Ambos verificados.
-6. La autenticación es decorativa: contraseñas en texto plano, sin token, sin guards de ruta, sin `[Authorize]` en la API. Cualquiera puede llamar los endpoints.
-7. Hay credenciales reales en el repositorio (cadena de conexión y una contraseña de Gmail en un comentario).
-8. El costo original estimado era ~US$ 78/mes, dominado por un App Service Plan **S1 Standard** (~US$ 73). La base de datos era la parte barata (~US$ 5).
-9. Se puede llegar a **US$ 0/mes**. La ruta recomendada y sus alternativas están en el documento 07.
-10. Para portafolio, lo que más valor agrega no es el hosting sino: arreglar los scripts, sacar los secretos, hashear contraseñas y poner un `docker compose up` que funcione.
+1. CRUD de inventario bien delimitado: usuarios, zonas, almacenes, categorías y
+   productos, más un panel de control con existencias y control de vencimientos.
+2. Backend .NET 5 en cuatro proyectos por capas, frontend Angular 9, y **toda la lógica
+   de negocio en siete procedimientos almacenados de T-SQL**.
+3. Doce casos de uso especificados en 2021, los doce con código y pantalla. El alcance
+   está cerrado: no hay módulos a medias.
+4. `docker compose up -d` levanta SQL Server, crea la base y carga datos de demostración
+   realistas. Los scripts son reejecutables.
+5. Backend y frontend compilan hoy. El frontend necesita
+   `NODE_OPTIONS=--openssl-legacy-provider`, ya fijado en los scripts de `package.json`.
+6. La auditoría encontró 33 hallazgos. Los bloqueantes de correctitud están corregidos y
+   verificados contra SQL Server; los de seguridad, no.
+7. **La autenticación sigue siendo decorativa:** contraseñas en texto plano, sin token,
+   sin guards de ruta, sin `[Authorize]`. Por eso esta aplicación **no se despliega en
+   internet** todavía.
+8. No hay secretos en el repositorio, y se verificó que tampoco los hubo nunca en el
+   historial de Git (§S-01).
+9. La infraestructura original costaba unos US$ 78/mes, y el 94 % era un App Service Plan
+   S1 sobredimensionado. El plan para llegar a US$ 0 está en el documento 07.
+10. Lo que más valor aporta como pieza de portafolio no es el hosting: es la auditoría del
+    documento 06 y el registro de decisiones del documento 10.

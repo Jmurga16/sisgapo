@@ -244,7 +244,35 @@ está en `sisgapo-docs/`, y que conviene tener la frase preparada.
 
 ---
 
-## D-10 · Numerar los documentos
+## D-10 · Un solo documento de convenciones, en `sisgapo-docs/`
+
+**La duda.** Las convenciones del proyecto —notación húngara, el contrato
+`sOpcion`/`pParametro`, el recorrido por capas— no estaban escritas en ninguna parte: se
+deducían leyendo el código. Con dos proyectos de stacks distintos, lo habitual sería un
+documento por proyecto, o un `CONTRIBUTING.md` en la raíz.
+
+**Decisión: uno solo, `00-convenciones.md`, dentro de `sisgapo-docs/`.**
+
+**Por qué uno y no dos.** Las convenciones que de verdad importan son **transversales**.
+La notación húngara cruza C#, TypeScript y T-SQL. El patrón `sOpcion`/`pParametro` solo se
+entiende viendo las tres capas a la vez —y los cuatro bugs más graves del proyecto son
+justamente capas que dejaron de estar de acuerdo entre sí—. Partir eso en dos archivos lo
+rompería por donde no hay que romperlo.
+
+Hay un detalle que lo confirma: **los scripts SQL del backend viven dentro del proyecto
+Angular**. Un documento por proyecto no tendría dónde explicar eso.
+
+**Por qué en `sisgapo-docs/` y no un `CONTRIBUTING.md` en la raíz.** Porque no son reglas
+de contribución para terceros, sino descripción de cómo está construido el sistema, y eso
+pertenece al mismo sitio que el resto del análisis. Lleva el número 00 porque es lo
+primero que hay que leer antes de escribir código, por delante del análisis general.
+
+**Reconsidera si:** el proyecto llega a tener colaboradores. Entonces sí hace falta un
+`CONTRIBUTING.md` en la raíz, aunque solo sea para apuntar a este documento.
+
+---
+
+## D-11 · Numerar los documentos
 
 **Decisión: prefijo numérico (`01-`…`10-`) en vez de nombres sueltos.**
 
@@ -256,7 +284,7 @@ Con diez documentos, es aceptable.
 
 ---
 
-## D-11 · Un documento de auditoría separado, en vez de repartir los hallazgos
+## D-12 · Un documento de auditoría separado, en vez de repartir los hallazgos
 
 **La duda.** Los 29 hallazgos podrían haber ido cada uno en su documento temático (los de base
 de datos en el 03, los de frontend en el 05…).
@@ -273,7 +301,7 @@ que es justo lo que hace que se lea como una auditoría y no como una lista de q
 
 ---
 
-## D-12 · `sisgapo-docs/sql/` pasa a ser el juego mantenido
+## D-13 · `sisgapo-docs/sql/` pasa a ser el juego mantenido
 
 **La duda.** D-06 creó `sisgapo-docs/sql/` como una copia *mecánicamente* corregida —solo
 lo justo para que ejecutase— y dejó explícito que "la lógica T-SQL no se tocó, incluidos
@@ -292,7 +320,7 @@ de scripts idempotentes.
 
 ---
 
-## D-13 · Scripts reejecutables con `CREATE OR ALTER`
+## D-14 · Scripts reejecutables con `CREATE OR ALTER`
 
 **La duda.** `docker compose up` dos veces fallaba: `02-funcion-split.sql` y los seis
 `CREATE PROCEDURE` reventaban con "There is already an object named…". Solo el esquema
@@ -311,7 +339,7 @@ Ojo con el detalle que lo hacía fallar en silencio: el script de arranque itera
 
 ---
 
-## D-14 · La base se publica en el puerto 14330
+## D-15 · La base se publica en el puerto 14330
 
 **La duda.** El `docker-compose.yml` publicaba `1433:1433`, lo estándar. Contra esa
 configuración, la API fallaba con "Error de inicio de sesión del usuario 'sa'" aunque
@@ -330,7 +358,7 @@ para todo el mundo.
 
 ---
 
-## D-15 · Las fechas del seed son relativas, no fijas
+## D-16 · Las fechas del seed son relativas, no fijas
 
 **La duda.** D-07 fijó los vencimientos en 2026–2027 para que la demo no saliera con todo
 caducado. Pero es una solución con fecha de caducidad, valga la redundancia: en unos meses
@@ -353,7 +381,7 @@ Lo compensa un comentario al principio del bloque explicando el escenario.
 
 ---
 
-## D-16 · El panel de inicio, antes que la autenticación
+## D-17 · El panel de inicio, antes que la autenticación
 
 **La duda.** `09-mejoras-propuestas.md` marca M-11 (panel) como 🤔 y M-02 (JWT) como ✅.
 El orden natural sería autenticar primero.
@@ -372,7 +400,7 @@ mientras S-02/S-03/S-04 sigan abiertos, **esto no se publica en internet**.
 
 ---
 
-## D-17 · Monorepo con el historial de 2021 importado
+## D-18 · Monorepo con el historial de 2021 importado
 
 **La duda.** El proyecto vivía en dos repositorios privados —`Jmurga16/SISGAPO.Back` y
 `Jmurga16/SISGAPO.Front`, 21 y 36 commits entre junio de 2021 y enero de 2022— y en local
@@ -405,7 +433,7 @@ contienen el identificador de suscripción de Azure y una contraseña cifrada co
 
 ---
 
-## D-18 · El módulo «Tracking» (Cliente) se queda fuera del árbol, no del historial
+## D-19 · El módulo «Tracking» (Cliente) se queda fuera del árbol, no del historial
 
 **La duda.** Al comparar la copia local con el repositorio apareció un sexto módulo
 completo —tabla, procedimiento, tres capas de backend, pantalla Angular, ruta y entrada de
@@ -451,16 +479,17 @@ llevar los dos scripts a `sisgapo-docs/sql/`, quitarles el `USE`, pasar `nTelefo
 | D-07 | Ampliar el seed | Bajo |
 | D-08 | Priorizar Docker Compose sin crearlo | Bajo |
 | D-09 | Señalar la autoría en equipo | **Medio** — callarlo perjudica más que decirlo |
-| D-10 | Documentos numerados | Ninguno |
-| D-11 | Auditoría centralizada | Bajo |
-| D-12 | `sisgapo-docs/sql/` pasa a ser el juego mantenido | Bajo — revisa D-06, que queda matizada |
-| D-13 | Scripts reejecutables con `CREATE OR ALTER` | Ninguno |
-| D-14 | Publicar la base en el puerto 14330 | Ninguno |
-| D-15 | Fechas del seed relativas a `GETDATE()` | Bajo |
-| D-16 | El panel antes que la autenticación | **Medio** — invierte el orden de `09-mejoras-propuestas.md` |
-| D-17 | Monorepo con el historial de 2021 importado | Bajo |
-| D-18 | «Tracking» fuera del árbol, dentro del historial | **Medio** — revisa §C-11 antes de opinar |
+| D-10 | Un solo documento de convenciones | Bajo |
+| D-11 | Documentos numerados | Ninguno |
+| D-12 | Auditoría centralizada | Bajo |
+| D-13 | `sisgapo-docs/sql/` pasa a ser el juego mantenido | Bajo — revisa D-06, que queda matizada |
+| D-14 | Scripts reejecutables con `CREATE OR ALTER` | Ninguno |
+| D-15 | Publicar la base en el puerto 14330 | Ninguno |
+| D-16 | Fechas del seed relativas a `GETDATE()` | Bajo |
+| D-17 | El panel antes que la autenticación | **Medio** — invierte el orden de `09-mejoras-propuestas.md` |
+| D-18 | Monorepo con el historial de 2021 importado | Bajo |
+| D-19 | «Tracking» fuera del árbol, dentro del historial | **Medio** — revisa §C-11 antes de opinar |
 
 **Las tres que más merecen tu revisión: D-01, D-04 y D-09.**
-De las nuevas, la discutible es **D-16**: es una decisión de escaparate por delante de una
+De las nuevas, la discutible es **D-17**: es una decisión de escaparate por delante de una
 de fondo, y solo se sostiene mientras la demo no salga a internet.
