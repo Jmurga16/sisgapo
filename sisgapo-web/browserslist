@@ -1,12 +1,24 @@
-# This file is used by the build system to adjust CSS and JS output to support the specified browsers below.
-# For additional information regarding the format and rule options, please see:
-# https://github.com/browserslist/browserslist#queries
-
-# You can see what browsers were selected by your queries by running:
-#   npx browserslist
+# Navegadores objetivo. El build ajusta el CSS y el JS a esta lista.
+#   npx browserslist              muestra la lista resuelta
+#   npx browserslist "... and not supports es6-module"   muestra los que fuerzan ES5
 
 > 0.5%
 last 2 versions
 Firefox ESR
 not dead
-not IE 9-11 # For IE 9-11 support, remove 'not'.
+not IE 9-11
+
+# --- Exclusiones deliberadas ---------------------------------------------
+# Estos navegadores no soportan modulos ES2015. Mientras esten en la lista,
+# Angular genera un segundo juego completo de bundles (main-es5 1039 KB,
+# polyfills-es5 130 KB) que ningun navegador moderno descarga: la carga
+# diferencial los sirve solo con <script nomodule>.
+#
+# Lo que cuesta tenerlos: ~1.2 MB de artefactos y la mitad del tiempo de
+# compilacion. Lo que da: soporte para navegadores que no son el publico de
+# este proyecto. Revertir es descomentar estas cuatro lineas.
+not op_mini all
+not kaios 2.5
+not and_uc > 0
+not baidu > 0
+not op_mob > 0
