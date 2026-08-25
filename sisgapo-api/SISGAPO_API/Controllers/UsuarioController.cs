@@ -54,7 +54,10 @@ namespace SISGAPO_API.Controllers
             }
             else
             {
-                return null;
+                //Antes esto era 'return null', que ASP.NET Core traduce a 204 No Content
+                //con cuerpo vacio: el frontend recibia null y fallaba al leer sus
+                //propiedades, sin mensaje para el usuario. Ver 06-hallazgos.md C-08.
+                return BadRequest(new { cod = "0", mensaje = $"Opcion no soportada: {erp.sOpcion}" });
             }
 
         }

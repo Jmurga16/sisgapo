@@ -57,9 +57,11 @@ namespace Entity
         public int nCantidad { get; set; }
         public int nIdUnidadMedida { get; set; }
         public int nPrecio { get; set; }
+        public string sDescripcion { get; set; }
+        public int nIdLote { get; set; }
         public string dFechaFab { get; set; }
         public string dFechaVenc { get; set; }
-        
+
     }
 
 }

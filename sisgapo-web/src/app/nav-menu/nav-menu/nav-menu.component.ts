@@ -19,25 +19,16 @@ export class NavMenuComponent implements OnInit {
   isShowing = false;
 
   listaNav = [
-    { id: 1, name: 'Usuarios', route: 'usuarios', icon: 'manage_accounts', subMenu: 0, mostrar: false },
-    { id: 2, name: 'Almacenes', route: 'almacenes', icon: 'store', subMenu: 0, mostrar: false },
-    { id: 3, name: 'Zonas', route: 'zonas', icon: 'room', subMenu: 0, mostrar: false },
-    { id: 4, name: 'Inventario', route: 'zonas', icon: 'view_in_ar', subMenu: 2, mostrar: false },
-    { id: 5, name: 'Tracking', route: 'clientes', icon: 'gps_fixed', subMenu: 0, mostrar: false },
+    { id: 1, name: 'Inicio', route: 'inicio', icon: 'dashboard', subMenu: 0, mostrar: false },
+    { id: 2, name: 'Usuarios', route: 'usuarios', icon: 'manage_accounts', subMenu: 0, mostrar: false },
+    { id: 3, name: 'Almacenes', route: 'almacenes', icon: 'store', subMenu: 0, mostrar: false },
+    { id: 4, name: 'Zonas', route: 'zonas', icon: 'room', subMenu: 0, mostrar: false },
+    { id: 5, name: 'Inventario', route: '', icon: 'view_in_ar', subMenu: 2, mostrar: false },
   ];
 
   listaSubNav = [
-    { idHijo: 1, idPadre: 2, name: 'SubAlmacen1', route: 'zonas', icon: 'false' },
-    { idHijo: 2, idPadre: 2, name: 'SubAlmacen2', route: 'zonas', icon: 'false' },
-    { idHijo: 3, idPadre: 4, name: 'Categoria', route: 'categoria', icon: 'category' },
-    { idHijo: 4, idPadre: 4, name: 'Productos', route: 'productos', icon: 'inventory_2' },
-  ];
-
-
-  listaNavegacion = [
-    { name: 'Usuarios', route: 'usuarios', icon: 'manage_accounts' },
-    { name: 'Almacenes', route: 'almacenes', icon: 'store' },
-    { name: 'Zonas', route: 'zonas', icon: 'room' },
+    { idHijo: 1, idPadre: 5, name: 'Categorías', route: 'categoria', icon: 'category' },
+    { idHijo: 2, idPadre: 5, name: 'Productos', route: 'productos', icon: 'inventory_2' },
   ];
 
   private _mobileQueryListener: () => void;

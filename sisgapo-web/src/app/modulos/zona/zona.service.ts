@@ -28,5 +28,15 @@ export class ZonaService {
     return this.http.post(`${this.API_URI}/zona`, zona);
   }
 
+  //Actualizar. No existía: el formulario de edición llamaba a saveZona() y
+  //cada guardado creaba una zona nueva. Ver 06-hallazgos.md §C-03.
+  updateZona(zona: ZonaData) {
+    return this.http.put(`${this.API_URI}/zona`, zona);
+  }
+
+  //Activar / dar de baja (baja lógica).
+  cambiarEstado(nIdZona: number, bEstado: boolean) {
+    return this.http.put(`${this.API_URI}/zona/estado/${nIdZona}/${bEstado}`, {});
+  }
 
 }

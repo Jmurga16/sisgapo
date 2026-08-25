@@ -19,22 +19,8 @@ namespace Data
         private string conf;
         public string ConfConexion()
         {
-
-            //Construir la conexión
-            try
-            {
-                var builder = new ConfigurationBuilder()
-             .SetBasePath(Directory.GetCurrentDirectory())
-             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-
-                IConfiguration configuration = builder.Build();
-                conf = configuration["ConnectionStrings:connectionString"];
-            }
-            catch (Exception e)
-            {
-                logger.Error(e);
-                throw;
-            }
+            //La cadena se resuelve una sola vez por proceso en ConfiguracionBD.
+            conf = ConfiguracionBD.sCadenaConexion;
             return conf;
         }
 
@@ -69,7 +55,9 @@ namespace Data
                     zonaEnt.nIdZona = Convert.ToInt32(reader["nIdZona"]);
                     zonaEnt.sNombre = reader["sNombre"].ToString();
                     zonaEnt.sRutaImagen = reader["sRutaImagen"].ToString();
-                   
+                    zonaEnt.bEstado = Convert.ToBoolean(reader["bEstado"]);
+                    zonaEnt.sEstado = reader["sEstado"].ToString();
+
                     lstZonas.Add(zonaEnt);
                 }
 
@@ -116,7 +104,8 @@ namespace Data
                     zonaEnt.nIdZona = Convert.ToInt32(dreader["nIdZona"]);
                     zonaEnt.sNombre = dreader["sNombre"].ToString();
                     zonaEnt.sRutaImagen = dreader["sRutaImagen"].ToString();
-
+                    zonaEnt.bEstado = Convert.ToBoolean(dreader["bEstado"]);
+                    zonaEnt.sEstado = dreader["sEstado"].ToString();
 
                     lstZonas.Add(zonaEnt);
                 }
@@ -134,36 +123,56 @@ namespace Data
 
 
         //Crear zona
+        //Antes usaba ExecuteNonQuery y devolvia "OK" a ciegas: si el procedimiento
+        //rechazaba el nombre por duplicado, devolvia "" y la pantalla navegaba igual
+        //al listado. Ahora se lee la respuesta 'cod|mensaje' del procedimiento.
         public String CREATE_ZonaData(ZonaEntity objZonaEnt)
         {
+            return fnEjecutarEscritura("03", objZonaEnt.nIdZona, objZonaEnt.sNombre, objZonaEnt.sRutaImagen, true);
+        }
+
+
+        //Actualizar zona
+        public String UPDATE_ZonaData(ZonaEntity objZonaEnt)
+        {
+            return fnEjecutarEscritura("04", objZonaEnt.nIdZona, objZonaEnt.sNombre, objZonaEnt.sRutaImagen, true);
+        }
+
+
+        //Activar / dar de baja (baja logica)
+        public String ESTADO_ZonaData(int nIdZona, bool bEstado)
+        {
+            return fnEjecutarEscritura("05", nIdZona, "", "", bEstado);
+        }
+
+
+        //Las tres escrituras comparten firma y contrato de respuesta.
+        private String fnEjecutarEscritura(string sOpcion, int nIdZona, string sNombre, string sRutaImagen, bool bEstado)
+        {
             String strResultado = "";
-            string sOpcion = "03";
+
             try
             {
                 ConfConexion();
 
-                var conn = new SqlConnection(conf);
-                conn.Open();
-
-                SqlCommand _Command = new SqlCommand("USP_MNT_Zonas", conn);
-
-                _Command.CommandType = CommandType.StoredProcedure;
-                _Command.Parameters.Add(new SqlParameter("@sOpcion", sOpcion));                
-                _Command.Parameters.Add(new SqlParameter("@nIdZona", objZonaEnt.nIdZona));
-                _Command.Parameters.Add(new SqlParameter("@sNombre", objZonaEnt.sNombre));
-                _Command.Parameters.Add(new SqlParameter("@sRutaImagen", objZonaEnt.sRutaImagen));
-                
-
-                if (_Command.ExecuteNonQuery() != 0)
+                using (var conn = new SqlConnection(conf))
                 {
-                    strResultado = "OK";                    
-                }
+                    conn.Open();
 
-                conn.Close();
+                    SqlCommand _Command = new SqlCommand("USP_MNT_Zonas", conn);
+                    _Command.CommandType = CommandType.StoredProcedure;
+                    _Command.Parameters.Add(new SqlParameter("@sOpcion", sOpcion));
+                    _Command.Parameters.Add(new SqlParameter("@nIdZona", nIdZona));
+                    _Command.Parameters.Add(new SqlParameter("@sNombre", sNombre ?? ""));
+                    _Command.Parameters.Add(new SqlParameter("@sRutaImagen", sRutaImagen ?? ""));
+                    _Command.Parameters.Add(new SqlParameter("@bEstado", bEstado));
+
+                    object oResultado = _Command.ExecuteScalar();
+                    strResultado = Convert.ToString(oResultado);
+                }
             }
             catch (Exception ex)
             {
-                strResultado = "";
                 logger.Error(ex);
                 throw;
             }

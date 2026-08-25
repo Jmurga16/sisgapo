@@ -15,7 +15,8 @@
 
         <mat-form-field class="selectEstado" appearance="fill">
             <mat-label>Almacen</mat-label>
-            <mat-select [formControl]="fAlmacen">
+            <mat-select [formControl]="fAlmacen" (selectionChange)="fnListarProductos()">
+                <mat-option [value]="0">Todos</mat-option>
                 <mat-option *ngFor="let opc of listaAlmacenes" [value]="opc.nIdAlmacen">
                     {{opc.sNombreAlmacen}}
                 </mat-option>
@@ -28,7 +29,8 @@
     <div class="col-md-2">
         <mat-form-field class="selectEstado" appearance="fill">
             <mat-label>Categoría</mat-label>
-            <mat-select [formControl]="fCategoria">
+            <mat-select [formControl]="fCategoria" (selectionChange)="fnListarProductos()">
+                <mat-option [value]="0">Todas</mat-option>
                 <mat-option *ngFor="let opc of listaCategorias" [value]="opc.nIdCategoria">
                     {{opc.sNombreCategoria}}
                 </mat-option>
@@ -116,9 +118,9 @@
                 <div class="example-button-row ">
                    
                     <button *ngIf="element.sEstado=='Activo'" mat-raised-button color="warn"
-                        (click)="fnCambiarEstado(element.nIdCatProd,0)">Eliminar</button>
+                        (click)="fnCambiarEstado(element.nIdProducto,0)">Eliminar</button>
                     <button *ngIf="element.sEstado=='Inactivo'" mat-raised-button class="buttonActive"
-                        (click)="fnCambiarEstado(element.nIdCatProd,1)">Activar</button>
+                        (click)="fnCambiarEstado(element.nIdProducto,1)">Activar</button>
                 </div>
 
             </td>

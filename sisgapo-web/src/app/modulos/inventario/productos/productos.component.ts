@@ -21,8 +21,8 @@ export class ProductosComponent implements OnInit {
   nIdUsuario: number;
   listaAlmacenes=[]
   listaCategorias=[]
-  fAlmacen=new FormControl();
-  fCategoria=new FormControl();
+  fAlmacen=new FormControl(0);
+  fCategoria=new FormControl(0);
 
 
   dsProducto: MatTableDataSource<any>;
@@ -108,8 +108,14 @@ export class ProductosComponent implements OnInit {
 
 
   //#region Listar Productos(Tabla)
+  //Los filtros de almacen y categoria viajan al procedimiento (opcion 03).
+  //Antes los dos desplegables estaban enlazados a un FormControl que nadie leia:
+  //elegir un almacen no cambiaba nada en la tabla.
   async fnListarProductos() {
     let pParametro = [];
+
+    pParametro.push(this.fAlmacen.value || 0);
+    pParametro.push(this.fCategoria.value || 0);
 
     await this.inventarioService.fnServProducto('03', pParametro).then(
       (value: any[]) => {
@@ -128,8 +134,8 @@ export class ProductosComponent implements OnInit {
 
   //#region Limpiar Filtros
   fnCleanFilter(){
-    this.fAlmacen.setValue('')
-    this.fCategoria.setValue('')
+    this.fAlmacen.setValue(0)
+    this.fCategoria.setValue(0)
     this.fnListarProductos();
   }
   //#endregion
@@ -156,7 +162,10 @@ export class ProductosComponent implements OnInit {
 
 
   //#region Eliminar/Activar
-  async fnCambiarEstado(nIdCatProd, bEstado) {
+  //Recibe nIdProducto: la opcion 08 hace UPDATE ... WHERE nIdProducto = @nIdProducto.
+  //Antes se le pasaba nIdCatProd, que coincide solo mientras las dos secuencias
+  //de identity vayan sincronizadas. Ver 06-hallazgos.md.
+  async fnCambiarEstado(nIdProducto, bEstado) {
 
     let sTitulo, sRespuesta;
 
@@ -185,7 +194,7 @@ export class ProductosComponent implements OnInit {
 
     let pParametro = [];
 
-    pParametro.push(nIdCatProd);
+    pParametro.push(nIdProducto);
     pParametro.push(bEstado);
 
     await this.inventarioService.fnServProducto('08', pParametro).then(

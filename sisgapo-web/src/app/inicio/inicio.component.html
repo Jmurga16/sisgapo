@@ -1,0 +1,157 @@
+<div class="panel">
+
+    <div class="header-app">
+        <h1>Panel de control</h1>
+        <p class="subtitulo">Estado del inventario a día de hoy</p>
+    </div>
+
+    <!-- Estados de carga y error -->
+    <div *ngIf="bCargando" class="aviso">Cargando información…</div>
+
+    <div *ngIf="bError && !bCargando" class="aviso aviso-error">
+        No se pudo cargar el panel. Comprueba que la API esté levantada.
+    </div>
+
+
+    <ng-container *ngIf="!bCargando && !bError">
+
+        <!-- ============ Tarjetas de resumen ============ -->
+        <div class="tarjetas">
+
+            <mat-card class="tarjeta">
+                <div class="tarjeta-icono"><mat-icon>store</mat-icon></div>
+                <div class="tarjeta-texto">
+                    <span class="tarjeta-valor">{{oResumen.nAlmacenes}}</span>
+                    <span class="tarjeta-etiqueta">Almacenes activos</span>
+                </div>
+            </mat-card>
+
+            <mat-card class="tarjeta">
+                <div class="tarjeta-icono"><mat-icon>inventory_2</mat-icon></div>
+                <div class="tarjeta-texto">
+                    <span class="tarjeta-valor">{{oResumen.nProductos}}</span>
+                    <span class="tarjeta-etiqueta">Productos activos</span>
+                </div>
+            </mat-card>
+
+            <mat-card class="tarjeta">
+                <div class="tarjeta-icono"><mat-icon>payments</mat-icon></div>
+                <div class="tarjeta-texto">
+                    <span class="tarjeta-valor">S/ {{oResumen.nValorInventario | number}}</span>
+                    <span class="tarjeta-etiqueta">Valor del inventario</span>
+                </div>
+            </mat-card>
+
+            <mat-card class="tarjeta" [class.tarjeta-alerta]="oResumen.nPorVencer30 > 0">
+                <div class="tarjeta-icono"><mat-icon>schedule</mat-icon></div>
+                <div class="tarjeta-texto">
+                    <span class="tarjeta-valor">{{oResumen.nPorVencer30}}</span>
+                    <span class="tarjeta-etiqueta">Por vencer en 30 días</span>
+                </div>
+            </mat-card>
+
+        </div>
+
+
+        <!-- ============ Existencias ============ -->
+        <div class="row">
+
+            <div class="col-md-6">
+                <mat-card class="bloque">
+                    <h2>Existencias por almacén</h2>
+
+                    <div *ngFor="let item of lPorAlmacen" class="barra-fila">
+                        <div class="barra-cabecera">
+                            <span class="barra-nombre">{{item.sNombreAlmacen}}</span>
+                            <span class="barra-valor">S/ {{item.nValor | number}}</span>
+                        </div>
+                        <div class="barra-pista">
+                            <div class="barra-relleno" [style.width]="fnAncho(item.nValor, nMaxAlmacen)"></div>
+                        </div>
+                        <div class="barra-pie">
+                            {{item.sNombreZona}} · {{item.nProductos}} productos · {{item.nUnidades | number}} unidades
+                        </div>
+                    </div>
+
+                    <p *ngIf="lPorAlmacen.length === 0" class="vacio">Sin almacenes activos.</p>
+                </mat-card>
+            </div>
+
+            <div class="col-md-6">
+                <mat-card class="bloque">
+                    <h2>Existencias por categoría</h2>
+
+                    <div *ngFor="let item of lPorCategoria" class="barra-fila">
+                        <div class="barra-cabecera">
+                            <span class="barra-nombre">{{item.sNombreCategoria}}</span>
+                            <span class="barra-valor">S/ {{item.nValor | number}}</span>
+                        </div>
+                        <div class="barra-pista">
+                            <div class="barra-relleno barra-alt" [style.width]="fnAncho(item.nValor, nMaxCategoria)"></div>
+                        </div>
+                        <div class="barra-pie">
+                            {{item.nProductos}} productos · {{item.nUnidades | number}} unidades
+                        </div>
+                    </div>
+
+                    <p *ngIf="lPorCategoria.length === 0" class="vacio">Sin categorías activas.</p>
+                </mat-card>
+            </div>
+
+        </div>
+
+
+        <!-- ============ Próximos a vencer ============ -->
+        <mat-card class="bloque">
+            <h2>Próximos a vencer <span class="h2-nota">(90 días)</span></h2>
+
+            <div class="tabla-scroll">
+                <table mat-table [dataSource]="lPorVencer" class="tabla-vencer">
+
+                    <ng-container matColumnDef="sNombreProducto">
+                        <th mat-header-cell *matHeaderCellDef>Producto</th>
+                        <td mat-cell *matCellDef="let item">{{item.sNombreProducto}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="sNombreAlmacen">
+                        <th mat-header-cell *matHeaderCellDef>Almacén</th>
+                        <td mat-cell *matCellDef="let item">{{item.sNombreAlmacen}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="sNombreLote">
+                        <th mat-header-cell *matHeaderCellDef>Lote</th>
+                        <td mat-cell *matCellDef="let item">{{item.sNombreLote}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="nCantidad">
+                        <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+                        <td mat-cell *matCellDef="let item">{{item.nCantidad | number}} {{item.sNombreUM}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="dFechaVenc">
+                        <th mat-header-cell *matHeaderCellDef>Vence</th>
+                        <td mat-cell *matCellDef="let item">{{item.dFechaVenc}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="nDiasRestantes">
+                        <th mat-header-cell *matHeaderCellDef>Días</th>
+                        <td mat-cell *matCellDef="let item">
+                            <span class="pastilla" [ngClass]="fnClaseVencimiento(item.nDiasRestantes)">
+                                {{item.nDiasRestantes}}
+                            </span>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="columnasVencer"></tr>
+                    <tr mat-row *matRowDef="let row; columns: columnasVencer;"></tr>
+                </table>
+            </div>
+
+            <p *ngIf="lPorVencer.length === 0" class="vacio">
+                No hay productos próximos a vencer en los próximos 90 días.
+            </p>
+        </mat-card>
+
+    </ng-container>
+
+</div>

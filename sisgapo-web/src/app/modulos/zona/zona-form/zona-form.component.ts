@@ -54,7 +54,7 @@ export class ZonaFormComponent implements OnInit {
     // Si existe la Zona
     if (params.id) {
       // Definir Titulo
-      this.sTitulo = 'Ver Zona'
+      this.sTitulo = 'Editar Zona'
 
       //Llamar al servicio cargar zona por id
       this.zonaService.getOne(params.id).subscribe(
@@ -82,13 +82,13 @@ export class ZonaFormComponent implements OnInit {
 
 
   //#region Guardar Zona
-  fnSaveNewZona() {
+  //Antes este metodo llamaba siempre a saveZona() (POST -> INSERT) y ademas
+  //borraba el identificador con "delete this.lZona.nIdZona", asi que editar una
+  //zona creaba un duplicado. Y navegaba al listado tanto si guardaba como si
+  //fallaba. Ver 06-hallazgos.md C-03 y C-05.
+  async fnSaveNewZona() {
 
-    //Eliminar datos al guardar :
-    delete this.lZona.nIdZona;
-    //Fin eliminar datos
-
-    //Validar que el campo nombre esté completo
+    //Validar que el campo nombre este completo
     if (this.fNombre.value == '' || this.fNombre.value == undefined) {
       return Swal.fire({
         title: `Complete el campo Nombre.`,
@@ -97,7 +97,7 @@ export class ZonaFormComponent implements OnInit {
       });
     }
 
-    //Validar que el campo ruta esté completo
+    //Validar que el campo ruta este completo
     if (this.fRutaImagen.value == '' || this.fRutaImagen.value == undefined) {
       return Swal.fire({
         title: `Complete el campo Ruta de Imagen.`,
@@ -106,26 +106,57 @@ export class ZonaFormComponent implements OnInit {
       });
     }
 
-    //Validar el formato de la ruta
-    if (!this.fnValidarImagen) {
+    //Validar el formato de la ruta.
+    //Faltaban los parentesis: "if (!this.fnValidarImagen)" evalua la referencia a
+    //la funcion, que siempre es truthy, asi que la validacion nunca se ejecutaba.
+    if (!(await this.fnValidarImagen())) {
       return;
     }
 
     //Obtener los valores del formulario
-    this.lZona.sNombre = this.fNombre.value
-    this.lZona.sRutaImagen = this.fRutaImagen.value
+    const oZona: ZonaData = {
+      nIdZona: this.bEditar ? Number(this.nIdZona) : 0,
+      sNombre: this.fNombre.value,
+      sRutaImagen: this.fRutaImagen.value
+    };
 
-    //Llamar al servicio de Zona    
-    this.zonaService.saveZona(this.lZona)
-      .subscribe(
-        res => {
-          // Despues de Grabar
-          this.router.navigate(['/', 'zonas']);
-        },
-        //Si es error = Botar
-        err => this.router.navigate(['/', 'zonas'])
+    //Alta o edicion segun como se haya entrado a la pantalla
+    const oPeticion = this.bEditar
+      ? this.zonaService.updateZona(oZona)
+      : this.zonaService.saveZona(oZona);
 
-      );
+    oPeticion.subscribe(
+      (res: any) => {
+
+        if (res && res.cod == 1) {
+          Swal.fire({
+            title: res.mensaje,
+            icon: 'success',
+            timer: 3000
+          }).then(() => {
+            this.router.navigate(['/', 'zonas']);
+          });
+        }
+        //Nombre duplicado u otro rechazo del procedimiento: se queda en el
+        //formulario con el motivo a la vista, en vez de navegar en silencio.
+        else {
+          Swal.fire({
+            title: 'No se pudo guardar',
+            text: res ? res.mensaje : 'La operacion no devolvio respuesta.',
+            icon: 'error'
+          });
+        }
+
+      },
+      (err) => {
+        console.error(err);
+        Swal.fire({
+          title: 'No se pudo guardar',
+          text: 'Error de comunicacion con el servidor.',
+          icon: 'error'
+        });
+      }
+    );
 
   }
   //#endregion

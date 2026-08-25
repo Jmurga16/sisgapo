@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "sisgapo-api"
+		},
+		{
+			"path": "sisgapo-web"
+		},
+		{
+			"path": "sisgapo-docs"
+		}
+	],
+	"settings": {}
+}

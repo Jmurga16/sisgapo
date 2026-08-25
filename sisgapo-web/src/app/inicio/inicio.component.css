@@ -1,0 +1,190 @@
+.panel {
+  padding: 1rem 1.5rem 3rem;
+}
+
+.header-app h1 {
+  font-weight: bold;
+  margin-bottom: 0.15rem;
+}
+
+.subtitulo {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.aviso {
+  padding: 1.25rem;
+  color: #6b7280;
+}
+
+.aviso-error {
+  color: #b02a37;
+}
+
+.vacio {
+  color: #6b7280;
+  font-style: italic;
+  margin: 0.5rem 0 0;
+}
+
+/* ---------------- Tarjetas de resumen ---------------- */
+
+.tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tarjeta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+}
+
+.tarjeta-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  background: #eef2ff;
+  color: #4338ca;
+  flex-shrink: 0;
+}
+
+.tarjeta-texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tarjeta-valor {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.tarjeta-etiqueta {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* La tarjeta de vencimientos avisa solo cuando hay algo que avisar */
+.tarjeta-alerta .tarjeta-icono {
+  background: #fff4e5;
+  color: #b45309;
+}
+
+.tarjeta-alerta .tarjeta-valor {
+  color: #b45309;
+}
+
+/* ---------------- Bloques ---------------- */
+
+.bloque {
+  padding: 1.25rem 1.5rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.bloque h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 1.1rem;
+}
+
+.h2-nota {
+  font-weight: 400;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+/* ---------------- Barras ---------------- */
+
+.barra-fila {
+  margin-bottom: 1rem;
+}
+
+.barra-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.barra-nombre {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barra-valor {
+  color: #374151;
+  flex-shrink: 0;
+}
+
+.barra-pista {
+  height: 0.55rem;
+  border-radius: 1rem;
+  background: #f1f2f6;
+  overflow: hidden;
+}
+
+.barra-relleno {
+  height: 100%;
+  border-radius: 1rem;
+  background: #4338ca;
+  transition: width 0.4s ease;
+}
+
+.barra-alt {
+  background: #0d9488;
+}
+
+.barra-pie {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+/* ---------------- Tabla de vencimientos ---------------- */
+
+/* La tabla se desplaza dentro de su bloque; la página no se va de ancho */
+.tabla-scroll {
+  overflow-x: auto;
+}
+
+.tabla-vencer {
+  width: 100%;
+  min-width: 640px;
+}
+
+.pastilla {
+  display: inline-block;
+  min-width: 2.5rem;
+  text-align: center;
+  padding: 0.1rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.venc-critico {
+  background: #fdeaea;
+  color: #b02a37;
+}
+
+.venc-aviso {
+  background: #fff4e5;
+  color: #b45309;
+}
+
+.venc-normal {
+  background: #eef7ee;
+  color: #1e7e34;
+}

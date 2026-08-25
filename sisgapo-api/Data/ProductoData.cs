@@ -163,6 +163,8 @@ namespace Data
                                 prodEnt.nCantidad = Int32.Parse(Convert.ToString(dr["nCantidad"]));
                                 prodEnt.nIdUnidadMedida = Int32.Parse(Convert.ToString(dr["nIdUnidadMedida"]));                                
                                 prodEnt.nPrecio = Int32.Parse(Convert.ToString(dr["nPrecio"]));
+                                prodEnt.sDescripcion = Convert.ToString(dr["sDescripcion"]);
+                                prodEnt.nIdLote = Int32.Parse(Convert.ToString(dr["nIdLote"]));
                                 prodEnt.dFechaFab = Convert.ToString(dr["dFechaFab"]);                                
                                 prodEnt.dFechaVenc = Convert.ToString(dr["dFechaVenc"]);
                                 
@@ -182,30 +184,6 @@ namespace Data
                     case "07":
                     case "08":
 
-                        #region Correo : Cambiar las "XX" por "06" y poner correos
-                        if (genEnt.sOpcion=="XX")
-                        {
-                            string EmailOrigen = "@gmail.com";
-                            string EmailDestino = "";
-                            string Contrasenia = "";
-
-                            string sAsunto = "Producto Nuevo";
-                            string sMensaje = "Un producto nuevo ha sido agregado";
-
-                            MailMessage mailMessage = new MailMessage(EmailOrigen,EmailDestino,sAsunto,sMensaje);
-                                                    
-
-                            using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
-                            {
-                                smtp.Credentials = new NetworkCredential(EmailOrigen, Contrasenia);
-                                smtp.UseDefaultCredentials = false;
-                                smtp.EnableSsl = true;
-                                smtp.Send(mailMessage);
-                                smtp.Dispose();
-                            }
-                            
-                        }
-                        #endregion
 
                         string sResultado = Convert.ToString(oCon.EjecutarEscalar("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro));
                         msj = sResultado;

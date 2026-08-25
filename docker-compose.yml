@@ -1,0 +1,48 @@
+# SISGAPO — entorno de desarrollo local
+#
+#   docker compose up -d          levanta SQL Server y carga el esquema + datos de demo
+#   docker compose down           lo apaga (conserva los datos)
+#   docker compose down -v        lo apaga y borra los datos
+#
+# La API y el frontend se levantan aparte (ver README.md en la raíz).
+
+services:
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sisgapo-db
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:-Sisgapo!Demo2026}"
+      MSSQL_PID: "Express"
+    ports:
+      # 14330 en el host, no 1433: en esta maquina ya hay un SQL Server local
+      # escuchando en el puerto estandar y ganaria el la conexion.
+      - "14330:1433"
+    volumes:
+      - sisgapo-datos:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 20s
+
+  # Contenedor de un solo uso: crea la base y ejecuta sisgapo-docs/sql en orden.
+  # Termina y se queda parado; volver a lanzarlo recarga el esquema y los datos.
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sisgapo-db-init
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:-Sisgapo!Demo2026}"
+    volumes:
+      - ./sisgapo-docs/sql:/sql:ro
+      - ./docker/init-db.sh:/init-db.sh:ro
+    entrypoint: ["/bin/bash", "/init-db.sh"]
+    restart: "no"
+
+volumes:
+  sisgapo-datos:

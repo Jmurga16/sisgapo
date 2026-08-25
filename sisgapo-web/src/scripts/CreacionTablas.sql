@@ -27,17 +27,15 @@ GO
 CREATE TABLE TBL_USUARIO(
     nIdUsuario INT NOT NULL IDENTITY(1,1) PRIMARY KEY ,
     sNombres VARCHAR(MAX),
-	sApellidos VARCHAR(MAX),
-	nTipoDoc INT,
+	  sApellidos VARCHAR(MAX),
+	  nTipoDoc INT,
     FOREIGN KEY (nTipoDoc) REFERENCES TBL_DOCUMENTO(nIdDocumento),
     sNumDoc VARCHAR(15),
-	sSexo VARCHAR(1),
-	nRol INT,
-    FOREIGN KEY (nRol) REFERENCES TBL_ROL(nIdRol),   
-	sDireccion VARCHAR(MAX),
-	nTelefono INT,
-	dFechaNacimiento DATE,
-	bEstado BIT NOT NULL DEFAULT 1
+	  sSexo VARCHAR(1),  
+	  sDireccion VARCHAR(MAX),
+	  nTelefono INT,
+	  dFechaNacimiento DATE,
+	  bEstado BIT NOT NULL DEFAULT 1
 )
 GO
 

@@ -1,0 +1,27 @@
+# ---------- Secretos y configuracion local ----------
+.env
+*.pubxml
+*.pubxml.user
+**/PublishProfiles/
+
+# ---------- Registros ----------
+**/logs/
+
+# ---------- Artefactos de compilacion ----------
+**/bin/
+**/obj/
+**/dist/
+**/node_modules/
+**/out-tsc/
+**/coverage/
+
+# ---------- Herramientas e IDE ----------
+.vs/
+.sonarqube/
+.idea/
+.scannerwork/
+
+# ---------- Copia de respaldo historica ----------
+# 13 MB del proyecto comprimido en 2022. El contenido ya vive en este
+# repositorio; el archivo solo anade peso al clon.
+SISGAPO.7z

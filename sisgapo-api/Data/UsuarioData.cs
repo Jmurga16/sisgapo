@@ -15,22 +15,8 @@ namespace Data
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
         public string ConfConexion()
         {
-
-            //Construir la conexión
-            try
-            {
-                var builder = new ConfigurationBuilder()
-             .SetBasePath(Directory.GetCurrentDirectory())
-             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-
-                IConfiguration configuration = builder.Build();
-                conf = configuration["ConnectionStrings:connectionString"];
-            }
-            catch (Exception e)
-            {
-                logger.Error(e);
-                throw;
-            }
+            //La cadena se resuelve una sola vez por proceso en ConfiguracionBD.
+            conf = ConfiguracionBD.sCadenaConexion;
             return conf;
         }
 

@@ -3,12 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test --code-coverage",
+    "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider ng serve",
+    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider ng build --prod",
+    "test": "cross-env NODE_OPTIONS=--openssl-legacy-provider ng test --code-coverage",
     "lint": "ng lint",
-    "e2e": "ng e2e",
-    "sonar":"sonar-scanner"
+    "sonar": "sonar-scanner"
   },
   "private": true,
   "dependencies": {
@@ -37,9 +36,9 @@
     "@angular/compiler-cli": "~9.1.2",
     "@angular/language-service": "~9.1.2",
     "@types/jasmine": "~3.5.0",
-    "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
     "codelyzer": "^5.1.2",
+    "cross-env": "^7.0.3",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~4.4.1",
@@ -47,7 +46,6 @@
     "karma-coverage-istanbul-reporter": "~2.1.0",
     "karma-jasmine": "~3.0.1",
     "karma-jasmine-html-reporter": "^1.4.2",
-    "protractor": "~5.4.3",
     "sonar-scanner": "^3.1.0",
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",

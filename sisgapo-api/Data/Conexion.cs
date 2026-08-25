@@ -24,26 +24,25 @@ namespace Data
 
         #region Conexion
         public Conexion(Int32 idDatabase)
-        {            
+        {
             try
             {
-                if (idDatabase == 1)
+                //Solo existe una base de datos. Antes, cualquier otro valor dejaba la
+                //cadena nula en silencio y el error aparecía mucho después.
+                if (idDatabase != 1)
                 {
-                    var builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-
-                    IConfiguration configuration = builder.Build();
-                    oSqlConnIN = configuration["ConnectionStrings:connectionString"];
+                    throw new ArgumentOutOfRangeException(nameof(idDatabase),
+                        "SISGAPO solo tiene una base de datos configurada (idDatabase = 1).");
                 }
-               
+
+                oSqlConnIN = ConfiguracionBD.sCadenaConexion;
             }
             catch (Exception e)
             {
                 logger.Error(e);
                 throw;
             }
-            
+
         }
         #endregion
         

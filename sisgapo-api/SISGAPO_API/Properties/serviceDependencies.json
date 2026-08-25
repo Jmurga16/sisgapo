@@ -3,6 +3,10 @@
     "mssql1": {
       "type": "mssql",
       "connectionId": "connectionString"
+    },
+    "mssql2": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:connectionString"
     }
   }
 }

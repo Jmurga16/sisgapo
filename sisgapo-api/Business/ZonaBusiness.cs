@@ -28,6 +28,16 @@ namespace Business
             return zonaData.CREATE_ZonaData(objZonasEnt);
         }
 
+        public String UPDATE_ZonaBusiness(ZonaEntity objZonasEnt)
+        {
+            return zonaData.UPDATE_ZonaData(objZonasEnt);
+        }
+
+        public String ESTADO_ZonaBusiness(int nIdZona, bool bEstado)
+        {
+            return zonaData.ESTADO_ZonaData(nIdZona, bEstado);
+        }
+
     
     }
 }

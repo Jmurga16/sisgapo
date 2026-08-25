@@ -1,4 +1,0 @@
-{
-    "appService.defaultWebAppToDeploy": "/subscriptions/d8e34094-19be-42b4-a540-216e309cc7cc/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/SISGAPOFrontEnd",
-    "appService.deploySubpath": "dist\\SISGAPO-Front"
-}

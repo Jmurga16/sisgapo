@@ -45,12 +45,14 @@ namespace SISGAPO_API.Controllers
             {
                 try
                 {
-                    string[] listaRes;
-
                     string sResultado = Convert.ToString(objInventario.BusinessAlmacen(genEnt));
-                    listaRes = sResultado.Split('|');
+                    string[] listaRes = (sResultado ?? "").Split('|');
 
-                    return Ok(new { cod = listaRes[0], mensaje = listaRes[1] });
+                    return Ok(new
+                    {
+                        cod = listaRes[0],
+                        mensaje = listaRes.Length > 1 ? listaRes[1] : ""
+                    });
                 }
                 catch (Exception e)
                 {
@@ -63,7 +65,10 @@ namespace SISGAPO_API.Controllers
 
             else
             {
-                return null;
+                //Antes esto era 'return null', que ASP.NET Core traduce a 204 No Content
+                //con cuerpo vacio: el frontend recibia null y fallaba al leer sus
+                //propiedades, sin mensaje para el usuario. Ver 06-hallazgos.md C-08.
+                return BadRequest(new { cod = "0", mensaje = $"Opcion no soportada: {genEnt.sOpcion}" });
             }
 
         }

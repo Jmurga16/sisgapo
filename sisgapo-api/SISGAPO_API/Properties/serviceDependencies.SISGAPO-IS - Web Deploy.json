@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "mssql2": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/servidorsqlsan/databases/DB_SISGAPO",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:connectionString",
+      "secretStore": "AzureAppSettings"
+    }
+  }
+}

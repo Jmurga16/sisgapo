@@ -1,75 +1,139 @@
-﻿using Business;
+using Business;
 using Entity;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SISGAPO_API.Controllers
 {
+    /// <summary>
+    /// Único controller REST del sistema; el resto usa el patrón sOpcion/pParametro.
+    ///
+    /// Las escrituras devuelven { cod, mensaje }, igual que los demás módulos.
+    /// Antes CREATE_Zona devolvía una cadena suelta y no existían la actualización
+    /// ni la baja: editar una zona desde la pantalla creaba un duplicado.
+    /// Ver 06-hallazgos.md §C-03.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class ZonaController : Controller
     {
         private readonly ZonaBusiness objZonas = new ZonaBusiness();
-        List<ZonaEntity> lstZonas = new List<ZonaEntity>();
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
-        string strZona = "";
-       
 
-        //Obtener Todos los zonas
+        //Obtener todas las zonas
         [HttpGet]
         public List<ZonaEntity> LIS_Zonas()
         {
-           
             try
             {
-                lstZonas = objZonas.LIS_ZonaBusiness();
-
+                return objZonas.LIS_ZonaBusiness();
             }
             catch (Exception e)
             {
                 logger.Error(e);
                 throw;
             }
-            return lstZonas;
         }
 
-        //Obtener uno para editar
+        //Obtener una para editar
         [Route("editar/{id}")]
         [HttpGet]
         public List<ZonaEntity> LIS_ZonaUnico(int id)
-        {            
+        {
             try
             {
-                lstZonas = objZonas.LIS_ZonaUnicoBusiness(id);
-
+                return objZonas.LIS_ZonaUnicoBusiness(id);
             }
             catch (Exception e)
             {
                 logger.Error(e);
                 throw;
             }
-            return lstZonas;
         }
 
-        //Crear Zonas
+        //Crear zona
         [HttpPost]
-        public String CREATE_Zona(ZonaEntity objZonaEnt)
+        public IActionResult CREATE_Zona(ZonaEntity objZonaEnt)
         {
-            
             try
             {
-                strZona = objZonas.CREATE_ZonaBusiness(objZonaEnt);
+                if (String.IsNullOrWhiteSpace(objZonaEnt?.sNombre))
+                {
+                    return BadRequest(new { cod = "0", mensaje = "El nombre de la zona es obligatorio." });
+                }
+
+                return Ok(fnRespuesta(objZonas.CREATE_ZonaBusiness(objZonaEnt)));
             }
             catch (Exception e)
             {
                 logger.Error(e);
                 throw;
             }
-            return strZona;
+        }
+
+        //Actualizar zona
+        [HttpPut]
+        public IActionResult UPDATE_Zona(ZonaEntity objZonaEnt)
+        {
+            try
+            {
+                if (objZonaEnt == null || objZonaEnt.nIdZona <= 0)
+                {
+                    return BadRequest(new { cod = "0", mensaje = "Falta el identificador de la zona." });
+                }
+
+                if (String.IsNullOrWhiteSpace(objZonaEnt.sNombre))
+                {
+                    return BadRequest(new { cod = "0", mensaje = "El nombre de la zona es obligatorio." });
+                }
+
+                return Ok(fnRespuesta(objZonas.UPDATE_ZonaBusiness(objZonaEnt)));
+            }
+            catch (Exception e)
+            {
+                logger.Error(e);
+                throw;
+            }
+        }
+
+        //Activar / dar de baja (baja lógica)
+        [Route("estado/{id}/{estado}")]
+        [HttpPut]
+        public IActionResult ESTADO_Zona(int id, bool estado)
+        {
+            try
+            {
+                if (id <= 0)
+                {
+                    return BadRequest(new { cod = "0", mensaje = "Falta el identificador de la zona." });
+                }
+
+                return Ok(fnRespuesta(objZonas.ESTADO_ZonaBusiness(id, estado)));
+            }
+            catch (Exception e)
+            {
+                logger.Error(e);
+                throw;
+            }
+        }
+
+        //El procedimiento responde "cod|mensaje", igual que el resto de módulos.
+        private static object fnRespuesta(string sResultado)
+        {
+            if (String.IsNullOrWhiteSpace(sResultado))
+            {
+                return new { cod = "0", mensaje = "La operación no devolvió respuesta." };
+            }
+
+            string[] arPartes = sResultado.Split('|');
+
+            return new
+            {
+                cod = arPartes[0],
+                mensaje = arPartes.Length > 1 ? arPartes[1] : ""
+            };
         }
     }
 }

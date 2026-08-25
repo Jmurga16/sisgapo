@@ -31,6 +31,7 @@ export class ProductosModalComponent implements OnInit {
  
   nIdUsuario: number;
   nIdCatProd: number;
+  nIdProducto: number;
   formProducto: FormGroup
   sAccionModal: string;
 
@@ -122,10 +123,18 @@ export class ProductosModalComponent implements OnInit {
         this.formProducto.get("nCantidad").setValue(value[0].nCantidad)
         //Nombre de nPrecio
         this.formProducto.get("nPrecio").setValue(value[0].nPrecio)
-        //Nombre de dFechaFab
-        this.formProducto.get("dFechaFab").setValue(value[0].dFechaFabPicker)
-        //Nombre de dFechaVenc
-        this.formProducto.get("dFechaVenc").setValue(value[0].dFechaVencPicker)
+        //Identificador del producto: es el que necesita la edicion (posicion 10),
+        //no el nIdCatProd. Ver 06-hallazgos.md C-02.
+        this.nIdProducto = value[0].nIdProducto
+
+        //Fechas: el SP las devuelve como 'YYYY-MM-DD'. El datepicker necesita un
+        //objeto Date, y las variables dFechaFab/dFechaVenc deben quedar cargadas
+        //para que al guardar sin tocar el calendario no se envien vacias.
+        this.dFechaFab = value[0].dFechaFab
+        this.dFechaVenc = value[0].dFechaVenc
+        this.formProducto.get("dFechaFab").setValue(this.fnTextoAFecha(value[0].dFechaFab))
+        this.formProducto.get("dFechaVenc").setValue(this.fnTextoAFecha(value[0].dFechaVenc))
+
         //Nombre de sDescripcion
         this.formProducto.get("sDescripcion").setValue(value[0].sDescripcion)
       },
@@ -221,7 +230,14 @@ export class ProductosModalComponent implements OnInit {
     pParametro.push(this.dFechaFab);
     pParametro.push(this.dFechaVenc);
     pParametro.push(this.formProducto.get("sDescripcion").value);
-    pParametro.push(this.formProducto.get("nIdCatProd").value);
+
+    //Solo en edicion: 10 -> nIdProducto, 11 -> nIdCatProd. Antes se enviaba
+    //nIdCatProd en la posicion 10 y la 11 no llegaba, asi que el procedimiento
+    //no podia mover el producto de almacen ni cambiar sus fechas (C-02).
+    if (pOpcion === '07') {
+      pParametro.push(this.nIdProducto);
+      pParametro.push(this.nIdCatProd);
+    }
 
     //Llamar al servicio de Insertar
     await this.inventarioService.fnServProducto(pOpcion, pParametro).then(
@@ -230,11 +246,20 @@ export class ProductosModalComponent implements OnInit {
         //Si se registra con exito
         if (value.cod == 1) {
           Swal.fire({
-            title: `Se registró con éxito`,
+            title: value.mensaje,
             icon: 'success',
             timer: 3500
           }).then(() => {
             this.fnCerrarModal(1);
+          });
+        }
+        //El procedimiento puede responder '0|<motivo>'. Antes ese caso no se
+        //trataba: el modal se quedaba quieto y el usuario no sabia que habia pasado.
+        else {
+          Swal.fire({
+            title: 'No se pudo guardar',
+            text: value.mensaje,
+            icon: 'error'
           });
         }
 
@@ -244,6 +269,19 @@ export class ProductosModalComponent implements OnInit {
         console.log(error);
       }
     );
+  }
+  //#endregion
+
+
+  //#region Texto ISO a Date
+  //'YYYY-MM-DD' -> Date local. Se construye por partes a proposito: new Date(cadena)
+  //la interpreta como UTC y en zonas negativas devuelve el dia anterior.
+  fnTextoAFecha(sFecha: string): Date {
+    if (!sFecha) {
+      return null;
+    }
+    const arPartes = sFecha.substring(0, 10).split('-');
+    return new Date(Number(arPartes[0]), Number(arPartes[1]) - 1, Number(arPartes[2]));
   }
   //#endregion
 

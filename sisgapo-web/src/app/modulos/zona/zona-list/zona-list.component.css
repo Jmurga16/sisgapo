@@ -39,3 +39,23 @@
     text-align: center;
     justify-content: center;
 }
+/* Estado de la zona: la baja logica tiene que verse en el listado */
+.badge-estado {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #e6f4ea;
+  color: #1e7e34;
+}
+
+.badge-inactivo {
+  background: #fdeaea;
+  color: #b02a37;
+}
+
+.zona-inactiva img {
+  filter: grayscale(1);
+  opacity: 0.6;
+}

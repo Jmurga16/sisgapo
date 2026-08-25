@@ -12,5 +12,7 @@ namespace Entity
         public int nIdZona { get; set; }
         public string sNombre { get; set; }
         public string sRutaImagen { get; set; }
+        public bool bEstado { get; set; }
+        public string sEstado { get; set; }
     }
 }
