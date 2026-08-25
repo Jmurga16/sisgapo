@@ -53,31 +53,38 @@ INSERT INTO TBL_USUARIO
     (sNombres, sApellidos, nTipoDoc, sNumDoc, sSexo, nRol, sDireccion, nTelefono, dFechaNacimiento, bEstado)
 VALUES
     ('Administrador', 'del Sistema', 1, '80808080', 'M', 1, 'Av. Principal 100, Lima',  989898989, '1990-01-01', 1),
+    ('Jose',    'M',     1, '70809586', 'M', 2, 'Calle Salaverry 101, Junín', 912654789, '1996-06-06', 1),
     ('Alex',    'Quispe Cruz',       1, '70807080', 'M', 2, 'Calle Salaverry 1, Junín', 987654321, '1997-05-07', 1),
     ('María',   'Ramírez Soto',      1, '45129876', 'F', 2, 'Jr. Huaylas 220, Áncash',  912345678, '1992-11-23', 1),
     ('Carlos',  'Mendoza Ríos',      1, '41235678', 'M', 2, 'Av. Cusco 450, Cusco',     998877665, '1988-03-15', 1),
     ('Lucía',   'Fernández Paz',     1, '46781234', 'F', 3, 'Jr. Amazonas 78, Lima',    955443322, '1999-07-30', 1),
-    ('Jorge',   'Salazar Vega',      2, 'CE998877', 'M', 3, 'Av. Tarapoto 12, Moyobamba', 944556677, '1995-02-18', 0);  -- inactivo, para probar el filtro
+    ('Jorge',   'Salazar Vega',      2, 'CE998877', 'M', 3, 'Av. Tarapoto 12, Moyobamba', 944556677, '1995-02-18', 0);  -- inactivo
 GO
 
 -- Credenciales de demostración. Contraseña de todos: 123456
 INSERT INTO TBL_LOGIN (nIdUsuario, sNombreUsuario, sContrasenia) VALUES
     (1, 'admin',           '123456'),
-    (2, 'alex.quispe',     '123456'),
-    (3, 'maria.ramirez',   '123456'),
-    (4, 'carlos.mendoza',  '123456'),
-    (5, 'lucia.fernandez', '123456'),
-    (6, 'jorge.salazar',   '123456');
+    (2, 'jose.m',          '123456'),
+    (3, 'alex.quispe',     '123456'),
+    (4, 'maria.ramirez',   '123456'),
+    (5, 'carlos.mendoza',  '123456'),
+    (6, 'lucia.fernandez', '123456'),
+    (7, 'jorge.salazar',   '123456');
 GO
 
 /* ---------------------------- ALMACENES ---------------------------- */
 
+-- nIdSupervisor apunta a TBL_USUARIO y solo admite usuarios con nRol = 2.
+-- El reparto es deliberado: cada supervisor tiene al menos un almacén, uno tiene
+-- dos, y el inactivo pertenece a alguien —así el listado cubre los tres casos que
+-- interesa probar. Si añades o quitas un usuario más arriba, revisa estos ids:
+-- al insertar una fila en medio, los IDENTITY de todo lo que sigue se desplazan.
 INSERT INTO TBL_ALMACEN (sNombre, sDireccion, nIdSupervisor, nIdZona, bEstado) VALUES
-    ('Almacén Central Satipo',  'Av. Marginal 101, Satipo',      2, 1, 1),
-    ('Almacén Norte Huaraz',    'Jr. Huaylas 101, Huaraz',       3, 2, 1),
-    ('Almacén Lima Callao',     'Av. Argentina 3200, Callao',    3, 3, 1),
-    ('Almacén Cusco Valle',     'Carretera Urubamba km 12',      4, 4, 1),
-    ('Almacén Tarapoto',        'Jr. Lima 550, Tarapoto',        4, 5, 0);  -- inactivo
+    ('Almacén Central Satipo',  'Av. Marginal 101, Satipo',      2, 1, 1),  -- Jose Murga
+    ('Almacén Norte Huaraz',    'Jr. Huaylas 101, Huaraz',       3, 2, 1),  -- Alex Quispe
+    ('Almacén Lima Callao',     'Av. Argentina 3200, Callao',    4, 3, 1),  -- María Ramírez
+    ('Almacén Cusco Valle',     'Carretera Urubamba km 12',      5, 4, 1),  -- Carlos Mendoza
+    ('Almacén Tarapoto',        'Jr. Lima 550, Tarapoto',        5, 5, 0);  -- Carlos Mendoza, inactivo
 GO
 
 /* ---------------------------- INVENTARIO ---------------------------- */

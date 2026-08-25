@@ -72,8 +72,8 @@ Studio o SSMS. No incluyen `USE`, así que basta con seleccionar la base correct
 TBL_DOCUMENTO      3
 TBL_ROL            3
 TBL_ZONA           5
-TBL_USUARIO        6
-TBL_LOGIN          6
+TBL_USUARIO        7
+TBL_LOGIN          7
 TBL_ALMACEN        5
 TBL_CATEGORIA      4
 TBL_UNIDADMEDIDA   5
@@ -87,9 +87,9 @@ Prueba de humo de los stored procedures, una vez cargado todo:
 
 ```sql
 EXEC USP_MNT_Login     @sNombreUsuario = 'admin', @sContrasenia = '123456';  -- 1 fila, nIdRol = 1
-EXEC USP_MNT_Usuarios  @sOpcion = '01', @pParametro = '';                    -- 6 usuarios
+EXEC USP_MNT_Usuarios  @sOpcion = '01', @pParametro = '';                    -- 7 usuarios
 EXEC USP_MNT_Almacenes @sOpcion = '01', @pParametro = '';                    -- 5 almacenes
-EXEC USP_MNT_Almacenes @sOpcion = '04', @pParametro = '';                    -- 3 supervisores
+EXEC USP_MNT_Almacenes @sOpcion = '04', @pParametro = '';                    -- 4 supervisores
 EXEC USP_MNT_Categorias @sOpcion = '01', @pParametro = '';                   -- 4 categorías
 EXEC USP_MNT_Productos @sOpcion = '03', @pParametro = '';                    -- 12 productos
 EXEC USP_MNT_Zonas     @sOpcion = '01', @nIdZona = 0, @sNombre = '', @sRutaImagen = '';  -- 5 zonas
@@ -106,9 +106,10 @@ original.
 | Usuario | Rol | Para probar |
 |---|---|---|
 | `admin` | Administrador | Acceso completo |
-| `alex.quispe` | Supervisor | Almacén Central Satipo |
-| `maria.ramirez` | Supervisor | Dos almacenes asignados |
-| `carlos.mendoza` | Supervisor | Incluye un almacén inactivo |
+| `jose.m` | Supervisor | Almacén Central Satipo |
+| `alex.quispe` | Supervisor | Almacén Norte Huaraz |
+| `maria.ramirez` | Supervisor | Almacén Lima Callao |
+| `carlos.mendoza` | Supervisor | Dos almacenes, uno de ellos inactivo |
 | `lucia.fernandez` | Asistente | Rol sin casos de uso definidos |
 | `jorge.salazar` | Asistente | **Usuario inactivo** — verifica el filtro de estado |
 
