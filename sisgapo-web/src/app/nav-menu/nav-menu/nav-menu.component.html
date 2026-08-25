@@ -1,0 +1,51 @@
+<div class="example-container" [class.example-is-mobile]="mobileQuery.matches" *ngIf="Rol>0">
+    <mat-toolbar color="primary" class="example-toolbar">
+        <button mat-icon-button (click)="snav.toggle()">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <h1 class="example-app-name">SISGAPO</h1>
+        
+        <a class="btnCerrarSesion" routerLink="/login" (click)="fnClean()">Cerrar Sesión</a>
+    </mat-toolbar>
+
+    <mat-sidenav-container class="example-sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 56 : 0" >
+        <mat-sidenav #snav [mode]="mobileQuery.matches ? 'over' : 'side'" [fixedInViewport]="mobileQuery.matches"
+            fixedTopGap="56">
+            <mat-nav-list>
+
+                <div *ngFor="let nav of listaNav; let i = index">
+                    <mat-list-item (click)="nav.subMenu>0  ? fnMostrar(i) : fnRuteo(nav.route)" class="parent">
+                        <span class="full-width">{{nav.name}}</span>
+                        <mat-icon mat-list-icon>{{nav.icon}}</mat-icon>
+                        <mat-icon class="menu-button" [ngClass]="{rotated : nav.mostrar}" *ngIf="nav.subMenu>0">
+                            expand_more</mat-icon>
+                    </mat-list-item>
+
+                    <div class="submenu" [ngClass]="{expanded : nav.mostrar }" *ngIf="nav.mostrar">
+                        <div *ngFor="let sub of listaSubNav">
+                            <div *ngIf="nav.id==sub.idPadre">
+                                <mat-list-item (click)="fnRuteo(sub.route)" class="parent">
+                                    <span class="full-width">{{sub.name}}</span>
+
+                                    <mat-icon mat-list-icon>{{sub.icon}}</mat-icon>
+                                </mat-list-item>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </mat-nav-list>
+        </mat-sidenav>
+
+        <mat-sidenav-content>
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+
+
+</div>
+
+<div *ngIf="Rol==0">
+    <app-login  (logeado)="fnSetEvent($event)" ></app-login>
+</div>

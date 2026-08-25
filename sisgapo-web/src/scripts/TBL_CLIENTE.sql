@@ -1,0 +1,12 @@
+USE DB_SISGAPO;
+GO
+
+CREATE TABLE TBL_CLIENTE(
+   nIdCliente INT NOT NULL IDENTITY(1,1) PRIMARY KEY ,
+   sNombre VARCHAR(100),
+   sEmail VARCHAR(100),
+   nTelefono INT,
+   sDireccion VARCHAR(100),
+   sDescripcion VARCHAR(100),
+)
+GO

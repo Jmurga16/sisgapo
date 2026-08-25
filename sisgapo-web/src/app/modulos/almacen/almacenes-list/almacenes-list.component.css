@@ -1,0 +1,70 @@
+/*Titulo*/
+
+table {
+    width: 100%;
+}
+
+.header-app {
+    text-align: center;
+}
+
+/*Filtro*/
+
+.filtros {
+    display        : flex;
+    flex-direction : row;
+    flex-wrap      : wrap;
+    justify-content: center;
+}
+
+/*Inputs*/
+
+.inputNombre {
+    width       : 90%;    
+    padding-top: 14px;
+    margin-right: 1rem;
+}
+
+.inputAsignatura {
+    width       : 90%;    
+    padding-top: 14px;
+    margin-right: 1rem;
+}
+
+.selectStock {
+    margin-right: 1rem;
+}
+
+
+
+/*Columnas de la tabla*/
+
+.clsColumnaId{
+    width: 12.5%;
+}
+
+.clsColumnaZona{
+    width: 30%;
+}
+
+.clsColumnaAcciones{
+    width: 15%;
+}
+
+/*Botones*/
+
+.botones {
+    margin-left: 1rem;
+    margin-top : 1.2rem;
+    float      : right;
+}
+.buttonActive{
+    background-color: forestgreen;
+    color: white;
+}
+
+.example-button-row button,
+.example-button-row a {
+    margin-right: 0.5rem;
+}
+
