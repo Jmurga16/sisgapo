@@ -1,24 +1,101 @@
-﻿using Microsoft.ApplicationBlocks.Data;
-using Microsoft.Extensions.Configuration;
-using NLog;
+﻿using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 
 namespace Data
 {
+    /// <summary>
+    /// Acceso a los procedimientos almacenados.
+    ///
+    /// Reescrita en 2026. La versión anterior tenía dos problemas de rendimiento
+    /// y uno de mantenimiento:
+    ///
+    /// [1] Cada escritura hacía DOS viajes a la base de datos. Antes de ejecutar
+    ///     el procedimiento, llamaba a `ObtenerParametros`, que ejecutaba el
+    ///     procedimiento de sistema no documentado `sp_procedure_params_rowset`
+    ///     para descubrir la firma en tiempo de ejecución. Sin caché: en cada
+    ///     petición, otra vez. Ahora la firma está declarada abajo, que es
+    ///     información que se conoce en tiempo de compilación.
+    ///
+    /// [2] El método `f_obtenerSQLType` existía solo para traducir los nombres de
+    ///     tipo que devolvía ese procedimiento, y lanzaba una excepción con
+    ///     cualquier tipo que no contemplara (`date`, `datetime2`, `money`…).
+    ///
+    /// [3] Dependía de `Microsoft.ApplicationBlocks.Data` (SqlHelper, del Data
+    ///     Access Application Block de ~2005), un ensamblado solo para .NET
+    ///     Framework que el compilador avisaba con NU1701 y que no recibe
+    ///     parches desde hace dos décadas. Al ser el único consumidor, quitarlo
+    ///     de aquí lo saca del proyecto entero.
+    ///
+    /// El resultado son 253 líneas menos las ~120 del descubrimiento de firmas,
+    /// ADO.NET plano, y la mitad de llamadas a la base en cada escritura.
+    /// Ver 06-hallazgos.md §D-05 y §S-06.
+    /// </summary>
     public class Conexion
     {
 
         #region Variables
         private readonly String oSqlConnIN;
-        private readonly SqlTransaction sqlTransaction = null;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
+        #endregion
+
+
+        #region Firmas de los procedimientos
+
+        /// <summary>
+        /// Definición de un parámetro: nombre, tipo y longitud (-1 = MAX).
+        /// </summary>
+        private readonly struct DefParametro
+        {
+            public DefParametro(string sNombre, SqlDbType tTipo, int nTamanio)
+            {
+                this.sNombre = sNombre;
+                this.tTipo = tTipo;
+                this.nTamanio = nTamanio;
+            }
+
+            public string sNombre { get; }
+            public SqlDbType tTipo { get; }
+            public int nTamanio { get; }
+        }
+
+        /// <summary>
+        /// Firma de cada procedimiento al que se llama desde aquí. Sustituye al
+        /// descubrimiento en tiempo de ejecución.
+        ///
+        /// Cinco de los seis comparten el contrato sOpcion/pParametro; `USP_MNT_Login`
+        /// es la excepción. `USP_MNT_Zonas` no aparece porque `ZonaData` construye
+        /// sus propios SqlCommand: es el módulo REST.
+        ///
+        /// Al añadir un procedimiento nuevo hay que registrarlo aquí. Si no, la
+        /// llamada falla con un mensaje explícito en vez de con un error de SQL.
+        /// </summary>
+        private static readonly Dictionary<string, DefParametro[]> dicFirmas =
+            new Dictionary<string, DefParametro[]>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["USP_MNT_Almacenes"] = FirmaOpcionParametro(),
+                ["USP_MNT_Categorias"] = FirmaOpcionParametro(),
+                ["USP_MNT_Productos"] = FirmaOpcionParametro(),
+                ["USP_MNT_Usuarios"] = FirmaOpcionParametro(),
+                ["USP_MNT_Panel"] = FirmaOpcionParametro(),
+                ["USP_MNT_Login"] = new[]
+                {
+                    new DefParametro("@sNombreUsuario", SqlDbType.VarChar, 100),
+                    new DefParametro("@sContrasenia",   SqlDbType.VarChar, 100)
+                }
+            };
+
+        private static DefParametro[] FirmaOpcionParametro()
+        {
+            return new[]
+            {
+                new DefParametro("@sOpcion",    SqlDbType.VarChar, 2),
+                new DefParametro("@pParametro", SqlDbType.VarChar, -1)
+            };
+        }
+
         #endregion
 
 
@@ -45,206 +122,112 @@ namespace Data
 
         }
         #endregion
-        
+
 
         #region EjecutarDataReader
+        /// <summary>
+        /// Ejecuta un procedimiento de lectura. El SqlDataReader devuelto cierra su
+        /// propia conexión al liberarse (CommandBehavior.CloseConnection), así que
+        /// quien llama debe envolverlo en un using — como ya hacen todas las clases
+        /// *Data.
+        /// </summary>
         public SqlDataReader ejecutarDataReader(String sProcedure, params object[] valores)
         {
+            SqlConnection conn = null;
+
             try
             {
-                return SqlHelper.ExecuteReader(this.oSqlConnIN, sProcedure, valores);
+                conn = new SqlConnection(oSqlConnIN);
+
+                SqlCommand oCmd = new SqlCommand(sProcedure, conn);
+                oCmd.CommandType = CommandType.StoredProcedure;
+                fnAgregarParametros(oCmd, sProcedure, valores);
+
+                conn.Open();
+
+                return oCmd.ExecuteReader(CommandBehavior.CloseConnection);
             }
             catch (Exception ex)
             {
-                Console.Write("Error: " + ex.Message);
+                //Si algo falla antes de devolver el reader, la conexión no tiene quien
+                //la cierre: hay que soltarla aquí o se queda ocupando el pool.
+                if (conn != null)
+                {
+                    conn.Dispose();
+                }
+
+                logger.Error(ex, "Error ejecutando {0}", sProcedure);
                 throw;
             }
         }
         #endregion
 
 
-        #region EjecutarEscalar       
+        #region EjecutarEscalar
+        /// <summary>
+        /// Ejecuta un procedimiento de escritura y devuelve su primer valor, que en
+        /// este sistema es siempre la cadena 'cod|mensaje'.
+        /// </summary>
         public String EjecutarEscalar(String sProcedure, params object[] valores)
         {
-            SqlParameter[] arParms = new SqlParameter[valores.Length];
-
- 
-            DataSet ds = ObtenerParametros(sProcedure);
-
-            if (ds.Tables.Count == 0)
-                return null;
-            else if (ds.Tables.Count > 0)
+            try
             {
-                DataTable dt = ds.Tables[0]; //Estructura del Stored           
-                Int32 i = 0;
-                foreach (DataRow dr in dt.Rows)
+                using (SqlConnection conn = new SqlConnection(oSqlConnIN))
                 {
-                    //Omite el parámetro de retorno del procedimiento
-                    if (!dr["Parameter_name"].Equals("@RETURN_VALUE"))
-                    {
-                        arParms[i] = new SqlParameter(dr["Parameter_name"].ToString(), f_obtenerSQLType(dr["Type_name"].ToString()));
-                        arParms[i].Value = valores[i];
-                        i++;
-                    }
-                }
-                if (i != valores.Length)
-                    throw new ArgumentException("La cantidad de parámetros ingresados no coincide con las del procedimiento.");
-            }
+                    SqlCommand oCmd = new SqlCommand(sProcedure, conn);
+                    oCmd.CommandType = CommandType.StoredProcedure;
+                    fnAgregarParametros(oCmd, sProcedure, valores);
 
-            //Se verifica si existe una Transaccion de BD activa
-            String sValor;
-            if (sqlTransaction != null)
-            {
-                sValor = SqlHelper.ExecuteScalar
-                    (
-                    sqlTransaction,
-                    CommandType.StoredProcedure,
-                    sProcedure,
-                    arParms
-                    ).ToString();
+                    conn.Open();
+
+                    object oResultado = oCmd.ExecuteScalar();
+
+                    return oResultado == null || oResultado == DBNull.Value
+                        ? null
+                        : Convert.ToString(oResultado);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                sValor = SqlHelper.ExecuteScalar
-                    (
-                    this.oSqlConnIN,
-                    CommandType.StoredProcedure,
-                    sProcedure,
-                    arParms
-                    ).ToString();
+                logger.Error(ex, "Error ejecutando {0}", sProcedure);
+                throw;
             }
-            return sValor;
         }
         #endregion
 
 
-        #region Metodos: Obtener Parametros / Obtener Tipo de dato SQL
-        private DataSet ObtenerParametros(string vProcedure)
+        #region Armado de parametros
+        private static void fnAgregarParametros(SqlCommand oCmd, string sProcedure, object[] valores)
         {
-            object vSquema = DBNull.Value;
-            if (vProcedure.Contains("."))
+            if (!dicFirmas.TryGetValue(sProcedure, out DefParametro[] arFirma))
             {
-                vSquema = vProcedure.Substring(0, vProcedure.IndexOf('.'));
-                vProcedure = vProcedure.Substring(vProcedure.IndexOf('.') + 1);
+                throw new ArgumentException(
+                    $"El procedimiento '{sProcedure}' no está registrado en Conexion.dicFirmas. " +
+                    "Añade su firma antes de llamarlo.", nameof(sProcedure));
             }
 
-            SqlParameter[] sqlParameters = { new SqlParameter("@procedure_name", SqlDbType.NChar, 256),
-                                      new SqlParameter("@group_number", SqlDbType.Int, 4),
-                                      new SqlParameter("@procedure_schema", SqlDbType.NChar, 256),
-                                      new SqlParameter("@parameter_name", SqlDbType.NChar, 256) };
+            int nRecibidos = valores == null ? 0 : valores.Length;
 
-            sqlParameters[0].Value = vProcedure;
-            sqlParameters[1].Value = DBNull.Value;
-            sqlParameters[2].Value = vSquema;
-            sqlParameters[3].Value = DBNull.Value;
-
-            DataSet ds;
-
-
-
-            if (sqlTransaction != null)
+            if (nRecibidos != arFirma.Length)
             {
-
-
-                ds = SqlHelper.ExecuteDataset(
-                    sqlTransaction,
-                    CommandType.StoredProcedure,
-                    "sp_procedure_params_rowset",
-                    sqlParameters
-                    );
-
+                throw new ArgumentException(
+                    $"'{sProcedure}' espera {arFirma.Length} parámetros y recibió {nRecibidos}.",
+                    nameof(valores));
             }
-            else
+
+            for (int i = 0; i < arFirma.Length; i++)
             {
-                ds = SqlHelper.ExecuteDataset
-                   (
-                   oSqlConnIN,
-                   CommandType.StoredProcedure,
-                   "sp_procedure_params_rowset",
-                   sqlParameters
-                   );
-            }
-            return ds;
+                DefParametro oDef = arFirma[i];
 
+                SqlParameter oParam = oDef.nTamanio == 0
+                    ? new SqlParameter(oDef.sNombre, oDef.tTipo)
+                    : new SqlParameter(oDef.sNombre, oDef.tTipo, oDef.nTamanio);
+
+                oParam.Value = valores[i] ?? (object)DBNull.Value;
+
+                oCmd.Parameters.Add(oParam);
+            }
         }
-
-        private static SqlDbType f_obtenerSQLType(string sNombreTipo)
-        {
-            SqlDbType tTipo;
-
-            switch (sNombreTipo)
-            {
-                case "bit":
-                    tTipo = SqlDbType.Bit;
-                    break;
-
-                case "char":
-                    tTipo = SqlDbType.Char;
-                    break;
-
-                case "varchar":
-                    tTipo = SqlDbType.VarChar;
-                    break;
-
-                case "decimal":
-                    tTipo = SqlDbType.Decimal;
-                    break;
-
-                case "float":
-                    tTipo = SqlDbType.Float;
-                    break;
-
-                case "int":
-                    tTipo = SqlDbType.Int;
-                    break;
-
-                case "smallint":
-                    tTipo = SqlDbType.SmallInt;
-                    break;
-
-                case "tinyint":
-                    tTipo = SqlDbType.TinyInt;
-                    break;
-
-                case "datetime":
-                    tTipo = SqlDbType.DateTime;
-                    break;
-
-                case "smalldatetime":
-                    tTipo = SqlDbType.SmallDateTime;
-                    break;
-
-                case "nvarchar":
-                    tTipo = SqlDbType.NVarChar;
-                    break;
-
-                case "image":
-                    tTipo = SqlDbType.Image;
-                    break;
-
-                case "xml":
-                    tTipo = SqlDbType.Xml;
-                    break;
-
-                case "text":
-                    tTipo = SqlDbType.Text;
-                    break;
-
-                case "ntext":
-                    tTipo = SqlDbType.NText;
-                    break;
-
-                case "bigint":
-                    tTipo = SqlDbType.BigInt;
-                    break;
-
-                default:
-                    throw (new Exception("Tipo de dato SQL no soportado:" + sNombreTipo));
-            }
-
-            return tTipo;
-        }
-        
         #endregion
 
     }
