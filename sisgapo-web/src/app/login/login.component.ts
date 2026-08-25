@@ -27,22 +27,35 @@ export class LoginComponent implements OnInit {
   }
 
   async fnLogin() {
-    let sNombreUsuario = this.sUser.value;
-    let sContrasenia = this.sPassword.value;
+
+    const sNombreUsuario = (this.sUser.value || '').trim();
+    const sContrasenia = this.sPassword.value || '';
+
+    //Antes se enviaban vacios y el servidor respondia "Credenciales Incorrectas",
+    //que es un mensaje enganoso cuando lo que falta es rellenar el formulario.
+    if (!sNombreUsuario || !sContrasenia) {
+      Swal.fire({
+        title: 'Complete usuario y contraseña.',
+        icon: 'warning',
+        timer: 2500
+      });
+      return;
+    }
+
     await this.loginService.LoginServ(sNombreUsuario, sContrasenia).then(
       (value: any = []) => {
 
-        if (value.length > 0) {
-          if (value[0].result > 0) {
+        if (value.length > 0 && value[0].result > 0) {
 
-            localStorage.setItem('Rol', value[0].nIdRol);
-            this.Rol = (parseInt(localStorage.getItem("Rol")));
-            this.logeado.emit(this.Rol);
-            this.router.navigate(['/', 'inicio']);
-            
-          }
+          localStorage.setItem('Rol', value[0].nIdRol);
+          this.Rol = (parseInt(localStorage.getItem("Rol")));
+          this.logeado.emit(this.Rol);
+          this.router.navigate(['/', 'inicio']);
+
         }
         else {
+          //Antes este 'else' solo cubria el arreglo vacio: si el servidor
+          //devolvia una fila con result 0, la pantalla se quedaba muda.
           Swal.fire({
             title: `Credenciales Incorrectas`,
             icon: 'error',
@@ -52,10 +65,15 @@ export class LoginComponent implements OnInit {
 
       },
       (error) => {
-        console.log(error);
+        //Antes solo se escribia en la consola: para el usuario, el boton no hacia nada.
+        console.error(error);
+        Swal.fire({
+          title: 'No se pudo conectar',
+          text: 'El servidor no responde. Comprueba que la API esté levantada.',
+          icon: 'error'
+        });
       }
     );
-
 
   }
 }

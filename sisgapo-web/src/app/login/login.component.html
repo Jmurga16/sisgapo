@@ -1,26 +1,29 @@
-<div class="row" style="width:100%">
-    <!--Lado Izquierdo-->
-    <div class="contenedor ">
+<div class="login-layout">
 
-        <div class="containerWave">
-            <svg viewBox="0 0 720 273" fill="none" style="height: 100%; width: 100%;">
+    <!--Lado Izquierdo: marca-->
+    <div class="panel panel-marca">
+
+        <!-- Las tres ondas son decorativas: aria-hidden para lectores de pantalla
+             y pointer-events:none en el CSS para que no intercepten los clics. -->
+        <div class="containerWave" aria-hidden="true">
+            <svg viewBox="0 0 720 273" fill="none" preserveAspectRatio="none">
                 <path
                     d="M720 201.808C503.169 2.83378e-05 216.788 423.789 7.97251e-07 211.958L1.93272e-05 5.17289e-07L718.792 6.33561e-05L720 201.808Z"
                     style=" fill: #3F51B5;"></path>
             </svg>
         </div>
-        <!--Logo-->
-        <div style="text-align: center;">
+
+        <div class="panel-contenido">
+            <!--Logo-->
             <span class="txtLogo">SISGAPO</span>
+
+            <div class="imgLogo">
+                <img src="./../../assets/Logo.svg" alt="Logotipo de SISGAPO" />
+            </div>
         </div>
-        <div class="imgLogo">
 
-            <img src="./../../assets/Logo.svg" alt="logo" />
-
-        </div>
-
-        <div class="containerWaveBottomLeft">
-            <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+        <div class="containerWaveBottomLeft" aria-hidden="true">
+            <svg viewBox="0 0 500 150" preserveAspectRatio="none">
                 <path d="M-2.93,75.29 C150.00,150.00 349.20,-49.99 615.41,59.70 L500.00,150.00 L-6.21,150.89 Z"
                     style="stroke: none; fill: #3F51B5;"></path>
             </svg>
@@ -28,65 +31,39 @@
 
     </div>
 
-    <!--Lado Derecho-->
-    <div class="contenedor">
+    <!--Lado Derecho: acceso-->
+    <div class="panel panel-acceso">
 
-        <div style="margin-top: 5rem;">
+        <div class="panel-contenido">
+
             <span class="txtBienvenido">Bienvenido</span>
-        </div>
 
-        <div class="imgLogin">
-            <img src="./../../assets/login.svg" alt="Welcome" />
-        </div>
-        <br>
-
-        <!--Formulario Login-->
-        <div class="row formLogin">
-
-            <div class="row">
-                <div class="col-md-3"></div>
-
-                <div class="col-md-6">
-                    <mat-form-field style="display:initial">
-                        <mat-label>Usuario</mat-label>
-                        <input matInput type="text" [formControl]="sUser" autocomplete="off" name="Nombres">
-                    </mat-form-field>
-                </div>
-
-                <div class="col-md-3"></div>
+            <div class="imgLogin">
+                <img src="./../../assets/login.svg" alt="" aria-hidden="true" />
             </div>
 
-            <br>
+            <!--Formulario Login-->
+            <form class="formLogin" (ngSubmit)="fnLogin()">
 
-            <div class="row">
-                <div class="col-md-3"></div>
+                <mat-form-field class="campo">
+                    <mat-label>Usuario</mat-label>
+                    <input matInput type="text" [formControl]="sUser" autocomplete="username" name="usuario">
+                </mat-form-field>
 
-                <div class="col-md-6">
+                <mat-form-field class="campo">
+                    <mat-label>Contraseña</mat-label>
+                    <input matInput type="password" [formControl]="sPassword" autocomplete="current-password"
+                        name="contrasenia">
+                </mat-form-field>
 
-                    <mat-form-field style="display:initial">
-                        <mat-label>Contraseña</mat-label>
-                        <input matInput type="password" [formControl]="sPassword" autocomplete="off" name="Nombres">
-                    </mat-form-field>
+                <!--type=submit para que Enter en cualquier campo funcione igual que el clic-->
+                <button type="submit" color="primary" class="btnIngresar" mat-raised-button>Ingresar</button>
 
-                </div>
-
-                <div class="col-md-3"></div>
-            </div>
-
-            <br>
-
-            <div class="row">
-                <div class="col-md-3"></div>
-
-                <div class="col-md-6">
-                    <button type="button" (click)="fnLogin()" color="primary" style="width: 100%;"
-                        mat-raised-button>Ingresar</button>
-                </div>
-            </div>
+            </form>
 
         </div>
 
-        <div class="containerWaveBottomRight">
+        <div class="containerWaveBottomRight" aria-hidden="true">
             <svg viewBox="0 0 711 215" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clip-path="url(#clip0)">
                     <path
@@ -102,6 +79,5 @@
         </div>
 
     </div>
-
 
 </div>

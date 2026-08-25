@@ -1,85 +1,239 @@
-* {
-    box-sizing: border-box;
+/* ============================================================================
+   Pantalla de acceso.
+
+   Dos problemas que arreglan estos estilos:
+
+   [1] El formulario no se podía pulsar cuando la ventana era baja (por ejemplo,
+       con las herramientas de desarrollo abiertas). Las tres ondas decorativas
+       eran `position: absolute` sin ningún ancestro posicionado, así que se
+       anclaban al bloque contenedor inicial —cuya altura es la del viewport—.
+       Al reducirse el viewport, la onda inferior derecha subía y su caja
+       rectangular quedaba por encima del botón Ingresar, interceptando el clic.
+       Se arregla por los dos lados: `position: relative` en el contenedor para
+       anclarlas al layout, y `pointer-events: none` para que un adorno no
+       capture nunca un clic.
+
+   [2] No había diseño para pantallas pequeñas: los dos paneles quedaban fijos
+       al 49 % cada uno, así que en un móvil el formulario salía comprimido en
+       media pantalla. Ahora los paneles se apilan y el panel de marca se
+       reduce a la palabra SISGAPO.
+   ============================================================================ */
+
+:host {
+    display: block;
 }
 
-body {
-    font-size: 14px;
+.login-layout {
+    display : flex;
+    flex-wrap: wrap;
+    /* min-height, no height: si el contenido no cabe, la página crece en vez
+       de recortarse. */
+    min-height: 100vh;
+    /* Ancla las ondas absolutas a este contenedor, no al viewport. */
+    position: relative;
+    overflow: hidden;
 }
 
-.contenedor {
-    width     : 49%;
-    height    : auto;
-    text-align: center;
+.panel {
+    position       : relative;
+    flex           : 1 1 50%;
+    display        : flex;
+    flex-direction : column;
+    align-items    : center;
+    justify-content: center;
+    text-align     : center;
+    /* Evita que un panel se desborde por el contenido de un hijo flex. */
+    min-width      : 0;
+    padding        : 2rem 1rem;
+}
+
+/* El contenido va por encima de las ondas. */
+.panel-contenido {
+    position : relative;
+    z-index  : 1;
+    width    : 100%;
+    max-width: 26rem;
 }
 
 
-.imgLogin {
-    height      : 25%;
-    width       : 25%;
-    margin      : 2rem;
-    margin-left : auto;
-    margin-right: auto;
-}
+/* ------------------------------- Tipografía ------------------------------ */
 
-.imgLogo {
-    height      : 20%;
-    width       : 20%;
-    margin-left : auto;
-    margin-right: auto;
-}
-
+.txtLogo,
 .txtBienvenido {
-    font-size: 4rem;
-    color    : #3F51B5;
-
-}
-
-.rotate {
-
-    -webkit-transform: rotateX(180deg);
-    transform        : rotateX(180deg);
-}
-
-.formLogin {
-    text-align: center;
+    display    : block;
+    /* Escala con la ventana en vez de quedarse fija en 4rem, que desbordaba
+       en pantallas estrechas. */
+    font-size  : clamp(2.25rem, 6vw, 4rem);
+    line-height: 1.15;
+    color      : #3F51B5;
 }
 
 .txtLogo {
-
-    font-size     : 4rem;
-    color         : #3F51B5;
-    
-    font-style    : normal;
-    font-weight   : normal;   
-    line-height   : 85px;
+    font-weight   : normal;
     letter-spacing: 0.1em;
 }
 
-.containerWaveBottomRight {
-    right   : 0px;
-    bottom  : 0px;
-    position: absolute;
-    width: 40%;
+
+/* -------------------------------- Imágenes ------------------------------- */
+
+.imgLogo,
+.imgLogin {
+    margin: 1.5rem auto 0;
 }
 
+.imgLogo img,
+.imgLogin img {
+    display  : block;
+    width    : 100%;
+    height   : auto;
+    max-width: 100%;
+}
+
+.imgLogo {
+    max-width: 14rem;
+}
+
+.imgLogin {
+    max-width: 11rem;
+}
+
+
+/* ------------------------------- Formulario ------------------------------ */
+
+.formLogin {
+    display       : flex;
+    flex-direction: column;
+    gap           : 0.5rem;
+    margin-top    : 1.5rem;
+    text-align    : left;
+}
+
+.campo {
+    width: 100%;
+}
+
+.btnIngresar {
+    width     : 100%;
+    margin-top: 1rem;
+}
+
+
+/* --------------------------- Ondas decorativas --------------------------- */
+
+/* Ningún adorno debe capturar un clic. Esta es la línea que arregla el bug. */
+.containerWave,
+.containerWaveBottomLeft,
+.containerWaveBottomRight {
+    pointer-events: none;
+    user-select   : none;
+}
+
+.containerWave svg,
+.containerWaveBottomLeft svg,
+.containerWaveBottomRight svg {
+    display: block;
+    width  : 100%;
+    height : 100%;
+}
+
+/* Onda superior del panel de marca: en el flujo, no absoluta. */
+.containerWave {
+    position: absolute;
+    top     : 0;
+    left    : 0;
+    width   : 100%;
+    height  : 38%;
+}
 
 .containerWaveBottomLeft {
-    left    : 0px;
-    bottom  : 0px;
     position: absolute;
-    width   : 49%;
-    height  : 40%;
-
+    left    : 0;
+    bottom  : 0;
+    width   : 100%;
+    height  : 30%;
 }
 
-.containerWaveTopLeft {
-    left    : 0px;
-    top     : 0px;
+.containerWaveBottomRight {
     position: absolute;
-    width   : 49%;
-    height  : 40%;
+    right   : 0;
+    bottom  : 0;
+    width   : 80%;
+    height  : 30%;
 }
 
-.divLogo {
-    margin: auto;
+
+/* ------------------------- Pantallas intermedias ------------------------- */
+
+@media (max-width: 900px) {
+
+    .login-layout {
+        flex-direction: column;
+    }
+
+    .panel {
+        flex: 0 0 auto;
+    }
+
+    /* El panel de marca se queda como cabecera, no como media pantalla. */
+    .panel-marca {
+        padding-bottom: 3rem;
+    }
+
+    .panel-marca .imgLogo {
+        max-width: 9rem;
+    }
+
+    .containerWave {
+        height: 60%;
+    }
+
+    .containerWaveBottomLeft {
+        height: 45%;
+    }
+
+    .containerWaveBottomRight {
+        width : 100%;
+        height: 22%;
+    }
+}
+
+
+/* ------------------------------ Móvil ----------------------------------- */
+
+@media (max-width: 600px) {
+
+    /* En vertical el espacio es todo: se queda la marca, se va la ilustración. */
+    .panel-marca .imgLogo {
+        display: none;
+    }
+
+    .panel-marca {
+        padding: 3rem 1rem 2.5rem;
+    }
+
+    .panel-acceso .imgLogin {
+        max-width: 8rem;
+    }
+}
+
+
+/* --------------------- Ventanas bajas (o consola abierta) --------------- */
+
+/* Con poca altura las ilustraciones son lo primero que sobra: sin ellas el
+   formulario entra sin scroll. */
+@media (max-height: 620px) {
+
+    .imgLogo,
+    .imgLogin {
+        display: none;
+    }
+
+    .txtLogo,
+    .txtBienvenido {
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+    }
+
+    .formLogin {
+        margin-top: 0.75rem;
+    }
 }
