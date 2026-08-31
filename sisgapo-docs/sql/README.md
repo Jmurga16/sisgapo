@@ -66,7 +66,8 @@ Studio o SSMS. No incluyen `USE`, así que basta con seleccionar la base correct
 
 ## Verificación
 
-`03-seed.sql` termina con un `SELECT` de conteos. Debe devolver:
+`03-seed.sql` termina con dos `SELECT` de control. El primero cuenta las filas de
+cada tabla y debe devolver:
 
 ```
 TBL_DOCUMENTO      3
@@ -75,13 +76,31 @@ TBL_ZONA           5
 TBL_USUARIO        7
 TBL_LOGIN          7
 TBL_ALMACEN        5
-TBL_CATEGORIA      4
+TBL_CATEGORIA      7
 TBL_UNIDADMEDIDA   5
-TBL_PRODUCTO      12
-TBL_LOTE          12
-TBL_DET_PRODUCTO  12
-TBL_CAT_PROD      12
+TBL_PRODUCTO      25
+TBL_LOTE          25
+TBL_DET_PRODUCTO  25
+TBL_CAT_PROD      25
 ```
+
+El segundo comprueba los invariantes del inventario, que son los que hacen que el
+panel de inicio se vea coherente. Debe devolver:
+
+```
+Valor del inventario activo                       69475
+Productos activos                                    21
+Productos dados de baja                               4
+Lotes activos que vencen en 30 días                   2
+Lotes activos que vencen en 90 días                   6
+Lotes activos ya vencidos                             0
+Productos de baja sin lote vencido                    0
+Productos activos en almacén o categoría de baja      0
+```
+
+Las fechas del seed son relativas a `GETDATE()`, así que estos números salen
+iguales se cargue el script cuando se cargue. Si alguno se desvía, el catálogo
+se ha tocado sin rehacer las cuentas — ver la cabecera de `03-seed.sql`.
 
 Prueba de humo de los stored procedures, una vez cargado todo:
 
@@ -90,8 +109,8 @@ EXEC USP_MNT_Login     @sNombreUsuario = 'admin', @sContrasenia = '123456';  -- 
 EXEC USP_MNT_Usuarios  @sOpcion = '01', @pParametro = '';                    -- 7 usuarios
 EXEC USP_MNT_Almacenes @sOpcion = '01', @pParametro = '';                    -- 5 almacenes
 EXEC USP_MNT_Almacenes @sOpcion = '04', @pParametro = '';                    -- 4 supervisores
-EXEC USP_MNT_Categorias @sOpcion = '01', @pParametro = '';                   -- 4 categorías
-EXEC USP_MNT_Productos @sOpcion = '03', @pParametro = '';                    -- 12 productos
+EXEC USP_MNT_Categorias @sOpcion = '01', @pParametro = '';                   -- 7 categorías
+EXEC USP_MNT_Productos @sOpcion = '03', @pParametro = '';                    -- 25 productos
 EXEC USP_MNT_Zonas     @sOpcion = '01', @nIdZona = 0, @sNombre = '', @sRutaImagen = '';  -- 5 zonas
 ```
 
