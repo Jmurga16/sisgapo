@@ -49,11 +49,13 @@ src/app/
 ├── login/                     componente + servicio de autenticación
 ├── inicio/                    página de bienvenida tras entrar
 ├── nav-menu/nav-menu/         barra lateral, control de sesión
-├── shared/services/           AppDateAdapter (formato de fecha para Material)
+├── shared/
+│   ├── models/                contratos tipados de las respuestas HTTP
+│   └── services/              AppDateAdapter (formato de fecha para Material)
 └── modulos/
-    ├── usuarios/              lista + modal + servicio + IUsuarios
-    ├── almacen/               lista + modal + servicio + IAlmacen
-    ├── zona/                  lista + formulario + servicio + IZona
+    ├── usuarios/              lista + modal + servicio
+    ├── almacen/               lista + modal + servicio
+    ├── zona/                  lista + formulario + servicio
     └── inventario/
         ├── categoria/         componente + modal
         ├── productos/         componente + modal
@@ -119,17 +121,19 @@ La distinción Administrador / Supervisor que define el documento de casos de us
 
 ## 5. Servicios
 
-Cuatro servicios, todos con la misma forma: envuelven `HttpClient.post(...).toPromise()`.
+Seis servicios. Cinco usan `HttpClient.post(...).toPromise()` y `ZonaService` conserva
+observables porque es el único módulo REST.
 
 | Servicio | Endpoint | Patrón |
 |---|---|---|
 | `LoginService` | `POST /LoginService` | objeto tipado |
+| `PanelService` | `POST /Panel` | `sOpcion` + `join('|')` |
 | `UsuariosService` | `POST /UsuariosService` | `sOpcion` + `join('|')` |
 | `AlmacenesService` | `POST /AlmacenesService` | `sOpcion` + `join('|')` |
 | `InventarioService` | `POST /InventarioService/{Categoria,Producto}` | `sOpcion` + `join('|')` |
 | `ZonaService` | `GET/POST /api/zona` | REST, objeto tipado |
 
-Los tres servicios del patrón `sOpcion` aplanan el arreglo:
+Los cuatro servicios del patrón `sOpcion` aplanan el arreglo:
 
 ```typescript
 const params = { sOpcion: sOpcion, pParametro: pParametro.join('|') };
@@ -141,7 +145,9 @@ Observaciones:
 - **`.toPromise()` en todo.** Está deprecado desde RxJS 7 y eliminado en RxJS 8; los componentes usan `async/await` en lugar de suscripciones. Funciona, pero desaprovecha la cancelación automática y los operadores de RxJS. `ZonaService` es el único que devuelve observables y usa `.subscribe()`.
 - **`JSON.stringify` manual.** `HttpClient` ya serializa el cuerpo; hacerlo a mano y además fijar `Content-Type` es redundante.
 - **Sin interceptor HTTP.** No hay un punto único para añadir cabeceras, manejar errores o mostrar un indicador de carga. Cada componente hace su propio `(error) => console.log(error)`.
-- **Sin tipado de respuestas.** Todo llega como `any`. Los modelos en `Models/I*.ts` existen pero apenas se usan para tipar las respuestas.
+- **Respuestas tipadas.** Los contratos de cada opción viven en `shared/models/` y los
+  servicios son genéricos. El formato delimitado de `pParametro` sigue sin tipado en el
+  backend; esta mejora solo evita `any` dentro del frontend.
 
 ## 6. Componentes
 
@@ -151,7 +157,7 @@ Todos los módulos siguen el mismo patrón: **lista + modal**.
 con `MatPaginator` y `MatSort`, y abre un `MatDialog` para crear o editar. Confirma las bajas
 con SweetAlert2 y recarga la tabla al cerrarse el modal.
 
-**Componente modal** — recibe `{ accion, id }` por `MAT_DIALOG_DATA` (`accion === 0` es alta,
+**Componente modal** — recibe `{ accion, nId }` por `MAT_DIALOG_DATA` (`accion === 0` es alta,
 distinto de 0 es edición), carga los catálogos para los selectores, y en edición pide los
 datos por id. Al guardar, elige el código de operación con un ternario:
 
@@ -164,19 +170,8 @@ let pOpcion = this.data.accion == 0 ? '05' : '06';   // 05 alta / 06 edición
 documentado en `06-hallazgos.md` §C-03 y ya corregido: ahora llama a `updateZona()` cuando
 la ruta trae `:id`, y el módulo tiene actualización y baja lógica en las tres capas.
 
-También arrastra un error de validación que es un clásico de JavaScript:
-
-```typescript
-// zona-form.component.ts
-if (!this.fnValidarImagen) {   // ← falta el () de la llamada
-    return;
-}
-```
-
-`this.fnValidarImagen` es una referencia a función, que siempre es *truthy*, así que `!`
-siempre da `false` y **la validación de formato de imagen nunca se ejecuta**. Debería ser
-`if (!(await this.fnValidarImagen()))`. El resto del archivo sí lo llama bien —en
-`changeImagen()`—, lo que confirma que es un descuido y no una decisión.
+La validación de imagen llama ahora a `fnValidarImagen()`, acepta las URL sin extensión de
+Unsplash y admite `.png`, `.jpg`, `.jpeg` y `.webp` aunque haya parámetros de consulta.
 
 ## 7. Interfaz y estilos
 
@@ -190,11 +185,12 @@ siempre da `false` y **la validación de formato de imagen nunca se ejecuta**. D
 
 Tres sistemas de estilos conviviendo. Funciona, pero produce inconsistencias visuales —
 botones de Material junto a botones de Bootstrap, espaciados que no cuadran— y hace que
-`styles.css` pese 213 kB en el bundle de producción.
+el CSS global sea más difícil de mantener. Las listas comparten ahora cabecera, filtros,
+scroll horizontal, acciones y paginador responsive en `styles.css`; los estilos propios
+quedan en cada componente.
 
 `AppDateAdapter` (`shared/services/AppDateAdapter.ts`) adapta el formato de fecha de Material
-al formato que espera el backend. Es el único elemento verdaderamente compartido de la
-carpeta `shared/`.
+al formato que espera el backend.
 
 ## 8. Configuración de entorno
 
@@ -203,22 +199,12 @@ carpeta `shared/`.
 { production: false, API_URL_INV: "https://localhost:44360/" }
 
 // environment.prod.ts
-{ production: true,  API_URL_INV: "http://sisgapoback.azurewebsites.net/" }
+{ production: true,  API_URL_INV: "https://localhost:44360/" }
 ```
 
-Dos problemas:
-
-1. **El entorno de producción usa `http://`**, mientras la API hace `UseHttpsRedirection()`. Ver `06-hallazgos.md` §S-08.
-2. **`InicioComponent` tiene la URL escrita a mano**, ignorando el archivo de entorno:
-
-```typescript
-ngOnInit(): void {
-    this.url = 'https://localhost:44360/';   // ← cableado
-}
-```
-
-Ese `url` no se usa para nada más, así que hoy es inofensivo, pero es exactamente el tipo de
-cosa que rompe un despliegue.
+El host de producción sigue pendiente hasta que exista el despliegue definitivo. Mientras
+tanto usa HTTPS local para no llamar al App Service eliminado ni romper CORS con una
+redirección desde HTTP. Ver `06-hallazgos.md` §S-08.
 
 ## 9. Despliegue
 
@@ -259,11 +245,11 @@ y borrar el workflow sobrante. Ver `07-migracion-tier-free.md` §6.
 | 7 | `if (!this.fnValidarImagen)` sin `()` | 🟠 | `zona-form.component.ts` | corregido |
 | 8 | Sin diseño para móvil en la pantalla de acceso | 🟠 | `login.component.css` | corregido |
 | 9 | Los filtros de Productos no filtraban | 🟠 | `productos.component.ts` | corregido |
-| 10 | Sin interceptor HTTP ni manejo de errores | 🟠 | los 4 servicios | pendiente |
+| 10 | Sin interceptor HTTP y con manejo de errores desigual | 🟠 | servicios y componentes | pendiente |
 | 11 | Workflow con `output_location` incorrecto | 🟠 | `.github/workflows/` | corregido |
 | 12 | URL cableada en `InicioComponent` | 🟡 | `inicio.component.ts` | corregido |
 | 13 | Errores silenciosos al iniciar sesión | 🟡 | `login.component.ts` | corregido |
-| 14 | `.toPromise()` deprecado | 🟡 | los 4 servicios | pendiente |
+| 14 | `.toPromise()` deprecado | 🟡 | cinco servicios | pendiente |
 | 15 | 8 `.spec.ts` sin adaptar | 🟡 | todo el proyecto | pendiente |
 | 16 | Un solo módulo, sin carga diferida | 🟡 | `app.module.ts` | pendiente |
 | 17 | Tres sistemas de estilos conviviendo | 🟡 | `styles.css` | mitigado — Bootstrap reducido a grid |

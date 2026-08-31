@@ -227,13 +227,13 @@ pantalla.**
 | `Business` | 7 | 236 | Pass-through puro |
 | `Test` | 2 | 37 | 1 test, roto |
 
-### Frontend — 63 archivos en `src/`
+### Frontend — 96 archivos en `src/`
 
 - 14 componentes (5 listas, 4 modales, login, inicio, nav-menu, zona-form, app)
-- 4 servicios (`login`, `usuarios`, `almacenes`, `inventario`)
-- 4 modelos de interfaces
-- 12 scripts SQL
-- 8 archivos `.spec.ts` — todos con el test generado por defecto (`should create`), ninguno adaptado
+- 6 servicios (`login`, `panel`, `usuarios`, `almacenes`, `zona`, `inventario`)
+- 8 archivos de modelos compartidos
+- 13 scripts SQL
+- 12 archivos `.spec.ts` — predominan pruebas de existencia, con poca cobertura de comportamiento
 
 ### Nivel de duplicación
 

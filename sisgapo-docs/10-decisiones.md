@@ -183,15 +183,17 @@ Quedan documentados y priorizados.
 **La duda.** El seed original tenía 3 zonas, 2 usuarios, 2 almacenes y 5 productos. ¿Copiarlo
 tal cual (fiel al original) o ampliarlo (mejor para demo)?
 
-**Decisión: ampliarlo** a 5 zonas, 7 usuarios, 5 almacenes, 4 categorías y 12 productos.
+**Decisión: ampliarlo** a 5 zonas, 7 usuarios, 5 almacenes, 7 categorías y 25 productos.
 
 **Por qué.** Es para una demo. Una tabla con dos filas hace que la paginación, los filtros y
-la ordenación parezcan decorativos; con doce, se ven trabajando. Incluí a propósito **un
+la ordenación parezcan decorativos; con veinticinco, se ven trabajando. Incluí a propósito **un
 usuario inactivo, un almacén inactivo y una categoría inactiva** para que el filtro por estado
 —que existe y funciona— tenga algo que filtrar.
 
-También actualicé las fechas de lote a 2026–2027. Las originales (2021) mostrarían todo el
-inventario vencido, lo que en una demo se lee como un error.
+El catálogo reparte S/ 69 475 entre 21 productos activos sin que una sola línea domine el
+panel. Las cinco unidades de medida quedan representadas con magnitudes coherentes; por
+ejemplo, `Gramos` se reserva para vainilla y no para productos cuyo precio real es por kilo.
+Los vencimientos son relativos a la fecha de carga, según D-16.
 
 **Qué me hizo dudar.** Los datos originales son parte del registro histórico. Lo resolví
 conservando su estructura, los nombres del seed original y su temática de café
@@ -372,8 +374,8 @@ relativas, el escenario es siempre el mismo se cargue cuando se cargue:
 
 - dos lotes activos vencen dentro de los próximos 30 días —alimentan la alerta sin que
   nada esté caducado;
-- el resto se reparte entre 2 y 14 meses;
-- los dos lotes de productos dados de baja sí están vencidos, que es el motivo verosímil
+- otros cuatro lotes vencen entre 31 y 90 días y el resto entre 6 y 18 meses;
+- los cuatro lotes de productos dados de baja sí están vencidos, que es el motivo verosímil
   de la baja.
 
 **Qué me hizo dudar.** Un seed con lógica es menos obvio de leer que una lista de fechas.
@@ -466,6 +468,36 @@ llevar los dos scripts a `sisgapo-docs/sql/`, quitarles el `USE`, pasar `nTelefo
 
 ---
 
+## D-20 · Tipar las respuestas del frontend sin activar `strict` completo
+
+**Decisión:** centralizar los contratos HTTP en `src/app/shared/models/`, hacer genéricos
+los servicios y activar `noImplicitAny` junto con las comprobaciones estrictas que no
+requieren modelar todavía todos los valores nulos.
+
+**Por qué.** Cada `sOpcion` devuelve una forma distinta y el uso generalizado de `any`
+ocultaba errores como confundir `nIdProducto` con `nIdCatProd`. Activar `strict` completo
+de una vez habría convertido este arreglo acotado en una reescritura de los formularios y
+los `@ViewChild`. `strictNullChecks`, `strictPropertyInitialization` y `strictTemplates`
+quedan para una migración gradual.
+
+La excepción de usuarios se mantiene explícita: sus escrituras devuelven `{ mensaje }`,
+sin `cod`, mientras los demás módulos devuelven `{ cod, mensaje }`.
+
+---
+
+## D-21 · Estilos comunes para los listados
+
+**Decisión:** compartir en `styles.css` la cabecera, la barra de filtros, el scroll de
+tablas, la columna de acciones y el paginador responsive. Los CSS de componente conservan
+solo reglas propias.
+
+**Por qué.** Usuarios, almacenes, categorías y productos repetían las mismas reglas con
+pequeñas diferencias y varios estilos en línea. Una sola implementación evita que una
+pantalla quede sin el arreglo móvil aplicado a las demás. Se conserva el punto de ruptura
+de Bootstrap (`768px`) porque las plantillas ya dependen de `row` y `col-md-*`.
+
+---
+
 ## Resumen de las decisiones
 
 | # | Decisión | Nivel de duda |
@@ -489,6 +521,8 @@ llevar los dos scripts a `sisgapo-docs/sql/`, quitarles el `USE`, pasar `nTelefo
 | D-17 | El panel antes que la autenticación | **Medio** — invierte el orden de `09-mejoras-propuestas.md` |
 | D-18 | Monorepo con el historial de 2021 importado | Bajo |
 | D-19 | «Tracking» fuera del árbol, dentro del historial | **Medio** — revisa §C-11 antes de opinar |
+| D-20 | Tipar respuestas sin activar `strict` completo | Bajo |
+| D-21 | Estilos comunes para los listados | Bajo |
 
 **Las tres que más merecen tu revisión: D-01, D-04 y D-09.**
 De las nuevas, la discutible es **D-17**: es una decisión de escaparate por delante de una

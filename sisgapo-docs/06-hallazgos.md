@@ -14,10 +14,10 @@ presentable—, no a un despliegue en producción:
 
 | Grupo | 🔴 | 🟠 | 🟡 | Total |
 |---|---|---|---|---|
-| Seguridad | 4 | 4 | 1 | 9 |
+| Seguridad | 5 | 4 | 1 | 10 |
 | Correctitud | 6 | 9 | 3 | 18 |
 | Deuda técnica | 0 | 4 | 5 | 9 |
-| **Total** | **10** | **17** | **9** | **36** |
+| **Total** | **11** | **17** | **9** | **37** |
 
 Cuatro de los de correctitud (C-12 a C-15) salieron **al aplicar los arreglos**, no en la
 revisión inicial. Es lo normal: el primero de ellos tapaba a los otros tres.
@@ -47,7 +47,8 @@ ejecutándolo** contra SQL Server 2022 en Docker y, donde aplica, por HTTP contr
 | C-16 · El formulario de acceso no se puede pulsar si la ventana es baja | ✅ Corregido (hallazgo nuevo) |
 | C-17 · La pantalla de acceso no tiene diseño para móvil | ✅ Corregido (hallazgo nuevo) |
 | C-18 · Errores silenciosos al iniciar sesión | ✅ Corregido (hallazgo nuevo) |
-| S-01 · Credenciales en el repositorio | ✅ Corregido — y **verificado que nunca estuvieron en el historial de Git** |
+| S-01 · Credenciales en el repositorio | ✅ Corregido — las de Azure SQL y Gmail nunca estuvieron en el historial; para la que sí estaba, ver S-10 |
+| S-10 · Contraseña de SonarQube en claro desde 2021 | ✅ Retirada e historial reescrito (hallazgo nuevo) — **pendiente de rotar** |
 | S-08 · Mezcla de HTTP/HTTPS y CORS que no cuadra | ✅ Corregido — orígenes por configuración |
 | D-04 · Configuración leída del disco en cada petición | ✅ Corregido — `ConfiguracionBD`, una vez por proceso |
 | D-09 · Restos de andamiaje y archivos generados | ✅ Limpiado |
@@ -119,9 +120,12 @@ tuvo una cadena local inofensiva:
 Y el bloque de correo de `ProductoData.cs` se subió con las credenciales vacías
 (`string EmailOrigen = "@gmail.com"; string Contrasenia = "";`).
 
-**Conclusión:** las credenciales reales solo existieron en la copia de trabajo local —la
-que salió del `.7z`—, nunca en Git. Publicar los repositorios **no filtra nada**, y no
-hace falta reescribir el historial.
+**Conclusión, rectificada el 25 de agosto de 2026.** Para las credenciales de Azure SQL y
+de Gmail lo anterior se sostiene: nunca estuvieron en Git. Lo que no se sostiene es lo que
+se dedujo de ahí —«publicar los repositorios no filtra nada, y no hace falta reescribir el
+historial»—, porque solo se habían buscado esas cinco cadenas. Un barrido posterior de los
+66 commits encontró una credencial distinta, en claro y presente desde 2021: ver §S-10. El
+historial **sí** hubo que reescribirlo.
 
 ### Arreglo aplicado
 
@@ -230,6 +234,33 @@ con una configuración que no quedó en el repositorio.
 
 **Arreglo:** el origen CORS debe venir de configuración, no estar escrito en el código, y el
 frontend debe llamar siempre por HTTPS.
+
+### 🔴 S-10 · Contraseña de SonarQube en claro, en el historial desde 2021
+
+`sisgapo-web/sonar-project.properties`
+
+```properties
+sonar.login=admin
+sonar.password=<contraseña de quince caracteres>
+```
+
+Estaba en la punta de `main` y en 23 commits, desde `Fix and Sonar 31-08` (31 de agosto de
+2021). El repositorio ha sido público todo ese tiempo.
+
+La verificación de §S-01 no lo vio porque buscó **cinco cadenas concretas** —las de Azure SQL
+y Gmail— en lugar del *patrón* de una credencial. Es el fallo clásico de comprobar una
+hipótesis en vez de buscar el problema: «no hay secretos en el historial» se apoyaba en
+realidad en «no están estos cinco secretos».
+
+**Arreglo aplicado (25 de agosto de 2026).** Las dos líneas salen del archivo, que ahora
+remite a `SONAR_TOKEN`, y se reescribió el historial de los 23 commits sustituyendo el blob
+por su versión saneada. Comprobado: 0 coincidencias en todos los commits alcanzables desde
+`main`.
+
+**Lo que el arreglo NO hace.** Reescribir el historial no revoca nada. La contraseña estuvo
+pública cuatro años: **hay que rotarla** y comprobar que no está reutilizada. Además GitHub
+conserva los commits huérfanos de los *push* anteriores y los sigue sirviendo por URL
+directa, así que el valor antiguo continúa siendo recuperable por quien tenga un hash previo.
 
 ### 🟡 S-09 · Sin límite de intentos de autenticación
 

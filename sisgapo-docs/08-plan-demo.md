@@ -133,7 +133,7 @@ enlace está frío, arranca Docker mientras se despierta y no pierdes el ritmo.
 - [x] `README.md` en la raíz, con el arranque en tres pasos
 - [x] Los bugs visibles corregidos (§C-02, §C-03, §C-08, §C-12 a §C-18)
 - [x] `docker compose up` probado desde cero
-- [x] Base de datos poblada (5 zonas, 5 almacenes, 4 categorías, 12 productos)
+- [x] Base de datos poblada (5 zonas, 5 almacenes, 7 categorías, 25 productos)
 - [ ] Captura de pantalla del panel en el README
 - [ ] Recorrido completo en el navegador, con la consola abierta y en móvil
 
