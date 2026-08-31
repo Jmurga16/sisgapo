@@ -1,42 +1,39 @@
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { ZonaData } from './Models/IZona';
-import { environment } from "src/environments/environment";
+import { Observable } from 'rxjs';
+import { RespuestaApi, ZonaGuardar, ZonaListado } from 'src/app/shared/models';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ZonaService {
+  private readonly sUrlApi: string = environment.API_URL_INV + 'api';
 
-  url: string = environment.API_URL_INV
+  constructor(private http: HttpClient) { }
 
-  API_URI: string
-
-  constructor(private http: HttpClient) {
-    this.API_URI = this.url + 'api'
+  getZonas(): Observable<ZonaListado[]> {
+    return this.http.get<ZonaListado[]>(`${this.sUrlApi}/zona`);
   }
 
-  getZonas() {
-    return this.http.get(`${this.API_URI}/zona`)
+  getOne(nIdZona: number | string): Observable<ZonaListado[]> {
+    return this.http.get<ZonaListado[]>(`${this.sUrlApi}/zona/editar/${nIdZona}`);
   }
 
-  getOne(id: string) {
-    return this.http.get(`${this.API_URI}/zona/editar/${id}`);
+  saveZona(zona: ZonaGuardar): Observable<RespuestaApi> {
+    return this.http.post<RespuestaApi>(`${this.sUrlApi}/zona`, zona);
   }
 
-  saveZona(zona: ZonaData) {
-    return this.http.post(`${this.API_URI}/zona`, zona);
+  updateZona(zona: ZonaGuardar): Observable<RespuestaApi> {
+    return this.http.put<RespuestaApi>(`${this.sUrlApi}/zona`, zona);
   }
 
-  //Actualizar. No existía: el formulario de edición llamaba a saveZona() y
-  //cada guardado creaba una zona nueva. Ver 06-hallazgos.md §C-03.
-  updateZona(zona: ZonaData) {
-    return this.http.put(`${this.API_URI}/zona`, zona);
+  cambiarEstado(nIdZona: number, bEstado: boolean): Observable<RespuestaApi> {
+    return this.http.put<RespuestaApi>(`${this.sUrlApi}/zona/estado/${nIdZona}/${bEstado}`, {});
   }
 
-  //Activar / dar de baja (baja lógica).
-  cambiarEstado(nIdZona: number, bEstado: boolean) {
-    return this.http.put(`${this.API_URI}/zona/estado/${nIdZona}/${bEstado}`, {});
+  static fnMensajeError(error: HttpErrorResponse, mensajePorDefecto: string): string {
+    const respuesta = error && error.error as RespuestaApi;
+    return respuesta && respuesta.mensaje ? respuesta.mensaje : mensajePorDefecto;
   }
-
 }

@@ -1,60 +1,53 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { InventarioService } from '../inventario.service';
-import { CategoriaModalComponent } from './categoria-modal/categoria-modal.component'
-
-import { MatTableDataSource } from '@angular/material/table';
-import { MatSort } from '@angular/material/sort';
-import { MatPaginator } from '@angular/material/paginator';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-
-import Swal from "sweetalert2";
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import Swal from 'sweetalert2';
+import {
+  AccionModal,
+  CategoriaListado,
+  DatosModal,
+  RespuestaApi,
+  ValorEstado
+} from 'src/app/shared/models';
+import { InventarioService } from '../inventario.service';
+import { CategoriaModalComponent } from './categoria-modal/categoria-modal.component';
 
 @Component({
   selector: 'app-categoria',
   templateUrl: './categoria.component.html',
   styleUrls: ['./categoria.component.css']
 })
-export class CategoriaComponent implements OnInit {
-
-  
-  nIdUsuario: number;
-
-
-  dsCategoria: MatTableDataSource<any>;
-
-  displayedColumns: string[] = [
+export class CategoriaComponent implements OnInit, AfterViewInit {
+  readonly displayedColumns: string[] = [
     'nIdCategoria',
     'sNombre',
     'sDescripcion',
     'sEstado',
     'Acciones',
   ];
+  dsCategoria = new MatTableDataSource<CategoriaListado>([]);
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-
   constructor(
     private inventarioService: InventarioService,
     public dialog: MatDialog,
-  ) {
-    this.dsCategoria = new MatTableDataSource();
-    
-  }
+  ) { }
 
   ngOnInit(): void {
-
-    this.fnListarCategorias()
-
+    this.fnListarCategorias();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.dsCategoria.paginator = this.paginator;
     this.dsCategoria.sort = this.sort;
   }
 
-  //#region Filtro
-  fnFiltrarTabla(event: Event) {
+  fnFiltrarTabla(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dsCategoria.filter = filterValue.trim().toLowerCase();
 
@@ -62,101 +55,63 @@ export class CategoriaComponent implements OnInit {
       this.dsCategoria.paginator.firstPage();
     }
   }
-  //#endregion
 
-
-  //#region Listar Usuarios
-  async fnListarCategorias() {
-    let pParametro = [];
-
-    await this.inventarioService.fnServCategoria('01', pParametro).then(
-      (value: any[]) => {
-
-        this.dsCategoria = new MatTableDataSource(value);
-        this.dsCategoria.paginator = this.paginator;
-        this.dsCategoria.sort = this.sort;
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+  async fnListarCategorias(): Promise<void> {
+    try {
+      this.dsCategoria.data = await this.inventarioService
+        .fnServCategoria<CategoriaListado[]>('01', []);
+    } catch (error) {
+      console.error(error as HttpErrorResponse);
+    }
   }
-  //#endregion
 
-
-  //#region Eliminar/Activar
-  async fnCambiarEstado(nIdUsuario, bEstado) {
-
-    let sTitulo, sRespuesta;
-
-    if (bEstado == 0) {
-      sTitulo = '¿Desea eliminar la categoría?'
-      sRespuesta = 'Se eliminó la categoría con éxito'
-    }
-    else {
-      sTitulo = '¿Desea activar la categoría?'
-      sRespuesta = 'Se activó la categoría con éxito'
-    }
-
-    var resp = await Swal.fire({
-      title: sTitulo,
+  async fnCambiarEstado(nIdCategoria: number, estado: ValorEstado): Promise<void> {
+    const activar = estado === ValorEstado.Activo;
+    const confirmacion = await Swal.fire({
+      title: activar ? '¿Desea activar la categoría?' : '¿Desea eliminar la categoría?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Aceptar',
       cancelButtonText: 'Cancelar'
-    })
+    });
 
-    if (!resp.isConfirmed) {
+    if (!confirmacion.isConfirmed) {
       return;
     }
 
-    let pParametro = [];
+    try {
+      const respuesta = await this.inventarioService.fnServCategoria<RespuestaApi>(
+        '05',
+        [nIdCategoria, estado]
+      );
 
-    pParametro.push(nIdUsuario);
-    pParametro.push(bEstado);
-
-    await this.inventarioService.fnServCategoria('05', pParametro).then(
-      (value: any) => {
-
-        if (value.mensaje == "Ok") {
-          Swal.fire({
-            title: sRespuesta,
-            icon: 'success',
-            timer: 3500
-          })
-        }
-
-        this.fnListarCategorias();
-
-      },
-      (error) => {
-        console.log(error);
+      if (respuesta.cod === '1') {
+        await Swal.fire({ title: respuesta.mensaje, icon: 'success', timer: 3500 });
+      } else {
+        await Swal.fire({ title: 'No se pudo cambiar el estado', text: respuesta.mensaje, icon: 'error' });
       }
-    );
+
+      await this.fnListarCategorias();
+    } catch (error) {
+      console.error(error as HttpErrorResponse);
+    }
   }
-  //#endregion
 
-
-  //#region Abrir Modal
-  async fnAbrirModal(accion, nIdCategoria) {
+  fnAbrirModal(accion: AccionModal, nIdCategoria: number): void {
+    const datos: DatosModal = { accion, nId: nIdCategoria };
     const dialogRef = this.dialog.open(CategoriaModalComponent, {
       width: '50rem',
+      maxWidth: '95vw',
       disableClose: true,
-      data: {
-        accion: accion, //0:Nuevo , 1:Editar
-        nIdCategoria: nIdCategoria
-      },
+      data: datos,
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: number | undefined) => {
       if (result !== undefined) {
         this.fnListarCategorias();
       }
     });
   }
-  //#endregion
-
-  
 }

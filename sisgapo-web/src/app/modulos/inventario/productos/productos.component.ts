@@ -1,44 +1,47 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { InventarioService } from '../inventario.service';
-import { ProductosModalComponent } from './productos-modal/productos-modal.component'
-
-import { MatTableDataSource } from '@angular/material/table';
-import { MatSort } from '@angular/material/sort';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatDialog } from '@angular/material/dialog';
-
-import Swal from "sweetalert2";
+import { HttpErrorResponse } from '@angular/common/http';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-
+import { MatDialog } from '@angular/material/dialog';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import Swal from 'sweetalert2';
+import {
+  AccionModal,
+  AlmacenCombo,
+  CategoriaCombo,
+  DatosModal,
+  ProductoListado,
+  RespuestaApi,
+  ValorEstado
+} from 'src/app/shared/models';
+import { InventarioService } from '../inventario.service';
+import { ProductosModalComponent } from './productos-modal/productos-modal.component';
 
 @Component({
   selector: 'app-productos',
   templateUrl: './productos.component.html',
   styleUrls: ['./productos.component.css']
 })
-export class ProductosComponent implements OnInit {
-
-  nIdUsuario: number;
-  listaAlmacenes=[]
-  listaCategorias=[]
-  fAlmacen=new FormControl(0);
-  fCategoria=new FormControl(0);
-
-
-  dsProducto: MatTableDataSource<any>;
-
-  displayedColumns: string[] = [
-    'nIdCatProd',   
+export class ProductosComponent implements OnInit, AfterViewInit {
+  readonly displayedColumns: string[] = [
+    'nIdCatProd',
     'sNombreAlmacen',
     'sNombreCategoria',
     'sNombreProducto',
     'nCantidad',
     'sNombreUM',
-    'nPrecio',   
+    'nPrecio',
     'dFechaVenc',
     'sEstado',
     'Acciones',
   ];
+
+  listaAlmacenes: AlmacenCombo[] = [];
+  listaCategorias: CategoriaCombo[] = [];
+  fAlmacen = new FormControl(0);
+  fCategoria = new FormControl(0);
+  dsProducto = new MatTableDataSource<ProductoListado>([]);
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -46,21 +49,20 @@ export class ProductosComponent implements OnInit {
   constructor(
     private inventarioService: InventarioService,
     public dialog: MatDialog,
-    ) { 
-      this.dsProducto = new MatTableDataSource();
-      
-    }
+  ) { }
 
   ngOnInit(): void {
-   
     this.fnListarAlmacenes();
     this.fnListarCategorias();
-    this.fnListarProductos()
+    this.fnListarProductos();
   }
 
- 
-  //#region Filtro
-  fnFiltrarTabla(event: Event) {
+  ngAfterViewInit(): void {
+    this.dsProducto.paginator = this.paginator;
+    this.dsProducto.sort = this.sort;
+  }
+
+  fnFiltrarTabla(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dsProducto.filter = filterValue.trim().toLowerCase();
 
@@ -68,161 +70,89 @@ export class ProductosComponent implements OnInit {
       this.dsProducto.paginator.firstPage();
     }
   }
-  //#endregion
 
-
-   //#region Listar Almacenes
-   async fnListarAlmacenes() {
-    let pParametro = [];
-
-    await this.inventarioService.fnServProducto('01', pParametro).then(
-      (value: any[]) => {
-
-        this.listaAlmacenes=value;
-        
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+  async fnListarAlmacenes(): Promise<void> {
+    try {
+      this.listaAlmacenes = await this.inventarioService
+        .fnServProducto<AlmacenCombo[]>('01', []);
+    } catch (error) {
+      console.error(error as HttpErrorResponse);
+    }
   }
-  //#endregion
 
-
-   //#region Listar Categorias
-   async fnListarCategorias() {
-    let pParametro = [];
-
-    await this.inventarioService.fnServProducto('02', pParametro).then(
-      (value: any[]) => {
-
-        this.listaCategorias=value;
-
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+  async fnListarCategorias(): Promise<void> {
+    try {
+      this.listaCategorias = await this.inventarioService
+        .fnServProducto<CategoriaCombo[]>('02', []);
+    } catch (error) {
+      console.error(error as HttpErrorResponse);
+    }
   }
-  //#endregion
 
-
-  //#region Listar Productos(Tabla)
-  //Los filtros de almacen y categoria viajan al procedimiento (opcion 03).
-  //Antes los dos desplegables estaban enlazados a un FormControl que nadie leia:
-  //elegir un almacen no cambiaba nada en la tabla.
-  async fnListarProductos() {
-    let pParametro = [];
-
-    pParametro.push(this.fAlmacen.value || 0);
-    pParametro.push(this.fCategoria.value || 0);
-
-    await this.inventarioService.fnServProducto('03', pParametro).then(
-      (value: any[]) => {
-
-        this.dsProducto = new MatTableDataSource(value);
-        this.dsProducto.paginator = this.paginator;
-        this.dsProducto.sort = this.sort;
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+  async fnListarProductos(): Promise<void> {
+    try {
+      this.dsProducto.data = await this.inventarioService.fnServProducto<ProductoListado[]>(
+        '03',
+        [this.fAlmacen.value || 0, this.fCategoria.value || 0]
+      );
+    } catch (error) {
+      console.error(error as HttpErrorResponse);
+    }
   }
-  //#endregion
 
-
-  //#region Limpiar Filtros
-  fnCleanFilter(){
-    this.fAlmacen.setValue(0)
-    this.fCategoria.setValue(0)
+  fnCleanFilter(): void {
+    this.fAlmacen.setValue(0);
+    this.fCategoria.setValue(0);
     this.fnListarProductos();
   }
-  //#endregion
 
-
-  //#region Abrir Modal
-  async fnAbrirModal(accion, nIdCatProd) {
+  fnAbrirModal(accion: AccionModal, nIdCatProd: number): void {
+    const datos: DatosModal = { accion, nId: nIdCatProd };
     const dialogRef = this.dialog.open(ProductosModalComponent, {
       width: '50rem',
+      maxWidth: '95vw',
       disableClose: true,
-      data: {
-        accion: accion, //0:Nuevo , 1:Editar
-        nIdCatProd: nIdCatProd
-      },
+      data: datos,
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: number | undefined) => {
       if (result !== undefined) {
         this.fnListarProductos();
       }
     });
   }
-  //#endregion
 
-
-  //#region Eliminar/Activar
-  //Recibe nIdProducto: la opcion 08 hace UPDATE ... WHERE nIdProducto = @nIdProducto.
-  //Antes se le pasaba nIdCatProd, que coincide solo mientras las dos secuencias
-  //de identity vayan sincronizadas. Ver 06-hallazgos.md.
-  async fnCambiarEstado(nIdProducto, bEstado) {
-
-    let sTitulo, sRespuesta;
-
-    if (bEstado == 0) {
-      sTitulo = '¿Desea eliminar el Producto?'
-      sRespuesta = 'Se eliminó el Producto con éxito'
-    }
-    else {
-      sTitulo = '¿Desea activar el Producto?'
-      sRespuesta = 'Se activó el Producto con éxito'
-    }
-
-    var resp = await Swal.fire({
-      title: sTitulo,
+  async fnCambiarEstado(nIdProducto: number, estado: ValorEstado): Promise<void> {
+    const activar = estado === ValorEstado.Activo;
+    const confirmacion = await Swal.fire({
+      title: activar ? '¿Desea activar el producto?' : '¿Desea eliminar el producto?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Aceptar',
       cancelButtonText: 'Cancelar'
-    })
+    });
 
-    if (!resp.isConfirmed) {
+    if (!confirmacion.isConfirmed) {
       return;
     }
 
-    let pParametro = [];
+    try {
+      const respuesta = await this.inventarioService.fnServProducto<RespuestaApi>(
+        '08',
+        [nIdProducto, estado]
+      );
 
-    pParametro.push(nIdProducto);
-    pParametro.push(bEstado);
-
-    await this.inventarioService.fnServProducto('08', pParametro).then(
-      (value: any) => {
-
-        if (value.cod == 1) {
-          Swal.fire({
-            title: sRespuesta,
-            icon: 'success',
-            timer: 3500
-          })
-        }
-
-        this.fnListarProductos();
-
-      },
-      (error) => {
-        console.log(error);
+      if (respuesta.cod === '1') {
+        await Swal.fire({ title: respuesta.mensaje, icon: 'success', timer: 3500 });
+      } else {
+        await Swal.fire({ title: 'No se pudo cambiar el estado', text: respuesta.mensaje, icon: 'error' });
       }
-    );
+
+      await this.fnListarProductos();
+    } catch (error) {
+      console.error(error as HttpErrorResponse);
+    }
   }
-  //#endregion
-
-
-
-}
-
-export interface ProductoData {
-  accion: number;
-  nIdCatProd:number;
 }

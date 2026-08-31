@@ -12,13 +12,10 @@ import { AlmacenesListComponent } from './modulos/almacen/almacenes-list/almacen
 import { AlmacenesModalComponent } from './modulos/almacen/almacenes-modal/almacenes-modal.component';
 import { NavMenuComponent } from './nav-menu/nav-menu/nav-menu.component';
 
-
-//Services
 import { AlmacenesService } from './modulos/almacen/almacenes.service';
 import { InventarioService } from './modulos/inventario/inventario.service';
 import { UsuariosService } from './modulos/usuarios/usuarios.service';
 
-//Material Modules
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';

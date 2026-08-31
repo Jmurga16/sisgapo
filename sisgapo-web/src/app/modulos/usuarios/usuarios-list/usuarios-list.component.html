@@ -1,111 +1,74 @@
-<!--Titulo-->
-<div class="header-app" style="margin-top:1rem;">
-    <h1 style=" font-weight: bold;">Gestión de {{appName}}</h1>
+<div class="header-app">
+    <h1 id="tituloUsuarios">Gestión de {{appName}}</h1>
 </div>
 
-<!--Filtrar y Botones -->
-<div class="filtros">
-
-    <!--Filtro: Nombre-->
+<div class="barra-filtros row">
     <div class="col-md-5">
-        <mat-form-field class="example-form-field inputNombre">
+        <mat-form-field>
             <mat-label>Nombre</mat-label>
             <input matInput type="text" [formControl]="fNombre">
-            <button mat-button *ngIf="fNombre.value" matSuffix mat-icon-button aria-label="Clear">
-                <mat-icon>close</mat-icon>
-            </button>
         </mat-form-field>
     </div>
-
-    <!--Filtro: Rol-->
     <div class="col-md-2">
-        <mat-form-field class="selectEstado" appearance="fill">
+        <mat-form-field appearance="fill">
             <mat-label>Rol</mat-label>
             <mat-select [formControl]="fRol">
-                <mat-option *ngFor="let opc of lRoles" [value]="opc.valor">
-                    {{opc.nombre}}
-                </mat-option>
+                <mat-option *ngFor="let opc of lRoles" [value]="opc.valor">{{opc.nombre}}</mat-option>
             </mat-select>
         </mat-form-field>
     </div>
-
-    <!--Filtro: Estado-->
     <div class="col-md-2">
-        <mat-form-field class="selectEstado" appearance="fill">
+        <mat-form-field appearance="fill">
             <mat-label>Estado</mat-label>
             <mat-select [formControl]="fEstado">
-                <mat-option *ngFor="let opc of lEstados" [value]="opc.valor">
-                    {{opc.nombre}}
-                </mat-option>
+                <mat-option *ngFor="let opc of lEstados" [value]="opc.valor">{{opc.nombre}}</mat-option>
             </mat-select>
         </mat-form-field>
     </div>
-
-    <div class="col-md-2">
-        <div class="example-button-row botones ">
-            <!--Boton: Consultar-->
-            <button mat-raised-button (click)="fnFiltrarUsuarios()">Consultar</button>
-            <!--Boton: Agregar-->
-            <button mat-raised-button color="primary" (click)="fnAbrirModal(0,0)">Agregar</button>
-
-        </div>
+    <div class="col-md-3 barra-filtros-botones">
+        <button mat-raised-button (click)="fnFiltrarUsuarios()">Consultar</button>
+        <button mat-raised-button color="primary" (click)="fnAbrirModal(0,0)">Agregar</button>
     </div>
-
 </div>
 
-<!--Boton: Tabla-->
-<div class="example-container mat-elevation-z8 ">
-    <table mat-table [dataSource]="dsUsuarios" matSort style="width: 100%;" aria-describedby="TablaUsuario">
-
-        <!-- Codigo -->
-        <ng-container matColumnDef="nIdUsuario">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId" id="Codigo"> Codigo </th>
-            <td mat-cell *matCellDef="let element"> {{element.nIdUsuario}} </td>
-        </ng-container>
-
-        <!-- Nombre -->
-        <ng-container matColumnDef="sNombrePersona">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaUsuario" id="Nombre"> Nombre </th>
-            <td mat-cell *matCellDef="let element"> {{element.sNombrePersona}} </td>
-        </ng-container>
-
-        <!-- Usuario -->
-        <ng-container matColumnDef="sNombreUsuario">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaUsuario" id="Usuario"> Usuario </th>
-            <td mat-cell *matCellDef="let element"> {{element.sNombreUsuario}} </td>
-        </ng-container>
-
-        <!-- Rol -->
-        <ng-container matColumnDef="sNombreRol">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId" id="Rol"> Rol </th>
-            <td mat-cell *matCellDef="let element"> {{element.sNombreRol}} </td>
-        </ng-container>
-
-        <!-- Estado -->
-        <ng-container matColumnDef="sEstado">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId" id="Estado"> Estado </th>
-            <td mat-cell *matCellDef="let element"> {{element.sEstado}} </td>
-        </ng-container>
-
-        <!--Acciones: Editar/Eliminar/Activar-->
-        <ng-container matColumnDef="Acciones">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId" id="Accion"> Acciones </th>
-            <td mat-cell *matCellDef="let element">
-                <div class="example-button-row " *ngIf="element.nIdUsuario!=1">
-                    <button mat-raised-button color="accent" style="margin-right: 8px;"
-                        (click)="fnAbrirModal(1,element.nIdUsuario)">Editar</button>
-                    <button *ngIf="element.sEstado=='Activo'" mat-raised-button color="warn"
-                        (click)="fnCambiarEstado(element.nIdUsuario,0)">Eliminar</button>
-                    <button *ngIf="element.sEstado=='Inactivo'" mat-raised-button class="buttonActive"
-                        (click)="fnCambiarEstado(element.nIdUsuario,1)">Activar</button>
-                </div>
-
-            </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-    <!--Mat Paginator-->
+<div class="mat-elevation-z8">
+    <div class="tabla-scroll tabla-6col">
+        <table mat-table [dataSource]="dsUsuarios" matSort aria-describedby="tituloUsuarios">
+            <ng-container matColumnDef="nIdUsuario">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Código</th>
+                <td mat-cell *matCellDef="let element">{{element.nIdUsuario}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sNombrePersona">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+                <td mat-cell *matCellDef="let element">{{element.sNombrePersona}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sNombreUsuario">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
+                <td mat-cell *matCellDef="let element">{{element.sNombreUsuario}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sNombreRol">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Rol</th>
+                <td mat-cell *matCellDef="let element">{{element.sNombreRol}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sEstado">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+                <td mat-cell *matCellDef="let element">{{element.sEstado}}</td>
+            </ng-container>
+            <ng-container matColumnDef="Acciones">
+                <th mat-header-cell *matHeaderCellDef class="col-acciones">Acciones</th>
+                <td mat-cell *matCellDef="let element" class="col-acciones">
+                    <div class="acciones" *ngIf="element.nIdUsuario!=1">
+                        <button mat-raised-button color="accent" (click)="fnAbrirModal(1,element.nIdUsuario)">Editar</button>
+                        <button *ngIf="element.sEstado=='Activo'" mat-raised-button color="warn"
+                            (click)="fnCambiarEstado(element.nIdUsuario,0)">Eliminar</button>
+                        <button *ngIf="element.sEstado=='Inactivo'" mat-raised-button class="boton-activar"
+                            (click)="fnCambiarEstado(element.nIdUsuario,1)">Activar</button>
+                    </div>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </div>
     <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
 </div>

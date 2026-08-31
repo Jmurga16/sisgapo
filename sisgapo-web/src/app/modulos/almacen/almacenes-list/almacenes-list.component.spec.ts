@@ -14,7 +14,6 @@ describe('AlmacenesListComponent', () => {
 
 
     beforeEach(() => {
-        // 0. set up the test environment
         TestBed.configureTestingModule({
             imports: [
                 HttpClient

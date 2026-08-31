@@ -1,30 +1,24 @@
 <div>
-    <!--Titulo-->
-    <h1 mat-dialog-title class="clstitulo">{{sAccionModal}} Almacen</h1>
-    <!--Formulario-->
+    <h1 mat-dialog-title class="clstitulo">{{sAccionModal}} Almacén</h1>
     <form [formGroup]="formAlmacen" ngNativeValidate autocomplete="off" name="Formulario" id="new-form">
-        <!--Formulario: Nombre-->
-        <div class="row" style="padding-bottom: 1rem;">
+        <div class="row fila-formulario">
             <div class="col-md-6">
-                <mat-form-field style="display:initial">
+                <mat-form-field class="campo-completo">
                     <mat-label>Nombre</mat-label>
                     <input matInput type="text" formControlName="sNombreAlmacen" autocomplete="off" name="Nombre">
                 </mat-form-field>
             </div>
-            <!--Formulario: Direccion-->
             <div class="col-md-6">
-                <mat-form-field style="display:initial">
+                <mat-form-field class="campo-completo">
                     <mat-label>Dirección</mat-label>
                     <input matInput type="text" formControlName="sDireccion" autocomplete="nope" name="Direccion">
                 </mat-form-field>
             </div>
         </div>
 
-
         <div class="row">
-            <!--Formulario: Zona-->
             <div class="col-md-6">
-                <mat-form-field class="selectMat selectResp" appearance="fill">
+                <mat-form-field class="campo-completo selectResp" appearance="fill">
                     <mat-label>Zona</mat-label>
                     <mat-select formControlName="nIdZona">
                         <mat-option *ngFor="let opc of lZonas" [value]="opc.nIdZona">
@@ -33,9 +27,8 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <!--Formulario: Supervisor-->
             <div class="col-md-6">
-                <mat-form-field class="selectMat selectResp" appearance="fill">
+                <mat-form-field class="campo-completo selectResp" appearance="fill">
                     <mat-label>Supervisor</mat-label>
                     <mat-select formControlName="nIdSupervisor">
                         <mat-option *ngFor="let opc of lSupervisores" [value]="opc.nIdSupervisor">
@@ -44,23 +37,17 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-
         </div>
 
-        <!--Botonera-->
-        <div class="row" style="padding-top: 1rem;">
-            <!--Guardar-->
+        <div class="row fila-botones">
             <div class="col-md-6">
-                <button type="button" color="primary" style="width: 100%;" mat-raised-button
+                <button type="button" color="primary" class="boton-modal" mat-raised-button
                     (click)="fnGrabar()">Grabar</button>
             </div>
-            <!--Cancelar-->
             <div class="col-md-6">
-                <button type="button" color="warn" style="width: 100%;" mat-raised-button
+                <button type="button" color="warn" class="boton-modal" mat-raised-button
                     (click)="fnCerrarModal(0)">Cancelar</button>
             </div>
-
         </div>
     </form>
-
 </div>

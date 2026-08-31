@@ -1,46 +1,31 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { UsuariosService } from '../usuarios.service';
-import { MatDialog } from "@angular/material/dialog";
-
-import { UsuariosModalComponent } from './../usuarios-modal/usuarios-modal.component'
-import { ListaData } from './../Models/IUsuarios'
-import Swal from "sweetalert2";
-
-
-import { MatTableDataSource } from '@angular/material/table';
-import { MatSort } from '@angular/material/sort';
-import { MatPaginator } from '@angular/material/paginator';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-
+import { MatDialog } from '@angular/material/dialog';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import Swal from 'sweetalert2';
+import {
+  AccionModal,
+  DatosModal,
+  ListaOpcion,
+  ParametroApi,
+  RespuestaUsuarios,
+  UsuarioListado,
+  ValorEstado
+} from 'src/app/shared/models';
+import { UsuariosModalComponent } from '../usuarios-modal/usuarios-modal.component';
+import { UsuariosService } from '../usuarios.service';
 
 @Component({
   selector: 'app-usuarios-list',
   templateUrl: './usuarios-list.component.html',
   styleUrls: ['./usuarios-list.component.css'],
 })
-export class UsuariosListComponent implements OnInit {
-  appName: string = 'Usuarios';
-  usuarios: any = [];
-
-  fNombre = new FormControl();
-  fRol = new FormControl();
-  fEstado = new FormControl();
-
-  lEstados: ListaData[] = [
-    { valor: 2, nombre: 'Todos' },
-    { valor: 1, nombre: 'Activo' },
-    { valor: 0, nombre: 'Inactivo' },
-  ];
-
-  lRoles: ListaData[] = [
-    { valor: 0, nombre: 'Todos' },
-    { valor: 1, nombre: 'Administrador' },
-    { valor: 2, nombre: 'Supervisor' },
-    { valor: 3, nombre: 'Asistente' },
-  ];
-
-  dsUsuarios: MatTableDataSource<any>;
-  displayedColumns: string[] = [
+export class UsuariosListComponent implements OnInit, AfterViewInit {
+  readonly appName: string = 'Usuarios';
+  readonly displayedColumns: string[] = [
     'nIdUsuario',
     'sNombrePersona',
     'sNombreUsuario',
@@ -48,6 +33,22 @@ export class UsuariosListComponent implements OnInit {
     'sEstado',
     'Acciones',
   ];
+  readonly lEstados: ListaOpcion[] = [
+    { valor: 2, nombre: 'Todos' },
+    { valor: 1, nombre: 'Activo' },
+    { valor: 0, nombre: 'Inactivo' },
+  ];
+  readonly lRoles: ListaOpcion[] = [
+    { valor: 0, nombre: 'Todos' },
+    { valor: 1, nombre: 'Administrador' },
+    { valor: 2, nombre: 'Supervisor' },
+    { valor: 3, nombre: 'Asistente' },
+  ];
+
+  fNombre = new FormControl();
+  fRol = new FormControl();
+  fEstado = new FormControl();
+  dsUsuarios = new MatTableDataSource<UsuarioListado>([]);
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -58,127 +59,95 @@ export class UsuariosListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
     this.fnListarUsuarios();
-
   }
 
-  //#region Listar Usuarios
-  async fnListarUsuarios() {
-    let pParametro = [];
-
-    await this.usuariosService.LIS_Usuarios('01', pParametro).then(
-      (data: any[]) => {
-
-        this.dsUsuarios = new MatTableDataSource(data);
-        this.dsUsuarios.paginator = this.paginator;
-        this.dsUsuarios.sort = this.sort;
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+  ngAfterViewInit(): void {
+    this.dsUsuarios.paginator = this.paginator;
+    this.dsUsuarios.sort = this.sort;
   }
-  //#endregion
 
+  async fnListarUsuarios(): Promise<void> {
+    try {
+      this.dsUsuarios.data = await this.usuariosService
+        .fnServUsuarios<UsuarioListado[]>('01', []);
+    } catch (error) {
+      console.error(error as HttpErrorResponse);
+    }
+  }
 
-  //#region Abrir Modal
-  async fnAbrirModal(accion, nIdUsuario) {
+  fnAbrirModal(accion: AccionModal, nIdUsuario: number): void {
+    const datos: DatosModal = { accion, nId: nIdUsuario };
     const dialogRef = this.dialog.open(UsuariosModalComponent, {
       width: '50rem',
+      maxWidth: '95vw',
       disableClose: true,
-      data: {
-        accion: accion, //0:Nuevo , 1:Editar
-        nIdUsuario: nIdUsuario
-      },
+      data: datos,
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: number | undefined) => {
       if (result !== undefined) {
         this.fnListarUsuarios();
       }
     });
   }
-  //#endregion
 
+  async fnFiltrarUsuarios(): Promise<void> {
+    const parametros: ParametroApi[] = [
+      this.fNombre.value || '',
+      this.fRol.value || 0,
+      this.fEstado.value == null ? 2 : this.fEstado.value
+    ];
 
-  //#region Filtrar Usuarios
-  async fnFiltrarUsuarios() {
-    let bEstado;
-
-    bEstado = this.fEstado.value == null ? 2 : this.fEstado.value;
-
-    let pParametro = [];
-    pParametro.push(this.fNombre.value);
-    pParametro.push(this.fRol.value);
-    pParametro.push(bEstado);
-
-    await this.usuariosService.LIS_Usuarios('02', pParametro)
-      .then((value: any[]) => {
-
-        this.dsUsuarios = new MatTableDataSource(value);
-        this.dsUsuarios.paginator = this.paginator;
-        this.dsUsuarios.sort = this.sort;
-      },
-        (error) => {
-          console.log(error);
-        }
-      );
+    try {
+      this.dsUsuarios.data = await this.usuariosService
+        .fnServUsuarios<UsuarioListado[]>('02', parametros);
+    } catch (error) {
+      console.error(error as HttpErrorResponse);
+    }
   }
-  //#endregion
 
-  
-  //#region Eliminar/Activar
-  async fnCambiarEstado(nIdUsuario, bEstado) {
-
-    let sTitulo, sRespuesta;
-
-    if (bEstado == 1) {
-      sTitulo = '¿Desea activar el usuario?'
-      sRespuesta = 'Se activó el usuario con éxito'
-    }
-    else {      
-      sTitulo = '¿Desea eliminar el usuario?'
-      sRespuesta = 'Se eliminó el usuario con éxito'
-    }
-
-    var resp = await Swal.fire({
-      title: sTitulo,
+  async fnCambiarEstado(nIdUsuario: number, estado: ValorEstado): Promise<void> {
+    const activar = estado === ValorEstado.Activo;
+    const confirmacion = await Swal.fire({
+      title: activar ? '¿Desea activar el usuario?' : '¿Desea eliminar el usuario?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Aceptar',
       cancelButtonText: 'Cancelar'
-    })
+    });
 
-    if (!resp.isConfirmed) {
+    if (!confirmacion.isConfirmed) {
       return;
     }
 
-    let pParametro = [];
-    pParametro.push(nIdUsuario);
-    pParametro.push(bEstado);
+    try {
+      const respuesta = await this.usuariosService.fnServUsuarios<RespuestaUsuarios>(
+        '06',
+        [nIdUsuario, estado]
+      );
 
-    await this.usuariosService.LIS_Usuarios('06', pParametro).then(
-      (value: any) => {
-
-        if (value.mensaje == "OK") {
-          Swal.fire({
-            title: sRespuesta,
-            icon: 'success',
-            timer: 3500
-          })
-        }
-        this.fnFiltrarUsuarios();
-
-      },
-      (error) => {
-        console.log(error);
+      if (respuesta.mensaje === 'OK') {
+        await Swal.fire({
+          title: activar
+            ? 'Se activó el usuario con éxito'
+            : 'Se eliminó el usuario con éxito',
+          icon: 'success',
+          timer: 3500
+        });
+      } else {
+        await Swal.fire({
+          title: 'No se pudo cambiar el estado',
+          text: respuesta.mensaje,
+          icon: 'error'
+        });
       }
-    );
-  }
-  //#endregion Eliminar
 
-  
+      await this.fnFiltrarUsuarios();
+    } catch (error) {
+      console.error(error as HttpErrorResponse);
+    }
+  }
 }

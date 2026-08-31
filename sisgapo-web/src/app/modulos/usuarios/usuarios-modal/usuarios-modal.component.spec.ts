@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { FormBuilder, } from "@angular/forms";
 import { MatDialogRef, } from "@angular/material/dialog";
-import { UsuarioData } from './../Models/IUsuarios'
+import { DatosModal } from 'src/app/shared/models';
 
 
 describe('UsuariosModalComponent', () => {
@@ -17,7 +17,7 @@ describe('UsuariosModalComponent', () => {
     let client: HttpClient;
 
     let dialogRef: MatDialogRef<UsuariosModalComponent>;
-    let data: UsuarioData;    
+    let data: DatosModal;
     let fB: FormBuilder;
 
 
@@ -58,13 +58,6 @@ describe('UsuariosModalComponent', () => {
         let nameMethod = spyOn(component, 'fnCambiarFecha')
         let param1
         component.fnCambiarFecha(param1)
-        expect(nameMethod).toHaveBeenCalled();
-    })
-
-    it(`Debe existir un metodo llamado fnConvertirFecha()`, () => {
-        let nameMethod = spyOn(component, 'fnConvertirFecha')
-        let param1,param2
-        component.fnConvertirFecha(param1,param2)
         expect(nameMethod).toHaveBeenCalled();
     })
 

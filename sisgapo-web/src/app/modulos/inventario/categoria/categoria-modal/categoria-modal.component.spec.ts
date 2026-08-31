@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { FormBuilder, } from "@angular/forms";
 import { MatDialogRef, } from "@angular/material/dialog";
-import { CategoriaData } from './../../Models/ICategoria'
+import { DatosModal } from 'src/app/shared/models';
 
 
 describe('CategoriaModalComponent', () => {
@@ -17,7 +17,7 @@ describe('CategoriaModalComponent', () => {
     let client: HttpClient;
 
     let dialogRef: MatDialogRef<CategoriaModalComponent>;
-    let data: CategoriaData;
+    let data: DatosModal;
     let fB: FormBuilder;
 
 

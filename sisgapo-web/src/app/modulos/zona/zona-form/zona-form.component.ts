@@ -1,10 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ZonaService } from '../zona.service';
-import { ActivatedRoute, Router } from "@angular/router";
-import { ZonaData } from '../Models/IZona';
+import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
-
+import { RespuestaApi, ZonaGuardar, ZonaListado } from 'src/app/shared/models';
+import { ZonaService } from '../zona.service';
 
 @Component({
   selector: 'app-zona-form',
@@ -12,203 +12,115 @@ import Swal from 'sweetalert2';
   styleUrls: ['./zona-form.component.css']
 })
 export class ZonaFormComponent implements OnInit {
-
-  //#region Definicion de Variables  
-  sTitulo: string;
+  sTitulo: string = 'Creación de Zona';
   sRutaImagen: string;
-  nIdZona: number;
+  nIdZona: number = 0;
   bEditar: boolean = false;
-  urlNoImagen: string = '../../../../assets/no-image.png'
-
+  readonly urlNoImagen: string = '../../../../assets/no-image.png';
 
   fNombre = new FormControl();
   fRutaImagen = new FormControl();
 
-  lZona: ZonaData = {
-    nIdZona: 0,
-    sNombre: '',
-    sRutaImagen: ''
-  }
-  //#endregion
-
-
-  //#region Definicion Constructor
   constructor(
     private zonaService: ZonaService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-  ) {
+  ) { }
 
-  }
-
-  //#region Definir OnInit
   ngOnInit(): void {
-    // Definir Titulo
-    this.sTitulo = "Creación de Zona"
-    // Definir Ruta de Imagen
-    this.sRutaImagen = 'https://www.allianceplast.com/wp-content/uploads/2017/11/no-image.png'
+    this.sRutaImagen = this.urlNoImagen;
+    const nIdZona = Number(this.activatedRoute.snapshot.params.id);
 
-    // Obtener los parametros segun ruta
-    const params = this.activatedRoute.snapshot.params;
-
-    // Si existe la Zona
-    if (params.id) {
-      // Definir Titulo
-      this.sTitulo = 'Editar Zona'
-
-      //Llamar al servicio cargar zona por id
-      this.zonaService.getOne(params.id).subscribe(
-        (res: any) => {
-
-
-          this.lZona = res;
-          //Llenar los datos
-          this.nIdZona = params.id
-          this.fNombre.setValue(this.lZona[0].sNombre);
-          this.fRutaImagen.setValue(this.lZona[0].sRutaImagen);
-
-          this.sRutaImagen = this.lZona[0].sRutaImagen;
-
-          this.bEditar = true;
-
-        },
-        //Mensaje erroneo
-        err => console.error(err)
-      );
-    }
-  }
-
-  //#endregion
-
-
-  //#region Guardar Zona
-  //Antes este metodo llamaba siempre a saveZona() (POST -> INSERT) y ademas
-  //borraba el identificador con "delete this.lZona.nIdZona", asi que editar una
-  //zona creaba un duplicado. Y navegaba al listado tanto si guardaba como si
-  //fallaba. Ver 06-hallazgos.md C-03 y C-05.
-  async fnSaveNewZona() {
-
-    //Validar que el campo nombre este completo
-    if (this.fNombre.value == '' || this.fNombre.value == undefined) {
-      return Swal.fire({
-        title: `Complete el campo Nombre.`,
-        icon: 'warning',
-        timer: 3500
-      });
-    }
-
-    //Validar que el campo ruta este completo
-    if (this.fRutaImagen.value == '' || this.fRutaImagen.value == undefined) {
-      return Swal.fire({
-        title: `Complete el campo Ruta de Imagen.`,
-        icon: 'warning',
-        timer: 3500
-      });
-    }
-
-    //Validar el formato de la ruta.
-    //Faltaban los parentesis: "if (!this.fnValidarImagen)" evalua la referencia a
-    //la funcion, que siempre es truthy, asi que la validacion nunca se ejecutaba.
-    if (!(await this.fnValidarImagen())) {
+    if (!nIdZona) {
       return;
     }
 
-    //Obtener los valores del formulario
-    const oZona: ZonaData = {
-      nIdZona: this.bEditar ? Number(this.nIdZona) : 0,
+    this.nIdZona = nIdZona;
+    this.sTitulo = 'Editar Zona';
+    this.bEditar = true;
+    this.zonaService.getOne(nIdZona).subscribe(
+      (zonas: ZonaListado[]) => {
+        if (!zonas.length) {
+          Swal.fire({ title: 'No se encontró la zona', icon: 'error' });
+          return;
+        }
+
+        const zona = zonas[0];
+        this.fNombre.setValue(zona.sNombre);
+        this.fRutaImagen.setValue(zona.sRutaImagen);
+        this.sRutaImagen = zona.sRutaImagen || this.urlNoImagen;
+      },
+      (error: HttpErrorResponse) => console.error(error)
+    );
+  }
+
+  async fnSaveNewZona(): Promise<void> {
+    if (!this.fNombre.value) {
+      await Swal.fire({ title: 'Complete el campo Nombre.', icon: 'warning', timer: 3500 });
+      return;
+    }
+
+    if (!this.fRutaImagen.value) {
+      await Swal.fire({ title: 'Complete el campo Ruta de Imagen.', icon: 'warning', timer: 3500 });
+      return;
+    }
+
+    if (!this.fnValidarImagen()) {
+      return;
+    }
+
+    const zona: ZonaGuardar = {
+      nIdZona: this.bEditar ? this.nIdZona : 0,
       sNombre: this.fNombre.value,
       sRutaImagen: this.fRutaImagen.value
     };
+    const peticion = this.bEditar
+      ? this.zonaService.updateZona(zona)
+      : this.zonaService.saveZona(zona);
 
-    //Alta o edicion segun como se haya entrado a la pantalla
-    const oPeticion = this.bEditar
-      ? this.zonaService.updateZona(oZona)
-      : this.zonaService.saveZona(oZona);
-
-    oPeticion.subscribe(
-      (res: any) => {
-
-        if (res && res.cod == 1) {
-          Swal.fire({
-            title: res.mensaje,
-            icon: 'success',
-            timer: 3000
-          }).then(() => {
-            this.router.navigate(['/', 'zonas']);
-          });
+    peticion.subscribe(
+      (respuesta: RespuestaApi) => {
+        if (respuesta.cod === '1') {
+          Swal.fire({ title: respuesta.mensaje, icon: 'success', timer: 3000 })
+            .then(() => this.router.navigate(['/', 'zonas']));
+        } else {
+          Swal.fire({ title: 'No se pudo guardar', text: respuesta.mensaje, icon: 'error' });
         }
-        //Nombre duplicado u otro rechazo del procedimiento: se queda en el
-        //formulario con el motivo a la vista, en vez de navegar en silencio.
-        else {
-          Swal.fire({
-            title: 'No se pudo guardar',
-            text: res ? res.mensaje : 'La operacion no devolvio respuesta.',
-            icon: 'error'
-          });
-        }
-
       },
-      (err) => {
-        console.error(err);
+      (error: HttpErrorResponse) => {
+        console.error(error);
         Swal.fire({
           title: 'No se pudo guardar',
-          text: 'Error de comunicacion con el servidor.',
+          text: ZonaService.fnMensajeError(error, 'Error de comunicación con el servidor.'),
           icon: 'error'
         });
       }
     );
-
   }
-  //#endregion
 
-
-  //#region Al cambiar ruta de Imagen
-  changeImagen() {
-
-    //#region Validar imagen en blanco
-    if (this.fRutaImagen.value == '') {
-      this.sRutaImagen = this.urlNoImagen
+  changeImagen(): void {
+    if (!this.fRutaImagen.value) {
+      this.sRutaImagen = this.urlNoImagen;
+      return;
     }
 
-    //Validar Imagen
-    else {
-      this.sRutaImagen = this.fRutaImagen.value
-      this.fnValidarImagen();
-    }
-
+    this.sRutaImagen = this.fRutaImagen.value;
+    this.fnValidarImagen();
   }
-  //#endregion
 
+  fnValidarImagen(): boolean {
+    const valor = String(this.fRutaImagen.value || '').trim();
+    const ruta = valor.split(/[?#]/)[0].toLowerCase();
+    const extension = ruta.match(/\.([a-z0-9]+)$/);
+    const bValido = /^https?:\/\/\S+$/.test(valor)
+      && (!extension || /^(png|jpe?g|webp)$/.test(extension[1]));
 
-  //#region Validar Imagen
-  async fnValidarImagen() {
-    let bValido: boolean;
-    //definir imagen
-    var imagen = this.fRutaImagen.value
-    //traer la extension
-    var extension = imagen.substr(-4)
-
-    //evaluar la extension
-    if (extension == '.png' || extension == '.jpg') {
-      bValido = true;
-    }
-    //si no es png ni jpg, volver a blanco
-    else {
-      bValido = false;
+    if (!bValido) {
       this.fRutaImagen.setValue('');
-      this.sRutaImagen = this.urlNoImagen
-      //Mensaje de no valido
-      Swal.fire({
-        title: `Formato de Imagen No Válida.`,
-        icon: 'warning',
-        timer: 3500
-      });
+      this.sRutaImagen = this.urlNoImagen;
+      Swal.fire({ title: 'Formato de imagen no válido.', icon: 'warning', timer: 3500 });
     }
 
     return bValido;
-
   }
-  //#endregion
-
-
 }

@@ -1,10 +1,6 @@
-/* html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
- */
-
 body {
     font-family: Roboto, Arial, sans-serif;
-    margin     : 0;
+    margin: 0;
 }
 
 .basic-container {
@@ -13,9 +9,131 @@ body {
 
 .version-info {
     font-size: 8pt;
-    float    : right;
+    float: right;
 }
 
 .hidden {
     display: none;
+}
+
+.header-app {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.header-app h1 {
+    font-weight: 700;
+    margin: 0 0 .5rem;
+    font-size: 1.75rem;
+}
+
+.barra-filtros {
+    align-items: flex-end;
+    margin-bottom: .5rem;
+}
+
+.barra-filtros .mat-form-field {
+    width: 100%;
+}
+
+.barra-filtros-botones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: .75rem;
+}
+
+.barra-filtros-botones > * {
+    margin-left: .5rem;
+    margin-top: .25rem;
+    margin-bottom: .25rem;
+}
+
+.barra-filtros-botones > *:first-child {
+    margin-left: 0;
+}
+
+.tabla-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tabla-scroll table {
+    width: 100%;
+}
+
+.tabla-5col table {
+    min-width: 680px;
+}
+
+.tabla-6col table {
+    min-width: 800px;
+}
+
+.tabla-10col table {
+    min-width: 1200px;
+}
+
+.col-acciones {
+    width: 1%;
+    white-space: nowrap;
+    text-align: right;
+    padding-right: 1rem;
+}
+
+.acciones {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.acciones > * {
+    margin-left: .5rem;
+}
+
+.acciones > *:first-child {
+    margin-left: 0;
+}
+
+.boton-activar {
+    background-color: forestgreen;
+    color: white;
+}
+
+.celda-sin-datos {
+    padding: 1rem;
+    text-align: center;
+}
+
+.mat-paginator {
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .header-app h1 {
+        font-size: 1.35rem;
+    }
+
+    .barra-filtros-botones {
+        justify-content: flex-start;
+        padding-bottom: .25rem;
+    }
+
+    .mat-paginator .mat-paginator-container {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: .25rem .5rem;
+        min-height: auto;
+    }
+
+    .mat-paginator .mat-paginator-page-size {
+        margin-right: .5rem;
+    }
+
+    .mat-paginator .mat-paginator-range-label {
+        margin: 0 .5rem;
+    }
 }

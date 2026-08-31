@@ -1,17 +1,33 @@
 .clstitulo {
     background-color: #334d6e;
-    color           : #fff;
-    text-align      : center;
-    border-radius   : calc(.25rem - 1px) calc(.25rem - 1px) 0 0;
-    height          : 3rem;
-    padding-top     : 0.5rem
-  }
-  
-  @media (min-width: 700px){
-    .selectResp {    
-      bottom : 0.75rem;
+    color: #fff;
+    text-align: center;
+    border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0;
+    height: 3rem;
+    padding-top: .5rem;
+}
+
+.fila-formulario {
+    padding-bottom: 1rem;
+}
+
+.fila-botones {
+    padding-top: 1rem;
+}
+
+.campo-completo,
+.boton-modal {
+    width: 100%;
+}
+
+@media (min-width: 700px) {
+    .selectResp {
+        bottom: .75rem;
     }
-  }
-  .selectMat {
-    display: initial;
-  }
+}
+
+@media (max-width: 768px) {
+    .boton-modal {
+        margin-bottom: .5rem;
+    }
+}

@@ -1,12 +1,9 @@
-<!--Titulo de Gestion de Zonas-->
-<div class="header-app" style="margin-top:1rem;">
-    <h1 style=" font-weight: bold;">Gestión de Zonas</h1>
+<div class="header-app">
+    <h1>Gestión de Zonas</h1>
 </div>
 
-<!--Zona de botones flotantes-->
 <div class="fab-container">
     <div>
-        <!--Para Agregar -->
         <a routerLink="/zonas/agregar">
             <button matTooltipPosition="left" mat-raised-button mat-mini-fab class="fab-secondary" color="primary"
                 matTooltip="Agregar"><span class="material-icons">add</span></button>
@@ -14,33 +11,21 @@
     </div>
 </div>
 
-
 <div class="row">
-
     <div *ngFor="let item of lZonas" class="col-md-3" style="margin-bottom: 2rem;">
-
         <mat-card class="example-card" [class.zona-inactiva]="item.bEstado === false">
-            <!--Imagen de Lista-->
             <mat-card-title style="text-align: center;">{{item.sNombre}}</mat-card-title>
-
             <mat-card-subtitle style="text-align: center;">
                 <span class="badge-estado" [class.badge-inactivo]="item.bEstado === false">{{item.sEstado}}</span>
             </mat-card-subtitle>
-
-            <img mat-card-image alt="item.sNombre" class="tamanioImagen" src={{item.sRutaImagen}}>
-
-            <!--Acciones-->
+            <img mat-card-image [alt]="item.sNombre" class="tamanioImagen" [src]="item.sRutaImagen">
             <mat-card-actions>
                 <button mat-raised-button color="accent" (click)="fnVerZona(item.nIdZona)">Editar</button>
-
                 <button *ngIf="item.bEstado !== false" mat-raised-button color="warn"
                     (click)="fnCambiarEstado(item, false)">Dar de baja</button>
-
                 <button *ngIf="item.bEstado === false" mat-raised-button color="primary"
                     (click)="fnCambiarEstado(item, true)">Activar</button>
             </mat-card-actions>
         </mat-card>
-
     </div>
-
 </div>

@@ -1,137 +1,96 @@
-<div class="header-app" style="margin-top:1rem;">
-    <h1 style=" font-weight: bold;">Productos</h1>
+<div class="header-app">
+    <h1 id="tituloProductos">Productos</h1>
 </div>
 
-<div class="form row">
-
+<div class="barra-filtros row">
     <div class="col-md-5">
-        <mat-form-field appearance="standard" style="width: 90%;">
+        <mat-form-field appearance="standard">
             <mat-label>Filtro</mat-label>
             <input matInput (keyup)="fnFiltrarTabla($event)" placeholder="Buscar" #input>
         </mat-form-field>
     </div>
-
     <div class="col-md-2">
-
-        <mat-form-field class="selectEstado" appearance="fill">
-            <mat-label>Almacen</mat-label>
+        <mat-form-field appearance="fill">
+            <mat-label>Almacén</mat-label>
             <mat-select [formControl]="fAlmacen" (selectionChange)="fnListarProductos()">
                 <mat-option [value]="0">Todos</mat-option>
-                <mat-option *ngFor="let opc of listaAlmacenes" [value]="opc.nIdAlmacen">
-                    {{opc.sNombreAlmacen}}
-                </mat-option>
+                <mat-option *ngFor="let opc of listaAlmacenes" [value]="opc.nIdAlmacen">{{opc.sNombreAlmacen}}</mat-option>
             </mat-select>
         </mat-form-field>
-
     </div>
-
-
     <div class="col-md-2">
-        <mat-form-field class="selectEstado" appearance="fill">
+        <mat-form-field appearance="fill">
             <mat-label>Categoría</mat-label>
             <mat-select [formControl]="fCategoria" (selectionChange)="fnListarProductos()">
                 <mat-option [value]="0">Todas</mat-option>
-                <mat-option *ngFor="let opc of listaCategorias" [value]="opc.nIdCategoria">
-                    {{opc.sNombreCategoria}}
-                </mat-option>
+                <mat-option *ngFor="let opc of listaCategorias" [value]="opc.nIdCategoria">{{opc.sNombreCategoria}}</mat-option>
             </mat-select>
         </mat-form-field>
     </div>
-
-    
-    <div class="col-md-3">
-        <div class="example-button-row botones ">
-
-            <button mat-raised-button (click)="fnCleanFilter()">Limpiar</button>
-
-            <button mat-raised-button (click)="fnListarProductos()">Consultar</button>
-
-            <button mat-raised-button color="primary" (click)="fnAbrirModal(0,0)">Agregar</button>
-
-        </div>
+    <div class="col-md-3 barra-filtros-botones">
+        <button mat-raised-button (click)="fnCleanFilter()">Limpiar</button>
+        <button mat-raised-button (click)="fnListarProductos()">Consultar</button>
+        <button mat-raised-button color="primary" (click)="fnAbrirModal(0,0)">Agregar</button>
     </div>
-
-
 </div>
 
 <div class="mat-elevation-z8">
-
-    <table mat-table [dataSource]="dsProducto" matSort aria-describedby="TablaProductos" >
-      
-        <!-- Codigo -->
-        <ng-container matColumnDef="nIdCatProd">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId" id="Codigo"> Código </th>
-            <td mat-cell *matCellDef="let element"> {{element.nIdCatProd}} </td>
-        </ng-container>
-
-        <!-- Nombre -->
-        <ng-container matColumnDef="sNombreAlmacen">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaNombre" id="NombreAlmacen"> Almacen </th>
-            <td mat-cell *matCellDef="let element"> {{element.sNombreAlmacen}} </td>
-        </ng-container>
-
-           <!-- Rol -->
-           <ng-container matColumnDef="sNombreCategoria">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaNombre" id="NombreCategoria"> Categoría </th>
-            <td mat-cell *matCellDef="let element"> {{element.sNombreCategoria}} </td>
-        </ng-container>
-
-        <!-- Producto -->
-        <ng-container matColumnDef="sNombreProducto">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsProducto" id="Producto"> Producto </th>
-            <td mat-cell *matCellDef="let element"> {{element.sNombreProducto}} </td>
-        </ng-container>
-
-        <!-- Cantidad -->
-        <ng-container matColumnDef="nCantidad">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaCantidad" id="Cantidad"> Cantidad </th>
-            <td mat-cell *matCellDef="let element" class="clsQanty"> {{element.nCantidad}} </td>
-        </ng-container>
-
-        <!-- Unidad de Medida -->
-        <ng-container matColumnDef="sNombreUM">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaCantidad" id="NombreUM"> U.M </th>
-            <td mat-cell *matCellDef="let element"> {{element.sNombreUM}} </td>
-        </ng-container>
-
-        <!-- Precio -->
-        <ng-container matColumnDef="nPrecio">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaCantidad" id="Precio"> Precio </th>
-            <td mat-cell *matCellDef="let element"> {{element.nPrecio}} </td>
-        </ng-container>
-
-        <!-- FechaVenc -->
-        <ng-container matColumnDef="dFechaVenc">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaCantidad" id="FechaVenc"> FechaVenc </th>
-            <td mat-cell *matCellDef="let element"> {{element.dFechaVenc}} </td>
-        </ng-container>
-
-        <!-- Estado -->
-        <ng-container matColumnDef="sEstado">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaCantidad" id="Estado"> Estado </th>
-            <td mat-cell *matCellDef="let element"> {{element.sEstado}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="Acciones">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaAcciones" id="Accion"> Acciones </th>
-            <td mat-cell *matCellDef="let element">
-                <div class="example-button-row ">
-                   
-                    <button *ngIf="element.sEstado=='Activo'" mat-raised-button color="warn"
-                        (click)="fnCambiarEstado(element.nIdProducto,0)">Eliminar</button>
-                    <button *ngIf="element.sEstado=='Inactivo'" mat-raised-button class="buttonActive"
-                        (click)="fnCambiarEstado(element.nIdProducto,1)">Activar</button>
-                </div>
-
-            </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-        <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell" colspan="4">No se encontraron datos con el filtro "{{input.value}}"</td>
-        </tr>
-    </table>
+    <div class="tabla-scroll tabla-10col">
+        <table mat-table [dataSource]="dsProducto" matSort aria-describedby="tituloProductos">
+            <ng-container matColumnDef="nIdCatProd">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Código</th>
+                <td mat-cell *matCellDef="let element">{{element.nIdCatProd}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sNombreAlmacen">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Almacén</th>
+                <td mat-cell *matCellDef="let element">{{element.sNombreAlmacen}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sNombreCategoria">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Categoría</th>
+                <td mat-cell *matCellDef="let element">{{element.sNombreCategoria}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sNombreProducto">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Producto</th>
+                <td mat-cell *matCellDef="let element">{{element.sNombreProducto}}</td>
+            </ng-container>
+            <ng-container matColumnDef="nCantidad">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Cantidad</th>
+                <td mat-cell *matCellDef="let element">{{element.nCantidad}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sNombreUM">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>U.M.</th>
+                <td mat-cell *matCellDef="let element">{{element.sNombreUM}}</td>
+            </ng-container>
+            <ng-container matColumnDef="nPrecio">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio</th>
+                <td mat-cell *matCellDef="let element">{{element.nPrecio}}</td>
+            </ng-container>
+            <ng-container matColumnDef="dFechaVenc">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Vencimiento</th>
+                <td mat-cell *matCellDef="let element">{{element.dFechaVenc}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sEstado">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+                <td mat-cell *matCellDef="let element">{{element.sEstado}}</td>
+            </ng-container>
+            <ng-container matColumnDef="Acciones">
+                <th mat-header-cell *matHeaderCellDef class="col-acciones">Acciones</th>
+                <td mat-cell *matCellDef="let element" class="col-acciones">
+                    <div class="acciones">
+                        <button mat-raised-button color="accent" (click)="fnAbrirModal(1,element.nIdCatProd)">Editar</button>
+                        <button *ngIf="element.sEstado=='Activo'" mat-raised-button color="warn"
+                            (click)="fnCambiarEstado(element.nIdProducto,0)">Eliminar</button>
+                        <button *ngIf="element.sEstado=='Inactivo'" mat-raised-button class="boton-activar"
+                            (click)="fnCambiarEstado(element.nIdProducto,1)">Activar</button>
+                    </div>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell celda-sin-datos" colspan="10">No se encontraron productos con el filtro "{{input.value}}"</td>
+            </tr>
+        </table>
+    </div>
     <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
 </div>

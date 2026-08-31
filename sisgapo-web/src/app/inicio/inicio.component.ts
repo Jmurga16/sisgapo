@@ -1,4 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import {
+  PanelPorAlmacen,
+  PanelPorCategoria,
+  PanelPorVencer,
+  PanelResumen
+} from 'src/app/shared/models';
 import { PanelService } from './panel.service';
 
 @Component({
@@ -7,12 +13,9 @@ import { PanelService } from './panel.service';
   styleUrls: ['./inicio.component.css']
 })
 export class InicioComponent implements OnInit {
-
-  //#region Variables
   bCargando: boolean = true;
   bError: boolean = false;
-
-  oResumen: any = {
+  oResumen: PanelResumen = {
     nAlmacenes: 0,
     nProductos: 0,
     nCategorias: 0,
@@ -23,15 +26,13 @@ export class InicioComponent implements OnInit {
     nVencidos: 0
   };
 
-  lPorAlmacen: any[] = [];
-  lPorCategoria: any[] = [];
-  lPorVencer: any[] = [];
-
-  //Referencias para dibujar las barras en proporción al mayor valor
+  lPorAlmacen: PanelPorAlmacen[] = [];
+  lPorCategoria: PanelPorCategoria[] = [];
+  lPorVencer: PanelPorVencer[] = [];
   nMaxAlmacen: number = 0;
   nMaxCategoria: number = 0;
-
-  columnasVencer: string[] = [
+  readonly nDiasVencimiento: number = 90;
+  readonly columnasVencer: string[] = [
     'sNombreProducto',
     'sNombreAlmacen',
     'sNombreLote',
@@ -39,19 +40,14 @@ export class InicioComponent implements OnInit {
     'dFechaVenc',
     'nDiasRestantes'
   ];
-  //#endregion
-
 
   constructor(private panelService: PanelService) { }
-
 
   ngOnInit(): void {
     this.fnCargarPanel();
   }
 
-
-  //#region Cargar panel
-  async fnCargarPanel() {
+  async fnCargarPanel(): Promise<void> {
     this.bCargando = true;
     this.bError = false;
 
@@ -62,68 +58,43 @@ export class InicioComponent implements OnInit {
         this.fnCargarPorCategoria(),
         this.fnCargarPorVencer()
       ]);
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       this.bError = true;
-    }
-    finally {
+    } finally {
       this.bCargando = false;
     }
   }
-  //#endregion
 
-
-  //#region Tarjetas de resumen
-  async fnCargarResumen() {
-    const value: any = await this.panelService.fnServPanel('01', []);
-
-    if (value && value.length > 0) {
-      this.oResumen = value[0];
+  async fnCargarResumen(): Promise<void> {
+    // Opción 01: devuelve una lista de una sola fila.
+    const resumen = await this.panelService.fnServPanel<PanelResumen>('01', []);
+    if (resumen.length) {
+      this.oResumen = resumen[0];
     }
   }
-  //#endregion
 
-
-  //#region Existencias por almacén
-  async fnCargarPorAlmacen() {
-    const value: any = await this.panelService.fnServPanel('02', []);
-
-    this.lPorAlmacen = value || [];
+  async fnCargarPorAlmacen(): Promise<void> {
+    this.lPorAlmacen = await this.panelService.fnServPanel<PanelPorAlmacen>('02', []);
     this.nMaxAlmacen = this.fnMaximo(this.lPorAlmacen, 'nValor');
   }
-  //#endregion
 
-
-  //#region Existencias por categoría
-  async fnCargarPorCategoria() {
-    const value: any = await this.panelService.fnServPanel('03', []);
-
-    this.lPorCategoria = value || [];
+  async fnCargarPorCategoria(): Promise<void> {
+    this.lPorCategoria = await this.panelService.fnServPanel<PanelPorCategoria>('03', []);
     this.nMaxCategoria = this.fnMaximo(this.lPorCategoria, 'nValor');
   }
-  //#endregion
 
-
-  //#region Próximos a vencer (90 días)
-  async fnCargarPorVencer() {
-    const value: any = await this.panelService.fnServPanel('04', [90]);
-
-    this.lPorVencer = value || [];
-  }
-  //#endregion
-
-
-  //#region Utilidades de presentación
-  fnMaximo(lista: any[], sCampo: string): number {
-    if (!lista || lista.length === 0) {
-      return 0;
-    }
-    return Math.max(...lista.map(item => Number(item[sCampo]) || 0));
+  async fnCargarPorVencer(): Promise<void> {
+    this.lPorVencer = await this.panelService
+      .fnServPanel<PanelPorVencer>('04', [this.nDiasVencimiento]);
   }
 
-  //Ancho de la barra en porcentaje. Un mínimo del 2% para que una fila con
-  //valor cero siga siendo visible como fila.
+  fnMaximo<T>(lista: T[], sCampo: keyof T): number {
+    return lista.length
+      ? Math.max(...lista.map((item: T) => Number(item[sCampo]) || 0))
+      : 0;
+  }
+
   fnAncho(nValor: number, nMaximo: number): string {
     if (!nMaximo) {
       return '2%';
@@ -131,7 +102,6 @@ export class InicioComponent implements OnInit {
     return Math.max(2, Math.round((Number(nValor) / nMaximo) * 100)) + '%';
   }
 
-  //Semáforo de vencimiento: rojo <= 15 días, ámbar <= 30, normal por encima.
   fnClaseVencimiento(nDias: number): string {
     if (nDias <= 15) {
       return 'venc-critico';
@@ -141,6 +111,4 @@ export class InicioComponent implements OnInit {
     }
     return 'venc-normal';
   }
-  //#endregion
-
 }

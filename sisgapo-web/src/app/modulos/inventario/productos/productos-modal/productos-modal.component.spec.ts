@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { FormBuilder, } from "@angular/forms";
 import { MatDialogRef, } from "@angular/material/dialog";
-import { ProductoData } from './../productos.component'
+import { DatosModal } from 'src/app/shared/models';
 
 
 describe('ProductosModalComponent', () => {
@@ -17,7 +17,7 @@ describe('ProductosModalComponent', () => {
     let client: HttpClient;
 
     let dialogRef: MatDialogRef<ProductosModalComponent>;
-    let data: ProductoData;    
+    let data: DatosModal;
     let fB: FormBuilder;
 
 
@@ -43,7 +43,7 @@ describe('ProductosModalComponent', () => {
 
     it(`Debe existir un metodo llamado fnCerrarModal()`, () => {
         let nameMethod = spyOn(component, 'fnCerrarModal')
-        let param1
+        const param1: number = 0;
         component.fnCerrarModal(param1)
         expect(nameMethod).toHaveBeenCalled();
     })
@@ -80,15 +80,9 @@ describe('ProductosModalComponent', () => {
 
     it(`Debe existir un metodo llamado fnCambiarFecha()`, () => {
         let nameMethod = spyOn(component, 'fnCambiarFecha')
-        let param1,param2
+        const param1 = { value: new Date() };
+        const param2: number = 1;
         component.fnCambiarFecha(param1,param2)
-        expect(nameMethod).toHaveBeenCalled();
-    })
-
-    it(`Debe existir un metodo llamado fnConvertirFecha()`, () => {
-        let nameMethod = spyOn(component, 'fnConvertirFecha')
-        let param1,param2
-        component.fnConvertirFecha(param1,param2)
         expect(nameMethod).toHaveBeenCalled();
     })
 

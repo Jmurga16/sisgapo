@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { MatDialogRef, } from "@angular/material/dialog";
 
-import { AlmacenData } from './../Models/IAlmacen'
+import { DatosModal } from 'src/app/shared/models'
 
 
 describe('AlmacenesModalComponent', () => {
@@ -17,7 +17,7 @@ describe('AlmacenesModalComponent', () => {
     let client: HttpClient;
 
     let dialogRef: MatDialogRef<AlmacenesModalComponent>;
-    let data: AlmacenData;    
+    let data: DatosModal;
     let fB: FormBuilder;
 
 
@@ -43,7 +43,7 @@ describe('AlmacenesModalComponent', () => {
 
     it(`Debe existir un metodo llamado fnCerrarModal()`, () => {
         let nameMethod = spyOn(component, 'fnCerrarModal')
-        let param1
+        const param1: number = 0;
         component.fnCerrarModal(param1)
         expect(nameMethod).toHaveBeenCalled();
     })

@@ -1,10 +1,7 @@
 <div>
-    <!--Titulo-->
     <h1 mat-dialog-title class="clstitulo">{{sAccionModal}} Usuario</h1>
-    <!-- Formulario-->
     <form [formGroup]="formUsuario" ngNativeValidate autocomplete="off" name="Formulario" id="new-form">
 
-        <!--Formulario: Nombres-->
         <div class="row" style="padding-bottom: 1rem;">
             <div class="col-md-6">
                 <mat-form-field style="display:initial">
@@ -13,7 +10,6 @@
                         formControlName="sNombres" autocomplete="nope" name="Nombres">
                 </mat-form-field>
             </div>
-            <!--Formulario: Apellidos-->
             <div class="col-md-6">
                 <mat-form-field style="display:initial">
                     <mat-label>Apellidos</mat-label>
@@ -26,7 +22,6 @@
 
         <div class="row">
 
-            <!--Formulario: Tipo de Documento-->
             <div class="col-md-3">
                 <mat-form-field class="selectMat selectResp" appearance="fill">
                     <mat-label>Tipo Documento</mat-label>
@@ -38,7 +33,6 @@
                 </mat-form-field>
             </div>
 
-            <!--Formulario: Numero de Documento-->
             <div class="col-md-3">
                 <mat-form-field style="display:initial">
                     <mat-label>N° Documento</mat-label>
@@ -47,7 +41,6 @@
                 </mat-form-field>
             </div>
 
-            <!--Formulario: Sexo-->
             <div class="col-md-3">
                 <mat-form-field class="selectMat selectResp" appearance="fill">
                     <mat-label>Sexo</mat-label>
@@ -59,7 +52,6 @@
                 </mat-form-field>
             </div>
 
-            <!--Formulario: Rol-->
             <div class="col-md-3">
                 <mat-form-field class="selectMat selectResp" appearance="fill">
                     <mat-label>Rol</mat-label>
@@ -75,7 +67,6 @@
 
         <div class="row">
 
-            <!--Formulario: Direccion-->
             <div class="col-md-6">
                 <mat-form-field style="display:initial">
                     <mat-label>Direccion</mat-label>
@@ -84,7 +75,6 @@
                 </mat-form-field>
             </div>
 
-            <!--Formulario: Telefono-->
             <div class="col-md-3">
                 <mat-form-field style="display:initial">
                     <mat-label>Telefono</mat-label>
@@ -93,7 +83,6 @@
                 </mat-form-field>
             </div>
 
-            <!--Formulario: Fecha de Nacimiento-->
             <div class="col-md-3">
                 <mat-form-field appearance="fill" class="selectMat selectResp">
                     <mat-label>Fecha de Nacimiento</mat-label>
@@ -111,7 +100,6 @@
 
             <div class="col-md-12  justify-content-center">
 
-                <!--Formulario: Contraseña-->
                 <mat-form-field style="display:initial">
                     <mat-label>Contraseña</mat-label>
                     <input matInput type="password" formControlName="sContrasenia" name="somePassword"
@@ -122,16 +110,12 @@
 
         </div>
 
-        <!--Botones-->
-
         <div class="row" style="padding-top: 1rem;">
-            <!--Botones: Grabar-->
             <div class="col-md-6">
                 <button type="button" color="primary" style="width: 100%;" mat-raised-button
                     (click)="fnGrabar()">Grabar</button>
             </div>
 
-            <!--Botones: Cancelar-->
             <div class="col-md-6">
                 <button type="button" color="warn" style="width: 100%;" mat-raised-button
                     (click)="fnCerrarModal(0)">Cancelar</button>

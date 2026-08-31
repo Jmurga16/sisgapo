@@ -1,71 +1,56 @@
-<div class="header-app" style="margin-top:1rem;">
-    <h1 style=" font-weight: bold;">Categorías</h1>
+<div class="header-app">
+    <h1 id="tituloCategorias">Categorías</h1>
 </div>
 
-<div class="form row">
-
+<div class="barra-filtros row">
     <div class="col-md-6">
-        <mat-form-field appearance="standard" style="width: 90%;">
+        <mat-form-field appearance="standard">
             <mat-label>Filtro</mat-label>
             <input matInput (keyup)="fnFiltrarTabla($event)" placeholder="Buscar" #input>
         </mat-form-field>
     </div>
-    <div class="col-md-1">
-        <div class="example-button-row botones ">
-            <button mat-raised-button color="primary" (click)="fnAbrirModal(0,0)">Agregar</button>
-        </div>
+    <div class="col-md-6 barra-filtros-botones">
+        <button mat-raised-button color="primary" (click)="fnAbrirModal(0,0)">Agregar</button>
     </div>
 </div>
 
 <div class="mat-elevation-z8">
-
-    <table mat-table [dataSource]="dsCategoria" matSort aria-describedby="TablaCategorias" >
-      
-        <!-- Codigo -->
-        <ng-container matColumnDef="nIdCategoria">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId" id="Codigo"> Código </th>
-            <td mat-cell *matCellDef="let element"> {{element.nIdCategoria}} </td>
-        </ng-container>
-
-        <!-- Nombre -->
-        <ng-container matColumnDef="sNombre">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaNombre" id="Nombre"> Nombre de Categoría </th>
-            <td mat-cell *matCellDef="let element"> {{element.sNombre}} </td>
-        </ng-container>
-
-        <!-- Rol -->
-        <ng-container matColumnDef="sDescripcion">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaDesc" id="Descripcion"> Descripción </th>
-            <td mat-cell *matCellDef="let element"> {{element.sDescripcion}} </td>
-        </ng-container>
-
-        <!-- Estado -->
-        <ng-container matColumnDef="sEstado">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaId" id="Estado"> Estado </th>
-            <td mat-cell *matCellDef="let element"> {{element.sEstado}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="Acciones">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="clsColumnaAcciones" id="Accion"> Acciones </th>
-            <td mat-cell *matCellDef="let element">
-                <div class="example-button-row ">
-                    <button mat-raised-button color="accent" style="margin-right: 8px;"
-                        (click)="fnAbrirModal(1,element.nIdCategoria)">Editar</button>
-                    <button *ngIf="element.sEstado=='Activo'" mat-raised-button color="warn"
-                        (click)="fnCambiarEstado(element.nIdCategoria,0)">Eliminar</button>
-                    <button *ngIf="element.sEstado=='Inactivo'" mat-raised-button class="buttonActive"
-                        (click)="fnCambiarEstado(element.nIdCategoria,1)">Activar</button>
-                </div>
-
-            </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-        <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell" colspan="4">No se encontraron datos con el filtro "{{input.value}}"</td>
-        </tr>
-    </table>
+    <div class="tabla-scroll tabla-5col">
+        <table mat-table [dataSource]="dsCategoria" matSort aria-describedby="tituloCategorias">
+            <ng-container matColumnDef="nIdCategoria">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Código</th>
+                <td mat-cell *matCellDef="let element">{{element.nIdCategoria}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sNombre">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre de Categoría</th>
+                <td mat-cell *matCellDef="let element">{{element.sNombre}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sDescripcion">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Descripción</th>
+                <td mat-cell *matCellDef="let element">{{element.sDescripcion}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sEstado">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+                <td mat-cell *matCellDef="let element">{{element.sEstado}}</td>
+            </ng-container>
+            <ng-container matColumnDef="Acciones">
+                <th mat-header-cell *matHeaderCellDef class="col-acciones">Acciones</th>
+                <td mat-cell *matCellDef="let element" class="col-acciones">
+                    <div class="acciones">
+                        <button mat-raised-button color="accent" (click)="fnAbrirModal(1,element.nIdCategoria)">Editar</button>
+                        <button *ngIf="element.sEstado=='Activo'" mat-raised-button color="warn"
+                            (click)="fnCambiarEstado(element.nIdCategoria,0)">Eliminar</button>
+                        <button *ngIf="element.sEstado=='Inactivo'" mat-raised-button class="boton-activar"
+                            (click)="fnCambiarEstado(element.nIdCategoria,1)">Activar</button>
+                    </div>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell celda-sin-datos" colspan="5">No se encontraron categorías con el filtro "{{input.value}}"</td>
+            </tr>
+        </table>
+    </div>
     <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
 </div>

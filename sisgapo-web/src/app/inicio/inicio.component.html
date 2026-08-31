@@ -5,7 +5,6 @@
         <p class="subtitulo">Estado del inventario a día de hoy</p>
     </div>
 
-    <!-- Estados de carga y error -->
     <div *ngIf="bCargando" class="aviso">Cargando información…</div>
 
     <div *ngIf="bError && !bCargando" class="aviso aviso-error">
@@ -15,7 +14,6 @@
 
     <ng-container *ngIf="!bCargando && !bError">
 
-        <!-- ============ Tarjetas de resumen ============ -->
         <div class="tarjetas">
 
             <mat-card class="tarjeta">
@@ -53,7 +51,6 @@
         </div>
 
 
-        <!-- ============ Existencias ============ -->
         <div class="row">
 
             <div class="col-md-6">
@@ -101,7 +98,6 @@
         </div>
 
 
-        <!-- ============ Próximos a vencer ============ -->
         <mat-card class="bloque">
             <h2>Próximos a vencer <span class="h2-nota">(90 días)</span></h2>
 

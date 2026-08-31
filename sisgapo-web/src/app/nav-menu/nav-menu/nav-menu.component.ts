@@ -1,37 +1,28 @@
-import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
-import { Router } from "@angular/router";
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav-menu',
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css'],
 })
-
-export class NavMenuComponent implements OnInit {
+export class NavMenuComponent implements OnInit, OnDestroy {
   mobileQuery: MediaQueryList;
-  Rol: number;
-  @Output() salida: EventEmitter<any> = new EventEmitter();
-
-  isExpanded = true;
-  showSubmenu: boolean = false;
-  showSubSubMenu: boolean = false;
-  isShowing = false;
-
-  listaNav = [
+  Rol: number = 0;
+  readonly listaNav = [
     { id: 1, name: 'Inicio', route: 'inicio', icon: 'dashboard', subMenu: 0, mostrar: false },
     { id: 2, name: 'Usuarios', route: 'usuarios', icon: 'manage_accounts', subMenu: 0, mostrar: false },
     { id: 3, name: 'Almacenes', route: 'almacenes', icon: 'store', subMenu: 0, mostrar: false },
     { id: 4, name: 'Zonas', route: 'zonas', icon: 'room', subMenu: 0, mostrar: false },
     { id: 5, name: 'Inventario', route: '', icon: 'view_in_ar', subMenu: 2, mostrar: false },
   ];
-
-  listaSubNav = [
+  readonly listaSubNav = [
     { idHijo: 1, idPadre: 5, name: 'Categorías', route: 'categoria', icon: 'category' },
     { idHijo: 2, idPadre: 5, name: 'Productos', route: 'productos', icon: 'inventory_2' },
   ];
 
-  private _mobileQueryListener: () => void;
+  private readonly mobileQueryListener: () => void;
 
   constructor(
     changeDetectorRef: ChangeDetectorRef,
@@ -39,60 +30,32 @@ export class NavMenuComponent implements OnInit {
     private router: Router
   ) {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
-    this._mobileQueryListener = () => changeDetectorRef.detectChanges();
-    this.mobileQuery.addEventListener('change', this._mobileQueryListener);
+    this.mobileQueryListener = () => changeDetectorRef.detectChanges();
+    this.mobileQuery.addEventListener('change', this.mobileQueryListener);
+  }
 
+  ngOnInit(): void {
+    this.Rol = Number(localStorage.getItem('Rol')) || 0;
   }
 
   ngOnDestroy(): void {
-    this.mobileQuery.removeEventListener('change', this._mobileQueryListener);
+    this.mobileQuery.removeEventListener('change', this.mobileQueryListener);
   }
 
-  shouldRun = true;
-
-  ngOnInit(): void {
-    
-    this.Rol = (parseInt(localStorage.getItem("Rol")));
-    if (this.Rol> 0) {
-      return
-    }
-    else{
-      this.Rol=0;
-    }
-
+  fnRuteo(ruta: string): void {
+    this.router.navigateByUrl(`/${ruta}`);
   }
 
-  fnRuteo(ruta) {
-
-    let sRuta = `/${ruta}`
-
-    this.router.navigateByUrl(sRuta);
-
+  fnMostrar(index: number): void {
+    this.listaNav[index].mostrar = !this.listaNav[index].mostrar;
   }
 
-  fnMostrar(index) {
-
-    let bEstado: boolean;
-
-    if (this.listaNav[index].mostrar) {
-      bEstado = false;
-    }
-    else {
-      bEstado = true;
-    }
-
-    this.listaNav[index].mostrar = bEstado
-
-  }
-  fnClean() {
-    this.salida.emit(0);
+  fnClean(): void {
     localStorage.clear();
     this.Rol = 0;
   }
 
-  fnSetEvent(event) {
+  fnSetEvent(event: number): void {
     this.Rol = event;
   }
-
 }
-
