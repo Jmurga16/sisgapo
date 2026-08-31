@@ -71,28 +71,23 @@ BEGIN
 
 	ELSE IF @sOpcion = '03'  --INSERTAR CATEGORÍAS
 	BEGIN
+		SET @sNombre = LTRIM(RTRIM((SELECT valor FROM @tParametro WHERE id = 1)));
+		SET @sDescripcion = LTRIM(RTRIM((SELECT valor FROM @tParametro WHERE id = 2)));
+
+		IF EXISTS (
+			SELECT 1
+			FROM TBL_CATEGORIA
+			WHERE LOWER(LTRIM(RTRIM(sNombre))) = LOWER(@sNombre)
+		)
 		BEGIN
-
-			SET @sNombre		  = (SELECT valor FROM @tParametro WHERE id = 1);
-			SET @sDescripcion		= (SELECT valor FROM @tParametro WHERE id = 2);
-			
-		END	
-
+			SELECT '0|Categoría ya registrada'
+		END
+		ELSE
 		BEGIN
-			IF((SELECT COUNT(*) FROM TBL_CATEGORIA)<1)
-			BEGIN
-				INSERT INTO [TBL_CATEGORIA]
-						(sNombre,  sDescripcion, bEstado)
-				VALUES(@sNombre, @sDescripcion,  1)
+			INSERT INTO [TBL_CATEGORIA] (sNombre, sDescripcion, bEstado)
+			VALUES (@sNombre, @sDescripcion, 1)
 
-				SELECT '1|Se registró con éxito'
-			END
-			ELSE
-			BEGIN
-				SELECT '0|Categoría ya registrada'
-			END
-			
-      		
+			SELECT '1|Se registró con éxito'
 		END
 		
 	END
@@ -101,11 +96,22 @@ BEGIN
 	ELSE IF @sOpcion = '04'  -- EDITAR CATEGORÍAS
 	BEGIN
 		BEGIN
-			SET @sNombre	  = (SELECT valor FROM @tParametro WHERE id = 1);
-			SET @sDescripcion = (SELECT valor FROM @tParametro WHERE id = 2);
+			SET @sNombre	  = LTRIM(RTRIM((SELECT valor FROM @tParametro WHERE id = 1)));
+			SET @sDescripcion = LTRIM(RTRIM((SELECT valor FROM @tParametro WHERE id = 2)));
 			SET @nIdCategoria = (SELECT valor FROM @tParametro WHERE id = 3);
 		END	
-                              
+
+		IF EXISTS (
+			SELECT 1
+			FROM TBL_CATEGORIA
+			WHERE LOWER(LTRIM(RTRIM(sNombre))) = LOWER(@sNombre)
+			  AND nIdCategoria <> @nIdCategoria
+		)
+		BEGIN
+			SELECT '0|Categoría ya registrada'
+			RETURN
+		END
+
 			UPDATE [TBL_CATEGORIA]                           
 				SET 
 				sNombre       = @sNombre,
@@ -113,7 +119,7 @@ BEGIN
 			WHERE 
 				nIdCategoria = @nIdCategoria                   
 
-			SELECT '1|Se actualizó con éxito'
+			SELECT IIF(@@ROWCOUNT = 1, '1|Se actualizó con éxito', '0|Categoría no encontrada')
         
 	END;                            
 
