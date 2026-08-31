@@ -25,6 +25,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
@@ -86,6 +87,7 @@ import { InicioComponent } from './inicio/inicio.component';
     MatSidenavModule,
     MatTableModule,
     MatToolbarModule,
+    MatTooltipModule,
     NoopAnimationsModule,
     NgbModule,
     NgSelectModule

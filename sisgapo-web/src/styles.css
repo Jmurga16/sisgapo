@@ -16,6 +16,19 @@ body {
     display: none;
 }
 
+.pagina-contenido {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 1.5rem clamp(1rem, 2vw, 2rem) 3rem;
+}
+
+.fab-listado {
+    position: fixed !important;
+    top: 5.3rem;
+    right: 2rem;
+    z-index: 101;
+}
+
 .header-app {
     text-align: center;
     margin-top: 1rem;
@@ -27,8 +40,12 @@ body {
     font-size: 1.75rem;
 }
 
+.pagina-contenido .header-app {
+    margin-top: 0;
+}
+
 .barra-filtros {
-    align-items: flex-end;
+    align-items: center;
     margin-bottom: .5rem;
 }
 
@@ -40,8 +57,8 @@ body {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: flex-end;
-    padding-bottom: .75rem;
+    justify-content: flex-start;
+    padding-bottom: 1.34375em;
 }
 
 .barra-filtros-botones > * {
@@ -52,6 +69,26 @@ body {
 
 .barra-filtros-botones > *:first-child {
     margin-left: 0;
+}
+
+.barra-filtros-botones mat-icon {
+    margin-right: .35rem;
+}
+
+.boton-limpiar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 7.5rem;
+    height: 3.25rem;
+    padding: 0 1.25rem;
+    line-height: normal;
+    font-weight: 500;
+}
+
+.boton-limpiar .mat-button-wrapper {
+    display: inline-flex;
+    align-items: center;
 }
 
 .tabla-scroll {
@@ -79,23 +116,51 @@ body {
 .col-acciones {
     width: 1%;
     white-space: nowrap;
-    text-align: right;
+    text-align: left;
+    padding-left: 1rem;
     padding-right: 1rem;
+}
+
+.estado-registro {
+    display: inline-flex;
+    padding: .2rem .65rem;
+    border-radius: 1rem;
+    background: #e6f4ea;
+    color: #1e7e34;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+.estado-registro-inactivo {
+    background: #fdeaea;
+    color: #b02a37;
 }
 
 .acciones {
     display: flex;
     flex-wrap: nowrap;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
+    gap: 1rem;
 }
 
-.acciones > * {
-    margin-left: .5rem;
+.acciones-formulario {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .75rem;
+    margin-top: .5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, .12);
 }
 
-.acciones > *:first-child {
-    margin-left: 0;
+.acciones-formulario .mat-button-base {
+    min-width: 7rem;
+}
+
+.acciones-formulario mat-icon {
+    margin-right: .35rem;
 }
 
 .boton-activar {
@@ -113,6 +178,15 @@ body {
 }
 
 @media (max-width: 768px) {
+    .pagina-contenido {
+        padding: 1rem 1rem 2rem;
+    }
+
+    .fab-listado {
+        top: 4.5rem;
+        right: 1rem;
+    }
+
     .header-app h1 {
         font-size: 1.35rem;
     }
@@ -120,6 +194,11 @@ body {
     .barra-filtros-botones {
         justify-content: flex-start;
         padding-bottom: .25rem;
+    }
+
+    .boton-limpiar {
+        width: 100%;
+        height: 3rem;
     }
 
     .mat-paginator .mat-paginator-container {
