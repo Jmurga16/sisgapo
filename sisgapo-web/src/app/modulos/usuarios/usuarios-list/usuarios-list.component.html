@@ -1,16 +1,22 @@
+<section class="pagina-contenido" aria-labelledby="tituloUsuarios">
 <div class="header-app">
     <h1 id="tituloUsuarios">Gestión de {{appName}}</h1>
 </div>
 
+<button class="fab-listado" mat-mini-fab color="primary" matTooltip="Agregar usuario"
+    matTooltipPosition="left" aria-label="Agregar usuario" (click)="fnAbrirModal(0,0)">
+    <mat-icon>add</mat-icon>
+</button>
+
 <div class="barra-filtros row">
     <div class="col-md-5">
-        <mat-form-field>
+        <mat-form-field appearance="outline">
             <mat-label>Nombre</mat-label>
             <input matInput type="text" [formControl]="fNombre">
         </mat-form-field>
     </div>
     <div class="col-md-2">
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
             <mat-label>Rol</mat-label>
             <mat-select [formControl]="fRol">
                 <mat-option *ngFor="let opc of lRoles" [value]="opc.valor">{{opc.nombre}}</mat-option>
@@ -18,7 +24,7 @@
         </mat-form-field>
     </div>
     <div class="col-md-2">
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
             <mat-label>Estado</mat-label>
             <mat-select [formControl]="fEstado">
                 <mat-option *ngFor="let opc of lEstados" [value]="opc.valor">{{opc.nombre}}</mat-option>
@@ -26,8 +32,10 @@
         </mat-form-field>
     </div>
     <div class="col-md-3 barra-filtros-botones">
-        <button mat-raised-button (click)="fnFiltrarUsuarios()">Consultar</button>
-        <button mat-raised-button color="primary" (click)="fnAbrirModal(0,0)">Agregar</button>
+        <button class="boton-limpiar" mat-stroked-button type="button" (click)="fnLimpiarFiltros()">
+            <mat-icon>filter_alt_off</mat-icon>
+            Limpiar
+        </button>
     </div>
 </div>
 
@@ -52,7 +60,11 @@
             </ng-container>
             <ng-container matColumnDef="sEstado">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-                <td mat-cell *matCellDef="let element">{{element.sEstado}}</td>
+                <td mat-cell *matCellDef="let element">
+                    <span class="estado-registro" [class.estado-registro-inactivo]="element.sEstado === 'Inactivo'">
+                        {{element.sEstado}}
+                    </span>
+                </td>
             </ng-container>
             <ng-container matColumnDef="Acciones">
                 <th mat-header-cell *matHeaderCellDef class="col-acciones">Acciones</th>
@@ -60,7 +72,7 @@
                     <div class="acciones" *ngIf="element.nIdUsuario!=1">
                         <button mat-raised-button color="accent" (click)="fnAbrirModal(1,element.nIdUsuario)">Editar</button>
                         <button *ngIf="element.sEstado=='Activo'" mat-raised-button color="warn"
-                            (click)="fnCambiarEstado(element.nIdUsuario,0)">Eliminar</button>
+                            (click)="fnCambiarEstado(element.nIdUsuario,0)">Desactivar</button>
                         <button *ngIf="element.sEstado=='Inactivo'" mat-raised-button class="boton-activar"
                             (click)="fnCambiarEstado(element.nIdUsuario,1)">Activar</button>
                     </div>
@@ -72,3 +84,4 @@
     </div>
     <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
 </div>
+</section>

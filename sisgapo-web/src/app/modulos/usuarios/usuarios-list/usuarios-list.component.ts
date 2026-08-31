@@ -1,10 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { merge, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import {
   AccionModal,
@@ -23,7 +25,7 @@ import { UsuariosService } from '../usuarios.service';
   templateUrl: './usuarios-list.component.html',
   styleUrls: ['./usuarios-list.component.css'],
 })
-export class UsuariosListComponent implements OnInit, AfterViewInit {
+export class UsuariosListComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly appName: string = 'Usuarios';
   readonly displayedColumns: string[] = [
     'nIdUsuario',
@@ -45,10 +47,11 @@ export class UsuariosListComponent implements OnInit, AfterViewInit {
     { valor: 3, nombre: 'Asistente' },
   ];
 
-  fNombre = new FormControl();
-  fRol = new FormControl();
-  fEstado = new FormControl();
+  fNombre = new FormControl('');
+  fRol = new FormControl(0);
+  fEstado = new FormControl(2);
   dsUsuarios = new MatTableDataSource<UsuarioListado>([]);
+  private filtrosSubscription: Subscription;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -59,12 +62,24 @@ export class UsuariosListComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit(): void {
-    this.fnListarUsuarios();
+    this.filtrosSubscription = merge(
+      this.fNombre.valueChanges,
+      this.fRol.valueChanges,
+      this.fEstado.valueChanges
+    ).pipe(debounceTime(250)).subscribe(() => this.fnFiltrarUsuarios());
+
+    this.fnFiltrarUsuarios();
   }
 
   ngAfterViewInit(): void {
     this.dsUsuarios.paginator = this.paginator;
     this.dsUsuarios.sort = this.sort;
+  }
+
+  ngOnDestroy(): void {
+    if (this.filtrosSubscription) {
+      this.filtrosSubscription.unsubscribe();
+    }
   }
 
   async fnListarUsuarios(): Promise<void> {
@@ -87,9 +102,16 @@ export class UsuariosListComponent implements OnInit, AfterViewInit {
 
     dialogRef.afterClosed().subscribe((result: number | undefined) => {
       if (result !== undefined) {
-        this.fnListarUsuarios();
+        this.fnFiltrarUsuarios();
       }
     });
+  }
+
+  fnLimpiarFiltros(): void {
+    this.fNombre.setValue('', { emitEvent: false });
+    this.fRol.setValue(0, { emitEvent: false });
+    this.fEstado.setValue(2, { emitEvent: false });
+    this.fnFiltrarUsuarios();
   }
 
   async fnFiltrarUsuarios(): Promise<void> {
@@ -110,7 +132,7 @@ export class UsuariosListComponent implements OnInit, AfterViewInit {
   async fnCambiarEstado(nIdUsuario: number, estado: ValorEstado): Promise<void> {
     const activar = estado === ValorEstado.Activo;
     const confirmacion = await Swal.fire({
-      title: activar ? '¿Desea activar el usuario?' : '¿Desea eliminar el usuario?',
+      title: activar ? '¿Desea activar el usuario?' : '¿Desea desactivar el usuario?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -133,7 +155,7 @@ export class UsuariosListComponent implements OnInit, AfterViewInit {
         await Swal.fire({
           title: activar
             ? 'Se activó el usuario con éxito'
-            : 'Se eliminó el usuario con éxito',
+            : 'Se desactivó el usuario con éxito',
           icon: 'success',
           timer: 3500
         });

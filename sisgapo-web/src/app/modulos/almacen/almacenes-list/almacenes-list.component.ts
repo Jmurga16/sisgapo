@@ -59,6 +59,15 @@ export class AlmacenesListComponent implements OnInit, AfterViewInit {
     }
   }
 
+  fnLimpiarFiltro(input: HTMLInputElement): void {
+    input.value = '';
+    this.dsAlmacenes.filter = '';
+
+    if (this.dsAlmacenes.paginator) {
+      this.dsAlmacenes.paginator.firstPage();
+    }
+  }
+
   fnAbrirModal(accion: AccionModal, nIdAlmacen: number): void {
     const datos: DatosModal = { accion, nId: nIdAlmacen };
     const dialogRef = this.dialog.open(AlmacenesModalComponent, {
@@ -87,7 +96,7 @@ export class AlmacenesListComponent implements OnInit, AfterViewInit {
 
   async fnCambiarEstado(nIdAlmacen: number, estado: ValorEstado): Promise<void> {
     const sTitulo = estado === ValorEstado.Inactivo
-      ? '¿Desea eliminar el almacén?'
+      ? '¿Desea desactivar el almacén?'
       : '¿Desea activar el almacén?';
     const confirmacion = await Swal.fire({
       title: sTitulo,
@@ -104,14 +113,17 @@ export class AlmacenesListComponent implements OnInit, AfterViewInit {
     }
 
     try {
-      // Opción 07: activa o da de baja el almacén.
+      // Opción 07: activa o desactiva el almacén.
       const respuesta = await this.almacenesService.fnServAlmacenes<RespuestaApi>(
         '07',
         [nIdAlmacen, estado]
       );
 
       if (respuesta.cod === '1') {
-        await Swal.fire({ title: respuesta.mensaje, icon: 'success', timer: 3500 });
+        const mensaje = estado === ValorEstado.Activo
+          ? 'Se activó el almacén con éxito'
+          : 'Se desactivó el almacén con éxito';
+        await Swal.fire({ title: mensaje, icon: 'success', timer: 3500 });
       } else {
         await Swal.fire({
           title: 'No se pudo cambiar el estado',

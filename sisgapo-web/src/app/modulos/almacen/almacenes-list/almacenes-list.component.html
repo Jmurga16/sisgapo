@@ -1,16 +1,25 @@
+<section class="pagina-contenido" aria-labelledby="tituloAlmacenes">
 <div class="header-app">
     <h1 id="tituloAlmacenes">Gestión de {{appName}}</h1>
 </div>
 
+<button class="fab-listado" mat-mini-fab color="primary" matTooltip="Agregar almacén"
+    matTooltipPosition="left" aria-label="Agregar almacén" (click)="fnAbrirModal(0,0)">
+    <mat-icon>add</mat-icon>
+</button>
+
 <div class="barra-filtros row">
     <div class="col-md-6">
-        <mat-form-field appearance="standard">
+        <mat-form-field appearance="outline">
             <mat-label>Filtro</mat-label>
-            <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" #input>
+            <input matInput (input)="applyFilter($event)" placeholder="Buscar" #input>
         </mat-form-field>
     </div>
     <div class="col-md-6 barra-filtros-botones">
-        <button mat-raised-button color="primary" (click)="fnAbrirModal(0,0)">Agregar</button>
+        <button class="boton-limpiar" mat-stroked-button type="button" (click)="fnLimpiarFiltro(input)">
+            <mat-icon>filter_alt_off</mat-icon>
+            Limpiar
+        </button>
     </div>
 </div>
 
@@ -34,7 +43,11 @@
 
             <ng-container matColumnDef="sEstado">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-estado" id="Estado"> Estado </th>
-                <td mat-cell *matCellDef="let element"> {{element.sEstado}} </td>
+                <td mat-cell *matCellDef="let element">
+                    <span class="estado-registro" [class.estado-registro-inactivo]="element.sEstado === 'Inactivo'">
+                        {{element.sEstado}}
+                    </span>
+                </td>
             </ng-container>
 
             <ng-container matColumnDef="Acciones">
@@ -44,7 +57,7 @@
                         <button mat-raised-button color="accent"
                             (click)="fnAbrirModal(1,element.nIdAlmacen)">Editar</button>
                         <button *ngIf="element.sEstado=='Activo'" mat-raised-button color="warn"
-                            (click)="fnCambiarEstado(element.nIdAlmacen,0)">Eliminar</button>
+                            (click)="fnCambiarEstado(element.nIdAlmacen,0)">Desactivar</button>
                         <button *ngIf="element.sEstado=='Inactivo'" mat-raised-button class="boton-activar"
                             (click)="fnCambiarEstado(element.nIdAlmacen,1)">Activar</button>
                     </div>
@@ -64,3 +77,4 @@
     </div>
     <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
 </div>
+</section>

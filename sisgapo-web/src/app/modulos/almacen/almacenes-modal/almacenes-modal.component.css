@@ -11,23 +11,12 @@
     padding-bottom: 1rem;
 }
 
-.fila-botones {
-    padding-top: 1rem;
-}
-
-.campo-completo,
-.boton-modal {
+.campo-completo {
     width: 100%;
 }
 
 @media (min-width: 700px) {
     .selectResp {
         bottom: .75rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .boton-modal {
-        margin-bottom: .5rem;
     }
 }
