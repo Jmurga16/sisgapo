@@ -20,11 +20,11 @@ GO
 
 --TABLA ZONAS
 INSERT INTO TBL_ZONA(sNombre,sRutaImagen)
-	VALUES('Junin','https://ddcjunin.files.wordpress.com/2021/01/cropped-portadawp.png')
+	VALUES('Junin','https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Nevado_de_Huaytapallana.jpg/960px-Nevado_de_Huaytapallana.jpg')
 INSERT INTO TBL_ZONA(sNombre,sRutaImagen)
-	VALUES('Ancash','https://camisetasdefutbol.pe/wp-content/uploads/camisetas-deportivas-futbol-ancash.jpg')
+	VALUES('Ancash','https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Nevado_Huascar%C3%A1n_%C3%81ncash.jpg/960px-Nevado_Huascar%C3%A1n_%C3%81ncash.jpg')
 INSERT INTO TBL_ZONA(sNombre,sRutaImagen)
-	VALUES('Lima','https://i.ytimg.com/vi/TrLBLghtnc4/maxresdefault.jpg')
+	VALUES('Lima','https://images.unsplash.com/photo-1531968455001-5c5272a41129?w=600&h=400&fit=crop')
 GO
 
 --TABLA USUARIOS

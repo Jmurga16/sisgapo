@@ -40,13 +40,19 @@ INSERT INTO TBL_ROL (sNombreRol) VALUES
     ('Asistente');
 GO
 
--- h=400&fit=crop mantiene todas las imágenes en proporción 3:2.
+-- Cada foto corresponde de verdad a su región; las tarjetas recortan con
+-- object-fit: cover, así que la proporción de origen no importa.
+--   Cusco y Lima: Unsplash (licencia libre, no exige atribución).
+--   Áncash, Junín y San Martín: Wikimedia Commons, CC BY-SA 4.0 —
+--     Áncash     · Nevado Huascarán, por Candy Lopez
+--     Junín      · Nevado de Huaytapallana, por Ozesama
+--     San Martín · Río Huallaga (Tarapoto), por Josue Hermoza
 INSERT INTO TBL_ZONA (sNombre, sRutaImagen) VALUES
-    ('Junín',     'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=600&h=400&fit=crop'),
-    ('Áncash',    'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=600&h=400&fit=crop'),
+    ('Junín',     'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Nevado_de_Huaytapallana.jpg/960px-Nevado_de_Huaytapallana.jpg'),
+    ('Áncash',    'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Nevado_Huascar%C3%A1n_%C3%81ncash.jpg/960px-Nevado_Huascar%C3%A1n_%C3%81ncash.jpg'),
     ('Lima',      'https://images.unsplash.com/photo-1531968455001-5c5272a41129?w=600&h=400&fit=crop'),
     ('Cusco',     'https://images.unsplash.com/photo-1526392060635-9d6019884377?w=600&h=400&fit=crop'),
-    ('San Martín','https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop');
+    ('San Martín','https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Rio_huallaga%2C_Tarapoto%2C_San_Mart%C3%ADn%2C_Per%C3%BA.jpg/960px-Rio_huallaga%2C_Tarapoto%2C_San_Mart%C3%ADn%2C_Per%C3%BA.jpg');
 GO
 
 /* ---------------------------- USUARIOS ---------------------------- */
