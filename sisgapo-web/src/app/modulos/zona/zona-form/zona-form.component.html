@@ -1,17 +1,9 @@
+<section class="pagina-contenido zona-formulario-pagina">
 <div class="header-app">
     <h1>{{sTitulo}}</h1>
 </div>
 
-<div class="fab-container">
-    <div>
-        <a routerLink="/zonas">
-            <button matTooltipPosition="left" mat-raised-button mat-mini-fab class="fab-secondary" color="warn"
-                matTooltip="Salir"><span class="material-icons">close</span></button>
-        </a>
-    </div>
-</div>
-
-<div style="justify-content: center;align-items: center; display:flex;">
+<div class="zona-formulario-contenido">
     <mat-card class="example-card">
         <div class="divImagen">
             <img mat-card-image alt="Imagen previa" class="tamanioImagen" [src]="sRutaImagen">
@@ -26,10 +18,13 @@
                 <input matInput type="text" autocomplete="off" [formControl]="fRutaImagen" (change)="changeImagen()">
             </mat-form-field>
         </mat-card-content>
-        <mat-card-actions>
-            <button mat-raised-button color="primary" style="width: 100%;" (click)="fnSaveNewZona()">
-                {{bEditar ? 'Actualizar' : 'Guardar'}}
+        <div class="acciones-formulario">
+            <button type="button" mat-button routerLink="/zonas">Cancelar</button>
+            <button type="button" mat-raised-button color="primary" (click)="fnSaveNewZona()">
+                <mat-icon>save</mat-icon>
+                Guardar
             </button>
-        </mat-card-actions>
+        </div>
     </mat-card>
 </div>
+</section>

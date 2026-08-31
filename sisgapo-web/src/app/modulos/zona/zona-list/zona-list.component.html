@@ -1,31 +1,62 @@
-<div class="header-app">
-    <h1>Gestión de Zonas</h1>
-</div>
+<section class="pagina-contenido zonas-pagina" aria-labelledby="tituloZonas">
+    <header class="zonas-encabezado">
+        <div>
+            <h1 id="tituloZonas">Gestión de zonas</h1>
+            <p>{{bCargando ? 'Cargando zonas…' : lZonas.length + ' zonas registradas'}}</p>
+        </div>
+    </header>
 
-<div class="fab-container">
-    <div>
-        <a routerLink="/zonas/agregar">
-            <button matTooltipPosition="left" mat-raised-button mat-mini-fab class="fab-secondary" color="primary"
-                matTooltip="Agregar"><span class="material-icons">add</span></button>
-        </a>
+    <a class="fab-listado" mat-mini-fab color="primary" routerLink="/zonas/agregar"
+        matTooltip="Agregar zona" matTooltipPosition="left" aria-label="Agregar zona">
+        <mat-icon>add</mat-icon>
+    </a>
+
+    <div *ngIf="bCargando" class="zonas-mensaje">
+        <mat-icon class="icono-cargando">sync</mat-icon>
+        <span>Cargando zonas…</span>
     </div>
-</div>
 
-<div class="row">
-    <div *ngFor="let item of lZonas" class="col-md-3" style="margin-bottom: 2rem;">
-        <mat-card class="example-card" [class.zona-inactiva]="item.bEstado === false">
-            <mat-card-title style="text-align: center;">{{item.sNombre}}</mat-card-title>
-            <mat-card-subtitle style="text-align: center;">
-                <span class="badge-estado" [class.badge-inactivo]="item.bEstado === false">{{item.sEstado}}</span>
-            </mat-card-subtitle>
-            <img mat-card-image [alt]="item.sNombre" class="tamanioImagen" [src]="item.sRutaImagen">
-            <mat-card-actions>
-                <button mat-raised-button color="accent" (click)="fnVerZona(item.nIdZona)">Editar</button>
+    <div *ngIf="!bCargando && sError" class="zonas-mensaje zonas-error">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{sError}}</span>
+    </div>
+
+    <div *ngIf="!bCargando && !sError && lZonas.length" class="zonas-grid">
+        <mat-card *ngFor="let item of lZonas" class="zona-card"
+            [class.zona-inactiva]="item.bEstado === false">
+            <div class="zona-card-cabecera">
+                <h2>{{item.sNombre}}</h2>
+                <span class="badge-estado" [class.badge-inactivo]="item.bEstado === false">
+                    {{item.sEstado}}
+                </span>
+            </div>
+
+            <div class="zona-imagen">
+                <img [alt]="'Vista de ' + item.sNombre" [src]="item.sRutaImagen" loading="lazy">
+            </div>
+
+            <div class="zona-acciones">
+                <button mat-raised-button color="accent" (click)="fnVerZona(item.nIdZona)">
+                    <mat-icon>edit</mat-icon>
+                    Editar
+                </button>
                 <button *ngIf="item.bEstado !== false" mat-raised-button color="warn"
-                    (click)="fnCambiarEstado(item, false)">Dar de baja</button>
-                <button *ngIf="item.bEstado === false" mat-raised-button color="primary"
-                    (click)="fnCambiarEstado(item, true)">Activar</button>
-            </mat-card-actions>
+                    (click)="fnCambiarEstado(item, false)">
+                    <mat-icon>block</mat-icon>
+                    Desactivar
+                </button>
+                <button *ngIf="item.bEstado === false" mat-raised-button class="boton-activar"
+                    (click)="fnCambiarEstado(item, true)">
+                    <mat-icon>check_circle</mat-icon>
+                    Activar
+                </button>
+            </div>
         </mat-card>
     </div>
-</div>
+
+    <div *ngIf="!bCargando && !sError && !lZonas.length" class="zonas-vacio">
+        <mat-icon>place</mat-icon>
+        <h2>Aún no hay zonas registradas</h2>
+        <p>Agrega la primera zona para asociarla a un almacén.</p>
+    </div>
+</section>

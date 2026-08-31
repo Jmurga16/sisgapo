@@ -12,6 +12,8 @@ import { ZonaService } from '../zona.service';
 })
 export class ZonaListComponent implements OnInit {
   lZonas: ZonaListado[] = [];
+  bCargando: boolean = true;
+  sError: string = '';
 
   constructor(
     private zonaService: ZonaService,
@@ -28,7 +30,7 @@ export class ZonaListComponent implements OnInit {
 
   async fnCambiarEstado(zona: ZonaListado, bEstado: boolean): Promise<void> {
     const confirmacion = await Swal.fire({
-      title: bEstado ? '¿Desea activar la zona?' : '¿Desea dar de baja la zona?',
+      title: bEstado ? '¿Desea activar la zona?' : '¿Desea desactivar la zona?',
       text: zona.sNombre,
       icon: 'question',
       showCancelButton: true,
@@ -45,10 +47,14 @@ export class ZonaListComponent implements OnInit {
     this.zonaService.cambiarEstado(zona.nIdZona, bEstado).subscribe(
       (respuesta: RespuestaApi) => {
         if (respuesta.cod === '1') {
-          Swal.fire({ title: respuesta.mensaje, icon: 'success', timer: 3000 });
+          const mensaje = bEstado
+            ? 'Se activó la zona con éxito'
+            : 'Se desactivó la zona con éxito';
+          Swal.fire({ title: mensaje, icon: 'success', timer: 3000 });
           this.fnGetZonas();
         } else {
-          Swal.fire({ title: 'No se pudo completar', text: respuesta.mensaje, icon: 'error' });
+          const mensaje = respuesta.mensaje.replace('dar de baja', 'desactivar');
+          Swal.fire({ title: 'No se pudo completar', text: mensaje, icon: 'error' });
         }
       },
       (error: HttpErrorResponse) => {
@@ -63,9 +69,19 @@ export class ZonaListComponent implements OnInit {
   }
 
   fnGetZonas(): void {
+    this.bCargando = true;
+    this.sError = '';
+
     this.zonaService.getZonas().subscribe(
-      (zonas: ZonaListado[]) => this.lZonas = zonas,
-      (error: HttpErrorResponse) => console.error(error)
+      (zonas: ZonaListado[]) => {
+        this.lZonas = zonas;
+        this.bCargando = false;
+      },
+      (error: HttpErrorResponse) => {
+        console.error(error);
+        this.sError = ZonaService.fnMensajeError(error, 'No se pudieron cargar las zonas.');
+        this.bCargando = false;
+      }
     );
   }
 }

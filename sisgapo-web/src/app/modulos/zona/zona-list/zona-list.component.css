@@ -1,49 +1,109 @@
-.fab-container {
-    position      : fixed;
-    top           : 4rem;
-    right         : 35px;
-    z-index       : 101;
-    display       : flex;
-    flex-direction: column;
-    align-items   : center;
-    margin-top    : 5px;
+.zonas-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.fab-container>div {
-    display       : flex;
-    flex-direction: column;
-    align-items   : center;
-    margin-bottom : 5px;
+.zonas-encabezado h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
 }
 
-.fab-container>div>button {
-    margin-top: 10px;
-    outline   : none;
+.zonas-encabezado p {
+  margin: .25rem 0 0;
+  color: #6b7280;
 }
 
-.example-card {
-    height: 5rem;
+.zona-acciones mat-icon {
+  margin-right: .35rem;
 }
 
-.header-app {
-    text-align: center;
+.zonas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  gap: 1.5rem;
+  align-items: stretch;
 }
 
-.tamanioImagen{
-    height: 22rem;
+.zona-card {
+  display: flex;
+  min-width: 0;
+  min-height: 23rem;
+  padding: 0;
+  overflow: hidden;
+  flex-direction: column;
+  border: 1px solid rgba(15, 23, 42, .08);
+  border-radius: .75rem;
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
-.tituloMatCard{
-    background:#3f51b5;
-    color:white;
-    text-align: center;
-    justify-content: center;
+.zona-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .16);
 }
+
+.zona-card-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  min-height: 3.5rem;
+  padding: .85rem 1rem;
+}
+
+.zona-card-cabecera h2 {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zona-imagen {
+  flex: 1 1 14rem;
+  width: 100%;
+  min-height: 14rem;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+.zona-imagen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 220ms ease;
+}
+
+.zona-card:hover .zona-imagen img {
+  transform: scale(1.02);
+}
+
+.zona-acciones {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: auto 0 0;
+  padding: 1rem;
+}
+
+.zona-acciones button {
+  width: 100%;
+  margin: 0;
+}
+
 .badge-estado {
-  display: inline-block;
-  padding: 0.15rem 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: .2rem .65rem;
   border-radius: 1rem;
-  font-size: 0.75rem;
+  font-size: .75rem;
   font-weight: 600;
   background: #e6f4ea;
   color: #1e7e34;
@@ -54,7 +114,68 @@
   color: #b02a37;
 }
 
-.zona-inactiva img {
+.zona-inactiva .zona-imagen img {
   filter: grayscale(1);
-  opacity: 0.6;
+  opacity: .65;
+}
+
+.zonas-vacio {
+  padding: 4rem 1rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.zonas-mensaje {
+  display: flex;
+  min-height: 12rem;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  color: #6b7280;
+}
+
+.zonas-error {
+  color: #b02a37;
+}
+
+.icono-cargando {
+  animation: girar 900ms linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.zonas-vacio mat-icon {
+  width: 3rem;
+  height: 3rem;
+  font-size: 3rem;
+}
+
+.zonas-vacio h2 {
+  margin: .75rem 0 .25rem;
+  color: inherit;
+}
+
+.zonas-vacio p {
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .zonas-encabezado {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .zonas-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .zona-acciones {
+    grid-template-columns: 1fr;
+  }
 }
