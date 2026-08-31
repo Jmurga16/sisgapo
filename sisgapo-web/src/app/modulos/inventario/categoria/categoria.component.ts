@@ -56,6 +56,15 @@ export class CategoriaComponent implements OnInit, AfterViewInit {
     }
   }
 
+  fnLimpiarFiltro(input: HTMLInputElement): void {
+    input.value = '';
+    this.dsCategoria.filter = '';
+
+    if (this.dsCategoria.paginator) {
+      this.dsCategoria.paginator.firstPage();
+    }
+  }
+
   async fnListarCategorias(): Promise<void> {
     try {
       this.dsCategoria.data = await this.inventarioService
@@ -68,7 +77,7 @@ export class CategoriaComponent implements OnInit, AfterViewInit {
   async fnCambiarEstado(nIdCategoria: number, estado: ValorEstado): Promise<void> {
     const activar = estado === ValorEstado.Activo;
     const confirmacion = await Swal.fire({
-      title: activar ? '¿Desea activar la categoría?' : '¿Desea eliminar la categoría?',
+      title: activar ? '¿Desea activar la categoría?' : '¿Desea desactivar la categoría?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -88,7 +97,10 @@ export class CategoriaComponent implements OnInit, AfterViewInit {
       );
 
       if (respuesta.cod === '1') {
-        await Swal.fire({ title: respuesta.mensaje, icon: 'success', timer: 3500 });
+        const mensaje = activar
+          ? 'Se activó la categoría con éxito'
+          : 'Se desactivó la categoría con éxito';
+        await Swal.fire({ title: mensaje, icon: 'success', timer: 3500 });
       } else {
         await Swal.fire({ title: 'No se pudo cambiar el estado', text: respuesta.mensaje, icon: 'error' });
       }

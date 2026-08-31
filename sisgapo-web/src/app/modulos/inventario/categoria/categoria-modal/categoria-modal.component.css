@@ -1,17 +1,26 @@
-.clstitulo {
-    background-color: #334d6e;
-    color           : #fff;
-    text-align      : center;
-    border-radius   : calc(.25rem - 1px) calc(.25rem - 1px) 0 0;
-    height          : 3rem;
-    padding-top     : 0.5rem
+.categoria-modal-titulo {
+  margin: -24px -24px 1.5rem;
+  padding: 1rem 1.5rem;
+  background: #334d6e;
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.categoria-form mat-dialog-content {
+  display: flex;
+  min-width: min(32rem, 70vw);
+  padding-top: .25rem;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.categoria-form mat-form-field {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .categoria-form mat-dialog-content {
+    min-width: 0;
   }
-  
-  @media (min-width: 700px){
-    .selectResp {    
-      bottom : 0.75rem;
-    }
-  }
-  .selectMat {
-    display: initial;
-  }
+}

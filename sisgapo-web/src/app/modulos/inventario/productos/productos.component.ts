@@ -100,7 +100,12 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     }
   }
 
-  fnCleanFilter(): void {
+  fnCleanFilter(input?: HTMLInputElement): void {
+    if (input) {
+      input.value = '';
+      this.dsProducto.filter = '';
+    }
+
     this.fAlmacen.setValue(0);
     this.fCategoria.setValue(0);
     this.fnListarProductos();
@@ -125,7 +130,7 @@ export class ProductosComponent implements OnInit, AfterViewInit {
   async fnCambiarEstado(nIdProducto: number, estado: ValorEstado): Promise<void> {
     const activar = estado === ValorEstado.Activo;
     const confirmacion = await Swal.fire({
-      title: activar ? '¿Desea activar el producto?' : '¿Desea eliminar el producto?',
+      title: activar ? '¿Desea activar el producto?' : '¿Desea desactivar el producto?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -145,7 +150,10 @@ export class ProductosComponent implements OnInit, AfterViewInit {
       );
 
       if (respuesta.cod === '1') {
-        await Swal.fire({ title: respuesta.mensaje, icon: 'success', timer: 3500 });
+        const mensaje = activar
+          ? 'Se activó el producto con éxito'
+          : 'Se desactivó el producto con éxito';
+        await Swal.fire({ title: mensaje, icon: 'success', timer: 3500 });
       } else {
         await Swal.fire({ title: 'No se pudo cambiar el estado', text: respuesta.mensaje, icon: 'error' });
       }

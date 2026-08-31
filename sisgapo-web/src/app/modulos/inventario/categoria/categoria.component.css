@@ -1,1 +1,70 @@
+.categoria-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
 
+.categoria-encabezado h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.categoria-encabezado p {
+  margin: .25rem 0 0;
+  color: #6b7280;
+}
+
+.categoria-filtros {
+  display: flex;
+  max-width: 38rem;
+  align-items: center;
+  gap: .75rem;
+}
+
+.categoria-filtros mat-form-field {
+  flex: 1;
+  width: 100%;
+}
+
+.categoria-filtros mat-icon {
+  margin-right: .5rem;
+  color: #6b7280;
+}
+
+/* Compensa el hueco que mat-form-field reserva para el hint/error,
+   para que el boton quede centrado con la caja del campo. */
+.categoria-filtros button {
+  margin-bottom: 1.34375em;
+  flex-shrink: 0;
+}
+
+.categoria-tabla {
+  overflow: hidden;
+  border-radius: .5rem;
+}
+
+.categoria-nombre {
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .categoria-encabezado {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .categoria-filtros {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .categoria-filtros button {
+    align-self: stretch;
+    margin-top: -.5rem;
+    margin-bottom: 0;
+  }
+}

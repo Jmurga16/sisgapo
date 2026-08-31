@@ -21,6 +21,7 @@ export class CategoriaModalComponent implements OnInit {
   nIdCategoria: number = 0;
   formCategoria: FormGroup;
   sAccionModal: string;
+  bGuardando: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<CategoriaModalComponent>,
@@ -32,8 +33,8 @@ export class CategoriaModalComponent implements OnInit {
   ngOnInit(): void {
     this.sAccionModal = this.data.accion === AccionModal.Agregar ? 'Agregar' : 'Editar';
     this.formCategoria = this.formBuilder.group({
-      sNombre: ['', Validators.required],
-      sDescripcion: ['', Validators.required],
+      sNombre: ['', [Validators.required, Validators.maxLength(100)]],
+      sDescripcion: ['', [Validators.required, Validators.maxLength(250)]],
     });
 
     if (this.data.accion === AccionModal.Editar) {
@@ -43,20 +44,26 @@ export class CategoriaModalComponent implements OnInit {
   }
 
   async fnGrabar(): Promise<void> {
-    if (this.formCategoria.invalid) {
+    const nombre = String(this.formCategoria.get('sNombre').value || '').trim();
+    const descripcion = String(this.formCategoria.get('sDescripcion').value || '').trim();
+
+    if (this.formCategoria.invalid || !nombre || !descripcion) {
+      this.formCategoria.markAllAsTouched();
       await Swal.fire({ title: 'Ingrese todos los campos.', icon: 'warning', timer: 1500 });
       return;
     }
 
     const opcion = this.data.accion === AccionModal.Agregar ? '03' : '04';
     const parametros: ParametroApi[] = [
-      this.formCategoria.get('sNombre').value,
-      this.formCategoria.get('sDescripcion').value
+      nombre,
+      descripcion
     ];
 
     if (opcion === '04') {
       parametros.push(this.nIdCategoria);
     }
+
+    this.bGuardando = true;
 
     try {
       const respuesta = await this.inventarioService
@@ -69,7 +76,17 @@ export class CategoriaModalComponent implements OnInit {
         await Swal.fire({ title: 'No se pudo guardar', text: respuesta.mensaje, icon: 'error' });
       }
     } catch (error) {
-      console.error(error as HttpErrorResponse);
+      const httpError = error as HttpErrorResponse;
+      console.error(httpError);
+      await Swal.fire({
+        title: 'No se pudo guardar',
+        text: httpError.error && httpError.error.mensaje
+          ? httpError.error.mensaje
+          : 'Error de comunicación con el servidor.',
+        icon: 'error'
+      });
+    } finally {
+      this.bGuardando = false;
     }
   }
 

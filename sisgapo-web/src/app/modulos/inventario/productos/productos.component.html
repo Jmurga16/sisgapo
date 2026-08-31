@@ -1,16 +1,22 @@
+<section class="pagina-contenido" aria-labelledby="tituloProductos">
 <div class="header-app">
     <h1 id="tituloProductos">Productos</h1>
 </div>
 
+<button class="fab-listado" mat-mini-fab color="primary" matTooltip="Agregar producto"
+    matTooltipPosition="left" aria-label="Agregar producto" (click)="fnAbrirModal(0,0)">
+    <mat-icon>add</mat-icon>
+</button>
+
 <div class="barra-filtros row">
     <div class="col-md-5">
-        <mat-form-field appearance="standard">
+        <mat-form-field appearance="outline">
             <mat-label>Filtro</mat-label>
-            <input matInput (keyup)="fnFiltrarTabla($event)" placeholder="Buscar" #input>
+            <input matInput (input)="fnFiltrarTabla($event)" placeholder="Buscar" #input>
         </mat-form-field>
     </div>
     <div class="col-md-2">
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
             <mat-label>Almacén</mat-label>
             <mat-select [formControl]="fAlmacen" (selectionChange)="fnListarProductos()">
                 <mat-option [value]="0">Todos</mat-option>
@@ -19,7 +25,7 @@
         </mat-form-field>
     </div>
     <div class="col-md-2">
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
             <mat-label>Categoría</mat-label>
             <mat-select [formControl]="fCategoria" (selectionChange)="fnListarProductos()">
                 <mat-option [value]="0">Todas</mat-option>
@@ -28,9 +34,10 @@
         </mat-form-field>
     </div>
     <div class="col-md-3 barra-filtros-botones">
-        <button mat-raised-button (click)="fnCleanFilter()">Limpiar</button>
-        <button mat-raised-button (click)="fnListarProductos()">Consultar</button>
-        <button mat-raised-button color="primary" (click)="fnAbrirModal(0,0)">Agregar</button>
+        <button class="boton-limpiar" mat-stroked-button type="button" (click)="fnCleanFilter(input)">
+            <mat-icon>filter_alt_off</mat-icon>
+            Limpiar
+        </button>
     </div>
 </div>
 
@@ -71,7 +78,11 @@
             </ng-container>
             <ng-container matColumnDef="sEstado">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-                <td mat-cell *matCellDef="let element">{{element.sEstado}}</td>
+                <td mat-cell *matCellDef="let element">
+                    <span class="estado-registro" [class.estado-registro-inactivo]="element.sEstado === 'Inactivo'">
+                        {{element.sEstado}}
+                    </span>
+                </td>
             </ng-container>
             <ng-container matColumnDef="Acciones">
                 <th mat-header-cell *matHeaderCellDef class="col-acciones">Acciones</th>
@@ -79,7 +90,7 @@
                     <div class="acciones">
                         <button mat-raised-button color="accent" (click)="fnAbrirModal(1,element.nIdCatProd)">Editar</button>
                         <button *ngIf="element.sEstado=='Activo'" mat-raised-button color="warn"
-                            (click)="fnCambiarEstado(element.nIdProducto,0)">Eliminar</button>
+                            (click)="fnCambiarEstado(element.nIdProducto,0)">Desactivar</button>
                         <button *ngIf="element.sEstado=='Inactivo'" mat-raised-button class="boton-activar"
                             (click)="fnCambiarEstado(element.nIdProducto,1)">Activar</button>
                     </div>
@@ -94,3 +105,4 @@
     </div>
     <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
 </div>
+</section>
