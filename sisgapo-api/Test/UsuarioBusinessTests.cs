@@ -19,15 +19,15 @@ namespace Test
                 parametros = new[]
                 {
                     "Ana", "Torres", "1", "12345678", "F", "2",
-                    "Lima", "999999999", "2000-01-01", "secreto"
+                    "Lima", "999999999", "2000-01-01", "secreto8"
                 }
             };
 
             negocio.LIS_UsuarioBusiness(usuario);
 
             string hash = datos.UltimoParametro.Split('|')[9];
-            Assert.NotEqual("secreto", hash);
-            Assert.True(BCrypt.Net.BCrypt.Verify("secreto", hash));
+            Assert.NotEqual("secreto8", hash);
+            Assert.True(BCrypt.Net.BCrypt.Verify("secreto8", hash));
         }
 
         [Fact]
@@ -60,12 +60,48 @@ namespace Test
                 parametros = new[]
                 {
                     "Ana|Maria", "Torres", "1", "12345678", "F", "2",
-                    "Lima", "999999999", "2000-01-01", "secreto"
+                    "Lima", "999999999", "2000-01-01", "secreto8"
                 }
             };
 
             ArgumentException error = Assert.Throws<ArgumentException>(() => negocio.LIS_UsuarioBusiness(usuario));
             Assert.Contains("no pueden contener", error.Message);
+        }
+
+        [Fact]
+        public void ContraseniaCortaEsRechazada()
+        {
+            UsuarioBusiness negocio = new UsuarioBusiness(new UsuarioDataFalso());
+            UsuarioEntity usuario = new UsuarioEntity
+            {
+                sOpcion = "04",
+                parametros = new[]
+                {
+                    "Ana", "Torres", "1", "12345678", "F", "2",
+                    "Lima", "999999999", "2000-01-01", "corta"
+                }
+            };
+
+            ArgumentException error = Assert.Throws<ArgumentException>(() => negocio.LIS_UsuarioBusiness(usuario));
+            Assert.Contains("al menos 8", error.Message);
+        }
+
+        [Fact]
+        public void UsuarioMenorDeEdadEsRechazado()
+        {
+            UsuarioBusiness negocio = new UsuarioBusiness(new UsuarioDataFalso());
+            UsuarioEntity usuario = new UsuarioEntity
+            {
+                sOpcion = "04",
+                parametros = new[]
+                {
+                    "Ana", "Torres", "1", "12345678", "F", "2",
+                    "Lima", "999999999", DateTime.Today.AddYears(-17).ToString("yyyy-MM-dd"), "secreto8"
+                }
+            };
+
+            ArgumentException error = Assert.Throws<ArgumentException>(() => negocio.LIS_UsuarioBusiness(usuario));
+            Assert.Contains("mayor de edad", error.Message);
         }
 
         private sealed class UsuarioDataFalso : IUsuarioData

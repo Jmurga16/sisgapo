@@ -2,6 +2,7 @@ import { MediaMatcher } from '@angular/cdk/layout';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Rol } from 'src/app/shared/models';
+import { ConfiguracionService } from 'src/app/shared/services/configuracion.service';
 import { SesionService } from 'src/app/shared/services/sesion.service';
 
 interface OpcionMenu {
@@ -44,6 +45,7 @@ export class NavMenuComponent implements OnInit, OnDestroy {
   constructor(
     changeDetectorRef: ChangeDetectorRef,
     media: MediaMatcher,
+    public configuracionService: ConfiguracionService,
     private sesionService: SesionService,
     private router: Router
   ) {
@@ -53,6 +55,7 @@ export class NavMenuComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.configuracionService.fnCargar();
     this.fnCargarSesion();
   }
 

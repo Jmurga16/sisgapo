@@ -16,6 +16,7 @@ import {
 } from 'src/app/shared/models';
 import { APP_DATE_FORMATS, AppDateAdapter } from 'src/app/shared/services/AppDateAdapter';
 import { InventarioService } from '../../inventario.service';
+import { ConfiguracionService } from 'src/app/shared/services/configuracion.service';
 
 interface EventoFecha {
   value: Date;
@@ -46,6 +47,7 @@ export class ProductosModalComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: DatosModal,
     private inventarioService: InventarioService,
     private formBuilder: FormBuilder,
+    public configuracionService: ConfiguracionService,
   ) { }
 
   ngOnInit(): void {
@@ -167,7 +169,15 @@ export class ProductosModalComponent implements OnInit {
         await Swal.fire({ title: 'No se pudo guardar', text: respuesta.mensaje, icon: 'error' });
       }
     } catch (error) {
-      console.error(error as HttpErrorResponse);
+      const httpError = error as HttpErrorResponse;
+      console.error(httpError);
+      await Swal.fire({
+        title: 'No se pudo guardar',
+        text: httpError.error && httpError.error.mensaje
+          ? httpError.error.mensaje
+          : 'Error de comunicación con el servidor.',
+        icon: 'error'
+      });
     }
   }
 

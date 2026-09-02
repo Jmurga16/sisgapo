@@ -5,14 +5,14 @@
 
         <div class="row" style="padding-bottom: 1rem;">
             <div class="col-md-6">
-                <mat-form-field style="display:initial">
+                <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>Nombres</mat-label>
                     <input matInput type="text" maxlength="50" onkeydown="return /[a-zA-ZñÑá-úÁ-Ú ]/i.test(event.key)"
                         formControlName="sNombres" autocomplete="nope" name="Nombres">
                 </mat-form-field>
             </div>
             <div class="col-md-6">
-                <mat-form-field style="display:initial">
+                <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>Apellidos</mat-label>
                     <input matInput type="text" maxlength="50" onkeydown="return /[a-zA-ZñÑá-úÁ-Ú ]/i.test(event.key)"
                         formControlName="sApellidos" autocomplete="nope" name="Apellidos">
@@ -24,7 +24,7 @@
         <div class="row">
 
             <div class="col-md-3">
-                <mat-form-field class="selectMat selectResp" appearance="fill">
+                <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>Tipo Documento</mat-label>
                     <mat-select formControlName="nTipoDoc">
                         <mat-option *ngFor="let opc of lDocumentos" [value]="opc.valor">
@@ -35,7 +35,7 @@
             </div>
 
             <div class="col-md-3">
-                <mat-form-field style="display:initial">
+                <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>N° Documento</mat-label>
                     <input matInput type="number" max="99999999" maxlength="8" required formControlName="sNumDoc"
                         autocomplete="off" name="Documento">
@@ -43,7 +43,7 @@
             </div>
 
             <div class="col-md-3">
-                <mat-form-field class="selectMat selectResp" appearance="fill">
+                <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>Sexo</mat-label>
                     <mat-select formControlName="sSexo">
                         <mat-option *ngFor="let opc of lSexo" [value]="opc.abrev">
@@ -54,7 +54,7 @@
             </div>
 
             <div class="col-md-3">
-                <mat-form-field class="selectMat selectResp" appearance="fill">
+                <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>Rol</mat-label>
                     <mat-select formControlName="nIdRol">
                         <mat-option *ngFor="let opc of lRoles" [value]="opc.valor">
@@ -69,27 +69,27 @@
         <div class="row">
 
             <div class="col-md-6">
-                <mat-form-field style="display:initial">
-                    <mat-label>Direccion</mat-label>
+                <mat-form-field appearance="outline" class="campo-formulario">
+                    <mat-label>Dirección</mat-label>
                     <input matInput type="search" formControlName="sDireccion" autocomplete="off" name="Direccion"
                         id="Direccion" />
                 </mat-form-field>
             </div>
 
             <div class="col-md-3">
-                <mat-form-field style="display:initial">
-                    <mat-label>Telefono</mat-label>
+                <mat-form-field appearance="outline" class="campo-formulario">
+                    <mat-label>Teléfono</mat-label>
                     <input matInput type="number" max="999999999" required formControlName="nTelefono"
                         autocomplete="nope" name="Telefono">
                 </mat-form-field>
             </div>
 
             <div class="col-md-3">
-                <mat-form-field appearance="fill" class="selectMat selectResp">
+                <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>Fecha de Nacimiento</mat-label>
                     <input matInput type="search" [matDatepicker]="picker" formControlName="dFechaNacimiento"
                         (dateChange)="fnCambiarFecha($event)" autocomplete="off" name="Fecha" id="Fecha"
-                        [max]="dFechaHoy">
+                        [max]="dFechaMaxima">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
@@ -97,15 +97,18 @@
 
         </div>
 
-        <div class="row">
+        <div class="row" *ngIf="bEsAlta">
 
             <div class="col-md-12  justify-content-center">
 
-                <mat-form-field style="display:initial">
-                    <mat-label>Contraseña</mat-label>
+                <mat-form-field appearance="outline" class="campo-formulario">
+                    <mat-label>Contraseña inicial</mat-label>
                     <input matInput type="password" formControlName="sContrasenia" name="somePassword"
-                        autocomplete="new-password" #password />
-                    <mat-hint *ngIf="!bEsAlta">Déjala en blanco para no cambiarla.</mat-hint>
+                        autocomplete="new-password" minlength="8" #password />
+                    <mat-hint>Mínimo 8 caracteres.</mat-hint>
+                    <mat-error *ngIf="formUsuario.get('sContrasenia').hasError('minlength')">
+                        La contraseña debe tener al menos 8 caracteres.
+                    </mat-error>
                 </mat-form-field>
 
             </div>
@@ -114,7 +117,8 @@
 
         <mat-dialog-actions class="acciones-formulario" align="end">
             <button type="button" mat-button (click)="fnCerrarModal(0)">Cancelar</button>
-            <button type="submit" mat-raised-button color="primary">
+            <button type="submit" mat-raised-button color="primary"
+                [disabled]="configuracionService.bDemoSoloLectura">
                 <mat-icon>save</mat-icon>
                 Guardar
             </button>

@@ -11,6 +11,7 @@ import {
   RespuestaApi
 } from 'src/app/shared/models';
 import { InventarioService } from '../../inventario.service';
+import { ConfiguracionService } from 'src/app/shared/services/configuracion.service';
 
 @Component({
   selector: 'app-categoria-modal',
@@ -28,6 +29,7 @@ export class CategoriaModalComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: DatosModal,
     private inventarioService: InventarioService,
     private formBuilder: FormBuilder,
+    public configuracionService: ConfiguracionService,
   ) { }
 
   ngOnInit(): void {

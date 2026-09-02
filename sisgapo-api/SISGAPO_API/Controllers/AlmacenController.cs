@@ -45,6 +45,11 @@ namespace SISGAPO_API.Controllers
 
             else if (genEnt.sOpcion == "05" || genEnt.sOpcion == "06" || genEnt.sOpcion == "07")
             {
+                if (!User.IsInRole("1") && !User.IsInRole("2"))
+                {
+                    return Forbid();
+                }
+
                 try
                 {
                     string sResultado = Convert.ToString(objInventario.BusinessAlmacen(genEnt));

@@ -93,7 +93,10 @@ namespace SISGAPO_API
                 };
             });
 
-            services.AddControllers();
+            services.AddControllers(opciones =>
+            {
+                opciones.Filters.Add<DemoSoloLecturaFilter>();
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SISGAPO_API", Version = "v1" });

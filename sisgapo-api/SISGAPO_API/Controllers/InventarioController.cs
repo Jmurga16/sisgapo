@@ -48,6 +48,11 @@ namespace SISGAPO_API.Controllers
 
             else if (genEnt.sOpcion == "03" || genEnt.sOpcion == "04" ||genEnt.sOpcion == "05" )
             {
+                if (!User.IsInRole("1") && !User.IsInRole("2"))
+                {
+                    return Forbid();
+                }
+
                 try
                 {
                     string sResultado = Convert.ToString(objCategoria.BusinessCategoria(genEnt));
@@ -105,6 +110,11 @@ namespace SISGAPO_API.Controllers
 
             else if (genEnt.sOpcion == "06" || genEnt.sOpcion == "07" || genEnt.sOpcion == "08")
             {
+                if (!User.IsInRole("1") && !User.IsInRole("2"))
+                {
+                    return Forbid();
+                }
+
                 try
                 {
                     string sResultado = Convert.ToString(objProducto.BusinessProducto(genEnt));

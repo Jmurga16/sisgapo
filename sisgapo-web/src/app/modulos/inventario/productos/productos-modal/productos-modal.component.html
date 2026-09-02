@@ -7,7 +7,7 @@
 
         <div class="row" style="padding-bottom: 1rem;">
             <div class="col-md-6">
-                <mat-form-field style="display:initial">
+                <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>Nombre</mat-label>
                     <input matInput type="text" formControlName="sNombreProducto" autocomplete="off"
                         name="NombreProducto">
@@ -15,8 +15,8 @@
             </div>
 
             <div class="col-md-6">
-                <mat-form-field class="selectMat selectResp" appearance="fill">
-                    <mat-label>Almacen</mat-label>
+                <mat-form-field appearance="outline" class="campo-formulario">
+                    <mat-label>Almacén</mat-label>
                     <mat-select formControlName="nIdAlmacen">
                         <mat-option *ngFor="let opc of lAlmacenes" [value]="opc.nIdAlmacen">
                             {{opc.sNombreAlmacen}}
@@ -30,7 +30,7 @@
         <div class="row">
 
             <div class="col-md-3">
-                <mat-form-field class="selectMat selectResp" appearance="fill">
+                <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>Categoría</mat-label>
                     <mat-select formControlName="nIdCategoria">
                         <mat-option *ngFor="let value of lCategorias" [value]="value.nIdCategoria">
@@ -41,14 +41,14 @@
             </div>
 
             <div class="col-md-3">
-                <mat-form-field style="display:initial">
+                <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>Cantidad</mat-label>
                     <input matInput type="number" formControlName="nCantidad" autocomplete="nope" name="Telefono">
                 </mat-form-field>
             </div>
 
             <div class="col-md-3">
-                <mat-form-field class="selectMat selectResp" appearance="fill">
+                <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>Unidad de Medida</mat-label>
                     <mat-select formControlName="nIdUnidadMedida">
                         <mat-option *ngFor="let opc of lUnidadMedida" [value]="opc.nIdUnidadMedida">
@@ -59,7 +59,7 @@
             </div>
 
             <div class="col-md-3">
-                <mat-form-field style="display:initial">
+                <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>Precio por U.M</mat-label>
                     <input matInput type="number" formControlName="nPrecio" autocomplete="nope" name="Telefono">
                 </mat-form-field>
@@ -70,7 +70,7 @@
         <div class="row">
 
             <div class="col-md-6">
-                <mat-form-field appearance="fill" class="selectMat selectResp">
+                <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>Fecha de Fabricación</mat-label>
                     <input matInput type="search" [matDatepicker]="pickerFab" formControlName="dFechaFab"
                         (dateChange)="fnCambiarFecha($event,1)" autocomplete="off" name="FechaFab" id="FechaFab">
@@ -80,7 +80,7 @@
             </div>
 
             <div class="col-md-6">
-                <mat-form-field appearance="fill" class="selectMat selectResp">
+                <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>Fecha de Vencimiento</mat-label>
                     <input matInput type="search" [matDatepicker]="pickerVenc" formControlName="dFechaVenc"
                         (dateChange)="fnCambiarFecha($event,2)" autocomplete="off" name="FechaVenc" id="FechaVenc"
@@ -96,8 +96,8 @@
 
             <div class="col-md-12  justify-content-center">
 
-                <mat-form-field style="display:initial">
-                    <mat-label>Descripcion</mat-label>
+                <mat-form-field appearance="outline" class="campo-formulario">
+                    <mat-label>Descripción</mat-label>
                     <textarea matInput type="text" formControlName="sDescripcion" name="Descripc"
                         autocomplete="off"></textarea>
                 </mat-form-field>
@@ -108,7 +108,8 @@
 
         <mat-dialog-actions class="acciones-formulario" align="end">
             <button type="button" mat-button (click)="fnCerrarModal(0)">Cancelar</button>
-            <button type="submit" mat-raised-button color="primary">
+            <button type="submit" mat-raised-button color="primary"
+                [disabled]="configuracionService.bDemoSoloLectura">
                 <mat-icon>save</mat-icon>
                 Guardar
             </button>

@@ -2,6 +2,8 @@ using Data;
 using Entity;
 using NLog;
 using System;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Business
 {
@@ -32,6 +34,7 @@ namespace Business
 
                 if (erp != null && (erp.sOpcion == "04" || erp.sOpcion == "05"))
                 {
+                    fnValidarDatosUsuario(erp.pParametro, erp.sOpcion == "04");
                     erp.pParametro = fnHashearContrasenia(erp.pParametro);
                 }
 
@@ -70,6 +73,45 @@ namespace Business
             arValores[nPosicionContrasenia - 1] = LoginBusiness.fnGenerarHash(sContrasenia);
 
             return String.Join(cSeparador.ToString(), arValores);
+        }
+
+        private static void fnValidarDatosUsuario(string pParametro, bool bEsAlta)
+        {
+            string[] arValores = (pParametro ?? String.Empty).Split(cSeparador);
+            int nCantidadEsperada = bEsAlta ? 10 : 11;
+
+            if (arValores.Length != nCantidadEsperada)
+            {
+                throw new ArgumentException("La cantidad de datos del usuario no es válida.");
+            }
+
+            if (!Regex.IsMatch(arValores[3] ?? String.Empty, @"^\d{8}$"))
+            {
+                throw new ArgumentException("El documento debe tener 8 dígitos.");
+            }
+
+            if (!Regex.IsMatch(arValores[7] ?? String.Empty, @"^9\d{8}$"))
+            {
+                throw new ArgumentException("El teléfono debe tener 9 dígitos y empezar con 9.");
+            }
+
+            if (!DateTime.TryParseExact(
+                arValores[8],
+                "yyyy-MM-dd",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateTime dFechaNacimiento)
+                || dFechaNacimiento.Date > DateTime.Today.AddYears(-18))
+            {
+                throw new ArgumentException("El usuario debe ser mayor de edad.");
+            }
+
+            string sContrasenia = arValores[nPosicionContrasenia - 1] ?? String.Empty;
+
+            if ((bEsAlta || sContrasenia.Length > 0) && sContrasenia.Length < 8)
+            {
+                throw new ArgumentException("La contraseña debe tener al menos 8 caracteres.");
+            }
         }
     }
 }

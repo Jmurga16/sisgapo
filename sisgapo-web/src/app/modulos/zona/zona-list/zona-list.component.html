@@ -7,7 +7,8 @@
     </header>
 
     <a class="fab-listado" mat-mini-fab color="primary" routerLink="/zonas/agregar"
-        matTooltip="Agregar zona" matTooltipPosition="left" aria-label="Agregar zona">
+        matTooltip="Agregar zona" matTooltipPosition="left" aria-label="Agregar zona"
+        *ngIf="!configuracionService.bDemoSoloLectura">
         <mat-icon>add</mat-icon>
     </a>
 
@@ -35,7 +36,7 @@
                 <img [alt]="'Vista de ' + item.sNombre" [src]="item.sRutaImagen" loading="lazy">
             </div>
 
-            <div class="zona-acciones">
+            <div class="zona-acciones" *ngIf="!configuracionService.bDemoSoloLectura">
                 <button mat-raised-button color="accent" (click)="fnVerZona(item.nIdZona)">
                     <mat-icon>edit</mat-icon>
                     Editar

@@ -17,6 +17,8 @@ import {
 } from 'src/app/shared/models';
 import { InventarioService } from '../inventario.service';
 import { ProductosModalComponent } from './productos-modal/productos-modal.component';
+import { ConfiguracionService } from 'src/app/shared/services/configuracion.service';
+import { SesionService } from 'src/app/shared/services/sesion.service';
 
 @Component({
   selector: 'app-productos',
@@ -48,6 +50,8 @@ export class ProductosComponent implements OnInit, AfterViewInit {
 
   constructor(
     private inventarioService: InventarioService,
+    public configuracionService: ConfiguracionService,
+    public sesionService: SesionService,
     public dialog: MatDialog,
   ) { }
 

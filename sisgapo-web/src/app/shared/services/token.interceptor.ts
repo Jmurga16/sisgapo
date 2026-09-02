@@ -21,7 +21,7 @@ export class TokenInterceptor implements HttpInterceptor {
 
     return next.handle(peticion).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401 || error.status === 403) {
+        if (error.status === 401) {
           this.sesionService.fnCerrar();
           this.router.navigate(['/', 'login']);
         }

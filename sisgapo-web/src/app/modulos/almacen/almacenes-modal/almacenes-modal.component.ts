@@ -13,6 +13,7 @@ import {
   ZonaCombo
 } from 'src/app/shared/models';
 import { AlmacenesService } from '../almacenes.service';
+import { ConfiguracionService } from 'src/app/shared/services/configuracion.service';
 
 @Component({
   selector: 'app-almacenes-modal',
@@ -31,6 +32,7 @@ export class AlmacenesModalComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: DatosModal,
     private almacenesService: AlmacenesService,
     private formBuilder: FormBuilder,
+    public configuracionService: ConfiguracionService,
   ) { }
 
   ngOnInit(): void {
@@ -127,10 +129,13 @@ export class AlmacenesModalComponent implements OnInit {
         await Swal.fire({ title: 'No se pudo guardar', text: respuesta.mensaje, icon: 'error' });
       }
     } catch (error) {
-      console.error(error as HttpErrorResponse);
+      const httpError = error as HttpErrorResponse;
+      console.error(httpError);
       await Swal.fire({
         title: 'No se pudo guardar',
-        text: 'Error de comunicación con el servidor.',
+        text: httpError.error && httpError.error.mensaje
+          ? httpError.error.mensaje
+          : 'Error de comunicación con el servidor.',
         icon: 'error'
       });
     }

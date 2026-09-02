@@ -25,7 +25,8 @@
         <button type="button" mat-button (click)="fnCerrarModal(0)" [disabled]="bGuardando">
             Cancelar
         </button>
-        <button type="submit" mat-raised-button color="primary" [disabled]="bGuardando">
+        <button type="submit" mat-raised-button color="primary"
+            [disabled]="bGuardando || configuracionService.bDemoSoloLectura">
             <mat-icon>save</mat-icon>
             {{bGuardando ? 'Guardando…' : 'Guardar'}}
         </button>

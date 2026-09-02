@@ -14,6 +14,7 @@ import {
   UsuarioDetalle
 } from 'src/app/shared/models';
 import { APP_DATE_FORMATS, AppDateAdapter } from 'src/app/shared/services/AppDateAdapter';
+import { ConfiguracionService } from 'src/app/shared/services/configuracion.service';
 import { UsuariosService } from '../usuarios.service';
 
 interface EventoFecha {
@@ -34,7 +35,11 @@ export class UsuariosModalComponent implements OnInit {
   formUsuario: FormGroup;
   sAccionModal: string;
   dFechaNacimiento: string = '';
-  dFechaHoy: Date = new Date();
+  dFechaMaxima: Date = new Date(
+    new Date().getFullYear() - 18,
+    new Date().getMonth(),
+    new Date().getDate()
+  );
 
   readonly lDocumentos: ListaOpcion[] = [
     { valor: 1, nombre: 'DNI' },
@@ -56,6 +61,7 @@ export class UsuariosModalComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: DatosModal,
     private usuariosService: UsuariosService,
     private formBuilder: FormBuilder,
+    public configuracionService: ConfiguracionService,
   ) { }
 
   ngOnInit(): void {
@@ -71,8 +77,9 @@ export class UsuariosModalComponent implements OnInit {
       sDireccion: ['', Validators.required],
       nTelefono: ['', Validators.required],
       dFechaNacimiento: ['', Validators.required],
-      //En edicion es opcional: en blanco significa dejar la contrasenia como esta.
-      sContrasenia: ['', this.bEsAlta ? Validators.required : []],
+      sContrasenia: ['', this.bEsAlta
+        ? [Validators.required, Validators.minLength(8)]
+        : []],
     });
 
     if (this.data.accion === AccionModal.Editar) {
@@ -147,7 +154,15 @@ export class UsuariosModalComponent implements OnInit {
         await Swal.fire({ title: 'No se pudo guardar', text: respuesta.mensaje, icon: 'error' });
       }
     } catch (error) {
-      console.error(error as HttpErrorResponse);
+      const httpError = error as HttpErrorResponse;
+      console.error(httpError);
+      await Swal.fire({
+        title: 'No se pudo guardar',
+        text: httpError.error && httpError.error.mensaje
+          ? httpError.error.mensaje
+          : 'Error de comunicación con el servidor.',
+        icon: 'error'
+      });
     }
   }
 

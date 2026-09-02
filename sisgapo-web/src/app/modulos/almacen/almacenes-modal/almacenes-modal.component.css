@@ -14,9 +14,3 @@
 .campo-completo {
     width: 100%;
 }
-
-@media (min-width: 700px) {
-    .selectResp {
-        bottom: .75rem;
-    }
-}

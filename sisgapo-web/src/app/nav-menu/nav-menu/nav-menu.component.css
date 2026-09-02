@@ -58,3 +58,19 @@ h1.example-app-name {
   text-overflow: ellipsis;
   max-width: 40vw;
 }
+
+.aviso-demo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .55rem 1rem;
+  background: #fff3cd;
+  color: #664d03;
+  font-size: .9rem;
+  text-align: center;
+}
+
+.aviso-demo mat-icon {
+  flex: 0 0 auto;
+}

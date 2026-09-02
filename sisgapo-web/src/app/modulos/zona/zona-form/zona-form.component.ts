@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { RespuestaApi, ZonaGuardar, ZonaListado } from 'src/app/shared/models';
 import { ZonaService } from '../zona.service';
+import { ConfiguracionService } from 'src/app/shared/services/configuracion.service';
 
 @Component({
   selector: 'app-zona-form',
@@ -25,6 +26,7 @@ export class ZonaFormComponent implements OnInit {
     private zonaService: ZonaService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
+    public configuracionService: ConfiguracionService,
   ) { }
 
   ngOnInit(): void {

@@ -9,6 +9,10 @@ export interface RespuestaUsuarios {
   mensaje: string;
 }
 
+export interface ConfiguracionAplicacion {
+  demoSoloLectura: boolean;
+}
+
 export enum AccionModal {
   Agregar = 0,
   Editar = 1

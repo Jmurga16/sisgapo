@@ -55,6 +55,11 @@ export class SesionService {
     return this.fnObtenerRol() === Rol.Administrador;
   }
 
+  fnPuedeGestionarInventario(): boolean {
+    const nRol = this.fnObtenerRol();
+    return nRol === Rol.Administrador || nRol === Rol.Supervisor;
+  }
+
   fnCerrar(): void {
     localStorage.removeItem(SesionService.sClave);
   }

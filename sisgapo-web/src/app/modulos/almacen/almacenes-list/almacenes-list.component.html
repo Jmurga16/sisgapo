@@ -4,7 +4,8 @@
 </div>
 
 <button class="fab-listado" mat-mini-fab color="primary" matTooltip="Agregar almacén"
-    matTooltipPosition="left" aria-label="Agregar almacén" (click)="fnAbrirModal(0,0)">
+    matTooltipPosition="left" aria-label="Agregar almacén" (click)="fnAbrirModal(0,0)"
+    *ngIf="!configuracionService.bDemoSoloLectura">
     <mat-icon>add</mat-icon>
 </button>
 
@@ -53,7 +54,7 @@
             <ng-container matColumnDef="Acciones">
                 <th mat-header-cell *matHeaderCellDef class="col-acciones" id="Accion"> Acciones </th>
                 <td mat-cell *matCellDef="let element" class="col-acciones">
-                    <div class="acciones">
+                    <div class="acciones" *ngIf="!configuracionService.bDemoSoloLectura">
                         <button mat-raised-button color="accent"
                             (click)="fnAbrirModal(1,element.nIdAlmacen)">Editar</button>
                         <button *ngIf="element.sEstado=='Activo'" mat-raised-button color="warn"

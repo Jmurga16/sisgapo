@@ -19,6 +19,7 @@ import {
 } from 'src/app/shared/models';
 import { UsuariosModalComponent } from '../usuarios-modal/usuarios-modal.component';
 import { UsuariosService } from '../usuarios.service';
+import { ConfiguracionService } from 'src/app/shared/services/configuracion.service';
 
 @Component({
   selector: 'app-usuarios-list',
@@ -58,6 +59,7 @@ export class UsuariosListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private usuariosService: UsuariosService,
+    public configuracionService: ConfiguracionService,
     public dialog: MatDialog,
   ) { }
 

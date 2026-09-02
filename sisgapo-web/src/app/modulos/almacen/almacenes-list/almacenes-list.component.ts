@@ -15,6 +15,7 @@ import {
 } from 'src/app/shared/models';
 import { AlmacenesModalComponent } from '../almacenes-modal/almacenes-modal.component';
 import { AlmacenesService } from '../almacenes.service';
+import { ConfiguracionService } from 'src/app/shared/services/configuracion.service';
 
 @Component({
   selector: 'app-almacenes-list',
@@ -38,6 +39,7 @@ export class AlmacenesListComponent implements OnInit, AfterViewInit {
 
   constructor(
     private almacenesService: AlmacenesService,
+    public configuracionService: ConfiguracionService,
     public dialog: MatDialog
   ) { }
 
