@@ -48,18 +48,20 @@ ejecutándolo** contra SQL Server 2022 en Docker y, donde aplica, por HTTP contr
 | C-17 · La pantalla de acceso no tiene diseño para móvil | ✅ Corregido (hallazgo nuevo) |
 | C-18 · Errores silenciosos al iniciar sesión | ✅ Corregido (hallazgo nuevo) |
 | S-01 · Credenciales en el repositorio | ✅ Corregido — las de Azure SQL y Gmail nunca estuvieron en el historial; para la que sí estaba, ver S-10 |
-| S-10 · Contraseña de SonarQube en claro desde 2021 | ✅ Retirada e historial reescrito (hallazgo nuevo) — **pendiente de rotar** |
+| S-10 · Contraseña de SonarQube en claro desde 2021 | ✅ Cerrado — fuera del historial y de los refs de respaldo; no procede rotar (instancia local, en desuso) |
 | S-08 · Mezcla de HTTP/HTTPS y CORS que no cuadra | ✅ Corregido — orígenes por configuración |
 | D-04 · Configuración leída del disco en cada petición | ✅ Corregido — `ConfiguracionBD`, una vez por proceso |
 | D-09 · Restos de andamiaje y archivos generados | ✅ Limpiado |
-| S-02 · Contraseñas en texto plano | ⏳ Pendiente — fase de autenticación |
-| S-03 / S-04 · Sin autenticación ni rutas protegidas | ⏳ Pendiente — aplazado a propósito |
+| S-02 · Contraseñas en texto plano | ✅ Corregido — bcrypt (factor 11); la opción 03 ya no devuelve la contraseña |
+| S-03 / S-04 · Sin autenticación ni rutas protegidas | ✅ Corregido — JWT, `[Authorize]`, guards por rol |
+| S-09 · Sin límite de intentos de autenticación | ⏳ Pendiente |
 | S-05 · `System.Data.SqlClient` con CVE | ✅ Corregido — migrado a `Microsoft.Data.SqlClient` 5.1.6 |
 | S-06 · `Microsoft.ApplicationBlocks.Data` sin mantenimiento | ✅ Eliminado del proyecto |
 | S-07 · El delimitador `\|` no se escapa | ⏳ Pendiente |
 | C-06 · El nombre de usuario siempre lleva sufijo | ⏳ Pendiente |
 | C-10 · El único test no puede pasar | ⚠️ Test eliminado; sin pruebas reales todavía |
-| D-01 / D-02 · .NET 5 y Angular 9 fuera de soporte | ⏳ Pendiente |
+| D-01 · .NET 5 fuera de soporte | ✅ Corregido — migrado a .NET 8, 0 warnings |
+| D-02 · Angular 9 fuera de soporte | ⏳ Pendiente |
 | D-03 · Sin inyección de dependencias | ⏳ Pendiente |
 | D-05 · Consulta de metadatos en cada escritura | ✅ Corregido — una llamada a la base en vez de dos |
 | D-06 / D-07 / D-08 | ⏳ Pendiente |
@@ -88,7 +90,7 @@ dentro de un bloque comentado que enviaba notificaciones por correo:
 //    string Contrasenia = "<contraseña>";
 ```
 
-El servidor SQL ya no existe (§01 §4), pero **ambas contraseñas deben considerarse
+El servidor SQL ya no existe (`01-analisis-general.md`, sección 4), pero **ambas contraseñas deben considerarse
 comprometidas**. Si están reutilizadas en cualquier otro sitio, cámbialas hoy.
 
 ### Verificación del historial — 23 de agosto de 2026
@@ -108,7 +110,7 @@ Se buscaron cinco cadenas en la historia completa de `SISGAPO.Back` y `SISGAPO.F
 | Usuario de Azure SQL (`User ID=…`) | 0 | 0 |
 | Cuenta de Gmail | 0 | 0 |
 
-*(Las cadenas concretas no se reproducen aquí; ver la nota de §S-01.)*
+*(Las cadenas concretas no se reproducen aquí; ver la nota de S-01.)*
 
 El `appsettings.json` que sí se publicó, en los cuatro commits que lo tocan, siempre
 tuvo una cadena local inofensiva:
@@ -124,7 +126,7 @@ Y el bloque de correo de `ProductoData.cs` se subió con las credenciales vacía
 de Gmail lo anterior se sostiene: nunca estuvieron en Git. Lo que no se sostiene es lo que
 se dedujo de ahí —«publicar los repositorios no filtra nada, y no hace falta reescribir el
 historial»—, porque solo se habían buscado esas cinco cadenas. Un barrido posterior de los
-66 commits encontró una credencial distinta, en claro y presente desde 2021: ver §S-10. El
+66 commits encontró una credencial distinta, en claro y presente desde 2021: ver S-10. El
 historial **sí** hubo que reescribirlo.
 
 ### Arreglo aplicado
@@ -133,7 +135,7 @@ Cadena de conexión fuera del código: se resuelve en `Data/ConfiguracionBD.cs` 
 variable de entorno `SISGAPO_CONNECTION_STRING`, con `appsettings.json` reducido a un
 marcador de posición vacío. El bloque de correo comentado, con su contraseña, se eliminó.
 
-### 🔴 S-02 · Contraseñas en texto plano
+### 🔴 S-02 · Contraseñas en texto plano — **corregido**
 
 `TBL_LOGIN.sContrasenia` guarda la contraseña sin cifrar. El seed original crea
 `admin` / `123456`. `USP_MNT_Login` compara con `=` directo, y `USP_MNT_Usuarios` opción `03`
@@ -144,9 +146,9 @@ cliente potencial con perfil técnico va a mirar primero.
 
 **Arreglo:** BCrypt o Argon2 en la capa de aplicación, `VARCHAR(255)` para el hash, y quitar
 `sContrasenia` de la proyección de la opción `03`. Para el seed, generar los hashes de las
-contraseñas de demo. Ver `09-mejoras-propuestas.md` §M-01.
+contraseñas de demo. Ver `09-mejoras-propuestas.md`, M-01.
 
-### 🔴 S-03 · La API no tiene autenticación
+### 🔴 S-03 · La API no tiene autenticación — **corregido**
 
 Ningún controller lleva `[Authorize]`. `Startup.Configure` invoca `app.UseAuthorization()`
 sin un `app.UseAuthentication()` delante, y no hay esquema de autenticación registrado en
@@ -163,9 +165,9 @@ curl -X POST http://<api>/UsuariosService \
   -d '{"sOpcion":"01","pParametro":""}'
 ```
 
-Si publicas la demo, publicas una API abierta. Ver `09-mejoras-propuestas.md` §M-02.
+Si publicas la demo, publicas una API abierta. Ver `09-mejoras-propuestas.md`, M-02.
 
-### 🔴 S-04 · El frontend no protege ninguna ruta
+### 🔴 S-04 · El frontend no protege ninguna ruta — **corregido**
 
 `app-routing.module.ts` no declara un solo `canActivate`. Escribir `/usuarios` en la barra de
 direcciones entra directo, sin pasar por login.
@@ -202,7 +204,7 @@ ensamblado solo para .NET Framework; el compilador avisa con `NU1701`. Hoy funci
 
 Se usa solo en `Conexion.cs`, para `SqlHelper.ExecuteReader`, `ExecuteScalar` y
 `ExecuteDataset`. Reemplazarlo por ADO.NET plano o Dapper son unas 80 líneas.
-Ver `09-mejoras-propuestas.md` §M-03.
+Ver `09-mejoras-propuestas.md`, M-03.
 
 ### 🟠 S-07 · El delimitador `|` no se escapa
 
@@ -219,7 +221,7 @@ escrituras con valores que la interfaz nunca le ofreció.
 
 **Arreglo mínimo:** rechazar `|` en la validación del formulario y también en el backend.
 **Arreglo real:** abandonar el formato delimitado y pasar objetos JSON tipados.
-Ver `09-mejoras-propuestas.md` §M-06.
+Ver `09-mejoras-propuestas.md`, M-06.
 
 ### 🟠 S-08 · Mezcla de HTTP y HTTPS, y CORS que no cuadra
 
@@ -247,7 +249,7 @@ sonar.password=<contraseña de quince caracteres>
 Estaba en la punta de `main` y en 23 commits, desde `Fix and Sonar 31-08` (31 de agosto de
 2021). El repositorio ha sido público todo ese tiempo.
 
-La verificación de §S-01 no lo vio porque buscó **cinco cadenas concretas** —las de Azure SQL
+La verificación de S-01 no lo vio porque buscó **cinco cadenas concretas** —las de Azure SQL
 y Gmail— en lugar del *patrón* de una credencial. Es el fallo clásico de comprobar una
 hipótesis en vez de buscar el problema: «no hay secretos en el historial» se apoyaba en
 realidad en «no están estos cinco secretos».
@@ -282,7 +284,7 @@ Cinco fallos bloqueantes acumulados. `CreacionTablas.sql` no crea la columna
 `ALTER PROCEDURE` en vez de `CREATE`; `CreacionTablasParte2.sql` y `PoblacionDatosParte2.sql`
 duplican objetos y datos; y todos llevan `USE DB_SISGAPO`, que Azure SQL no admite.
 
-Detalle completo en `03-modelo-de-datos.md` §4. Versión corregida y **verificada
+Detalle completo en `03-modelo-de-datos.md`, sección 4. Versión corregida y **verificada
 ejecutándose** en `sql/`.
 
 Es el hallazgo con más impacto práctico: sin base de datos no hay demo.
@@ -295,7 +297,7 @@ ninguna fila — y el procedimiento igual responde `'1|Se actualizó con éxito'
 
 Verificado contra SQL Server 2022: al pedir mover un producto al almacén 2 / categoría 2 y
 cambiar sus fechas, `TBL_CAT_PROD` se quedó en 1/1 y `TBL_LOTE` conservó las fechas
-originales. Detalle y reproducción en `04-api-referencia.md` §6.
+originales. Detalle y reproducción en `04-api-referencia.md`, sección 6.
 
 **Cambiar un producto de almacén no funciona. Cambiar su fecha de vencimiento tampoco.** Son
 las dos operaciones centrales de un sistema de gestión de almacén con control de caducidad.
@@ -355,7 +357,7 @@ guardó.**
 después del `INSERT` del propio usuario.
 
 Verificado: crear "Pedro Ramos" genera el usuario **`pedro.ramos2`**. Nunca existe un
-`pedro.ramos` sin sufijo. Detalle en `03-modelo-de-datos.md` §4 hallazgo 9.
+`pedro.ramos` sin sufijo. Detalle en `03-modelo-de-datos.md`, sección 4, hallazgo 9.
 
 ### 🟠 C-07 · Las escrituras multi-tabla no usan transacciones
 
@@ -462,14 +464,14 @@ y aquí se hizo al revés.
 **Qué sigue afectando al módulo, ahora sí verificado:**
 
 - `TBL_CLIENTE.sql` y `USP_MNT_Clientes.sql` llevan `USE [DB_SISGAPO]`, que Azure SQL no
-  admite (el mismo fallo que §C-01).
-- `TBL_CLIENTE.nTelefono` es `INT` (§D-07).
+  admite (el mismo fallo que C-01).
+- `TBL_CLIENTE.nTelefono` es `INT` (D-07).
 - No hay datos de demostración para la tabla.
 - `ClienteEntity` sigue declarada como `class` sin modificador, es decir `internal`,
   mientras el resto de entidades son `public`.
 
 **Estado actual:** el módulo **no** forma parte del árbol de trabajo — ver
-`10-decisiones.md` §D-19, donde se explica por qué se dejó fuera y cómo recuperarlo en un
+`10-decisiones.md`, D-19, donde se explica por qué se dejó fuera y cómo recuperarlo en un
 solo comando.
 
 **Lo que sí era código muerto de verdad**, y se eliminó: `SISGAPO_API/WeatherForecast.cs`
@@ -591,7 +593,7 @@ desbordando el ancho.
 **Arreglo:** los paneles se apilan por debajo de 900 px, la ilustración del panel de marca
 se oculta por debajo de 600 px, y los títulos escalan con `clamp()`. Se añadió además una
 media query por **altura**: con menos de 620 px de alto las dos ilustraciones se ocultan,
-de modo que el formulario entra sin scroll — el mismo caso que provocaba §C-16.
+de modo que el formulario entra sin scroll — el mismo caso que provocaba C-16.
 
 ### 🟡 C-18 · Errores silenciosos al iniciar sesión
 
@@ -605,21 +607,21 @@ de modo que el formulario entra sin scroll — el mismo caso que provocaba §C-1
 - Un fallo de red hacía `console.log(error)` y nada más: para el usuario, el botón no hacía
   nada.
 
-Los tres muestran ahora un mensaje. Es el mismo patrón que §C-05: **rechazar una operación
+Los tres muestran ahora un mensaje. Es el mismo patrón que C-05: **rechazar una operación
 en silencio es peor que fallar**.
 
 ---
 
 ## D — Deuda técnica
 
-### 🟠 D-01 · .NET 5 está fuera de soporte
+### 🟠 D-01 · .NET 5 está fuera de soporte — **corregido**
 
 Fin de soporte: 8 de mayo de 2022. Sin parches de seguridad desde entonces.
 Azure App Service ya no ofrece .NET 5 como pila de runtime, así que **desplegarlo en un
 App Service nuevo no es posible sin publicar como *self-contained***.
 
 La migración a .NET 8 (LTS) es el requisito técnico central del plan de migración.
-Ver `07-migracion-tier-free.md` §5.
+Ver `07-migracion-tier-free.md`, sección 5.
 
 ### 🟠 D-02 · Angular 9 está fuera de soporte
 
@@ -650,7 +652,7 @@ Consecuencias en cadena:
 - No se puede sustituir una implementación sin recompilar.
 
 Es la mejora con mejor relación esfuerzo/beneficio del backend: ~15 líneas en `Startup` más
-cambiar constructores. Ver `09-mejoras-propuestas.md` §M-03.
+cambiar constructores. Ver `09-mejoras-propuestas.md`, M-03.
 
 ### 🟠 D-04 · La configuración se lee del disco en cada petición
 
@@ -690,7 +692,7 @@ Todo esto para descubrir algo que ya se sabe: **los seis procedimientos tienen l
 parámetros explícitamente y funciona igual.
 
 Eliminarlo quita ~120 de las 253 líneas de `Conexion.cs` y la mitad de las llamadas a la base
-de datos. Ver `09-mejoras-propuestas.md` §M-03.
+de datos. Ver `09-mejoras-propuestas.md`, M-03.
 
 ### 🟡 D-06 · Los precios son `INT`
 
@@ -818,4 +820,4 @@ Si solo vas a hacer una parte, este es el orden por retorno:
 | 8 | D-09 | 20 min | Quita ruido de la primera impresión |
 
 Los pasos 1–5 son un fin de semana y cubren los ocho bloqueantes.
-El plan completo con calendario está en `07-migracion-tier-free.md` §7.
+El plan completo con calendario está en `07-migracion-tier-free.md`, sección 7.

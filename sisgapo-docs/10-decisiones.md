@@ -34,8 +34,8 @@ no existe) el cambio salía "gratis" en términos de datos.
 Docker para desarrollo y demos presenciales.
 
 **Por qué.** El factor decisivo es que **toda la lógica de negocio está en T-SQL**, no en C#
-(`02-arquitectura.md` §1). Cambiar de motor no es cambiar una cadena de conexión: es portar
-la aplicación. El inventario de construcciones no portables está en `03-modelo-de-datos.md` §6
+(`02-arquitectura.md`, sección 1). Cambiar de motor no es cambiar una cadena de conexión: es portar
+la aplicación. El inventario de construcciones no portables está en `03-modelo-de-datos.md`, sección 6
 —`IIF`, `SCOPE_IDENTITY()`, variables de tipo tabla, `dbo.Split`, `CONVERT` con estilo
 numérico— y además PostgreSQL plegaría a minúsculas los identificadores, rompiendo cada
 `dr["nIdAlmacen"]` de la capa `Data`.
@@ -51,7 +51,7 @@ la lógica de negocio de stored procedures a servicios de C# con pruebas" es una
 fuerte que "lo desplegué en el tier gratuito".
 
 Si tu objetivo fuera demostrar capacidad de modernización en vez de tener algo que enseñar
-pronto, mi recomendación sería D. Está desarrollada en `09-mejoras-propuestas.md` §M-10 con
+pronto, mi recomendación sería D. Está desarrollada en `09-mejoras-propuestas.md`, M-10 con
 el orden de ejecución seguro.
 
 **Reconsidera si:** la oferta gratuita de Azure SQL deja de existir o cambia de condiciones;
@@ -76,7 +76,7 @@ Se suma que ya tienes los workflows de Static Web Apps escritos y que conoces el
 **Qué me hizo dudar.** Cloudflare Pages es mejor que Static Web Apps para el frontend —más
 rápido, sin arranque en frío, ancho de banda ilimitado— y es un cambio de 15 minutos. No lo
 recomendé como principal solo porque lo que ya tienes también es gratis y funciona; queda
-anotado en `07-migracion-tier-free.md` §9.
+anotado en `07-migracion-tier-free.md`, sección 9.
 
 **Reconsidera si:** tu suscripción de Azure da problemas, o si haces M-10 y quedas libre de
 elegir motor. En ese caso: Cloudflare Pages + Fly.io + SQLite es la combinación más limpia.
@@ -105,12 +105,12 @@ reciente disponible cuando lo hagas.
 
 ## D-04 · Conservar el patrón `sOpcion` / `pParametro`
 
-**La duda.** Es el antipatrón más visible del sistema (`02-arquitectura.md` §3): sin tipado,
+**La duda.** Es el antipatrón más visible del sistema (`02-arquitectura.md`, sección 3): sin tipado,
 acoplado por posición, con un delimitador que no se escapa. Es lo primero que criticaría un
 revisor.
 
 **Decisión: conservarlo.** Documentarlo a fondo, señalar sus problemas, y proponer el cambio
-como mejora opcional (`09-mejoras-propuestas.md` §M-06).
+como mejora opcional (`09-mejoras-propuestas.md`, M-06).
 
 **Por qué.** Tres razones:
 
@@ -118,7 +118,7 @@ como mejora opcional (`09-mejoras-propuestas.md` §M-06).
 2. **Cambiarlo son dos días** de tocar tres capas a la vez y volver a probar los 12 casos de uso, con riesgo alto de regresión.
 3. **Está bien defendido en una entrevista.** "Es el patrón del entorno donde aprendí; tiene estos problemas concretos y así es como lo haría hoy" es una respuesta que suma. Aparentar que nunca lo usaste, no.
 
-**Qué me hizo dudar.** El hallazgo §S-07 (delimitador sin escapar) no es cosmético: un almacén
+**Qué me hizo dudar.** El hallazgo S-07 (delimitador sin escapar) no es cosmético: un almacén
 llamado `Norte|Sur` corrompe todos los parámetros siguientes. Estuve cerca de recomendarlo
 como bloqueante.
 
@@ -147,14 +147,14 @@ cambio son un par de horas.
 
 **Recomendación práctica:** migra primero con `Startup`, verifica que todo funciona, y
 entonces —en un commit aparte— pásalo a hosting mínimo. Así el cambio de estilo es reversible
-sin tocar la migración. Anotado en `07-migracion-tier-free.md` §5.4.
+sin tocar la migración. Anotado en `07-migracion-tier-free.md`, sección 5.4.
 
 ---
 
 ## D-06 · Corregir los scripts SQL en una carpeta nueva, sin tocar los originales
 
-**La duda.** Los scripts de `sisgapo-web/src/scripts/` no ejecutan (`03-modelo-de-datos.md`
-§4). ¿Corregirlos donde están o crear una versión nueva?
+**La duda.** Los scripts de `sisgapo-web/src/scripts/` no ejecutan (`03-modelo-de-datos.md`,
+sección 4). ¿Corregirlos donde están o crear una versión nueva?
 
 **Decisión: crear `sisgapo-docs/sql/` con la versión corregida y dejar los originales intactos.**
 
@@ -166,7 +166,7 @@ sin tocar la migración. Anotado en `07-migracion-tier-free.md` §5.4.
 
 **Qué corregí y qué no.** Corregí solo lo que impide **ejecutar** los scripts: la columna que
 falta, `ALTER`→`CREATE`, duplicados, codificaciones, `USE`. **No corregí los bugs de lógica**
-(§C-02, §C-05, §C-06) porque son cambios de comportamiento que merecen decidirse aparte.
+(C-02, C-05, C-06) porque son cambios de comportamiento que merecen decidirse aparte.
 Quedan documentados y priorizados.
 
 **Qué me hizo dudar.** Tener dos juegos de scripts puede confundir. Lo mitigué con
@@ -210,7 +210,7 @@ de una demo**, o descarga las imágenes al proyecto.
 **La duda.** No estaba en el alcance del análisis. ¿Es pasarse?
 
 **Decisión: recomendarlo con prioridad alta**, con los `Dockerfile` y el `docker-compose.yml`
-escritos en `07-migracion-tier-free.md` §8, pero **sin crearlos** en el repositorio.
+escritos en `07-migracion-tier-free.md`, sección 8, pero **sin crearlos** en el repositorio.
 
 **Por qué.** Es la respuesta directa a tu objetivo principal. Una demo tiene dos formas de
 fallar: que no se pueda levantar, o que el enlace público esté frío justo cuando la enseñas.
@@ -229,8 +229,8 @@ copiar.
 **La duda.** Escribiste "este sistema lo hice solo". El documento de casos de uso lista **seis
 integrantes** y atribuye la redacción a dos de ellos.
 
-**Decisión: mencionarlo, de forma neutral, en `01-analisis-general.md` §1 y en
-`08-plan-demo.md` §4.**
+**Decisión: mencionarlo, de forma neutral, en `01-analisis-general.md`, sección 1 y en
+`08-plan-demo.md`, sección 4.**
 
 **Por qué.** No es una contradicción: lo más probable es que el desarrollo lo hicieras tú y el
 análisis fuera de equipo. Pero es un **riesgo concreto para el objetivo que me diste**: si vas
@@ -295,7 +295,7 @@ de datos en el 03, los de frontend en el 05…).
 documentos temáticos.
 
 **Por qué.** El documento de hallazgos es **la pieza con más valor para tu objetivo**
-(`08-plan-demo.md` §2). Una lista completa, priorizada y con un plan de ataque es algo que se
+(`08-plan-demo.md`, sección 2). Una lista completa, priorizada y con un plan de ataque es algo que se
 puede enseñar tal cual en una reunión. Repartida en seis documentos, deja de ser enseñable.
 
 Además permite ver la distribución de un vistazo —8 bloqueantes, 13 importantes, 8 menores—,
@@ -440,7 +440,7 @@ contienen el identificador de suscripción de Azure y una contraseña cifrada co
 **La duda.** Al comparar la copia local con el repositorio apareció un sexto módulo
 completo —tabla, procedimiento, tres capas de backend, pantalla Angular, ruta y entrada de
 menú— que la copia local no tenía y que la auditoría había dado por código muerto
-(§C-11, ya rectificado). La limpieza de la fase 1 lo había eliminado partiendo de una
+(C-11, ya rectificado). La limpieza de la fase 1 lo había eliminado partiendo de una
 premisa falsa.
 
 **Decisión: no restaurarlo en el árbol de trabajo por ahora. Queda íntegro en el
@@ -498,6 +498,70 @@ de Bootstrap (`768px`) porque las plantillas ya dependen de `row` y `col-md-*`.
 
 ---
 
+## D-22 · La verificación se mueve del procedimiento a C#
+
+**Decisión:** `USP_MNT_Login` deja de comparar la contraseña y pasa a devolver el hash
+guardado; quien decide si las credenciales valen es `LoginBusiness`.
+
+**Por qué.** No hay alternativa. Un hash bcrypt lleva sal, así que dos hashes de la misma
+contraseña son distintos y `WHERE sContrasenia = @sContrasenia` no puede funcionar. El
+efecto colateral es interesante: `Business` deja de ser un pasamanos y pasa a tener, por
+primera vez, lógica de negocio real. El parámetro `@sContrasenia` desaparece de la firma,
+y con él la costumbre de mandar la contraseña a la base de datos.
+
+De paso se arregló algo que nadie había mirado: el procedimiento no filtraba por
+`bEstado`, así que un usuario dado de baja seguía entrando. En el seed hay uno inactivo
+(`jorge.salazar`) que hasta ahora iniciaba sesión sin problema.
+
+---
+
+## D-23 · El hasheo ocurre en `UsuarioBusiness`, no en el navegador
+
+**Decisión:** el alta y la edición siguen enviando la contraseña dentro de `pParametro`;
+`UsuarioBusiness` sustituye la posición 10 por su hash antes de llamar a la capa de datos.
+
+**Por qué.** La alternativa era hashear en Angular, y eso no es seguridad: un hash
+calculado en el cliente *es* la contraseña, solo que escrita de otra forma, y quien lo
+intercepte entra igual. Hashear en el servidor obliga a partir y recomponer `pParametro`,
+que es feo, pero el contrato se mantiene y la fealdad queda encerrada en un método.
+
+Hay un efecto secundario que compensa: S-07 —el delimitador `|` sin escapar— dejaba de
+ser teórico justo en este campo, porque una contraseña puede contener `|`. Al sustituirla
+por el hash, que usa el alfabeto `./A-Za-z0-9`, el problema desaparece donde más dolía.
+
+---
+
+## D-24 · El token vive en `localStorage`
+
+**Decisión:** guardar la sesión en `localStorage` bajo una única clave, gestionada solo
+por `SesionService`.
+
+**Por qué.** La alternativa correcta es una cookie `HttpOnly` con `SameSite`, que un XSS
+no puede leer. Exige que la API y el frontend compartan dominio, y una demo repartida
+entre dos servicios gratuitos no lo tiene. Es una concesión consciente, y en un sistema
+con datos reales no sería aceptable.
+
+Lo que sí cambia respecto a antes: la clave ya no es una credencial. Escribir
+`localStorage` a mano deja de dar acceso, porque quien decide es la firma del token en el
+servidor. El `localStorage` pasa de ser la autenticación a ser solo su transporte.
+
+---
+
+## D-25 · .NET 8 y autenticación en el mismo paso
+
+**Decisión:** migrar de .NET 5 a .NET 8 y añadir la autenticación en la misma tanda, en
+vez de dejar la migración para después.
+
+**Por qué.** Petición explícita, y tiene sentido: `Microsoft.AspNetCore.Authentication.JwtBearer`
+se elige por versión del framework. Hacerlo al revés obligaba a instalar la versión 5 del
+paquete y volver a tocarla al migrar. La migración resultó ser mecánica —cinco
+`TargetFramework`, seis versiones de paquete— y bajó los avisos de compilación de 18 a 0.
+
+Se conserva `Startup.cs` en vez de pasar al modelo de `Program.cs` de nivel superior
+(D-05): son dos cambios independientes y mezclarlos habría hecho ilegible el diff.
+
+---
+
 ## Resumen de las decisiones
 
 | # | Decisión | Nivel de duda |
@@ -505,7 +569,7 @@ de Bootstrap (`768px`) porque las plantillas ya dependen de `row` y `col-md-*`.
 | D-01 | Conservar SQL Server (Azure gratuito + Docker) | **Alto** — SQLite era mejor técnicamente |
 | D-02 | Seguir en Azure | Bajo — es consecuencia de D-01 |
 | D-03 | .NET 8 (LTS), no .NET 9 | Bajo |
-| D-04 | Conservar `sOpcion`/`pParametro` | **Medio** — §S-07 casi lo vuelve bloqueante |
+| D-04 | Conservar `sOpcion`/`pParametro` | **Medio** — S-07 casi lo vuelve bloqueante |
 | D-05 | Conservar `Startup.cs` | **Medio** — se lee como código viejo |
 | D-06 | Scripts corregidos en carpeta nueva | Bajo |
 | D-07 | Ampliar el seed | Bajo |
@@ -520,10 +584,14 @@ de Bootstrap (`768px`) porque las plantillas ya dependen de `row` y `col-md-*`.
 | D-16 | Fechas del seed relativas a `GETDATE()` | Bajo |
 | D-17 | El panel antes que la autenticación | **Medio** — invierte el orden de `09-mejoras-propuestas.md` |
 | D-18 | Monorepo con el historial de 2021 importado | Bajo |
-| D-19 | «Tracking» fuera del árbol, dentro del historial | **Medio** — revisa §C-11 antes de opinar |
+| D-19 | «Tracking» fuera del árbol, dentro del historial | **Medio** — revisa C-11 antes de opinar |
 | D-20 | Tipar respuestas sin activar `strict` completo | Bajo |
 | D-21 | Estilos comunes para los listados | Bajo |
+| D-22 | Verificar la contraseña en C#, no en el procedimiento | Ninguno — bcrypt no deja alternativa |
+| D-23 | Hashear en `UsuarioBusiness`, no en el navegador | Bajo |
+| D-24 | El token en `localStorage` | **Medio** — una cookie `HttpOnly` sería lo correcto |
+| D-25 | .NET 8 y autenticación en la misma tanda | Bajo |
 
 **Las tres que más merecen tu revisión: D-01, D-04 y D-09.**
-De las nuevas, la discutible es **D-17**: es una decisión de escaparate por delante de una
-de fondo, y solo se sostiene mientras la demo no salga a internet.
+De las nuevas, la discutible es **D-24**: `localStorage` es la opción cómoda, no la
+correcta. Con la autenticación ya cerrada, D-17 deja de ser una deuda.

@@ -46,7 +46,7 @@ También en esta carpeta:
 
 1. CRUD de inventario bien delimitado: usuarios, zonas, almacenes, categorías y
    productos, más un panel de control con existencias y control de vencimientos.
-2. Backend .NET 5 en cuatro proyectos por capas, frontend Angular 9, y **toda la lógica
+2. Backend .NET 8 en cuatro proyectos por capas, frontend Angular 9, y **toda la lógica
    de negocio en siete procedimientos almacenados de T-SQL**.
 3. Doce casos de uso especificados en 2021, los doce con código y pantalla. El alcance
    está cerrado: no hay módulos a medias.
@@ -54,13 +54,13 @@ También en esta carpeta:
    realistas. Los scripts son reejecutables.
 5. Backend y frontend compilan hoy. El frontend necesita
    `NODE_OPTIONS=--openssl-legacy-provider`, ya fijado en los scripts de `package.json`.
-6. La auditoría encontró 33 hallazgos. Los bloqueantes de correctitud están corregidos y
-   verificados contra SQL Server; los de seguridad, no.
-7. **La autenticación sigue siendo decorativa:** contraseñas en texto plano, sin token,
-   sin guards de ruta, sin `[Authorize]`. Por eso esta aplicación **no se despliega en
-   internet** todavía.
-8. No hay secretos en el repositorio, y se verificó que tampoco los hubo nunca en el
-   historial de Git (§S-01).
+6. La auditoría encontró 37 hallazgos. Los bloqueantes de correctitud y los de
+   autenticación están corregidos y verificados contra SQL Server.
+7. **La autenticación ya es real:** contraseñas con bcrypt, JWT firmado, `[Authorize]` en
+   todos los controladores y guards por rol en las rutas de Angular. Ver S-02 a S-04.
+8. No hay secretos en el repositorio. Sí los hubo: la contraseña de SonarQube estuvo en
+   claro desde 2021 y se retiró reescribiendo el historial (S-10). La verificación
+   original de S-01 buscaba solo cinco cadenas conocidas y no la vio.
 9. La infraestructura original costaba unos US$ 78/mes, y el 94 % era un App Service Plan
    S1 sobredimensionado. El plan para llegar a US$ 0 está en el documento 07.
 10. Lo que más valor aporta como pieza de portafolio no es el hosting: es la auditoría del

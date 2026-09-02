@@ -7,7 +7,7 @@ Swagger está disponible en `/swagger` **solo cuando el entorno es Development**
 
 > **Toda la API es pública.** No hay autenticación, ni tokens, ni `[Authorize]`. Cualquiera
 > con la URL puede invocar cualquier endpoint, incluidos los de creación y baja de usuarios.
-> Ver `06-hallazgos.md` §S-03.
+> Ver `06-hallazgos.md`, S-03.
 
 ## 1. Convención general
 
@@ -38,7 +38,7 @@ Content-Type: application/json
 **Si `sOpcion` no está en el rango esperado**, el controller hace `return null`, que ASP.NET
 Core traduce a `204 No Content` con cuerpo vacío. El frontend no lo maneja.
 
-`ZonaController` es la excepción: usa REST convencional con cuerpos tipados (§7).
+`ZonaController` es la excepción: usa REST convencional con cuerpos tipados (sección 7).
 
 ## 2. `POST /LoginService`
 
@@ -49,18 +49,29 @@ Core traduce a `204 No Content` con cuerpo vacío. El frontend no lo maneja.
 { "sNombreUsuario": "admin", "sContrasenia": "123456" }
 ```
 
-**Response (credenciales válidas)**
+**Response `200`**
 ```json
-[ { "nIdRol": 1, "result": 1 } ]
+{
+  "sToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "nIdUsuario": 1,
+  "nIdRol": 1,
+  "sNombreUsuario": "admin",
+  "sNombrePersona": "Administrador del Sistema",
+  "dExpira": "2026-09-02T14:27:58.3726689Z"
+}
 ```
 
-**Response (credenciales inválidas)** — arreglo vacío `[]`.
+**Response `401`** — `{ "cod": "0", "mensaje": "Usuario o contraseña incorrectos." }`.
+Mismo cuerpo si el usuario no existe, si la contraseña no coincide o si el usuario está
+dado de baja: distinguirlos permitiría averiguar qué usuarios hay.
 
-`result` es un `ROW_NUMBER()`, no un código de estado: vale 1 para la primera coincidencia.
-El frontend comprueba `value.length > 0 && value[0].result > 0`.
+El resto de endpoints exige `Authorization: Bearer <sToken>`. Sin cabecera responden `401`;
+con un rol insuficiente, `403`. `UsuariosService` es el único restringido por rol
+(administrador). El token dura 8 horas por defecto (`Jwt:MinutosVigencia`).
 
-No se emite ningún token. La sesión es `localStorage.setItem('Rol', nIdRol)` en el navegador,
-y nada más. Las peticiones posteriores no llevan credencial alguna.
+> Contrato anterior, por si te encuentras código viejo: devolvía `[ { "nIdRol": 1,
+> "result": 1 } ]`, donde `result` era un `ROW_NUMBER()` y no un código de estado, y no
+> emitía token alguno.
 
 ## 3. `POST /UsuariosService`
 
@@ -94,7 +105,7 @@ mensaje del procedimiento. Es el único módulo así.
 
 **Detalle a tener en cuenta:** la opción `04` genera el nombre de usuario automáticamente
 (primer nombre + `.` + primer apellido) y siempre le añade un sufijo numérico por un error en
-el contador. Ver `03-modelo-de-datos.md` §4 hallazgo 9.
+el contador. Ver `03-modelo-de-datos.md`, sección 4, hallazgo 9.
 
 ## 4. `POST /AlmacenesService`
 
@@ -231,7 +242,7 @@ son justamente las dos operaciones que dan sentido al software.
 **Es el bug más importante que corregir antes de enseñar la demo**, porque editar un producto
 es la acción que un cliente va a probar. La corrección es de una línea en el frontend
 (enviar `nIdProducto` en la posición 10 y `nIdCatProd` en la 11) más asignar `@nIdLote` en el
-procedimiento. Ver `09-mejoras-propuestas.md` §M-04.
+procedimiento. Ver `09-mejoras-propuestas.md`, M-04.
 
 ## 7. `/api/Zona` — el módulo REST
 
@@ -264,7 +275,7 @@ Respuesta: el string `"OK"` (texto plano, no JSON), o `""` si no se insertó nin
 delete this.lZona.nIdZona;
 ```
 
-- La comprobación de duplicados del procedimiento tampoco funciona (compara contra `LOWER(@sNombre)`), así que el duplicado se crea sin obstáculo. Ver `03-modelo-de-datos.md` §4 hallazgo 10.
+- La comprobación de duplicados del procedimiento tampoco funciona (compara contra `LOWER(@sNombre)`), así que el duplicado se crea sin obstáculo. Ver `03-modelo-de-datos.md`, sección 4, hallazgo 10.
 
 ## 8. `POST /ClientesService` — no funcional
 
@@ -276,7 +287,7 @@ cree ni pantalla en el frontend que los use. Cualquier llamada devuelve un error
 
 Es código muerto de un módulo que se empezó y no se terminó — probablemente el proceso PN3
 (gestión de abastecimiento) del documento de casos de uso. La opción sensata para la demo es
-eliminarlo. Ver `09-mejoras-propuestas.md` §M-05.
+eliminarlo. Ver `09-mejoras-propuestas.md`, M-05.
 
 ## 9. Tabla resumen de códigos
 
@@ -344,4 +355,4 @@ curl -k -X POST $API/api/zona \
 El `-k` es necesario porque en local el certificado es autofirmado.
 
 > Que estos comandos funcionen **sin ninguna credencial** es exactamente el problema descrito
-> en §1. Sirve como demostración del hallazgo §S-03.
+> en la sección 1. Sirve como demostración del hallazgo S-03.

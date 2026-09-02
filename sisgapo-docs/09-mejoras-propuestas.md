@@ -21,10 +21,10 @@ implementados. Estas mejoras son sobre calidad, no sobre funcionalidad que falte
 
 | # | Mejora | Esfuerzo | Demo | Portafolio | Reco. | Estado |
 |---|---|---|---|---|---|---|
-| M-01 | Contraseñas hasheadas | 2 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ | pendiente |
-| M-02 | Autenticación JWT + guards | 6 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ | pendiente |
+| M-01 | Contraseñas hasheadas | 2 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ | **hecho** |
+| M-02 | Autenticación JWT + guards | 6 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ | **hecho** |
 | M-03 | Reescribir `Conexion.cs` + DI | 3 h | ⭐⭐ | ⭐⭐⭐⭐ | ✅ | **parcial** |
-| M-04 | Corregir §C-02 y §C-03 | 2 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ✅ | **hecho** |
+| M-04 | Corregir C-02 y C-03 | 2 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ✅ | **hecho** |
 | M-05 | Limpiar código muerto | 30 min | ⭐ | ⭐⭐⭐ | ✅ | **hecho** |
 | M-06 | Sustituir `pParametro` por JSON | 2 días | ⭐ | ⭐⭐⭐⭐ | 🤔 | pendiente |
 | M-07 | Actualizar Angular | 3–5 días | ⭐⭐ | ⭐⭐⭐ | 🤔 | pendiente |
@@ -40,7 +40,7 @@ implementados. Estas mejoras son sobre calidad, no sobre funcionalidad que falte
 
 ## ✅ M-01 · Contraseñas hasheadas
 
-**Resuelve:** `06-hallazgos.md` §S-02 · **Esfuerzo:** 2 h
+**Resuelve:** `06-hallazgos.md`, S-02 · **Esfuerzo:** 2 h
 
 Es la objeción más obvia y la más barata de eliminar.
 
@@ -86,7 +86,7 @@ contraseña.
 
 ## ✅ M-02 · Autenticación JWT y control de acceso
 
-**Resuelve:** `06-hallazgos.md` §S-03, §S-04 · **Esfuerzo:** 6 h
+**Resuelve:** `06-hallazgos.md`, S-03, S-04 · **Esfuerzo:** 6 h
 
 Es el cambio que más eleva la percepción del proyecto. Hoy la API es completamente pública.
 
@@ -121,7 +121,7 @@ para las operaciones de administrador.
 
 > **La clave JWT es un secreto.** Va en `dotnet user-secrets` en local y en la configuración
 > del App Service en producción — nunca en `appsettings.json` versionado. Ver
-> `06-hallazgos.md` §S-01.
+> `06-hallazgos.md`, S-01.
 
 **Frontend**
 
@@ -162,11 +162,11 @@ consola ya no debe dar acceso a nada.
 > `new` en un campo, así que el código sigue sin poder probarse con dobles. Es el
 > prerrequisito de M-08 y de la migración a .NET 8.
 
-**Resuelve:** `06-hallazgos.md` §D-03, §D-04, §D-05, §S-06 · **Esfuerzo:** 3 h
+**Resuelve:** `06-hallazgos.md`, D-03, D-04, D-05, S-06 · **Esfuerzo:** 3 h
 
 Cuatro hallazgos de una vez, y es prerrequisito de la migración a .NET 8.
 
-El código concreto está en `07-migracion-tier-free.md` §5.3 y §5.5. Resumen de lo que se
+El código concreto está en `07-migracion-tier-free.md` secciones 5.3 y 5.5. Resumen de lo que se
 consigue:
 
 | Antes | Después |
@@ -184,11 +184,11 @@ Es la mejora con mejor relación esfuerzo/beneficio del backend, y la que hace p
 
 ## ✅ M-04 · Corregir los bugs que se ven
 
-**Resuelve:** `06-hallazgos.md` §C-02, §C-03, §C-08 · **Esfuerzo:** 2 h
+**Resuelve:** `06-hallazgos.md`, C-02, C-03, C-08 · **Esfuerzo:** 2 h
 
 Son los tres que un cliente encuentra probando la aplicación.
 
-**§C-02 — editar producto.** Dos cambios de una línea cada uno.
+**C-02 — editar producto.** Dos cambios de una línea cada uno.
 
 En `productos-modal.component.ts`, el frontend envía 10 valores donde el procedimiento espera 11:
 
@@ -204,7 +204,7 @@ En `USP_MNT_Productos` opción `07`, `@nIdLote` nunca se asigna:
 SET @nIdLote = (SELECT nIdLote FROM TBL_DET_PRODUCTO WHERE nIdProducto = @nIdProducto);
 ```
 
-**§C-03 — editar zona.** Requiere una operación de actualización que no existe en ninguna capa:
+**C-03 — editar zona.** Requiere una operación de actualización que no existe en ninguna capa:
 añadir la opción `04` a `USP_MNT_Zonas`, un método en `ZonaData`, un `PUT /api/zona/{id}` en
 el controller, y hacer que `zona-form.component.ts` distinga alta de edición en vez de
 ejecutar `delete this.lZona.nIdZona`.
@@ -214,20 +214,20 @@ De paso, arregla la validación que nunca se ejecuta:
 if (!(await this.fnValidarImagen())) { return; }   // faltaban los paréntesis
 ```
 
-**§C-08 — respuestas nulas.** Sustituir el `return null` final de los seis controllers:
+**C-08 — respuestas nulas.** Sustituir el `return null` final de los seis controllers:
 
 ```csharp
 return BadRequest(new { mensaje = $"sOpcion no soportada: {genEnt.sOpcion}" });
 ```
 
-**Aprovecha y añade transacciones** (§C-07) a `USP_MNT_Productos` opción `06` y
+**Aprovecha y añade transacciones** (C-07) a `USP_MNT_Productos` opción `06` y
 `USP_MNT_Usuarios` opción `04`, que son los dos sitios donde un fallo a medias deja datos
 inconsistentes. Son cuatro líneas: `BEGIN TRY / BEGIN TRANSACTION / COMMIT / END TRY BEGIN
 CATCH ROLLBACK`.
 
 ## ✅ M-05 · Limpiar código muerto
 
-**Resuelve:** `06-hallazgos.md` §C-11, §D-09 · **Esfuerzo:** 30 min
+**Resuelve:** `06-hallazgos.md`, C-11, D-09 · **Esfuerzo:** 30 min
 
 Media hora que cambia la primera impresión al abrir el repositorio.
 
@@ -251,7 +251,7 @@ en uno solo.
 
 ## 🤔 M-06 · Sustituir `pParametro` por JSON tipado
 
-**Resuelve:** `06-hallazgos.md` §S-07 · **Esfuerzo:** 2 días
+**Resuelve:** `06-hallazgos.md`, S-07 · **Esfuerzo:** 2 días
 
 Elimina de raíz el acoplamiento posicional y el problema del delimitador sin escapar.
 
@@ -281,7 +281,7 @@ empezar la siguiente. `ZonaController` ya funciona así y sirve de plantilla.
 
 ## 🤔 M-07 · Actualizar Angular
 
-**Resuelve:** `06-hallazgos.md` §D-02 · **Esfuerzo:** 3–5 días
+**Resuelve:** `06-hallazgos.md`, D-02 · **Esfuerzo:** 3–5 días
 
 Angular 9 → 19/20 son once versiones mayores. La ruta oficial (`ng update` versión a versión)
 es lenta y con este código —que mezcla Material, Bootstrap 5 y `@ng-bootstrap` 6— probablemente
@@ -302,7 +302,7 @@ convierte una limitación en una decisión explicada.
 
 ## 🤔 M-08 · Pruebas de verdad
 
-**Resuelve:** `06-hallazgos.md` §C-10 · **Esfuerzo:** 2–3 días
+**Resuelve:** `06-hallazgos.md`, C-10 · **Esfuerzo:** 2–3 días
 
 Hoy la cobertura real es **cero** en las dos puntas: un test de backend que no puede pasar y
 ocho `.spec.ts` con el `should create` del generador.
@@ -315,7 +315,7 @@ tuvo la intención.
 el test existente ataca la base de datos real.
 
 Lo que aportaría más por hora:
-1. **Tests de integración de los procedimientos** contra SQL Server en contenedor (Testcontainers). Habrían detectado §C-02 y §C-06 automáticamente.
+1. **Tests de integración de los procedimientos** contra SQL Server en contenedor (Testcontainers). Habrían detectado C-02 y C-06 automáticamente.
 2. **Tests unitarios de la capa de negocio** con `Data` simulado — una vez que M-01 y M-02 pongan lógica real ahí.
 3. **Un test de extremo a extremo** con Playwright que recorra login → listar → crear → editar → dar de baja.
 
@@ -418,7 +418,7 @@ más que tenerla implementada.
 **Esfuerzo:** 5 días
 
 El proceso PN3 del documento nunca se implementó, y el módulo `Cliente` del backend parece un
-intento abandonado en esa dirección (`06-hallazgos.md` §C-11).
+intento abandonado en esa dirección (`06-hallazgos.md`, C-11).
 
 **Recomendación:** ❌ borra el código muerto (M-05) en lugar de completarlo. Un módulo a
 medias resta; su ausencia, explicada, no. La respuesta honesta —"estaba en el análisis y no se
