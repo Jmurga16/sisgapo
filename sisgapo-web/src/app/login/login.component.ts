@@ -3,7 +3,8 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { LoginResultado } from 'src/app/shared/models';
+import { Sesion } from 'src/app/shared/models';
+import { SesionService } from 'src/app/shared/services/sesion.service';
 import { LoginService } from './login.service';
 
 @Component({
@@ -14,17 +15,18 @@ import { LoginService } from './login.service';
 export class LoginComponent implements OnInit {
   sUser = new FormControl();
   sPassword = new FormControl();
-  Rol: number;
+  nRol: number = 0;
 
   @Output() logeado = new EventEmitter<number>();
 
   constructor(
     private loginService: LoginService,
+    private sesionService: SesionService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
-    localStorage.clear();
+    this.sesionService.fnCerrar();
   }
 
   async fnLogin(): Promise<void> {
@@ -37,20 +39,26 @@ export class LoginComponent implements OnInit {
     }
 
     try {
-      const resultados: LoginResultado[] = await this.loginService
-        .fnServLogin(sNombreUsuario, sContrasenia);
+      const oSesion: Sesion = await this.loginService.fnServLogin(sNombreUsuario, sContrasenia);
 
-      if (!resultados.length || resultados[0].result <= 0) {
+      if (!oSesion || !oSesion.sToken) {
         await Swal.fire({ title: 'Credenciales incorrectas', icon: 'error', timer: 3500 });
         return;
       }
 
-      this.Rol = resultados[0].nIdRol;
-      localStorage.setItem('Rol', String(this.Rol));
-      this.logeado.emit(this.Rol);
+      this.sesionService.fnGuardar(oSesion);
+      this.nRol = oSesion.nIdRol;
+      this.logeado.emit(this.nRol);
       await this.router.navigate(['/', 'inicio']);
     } catch (error) {
-      console.error(error as HttpErrorResponse);
+      const oError = error as HttpErrorResponse;
+
+      if (oError.status === 401) {
+        await Swal.fire({ title: 'Credenciales incorrectas', icon: 'error', timer: 3500 });
+        return;
+      }
+
+      console.error(oError);
       await Swal.fire({
         title: 'No se pudo conectar',
         text: 'El servidor no responde. Comprueba que la API esté levantada.',

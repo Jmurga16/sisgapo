@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NoopAnimationsModule, BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -44,6 +44,7 @@ import { CategoriaModalComponent } from './modulos/inventario/categoria/categori
 import { ProductosModalComponent } from './modulos/inventario/productos/productos-modal/productos-modal.component';
 import { LoginComponent } from './login/login.component';
 import { InicioComponent } from './inicio/inicio.component';
+import { TokenInterceptor } from './shared/services/token.interceptor';
 
 
 @NgModule({
@@ -99,7 +100,7 @@ import { InicioComponent } from './inicio/inicio.component';
     UsuariosService,
     MatDatepickerModule,
     MatNativeDateModule,
-
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })

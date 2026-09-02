@@ -45,7 +45,16 @@ h1.example-app-name {
 }
 
 .btnCerrarSesion{
-  margin-left: auto;  
   color: white;
   text-decoration: none;
+  white-space: nowrap;
+}
+.usuario-sesion {
+  margin-left: auto;
+  padding-right: 1rem;
+  font-size: .85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 40vw;
 }
