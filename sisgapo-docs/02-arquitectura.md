@@ -67,16 +67,20 @@ nada.
 Cada entidad expone **un solo endpoint** y **un solo stored procedure**. La operación concreta
 se selecciona con un código de dos dígitos.
 
-**1. El frontend arma el arreglo y lo aplana con `|`:**
+**1. El frontend envía valores separados:**
 
 ```typescript
 // sisgapo-web/src/app/modulos/usuarios/usuarios.service.ts
 const params = {
   sOpcion: sOpcion,
-  pParametro: pParametro.join('|')      // ["Juan","Pérez",1,...] → "Juan|Pérez|1|..."
+  parametros: pParametro.map(String)
 };
 return this.http.post(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();
 ```
+
+La capa Business rechaza valores que contengan `|` y solo entonces reconstruye el
+`pParametro` delimitado que esperan los procedimientos. Así no cambia la estructura SQL
+histórica y los nombres de productos o almacenes no pueden alterar las posiciones.
 
 **2. El controller enruta por rango de códigos:**
 

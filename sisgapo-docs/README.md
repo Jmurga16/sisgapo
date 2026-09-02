@@ -18,6 +18,7 @@ existe; la base de datos se reconstruye desde los scripts de `sql/`.
 | Entender el sistema | `01` → `02` → `03` |
 | Saber qué está mal | [`06-hallazgos.md`](06-hallazgos.md) |
 | Presentarlo | [`08-plan-demo.md`](08-plan-demo.md) |
+| Ver qué está hecho y qué falta | [`11-estado-portafolio.md`](11-estado-portafolio.md) |
 
 ## Índice
 
@@ -29,11 +30,12 @@ existe; la base de datos se reconstruye desde los scripts de `sql/`.
 | 03 | [Modelo de datos](03-modelo-de-datos.md) | Tablas, relaciones, procedimientos y cómo recrear la base |
 | 04 | [Referencia de API](04-api-referencia.md) | Endpoints, contratos y catálogo completo de códigos `sOpcion` |
 | 05 | [Frontend](05-frontend.md) | Módulos Angular, rutas, servicios, componentes, sesión |
-| 06 | [Hallazgos](06-hallazgos.md) | **La auditoría: 33 hallazgos de seguridad, correctitud y deuda técnica** |
+| 06 | [Hallazgos](06-hallazgos.md) | **La auditoría: 37 hallazgos de seguridad, correctitud y deuda técnica** |
 | 07 | [Migración a tier free](07-migracion-tier-free.md) | Plan paso a paso para llegar a US$ 0/mes |
 | 08 | [Plan de demo](08-plan-demo.md) | Cómo presentar el proyecto: guion y qué decir |
 | 09 | [Mejoras propuestas](09-mejoras-propuestas.md) | Roadmap más allá del alcance original, con estimaciones |
 | 10 | [Decisiones](10-decisiones.md) | Registro de decisiones tomadas y alternativas descartadas |
+| 11 | [Estado para portafolio](11-estado-portafolio.md) | Qué está hecho, qué queda pendiente y suficiencia de módulos |
 
 También en esta carpeta:
 

@@ -277,17 +277,11 @@ delete this.lZona.nIdZona;
 
 - La comprobación de duplicados del procedimiento tampoco funciona (compara contra `LOWER(@sNombre)`), así que el duplicado se crea sin obstáculo. Ver `03-modelo-de-datos.md`, sección 4, hallazgo 10.
 
-## 8. `POST /ClientesService` — no funcional
+## 8. `POST /ClientesService` — fuera del alcance actual
 
-`ClienteController`, `ClienteBusiness` y `ClienteData` existen y compilan, e implementan las
-opciones `01`–`05` contra `USP_MNT_Clientes`.
-
-**Ese procedimiento no existe, ni existe la tabla `TBL_CLIENTE`.** No hay script que los
-cree ni pantalla en el frontend que los use. Cualquier llamada devuelve un error de SQL Server.
-
-Es código muerto de un módulo que se empezó y no se terminó — probablemente el proceso PN3
-(gestión de abastecimiento) del documento de casos de uso. La opción sensata para la demo es
-eliminarlo. Ver `09-mejoras-propuestas.md`, M-05.
+La API publicada no expone este endpoint. El módulo completo se recuperó del historial, pero
+se dejó fuera del árbol actual porque todavía no está integrado con los datos ni probado en
+el recorrido de la demo. Puede restaurarse con los comandos de `10-decisiones.md`, D-19.
 
 ## 9. Tabla resumen de códigos
 

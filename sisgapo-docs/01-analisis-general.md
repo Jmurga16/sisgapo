@@ -61,13 +61,13 @@ lo cual es una fortaleza para una demo: no hay pantallas a medias.
 - CUS-0003, 0007 y 0012 especifican que *el sistema elimina definitivamente*. La
   implementación hace **baja lógica** (`UPDATE ... SET bEstado = 0`). La implementación es la
   decisión correcta; la especificación es la que está mal.
-- CUS-0009 especifica un **límite de intentos de autenticación**. No está implementado.
+- CUS-0009 especifica un **límite de intentos de autenticación**. Está implementado con
+  cinco solicitudes por IP y minuto; las siguientes reciben HTTP 429.
 - CUS-0001 especifica validaciones (DNI de 8 dígitos, teléfono de 9, mayoría de edad).
-  Están en el frontend; no hay validación equivalente en el backend.
-- PN3 (abastecimiento / proveedores) no se implementó. Existe un módulo `Cliente` en el
-  backend que parece un intento abandonado en esa dirección: tiene controller, business y
-  data, pero **no tiene tabla, ni stored procedure, ni pantalla**. Es código muerto que
-  revienta si se invoca. Ver `06-hallazgos.md`, C-11.
+  Se validan tanto en el frontend como en el backend.
+- PN3 (abastecimiento / proveedores) no forma parte de la demo actual. El módulo histórico
+  `Cliente` se recuperó y se documentó, pero se dejó fuera del árbol publicado hasta poder
+  integrarlo y probarlo. Ver `10-decisiones.md`, D-19.
 
 ## 3. Stack tecnológico
 

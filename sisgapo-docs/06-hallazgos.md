@@ -60,7 +60,7 @@ SQL Server 2022 en Docker y, donde aplica, por HTTP contra la API.
 | S-06 · `Microsoft.ApplicationBlocks.Data` sin mantenimiento | ✅ Eliminado del proyecto |
 | S-07 · El delimitador `\|` no se escapa | ✅ Corregido — el frontend envía valores separados y el backend los valida antes de reconstruir `pParametro` |
 | C-06 · El nombre de usuario siempre lleva sufijo | ⏳ Pendiente |
-| C-10 · El único test no puede pasar | ✅ Corregido — seis pruebas unitarias ejecutadas por GitHub Actions |
+| C-10 · El único test no puede pasar | ✅ Corregido — 11 pruebas unitarias ejecutadas por GitHub Actions |
 | D-01 · .NET 5 fuera de soporte | ✅ Corregido — migrado a .NET 8, 0 warnings |
 | D-02 · Angular 9 fuera de soporte | ⏳ Pendiente |
 | D-03 · Sin inyección de dependencias | ⚠️ Parcial — `LoginBusiness` y `UsuarioBusiness` admiten dobles; el resto conserva instanciación directa |
@@ -274,8 +274,8 @@ directa, así que el valor antiguo continúa siendo recuperable por quien tenga 
 ### 🟡 S-09 · Sin límite de intentos de autenticación — **corregido**
 
 CUS-0009 lo especifica explícitamente ("si el usuario ha excedido el número de intentos…").
-No está implementado en ninguna capa. Sin *rate limiting*, `USP_MNT_Login` acepta intentos
-ilimitados.
+En el estado original no estaba implementado en ninguna capa: sin *rate limiting*,
+`USP_MNT_Login` aceptaba intentos ilimitados.
 
 Con contraseñas de seis dígitos numéricos como las del seed, un ataque de fuerza bruta es
 trivial. Relevante solo si la demo queda expuesta públicamente con datos que importen.
@@ -432,14 +432,15 @@ Tres problemas:
 Los ocho `.spec.ts` del frontend están igual de vacíos: todos conservan el `should create`
 generado por el CLI, sin adaptar.
 
-Cobertura real de pruebas: **cero**, en las dos puntas. Con `sonar-project.properties` y
-`npm run test -- --code-coverage` configurados, lo que sugiere que la intención estaba pero
-no se llegó.
+En el estado original, la cobertura real de pruebas era **cero** en las dos puntas. Con
+`sonar-project.properties` y `npm run test -- --code-coverage` configurados, la intención
+estaba pero no se llegó a completar.
 
-**Arreglo aplicado:** el proyecto `Test` forma parte de la solución y contiene seis pruebas
+**Arreglo aplicado:** el proyecto `Test` forma parte de la solución y contiene 11 pruebas
 unitarias. `LoginBusiness` cubre hash correcto, usuario inactivo y hash corrupto;
-`UsuarioBusiness` cubre alta con bcrypt, edición sin cambio de contraseña y rechazo del
-delimitador. Las dependencias de datos se sustituyen por dobles mediante interfaces pequeñas.
+`UsuarioBusiness` cubre bcrypt, edición sin cambio de contraseña, delimitador, longitud
+mínima y mayoría de edad; el filtro de demo cubre escrituras bloqueadas y lecturas
+permitidas. Las dependencias de datos se sustituyen por dobles mediante interfaces pequeñas.
 GitHub Actions compila API y frontend, ejecuta las pruebas y recoge cobertura en cada push y
 pull request a `main`.
 

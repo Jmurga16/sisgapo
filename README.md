@@ -95,6 +95,7 @@ Y estos dos, que no son secretos pero sí cambian por entorno:
 |---|---|---|
 | `Cors:OrigenesPermitidos` | Dominios del frontend autorizados | `http://localhost:4200` |
 | `Jwt:MinutosVigencia` | Duración del token | `480` (8 h) |
+| `Demo:SoloLectura` | Bloquea altas, ediciones y cambios de estado | `false` |
 
 Cambiar `SISGAPO_JWT_KEY` invalida todas las sesiones abiertas, que es justo lo que se
 quiere si alguna vez se filtra. Para generar una:
@@ -106,6 +107,11 @@ openssl rand -base64 48
 En despliegue, `MSSQL_SA_PASSWORD` del `docker-compose.yml` deja de aplicar: ahí la base
 la da el proveedor y su contraseña vive dentro de `SISGAPO_CONNECTION_STRING`.
 
+Para una demo pública, activa el modo de consulta con la variable
+`Demo__SoloLectura=true`. La API devolverá 403 ante cualquier escritura y el frontend
+ocultará o deshabilitará esas acciones. En local queda desactivado para poder recorrer los
+CRUD completos.
+
 ---
 
 ## Pruebas y CI
@@ -114,8 +120,8 @@ la da el proveedor y su contraseña vive dentro de `SISGAPO_CONNECTION_STRING`.
 dotnet test sisgapo-api/SISGAPO_Back.sln --configuration Release
 ```
 
-La suite cubre autenticación con bcrypt, usuarios inactivos, hashes corruptos, actualización
-de contraseñas y rechazo del delimitador legado. El workflow de GitHub Actions ejecuta esas
+La suite cubre autenticación con bcrypt, usuarios inactivos, hashes corruptos, validación de
+usuarios, modo demo y rechazo del delimitador legado. El workflow de GitHub Actions ejecuta esas
 pruebas, compila la solución .NET y genera el build de producción de Angular en cada push y
 pull request a `main`.
 
@@ -138,7 +144,11 @@ entrar, que es justamente lo que se comprueba.
 > Las contraseñas se guardan con bcrypt. La contraseña compartida y documentada es una
 > licencia de la demo, no del diseño: en el original de 2021 estaban en texto plano
 > (`06-hallazgos.md`, S-02).
-> **No expongas esta demo en internet tal cual.**
+> Para exponer estas cuentas en internet, activa siempre `Demo__SoloLectura=true`.
+
+Al crear usuarios nuevos se exige una contraseña inicial de al menos 8 caracteres. Editar
+los datos de una persona no cambia su contraseña; un restablecimiento deberá implementarse
+como flujo independiente si el proyecto deja de usar cuentas de demostración.
 
 ---
 
@@ -158,3 +168,4 @@ Empieza por [`sisgapo-docs/README.md`](sisgapo-docs/README.md).
 | `08-plan-demo.md` | Cómo presentarlo |
 | `09-mejoras-propuestas.md` | Roadmap |
 | `10-decisiones.md` | Decisiones tomadas y alternativas descartadas |
+| `11-estado-portafolio.md` | Estado hecho/pendiente y revisión de suficiencia funcional |

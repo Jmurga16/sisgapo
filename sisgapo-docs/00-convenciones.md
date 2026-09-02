@@ -68,19 +68,21 @@ Los métodos de TypeScript llevan `fn`: `fnListarProductos()`, `fnCambiarEstado(
 
 ## 4. El contrato `sOpcion` / `pParametro`
 
-Cinco de los seis endpoints comparten un único contrato:
+Los endpoints de panel, usuarios, almacenes e inventario comparten un contrato compatible
+con los procedimientos almacenados históricos:
 
 ```jsonc
 POST /AlmacenesService
-{ "sOpcion": "05", "pParametro": "Almacén Norte|Av. Perú 123|2|1" }
+{ "sOpcion": "05", "parametros": ["Almacén Norte", "Av. Perú 123", "2", "1"] }
 ```
 
 - **`sOpcion`** es un código de dos dígitos que selecciona la operación. **No es
   universal:** `"05"` es *insertar* en Almacenes y *obtener por id* en Productos. Cada
   entidad tiene su propio catálogo, y está completo en `04-api-referencia.md`.
-- **`pParametro`** son los argumentos concatenados con `|`, en orden posicional. El
-  frontend hace `array.join('|')` y el procedimiento los separa con la función escalar
-  `dbo.Split`.
+- **`parametros`** transporta los valores separados desde Angular. La capa Business
+  comprueba que ningún valor contenga `|`, reconstruye internamente `pParametro` y el
+  procedimiento lo separa con `dbo.Split`. El formato delimitado se conserva solo dentro
+  del backend para no reescribir los procedimientos históricos.
 - Las **lecturas** devuelven el arreglo tal cual lo produce el procedimiento.
 - Las **escrituras** devuelven `'1|Se registró con éxito'`, que el controller parte en
   `{ cod, mensaje }`.

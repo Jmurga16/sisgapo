@@ -45,13 +45,13 @@ Conviene fijarlo en `package.json` para no depender de que alguien recuerde el f
 src/app/
 ├── app.component.*            shell: solo <app-nav-menu>
 ├── app.module.ts              módulo único — no hay lazy loading
-├── app-routing.module.ts      9 rutas, ninguna protegida
+├── app-routing.module.ts      rutas protegidas por sesión y rol
 ├── login/                     componente + servicio de autenticación
 ├── inicio/                    página de bienvenida tras entrar
 ├── nav-menu/nav-menu/         barra lateral, control de sesión
 ├── shared/
 │   ├── models/                contratos tipados de las respuestas HTTP
-│   └── services/              AppDateAdapter (formato de fecha para Material)
+│   └── services/              sesión, guards, interceptor, configuración y fechas
 └── modulos/
     ├── usuarios/              lista + modal + servicio
     ├── almacen/               lista + modal + servicio
@@ -72,82 +72,73 @@ dividir en módulos con carga diferida es la mejora obvia si el sistema creciera
 |---|---|---|
 | `''` | redirige a `login` | — |
 | `login` | **`NavMenuComponent`** | no |
-| `inicio` | `InicioComponent` | no |
-| `usuarios` | `UsuariosListComponent` | no |
-| `almacenes` | `AlmacenesListComponent` | no |
-| `zonas` | `ZonaListComponent` | no |
-| `zonas/agregar` | `ZonaFormComponent` | no |
-| `zonas/editar/:id` | `ZonaFormComponent` | no |
-| `categoria` | `CategoriaComponent` | no |
-| `productos` | `ProductosComponent` | no |
-
-Dos cosas a notar:
-
-**No hay ni un `canActivate` en todo el archivo.** Cualquier ruta es accesible escribiéndola
-en la barra de direcciones. Ver `06-hallazgos.md`, S-04.
+| `inicio` | `InicioComponent` | sesión |
+| `usuarios` | `UsuariosListComponent` | administrador |
+| `almacenes` | `AlmacenesListComponent` | administrador o supervisor |
+| `zonas` | `ZonaListComponent` | administrador o supervisor |
+| `zonas/agregar` | `ZonaFormComponent` | administrador o supervisor |
+| `zonas/editar/:id` | `ZonaFormComponent` | administrador o supervisor |
+| `categoria` | `CategoriaComponent` | sesión |
+| `productos` | `ProductosComponent` | sesión |
 
 **La ruta `login` apunta a `NavMenuComponent`, no a `LoginComponent`.** `NavMenuComponent`
-decide qué mostrar según `localStorage.getItem("Rol")`: si no hay rol, renderiza el login
-dentro de su plantilla; si lo hay, muestra la barra lateral. Es un patrón poco habitual
+decide qué mostrar según la sesión: si no existe, renderiza el login dentro de su plantilla;
+si existe, muestra la barra lateral. Es un patrón poco habitual
 —el componente de navegación hace de guardián y de contenedor a la vez— y explica por qué el
 árbol de rutas se ve raro a primera vista.
 
 ## 4. Sesión y control de acceso
 
-La sesión completa cabe en tres líneas repartidas por el código:
+`SesionService` guarda el token JWT, el rol, el nombre visible y la fecha de expiración en
+una única entrada de `localStorage`. `AuthGuard` exige sesión y comprueba los roles declarados
+en cada ruta. `TokenInterceptor` añade el encabezado `Authorization: Bearer` y cierra la
+sesión únicamente cuando la API responde 401.
 
 ```typescript
-// login.component.ts — al entrar
-localStorage.setItem('Rol', value[0].nIdRol);
-
-// nav-menu.component.ts — al arrancar
-this.Rol = parseInt(localStorage.getItem("Rol"));
-
-// nav-menu.component.ts — al salir
-localStorage.clear();
+const peticion = sToken
+  ? req.clone({ setHeaders: { Authorization: `Bearer ${sToken}` } })
+  : req;
 ```
 
-No hay token, ni expiración, ni renovación, ni cabecera `Authorization` en ninguna llamada.
-El valor guardado es un número (`1`, `2` o `3`) que cualquiera puede escribir desde la consola
-del navegador.
-
-Y **el rol no cambia la interfaz**: `listaNav` en `nav-menu.component.ts` es un arreglo fijo
-con las cuatro entradas de menú, sin filtrado por rol. Los componentes de lista muestran los
-botones de crear, editar y eliminar a todo el mundo.
-
-La distinción Administrador / Supervisor que define el documento de casos de uso
-—el administrador gestiona usuarios, almacenes y zonas; el supervisor gestiona categorías—
-**no está implementada en ninguna capa**.
+El menú se filtra por rol. El administrador gestiona usuarios; administrador y supervisor
+gestionan almacenes, zonas e inventario; el asistente consulta inventario. La API vuelve a
+comprobar los permisos, por lo que ocultar botones no es la única barrera. En modo demo, la
+interfaz deshabilita las escrituras y un filtro global de la API las rechaza con HTTP 403.
 
 ## 5. Servicios
 
-Seis servicios. Cinco usan `HttpClient.post(...).toPromise()` y `ZonaService` conserva
-observables porque es el único módulo REST.
+Los servicios de negocio usan `HttpClient`; `ZonaService` conserva observables porque es el
+único módulo REST y los demás mantienen `Promise` por compatibilidad con el código Angular 9.
 
 | Servicio | Endpoint | Patrón |
 |---|---|---|
 | `LoginService` | `POST /LoginService` | objeto tipado |
-| `PanelService` | `POST /Panel` | `sOpcion` + `join('|')` |
-| `UsuariosService` | `POST /UsuariosService` | `sOpcion` + `join('|')` |
-| `AlmacenesService` | `POST /AlmacenesService` | `sOpcion` + `join('|')` |
-| `InventarioService` | `POST /InventarioService/{Categoria,Producto}` | `sOpcion` + `join('|')` |
+| `PanelService` | `POST /Panel` | `sOpcion` + `parametros[]` |
+| `UsuariosService` | `POST /UsuariosService` | `sOpcion` + `parametros[]` |
+| `AlmacenesService` | `POST /AlmacenesService` | `sOpcion` + `parametros[]` |
+| `InventarioService` | `POST /InventarioService/{Categoria,Producto}` | `sOpcion` + `parametros[]` |
 | `ZonaService` | `GET/POST /api/zona` | REST, objeto tipado |
+| `ConfiguracionService` | `GET /ConfiguracionService` | estado público del modo demo |
 
-Los cuatro servicios del patrón `sOpcion` aplanan el arreglo:
+Los cuatro servicios del patrón `sOpcion` envían los valores separados:
 
 ```typescript
-const params = { sOpcion: sOpcion, pParametro: pParametro.join('|') };
+const params = { sOpcion, parametros: pParametro.map(String) };
 return this.http.post(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();
 ```
+
+El backend valida el delimitador y reconstruye el string que consumen los procedimientos;
+la función SQL `dbo.Split` sigue intacta.
 
 Observaciones:
 
 - **`.toPromise()` en todo.** Está deprecado desde RxJS 7 y eliminado en RxJS 8; los componentes usan `async/await` en lugar de suscripciones. Funciona, pero desaprovecha la cancelación automática y los operadores de RxJS. `ZonaService` es el único que devuelve observables y usa `.subscribe()`.
 - **`JSON.stringify` manual.** `HttpClient` ya serializa el cuerpo; hacerlo a mano y además fijar `Content-Type` es redundante.
-- **Sin interceptor HTTP.** No hay un punto único para añadir cabeceras, manejar errores o mostrar un indicador de carga. Cada componente hace su propio `(error) => console.log(error)`.
+- **Interceptor HTTP.** Centraliza el token y el cierre de sesiones vencidas; los mensajes
+  específicos y un indicador global de carga todavía pueden mejorarse.
 - **Respuestas tipadas.** Los contratos de cada opción viven en `shared/models/` y los
-  servicios son genéricos. El formato delimitado de `pParametro` sigue sin tipado en el
-  backend; esta mejora solo evita `any` dentro del frontend.
+  servicios son genéricos. Los parámetros viajan como arreglo, aunque los procedimientos
+  todavía conservan el contrato posicional delimitado.
 
 ## 6. Componentes
 
@@ -208,44 +199,26 @@ redirección desde HTTP. Ver `06-hallazgos.md`, S-08.
 
 ## 9. Despliegue
 
-Dos workflows en `.github/workflows/`, ambos hacia Azure Static Web Apps:
-
-| Archivo | `output_location` |
-|---|---|
-| `azure-static-web-apps-blue-sea-0c3542710.yml` | `dist` |
-| `azure-static-web-apps-yellow-meadow-0e36f1a10.yml` | `dist/SISGAPO-Front` |
-
-**El primero está mal.** `angular.json` define `"outputPath": "dist/SISGAPO-Front"`, así que
-el workflow `blue-sea` publicaría un directorio que no contiene la aplicación. Parece que se
-creó un recurso, no funcionó, se creó otro y nunca se borró el primero.
-
-Además, **ninguno de los dos workflows funcionaría hoy**: usan `actions/checkout@v2` y no
-fijan la versión de Node, así que el runner usaría una versión moderna y el build fallaría
-con el error de OpenSSL descrito en la sección 1 — salvo que se añada `NODE_OPTIONS`.
-
-Para la demo, esto se arregla con dos líneas en el workflow:
-
-```yaml
-env:
-  NODE_OPTIONS: --openssl-legacy-provider
-```
-
-y borrar el workflow sobrante. Ver `07-migracion-tier-free.md`, sección 6.
+El repositorio conserva un único workflow, `.github/workflows/ci.yml`. Usa Node 22,
+`actions/checkout@v4`, instala con el lockfile y genera el build de producción en cada push
+y pull request. Los workflows antiguos de Azure Static Web Apps se retiraron porque los
+recursos ya no existen. El despliegue público nuevo sigue pendiente; ver
+`07-migracion-tier-free.md` y `11-estado-portafolio.md`.
 
 ## 10. Resumen de problemas del frontend
 
 | # | Problema | Gravedad | Dónde | Estado |
 |---|---|---|---|---|
-| 1 | Ninguna ruta protegida | 🔴 | `app-routing.module.ts` | pendiente |
+| 1 | Ninguna ruta protegida | 🔴 | `app-routing.module.ts` | corregido |
 | 2 | Editar zona crea un duplicado | 🔴 | `zona-form.component.ts` | corregido |
 | 3 | Editar producto envía 10 parámetros de 11 | 🔴 | `productos-modal.component.ts` | corregido |
-| 4 | Sesión = un número en `localStorage` | 🔴 | `login.component.ts` | pendiente |
+| 4 | Sesión = un número en `localStorage` | 🔴 | `login.component.ts` | corregido — JWT con expiración |
 | 5 | El formulario de acceso no responde al clic con la ventana baja | 🔴 | `login.component.css` | corregido |
-| 6 | El rol no filtra menús ni acciones | 🟠 | `nav-menu.component.ts` | pendiente |
+| 6 | El rol no filtra menús ni acciones | 🟠 | `nav-menu.component.ts` | corregido |
 | 7 | `if (!this.fnValidarImagen)` sin `()` | 🟠 | `zona-form.component.ts` | corregido |
 | 8 | Sin diseño para móvil en la pantalla de acceso | 🟠 | `login.component.css` | corregido |
 | 9 | Los filtros de Productos no filtraban | 🟠 | `productos.component.ts` | corregido |
-| 10 | Sin interceptor HTTP y con manejo de errores desigual | 🟠 | servicios y componentes | pendiente |
+| 10 | Sin interceptor HTTP y con manejo de errores desigual | 🟠 | servicios y componentes | mitigado — interceptor y errores de escritura visibles |
 | 11 | Workflow con `output_location` incorrecto | 🟠 | `.github/workflows/` | corregido |
 | 12 | URL cableada en `InicioComponent` | 🟡 | `inicio.component.ts` | corregido |
 | 13 | Errores silenciosos al iniciar sesión | 🟡 | `login.component.ts` | corregido |
@@ -254,5 +227,6 @@ y borrar el workflow sobrante. Ver `07-migracion-tier-free.md`, sección 6.
 | 16 | Un solo módulo, sin carga diferida | 🟡 | `app.module.ts` | pendiente |
 | 17 | Tres sistemas de estilos conviviendo | 🟡 | `styles.css` | mitigado — Bootstrap reducido a grid |
 
-Los pendientes de gravedad alta son los dos de sesión y rol: van juntos con la
-autenticación. El resto se documenta en `06-hallazgos.md` con su reproducción.
+No quedan pendientes de gravedad alta en esta lista. La actualización de Angular, las
+pruebas de interfaz y la simplificación del stack visual son deuda de mantenimiento, no
+bloqueos para la demo.

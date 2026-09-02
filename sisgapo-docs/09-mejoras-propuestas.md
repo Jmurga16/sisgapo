@@ -234,7 +234,8 @@ Eliminar:
 - `SISGAPO_API/WeatherForecast.cs` — plantilla por defecto
 - `Data/Correo.cs` — clase vacía
 - `Test/Entities.cs` — clase vacía
-- `ClienteController.cs`, `ClienteBusiness.cs`, `ClienteData.cs`, `ClienteEntity.cs` — módulo que no funciona
+- `ClienteController.cs`, `ClienteBusiness.cs`, `ClienteData.cs`, `ClienteEntity.cs` — módulo
+  histórico retirado del árbol actual; se conserva recuperable en Git
 - Las cinco clases de entidad vacías (`AlmacenEntity`, `CategoriaEntity`, `ProductoEntity`…)
 - El bloque de correo comentado en `ProductoData.cs` (que además contiene una contraseña)
 - Paquetes de EF Core y `.config/dotnet-tools.json`
@@ -307,8 +308,9 @@ convierte una limitación en una decisión explicada.
 
 **Resuelve:** `06-hallazgos.md`, C-10 · **Esfuerzo:** 2–3 días
 
-La primera suite real ya está incorporada: seis pruebas unitarias de `LoginBusiness` y
-`UsuarioBusiness`, ejecutadas por GitHub Actions junto con la compilación de ambas capas.
+La primera suite real ya está incorporada: 11 pruebas unitarias de `LoginBusiness`,
+`UsuarioBusiness` y el filtro de modo demo, ejecutadas por GitHub Actions junto con la
+compilación de ambas capas.
 Los ocho `.spec.ts` del frontend conservan todavía el `should create` del generador.
 
 Lo interesante es que **el andamiaje ya está montado**: xUnit configurado, Karma con
@@ -420,12 +422,13 @@ más que tenerla implementada.
 
 **Esfuerzo:** 5 días
 
-El proceso PN3 del documento nunca se implementó, y el módulo `Cliente` del backend parece un
-intento abandonado en esa dirección (`06-hallazgos.md`, C-11).
+El proceso PN3 no forma parte de la demo actual. El módulo histórico `Cliente` llegó a tener
+tabla, procedimiento, backend y pantalla, pero se dejó fuera del árbol publicado porque no
+está integrado ni probado con el recorrido actual (`10-decisiones.md`, D-19).
 
-**Recomendación:** ❌ borra el código muerto (M-05) en lugar de completarlo. Un módulo a
-medias resta; su ausencia, explicada, no. La respuesta honesta —"estaba en el análisis y no se
-llegó a implementar"— es perfectamente aceptable.
+**Recomendación:** ❌ para la demo actual. Mantenerlo en el historial evita añadir una entrada
+de menú sin validar. Solo conviene restaurarlo si el objetivo cambia a cubrir abastecimiento
+y se añaden datos, integración y pruebas.
 
 ## ❌ M-14 · Reescritura completa
 

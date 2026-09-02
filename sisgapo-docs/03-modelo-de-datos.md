@@ -147,8 +147,9 @@ Seis procedimientos más una función. Toda la lógica de negocio del sistema es
 delimitado, y no tiene valor por defecto para `@sRutaImagen` (hay que pasarlo siempre).
 Es coherente con que `ZonaController` sea el único controller REST.
 
-**`USP_MNT_Clientes` no existe.** `ClienteData.cs` lo invoca, pero no hay script que lo cree
-ni tabla `TBL_CLIENTE`. Ver `06-hallazgos.md`, C-11.
+**Clientes no forma parte del esquema publicado.** La tabla, el procedimiento y el módulo
+se recuperaron del historial, pero se dejaron fuera de la demo hasta integrarlos y probarlos.
+La decisión y los comandos de recuperación están en `10-decisiones.md`, D-19.
 
 ### La función `dbo.Split`
 
