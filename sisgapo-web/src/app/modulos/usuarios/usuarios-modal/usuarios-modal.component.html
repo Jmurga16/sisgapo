@@ -105,6 +105,7 @@
                     <mat-label>Contraseña</mat-label>
                     <input matInput type="password" formControlName="sContrasenia" name="somePassword"
                         autocomplete="new-password" #password />
+                    <mat-hint *ngIf="!bEsAlta">Déjala en blanco para no cambiarla.</mat-hint>
                 </mat-form-field>
 
             </div>

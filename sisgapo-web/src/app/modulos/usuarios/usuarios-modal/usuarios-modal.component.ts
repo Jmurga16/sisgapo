@@ -49,6 +49,8 @@ export class UsuariosModalComponent implements OnInit {
     { abrev: 'F', nombre: 'Femenino' },
   ];
 
+  bEsAlta: boolean = true;
+
   constructor(
     public dialogRef: MatDialogRef<UsuariosModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DatosModal,
@@ -57,7 +59,8 @@ export class UsuariosModalComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.sAccionModal = this.data.accion === AccionModal.Agregar ? 'Agregar' : 'Editar';
+    this.bEsAlta = this.data.accion === AccionModal.Agregar;
+    this.sAccionModal = this.bEsAlta ? 'Agregar' : 'Editar';
     this.formUsuario = this.formBuilder.group({
       sNombres: ['', Validators.required],
       sApellidos: ['', Validators.required],
@@ -68,7 +71,8 @@ export class UsuariosModalComponent implements OnInit {
       sDireccion: ['', Validators.required],
       nTelefono: ['', Validators.required],
       dFechaNacimiento: ['', Validators.required],
-      sContrasenia: ['', Validators.required],
+      //En edicion es opcional: en blanco significa dejar la contrasenia como esta.
+      sContrasenia: ['', this.bEsAlta ? Validators.required : []],
     });
 
     if (this.data.accion === AccionModal.Editar) {
