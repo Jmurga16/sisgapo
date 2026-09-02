@@ -5,7 +5,7 @@ using System.Data;
 
 namespace Data
 {
-    public class LoginData
+    public class LoginData : ILoginData
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 

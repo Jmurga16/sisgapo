@@ -7,8 +7,17 @@ namespace Business
 {
     public class LoginBusiness
     {
-        private readonly LoginData loginData = new LoginData();
+        private readonly ILoginData loginData;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public LoginBusiness() : this(new LoginData())
+        {
+        }
+
+        public LoginBusiness(ILoginData loginData)
+        {
+            this.loginData = loginData ?? throw new ArgumentNullException(nameof(loginData));
+        }
         
         public CredencialEntity fnVerificarCredenciales(LoginEntity logEnt)
         {
@@ -57,7 +66,6 @@ namespace Business
             }
             catch (BCrypt.Net.SaltParseException)
             {
-                //Base sembrada con un seed anterior: las contrasenias estan en claro.
                 logger.Warn("La contrasenia guardada no tiene formato bcrypt.");
                 return false;
             }

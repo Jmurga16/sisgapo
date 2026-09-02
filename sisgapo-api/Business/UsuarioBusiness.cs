@@ -7,18 +7,29 @@ namespace Business
 {
     public class UsuarioBusiness
     {
-        private readonly UsuarioData usuarioData = new UsuarioData();
+        private readonly IUsuarioData usuarioData;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        //Posicion de la contrasenia dentro de pParametro en las opciones 04 y 05.
         private const int nPosicionContrasenia = 10;
 
         private const char cSeparador = '|';
+
+        public UsuarioBusiness() : this(new UsuarioData())
+        {
+        }
+
+        public UsuarioBusiness(IUsuarioData usuarioData)
+        {
+            this.usuarioData = usuarioData ?? throw new ArgumentNullException(nameof(usuarioData));
+        }
 
         public object LIS_UsuarioBusiness(UsuarioEntity erp)
         {
             try
             {
+                bool bEscritura = erp != null && (erp.sOpcion == "04" || erp.sOpcion == "05" || erp.sOpcion == "06");
+                erp.pParametro = ParametroDelimitado.Preparar(erp.parametros, erp.pParametro, bEscritura);
+
                 if (erp != null && (erp.sOpcion == "04" || erp.sOpcion == "05"))
                 {
                     erp.pParametro = fnHashearContrasenia(erp.pParametro);

@@ -14,6 +14,7 @@ namespace Business
         {
             try
             {
+                genEnt.pParametro = ParametroDelimitado.Preparar(genEnt.parametros, genEnt.pParametro, false);
                 return panelData.DataPanel(genEnt);
             }
             catch (Exception e)

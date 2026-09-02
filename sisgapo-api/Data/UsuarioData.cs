@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Data
 {
-    public class UsuarioData
+    public class UsuarioData : IUsuarioData
     {
         private string conf;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();

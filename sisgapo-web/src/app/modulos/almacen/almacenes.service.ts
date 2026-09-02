@@ -18,7 +18,7 @@ export class AlmacenesService {
 
     const params = {
       sOpcion,
-      pParametro: pParametro.join('|')
+      parametros: pParametro.map(String)
     };
 
     return this.http.post<T>(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();

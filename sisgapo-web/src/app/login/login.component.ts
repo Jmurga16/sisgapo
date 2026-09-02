@@ -58,6 +58,17 @@ export class LoginComponent implements OnInit {
         return;
       }
 
+      if (oError.status === 429) {
+        await Swal.fire({
+          title: 'Demasiados intentos',
+          text: oError.error && oError.error.mensaje
+            ? oError.error.mensaje
+            : 'Vuelve a intentarlo en un minuto.',
+          icon: 'warning'
+        });
+        return;
+      }
+
       console.error(oError);
       await Swal.fire({
         title: 'No se pudo conectar',

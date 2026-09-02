@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +15,7 @@ using System;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Threading.RateLimiting;
 
 namespace SISGAPO_API
 {
@@ -65,6 +67,32 @@ namespace SISGAPO_API
 
             services.AddAuthorization();
 
+            services.AddRateLimiter(opciones =>
+            {
+                opciones.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                opciones.AddPolicy("Login", contexto =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        contexto.Connection.RemoteIpAddress?.ToString() ?? "desconocida",
+                        _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 5,
+                            Window = TimeSpan.FromMinutes(1),
+                            QueueLimit = 0,
+                            AutoReplenishment = true
+                        }));
+                opciones.OnRejected = async (contexto, cancellationToken) =>
+                {
+                    contexto.HttpContext.Response.ContentType = "application/json";
+                    await contexto.HttpContext.Response.WriteAsync(
+                        JsonSerializer.Serialize(new
+                        {
+                            cod = "0",
+                            mensaje = "Demasiados intentos. Vuelve a intentarlo en un minuto."
+                        }),
+                        cancellationToken);
+                };
+            });
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -106,18 +134,24 @@ namespace SISGAPO_API
                 {
                     IExceptionHandlerFeature oFeature = contexto.Features.Get<IExceptionHandlerFeature>();
 
-                    if (oFeature != null)
+                    bool bSolicitudInvalida = oFeature?.Error is ArgumentException;
+
+                    if (oFeature != null && !bSolicitudInvalida)
                     {
                         logger.Error(oFeature.Error, "Error no controlado en {0}", contexto.Request.Path);
                     }
 
-                    contexto.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    contexto.Response.StatusCode = bSolicitudInvalida
+                        ? StatusCodes.Status400BadRequest
+                        : StatusCodes.Status500InternalServerError;
                     contexto.Response.ContentType = "application/json";
 
                     await contexto.Response.WriteAsync(JsonSerializer.Serialize(new
                     {
                         cod = "0",
-                        mensaje = env.IsDevelopment() && oFeature != null
+                        mensaje = bSolicitudInvalida
+                            ? oFeature.Error.Message
+                            : env.IsDevelopment() && oFeature != null
                             ? oFeature.Error.Message
                             : "Ocurrió un error al procesar la solicitud."
                     }));
@@ -137,6 +171,7 @@ namespace SISGAPO_API
             app.UseRouting();
 
             app.UseCors(sPoliticaCors);
+            app.UseRateLimiter();
 
             app.UseAuthentication();
             app.UseAuthorization();

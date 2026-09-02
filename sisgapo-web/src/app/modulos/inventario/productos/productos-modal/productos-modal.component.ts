@@ -51,7 +51,7 @@ export class ProductosModalComponent implements OnInit {
   ngOnInit(): void {
     this.sAccionModal = this.data.accion === AccionModal.Agregar ? 'Agregar' : 'Editar';
     this.formProducto = this.formBuilder.group({
-      sNombreProducto: ['', Validators.required],
+      sNombreProducto: ['', [Validators.required, Validators.pattern(/^[^|]*$/)]],
       nIdAlmacen: [0, Validators.required],
       nIdCategoria: [0, Validators.required],
       nIdUnidadMedida: [0, Validators.required],
@@ -59,7 +59,7 @@ export class ProductosModalComponent implements OnInit {
       nPrecio: [0, Validators.required],
       dFechaFab: ['', Validators.required],
       dFechaVenc: ['', Validators.required],
-      sDescripcion: ['', Validators.required],
+      sDescripcion: ['', [Validators.required, Validators.pattern(/^[^|]*$/)]],
     });
 
     this.fnListarAlmacenes();

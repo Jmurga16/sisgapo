@@ -10,6 +10,7 @@ namespace Entity
     {
         public string sOpcion { get; set; }
         public string pParametro { get; set; }
+        public string[] parametros { get; set; }
 
     }
 

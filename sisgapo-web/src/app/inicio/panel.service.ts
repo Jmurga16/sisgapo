@@ -17,7 +17,7 @@ export class PanelService {
 
     const params = {
       sOpcion,
-      pParametro: pParametro.join('|')
+      parametros: pParametro.map(String)
     };
 
     return this.http.post<TFila[]>(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();

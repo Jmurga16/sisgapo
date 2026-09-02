@@ -9,6 +9,8 @@ namespace Entity
 
         public string pParametro { get; set; }
 
+        public string[] parametros { get; set; }
+
     }
 
     public class EntRequestUsuario

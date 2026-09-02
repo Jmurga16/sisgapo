@@ -36,8 +36,8 @@ export class AlmacenesModalComponent implements OnInit {
   ngOnInit(): void {
     this.sAccionModal = this.data.accion === AccionModal.Agregar ? 'Agregar' : 'Editar';
     this.formAlmacen = this.formBuilder.group({
-      sNombreAlmacen: ['', Validators.required],
-      sDireccion: ['', Validators.required],
+      sNombreAlmacen: ['', [Validators.required, Validators.pattern(/^[^|]*$/)]],
+      sDireccion: ['', [Validators.required, Validators.pattern(/^[^|]*$/)]],
       nIdZona: ['', Validators.required],
       nIdSupervisor: ['', Validators.required],
     });

@@ -2,6 +2,7 @@ using Business;
 using Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using NLog;
 using SISGAPO_API.Seguridad;
 using System;
@@ -11,6 +12,7 @@ namespace SISGAPO_API.Controllers
     [Route("LoginService")]
     [ApiController]
     [AllowAnonymous]
+    [EnableRateLimiting("Login")]
     public class LoginController : Controller
     {
         private readonly LoginBusiness objLogin = new LoginBusiness();
