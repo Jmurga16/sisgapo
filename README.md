@@ -125,30 +125,30 @@ usuarios, modo demo y rechazo del delimitador legado. El workflow de GitHub Acti
 pruebas, compila la solución .NET y genera el build de producción de Angular en cada push y
 pull request a `main`.
 
+El workflow es únicamente CI: no publica la aplicación. El despliegue de la demo se realiza
+manualmente después de comprobar que ambos jobs están en verde.
+
 ---
 
 ## Credenciales de demostración
 
-Todas con la contraseña `123456`.
+| Usuario | Contraseña | Rol | Para probar |
+|---|---|---|---|
+| `demo.supervisor` | `SisgapoDemo2026!` | Supervisor | Altas, ediciones y cambios de estado |
+| `demo.asistente` | `SisgapoDemo2026!` | Asistente | Panel y consulta de inventario |
 
-| Usuario | Rol |
-|---|---|
-| `admin` | Administrador |
-| `jose.m` | Supervisor |
-| `lucia.fernandez` | Asistente |
-
-Los tres roles ven cosas distintas: el administrador es el único que entra a Usuarios,
-el asistente no ve Almacenes ni Zonas. `jorge.salazar` está dado de baja y no puede
-entrar, que es justamente lo que se comprueba.
+El Supervisor gestiona almacenes, zonas, categorías y productos, pero no Usuarios. El
+Asistente permite comprobar que menús y escrituras cambian según el rol.
 
 > Las contraseñas se guardan con bcrypt. La contraseña compartida y documentada es una
 > licencia de la demo, no del diseño: en el original de 2021 estaban en texto plano
 > (`06-hallazgos.md`, S-02).
-> Para exponer estas cuentas en internet, activa siempre `Demo__SoloLectura=true`.
+> En una demo pública interactiva, programa el reinicio periódico de los datos. Usa
+> `Demo__SoloLectura=true` como alternativa temporal si el reinicio no está disponible.
 
 Al crear usuarios nuevos se exige una contraseña inicial de al menos 8 caracteres. Editar
-los datos de una persona no cambia su contraseña; un restablecimiento deberá implementarse
-como flujo independiente si el proyecto deja de usar cuentas de demostración.
+los datos de una persona no cambia su contraseña. No se incluye recuperación porque la demo
+no tendrá cuentas reales.
 
 ---
 

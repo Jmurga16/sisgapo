@@ -177,18 +177,17 @@ Salida en `dist/SISGAPO-Front`.
 `--openssl-legacy-provider` lo reactiva. Es decir: **no necesitas actualizar Angular para
 desplegar la demo.** Verificado en Node 22.23.1.
 
-### La autenticación no protege nada
+### Autenticación y autorización actuales
 
-- `TBL_LOGIN` guarda contraseñas en **texto plano**. El seed crea `admin` / `123456`.
-- `USP_MNT_Login` compara con `=` directo y devuelve un número de fila y un rol.
-- El frontend guarda `localStorage.setItem('Rol', ...)` y navega a `/inicio`.
-- **No se emite ningún token.** Las llamadas siguientes no llevan credencial alguna.
-- La API no tiene `[Authorize]` en ningún controller, ni `UseAuthentication()` en el pipeline.
-- Angular no tiene ningún guard `CanActivate`: escribir `/usuarios` en la barra de
-  direcciones entra directo, sin pasar por login.
+- `TBL_LOGIN` almacena hashes bcrypt; la contraseña nunca vuelve al frontend.
+- La API emite JWT con expiración, exige `[Authorize]` y vuelve a validar los roles.
+- Angular conserva la sesión, añade el token mediante interceptor y protege las rutas.
+- El administrador gestiona Usuarios; administrador y supervisor gestionan datos
+  operativos; el asistente consulta el panel y el inventario.
+- El seed incluye `demo.supervisor` y `demo.asistente` para recorrer ambos permisos.
 
-En términos prácticos: **la API es completamente pública.** Cualquiera con la URL puede
-listar, crear y borrar usuarios. Ver `06-hallazgos.md`, S-03 y S-04.
+El estado original era una API pública con contraseñas en texto plano y un rol modificable
+desde `localStorage`. La reproducción y los arreglos están en `06-hallazgos.md`, S-02 a S-04.
 
 ### Habia secretos en la copia local, no en el repositorio
 

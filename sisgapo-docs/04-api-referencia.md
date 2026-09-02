@@ -46,17 +46,17 @@ Core traduce a `204 No Content` con cuerpo vacío. El frontend no lo maneja.
 
 **Request**
 ```json
-{ "sNombreUsuario": "admin", "sContrasenia": "123456" }
+{ "sNombreUsuario": "demo.supervisor", "sContrasenia": "SisgapoDemo2026!" }
 ```
 
 **Response `200`**
 ```json
 {
   "sToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "nIdUsuario": 1,
-  "nIdRol": 1,
-  "sNombreUsuario": "admin",
-  "sNombrePersona": "Administrador del Sistema",
+  "nIdUsuario": 8,
+  "nIdRol": 2,
+  "sNombreUsuario": "demo.supervisor",
+  "sNombrePersona": "Usuario Demo Supervisor",
   "dExpira": "2026-09-02T14:27:58.3726689Z"
 }
 ```
@@ -66,8 +66,9 @@ Mismo cuerpo si el usuario no existe, si la contraseña no coincide o si el usua
 dado de baja: distinguirlos permitiría averiguar qué usuarios hay.
 
 El resto de endpoints exige `Authorization: Bearer <sToken>`. Sin cabecera responden `401`;
-con un rol insuficiente, `403`. `UsuariosService` es el único restringido por rol
-(administrador). El token dura 8 horas por defecto (`Jwt:MinutosVigencia`).
+con un rol insuficiente, `403`. `UsuariosService` exige administrador; las escrituras de
+almacenes, zonas e inventario exigen administrador o supervisor. El token dura 8 horas por
+defecto (`Jwt:MinutosVigencia`).
 
 > Contrato anterior, por si te encuentras código viejo: devolvía `[ { "nIdRol": 1,
 > "result": 1 } ]`, donde `result` era un `ROW_NUMBER()` y no un código de estado, y no
@@ -92,8 +93,8 @@ Procedimiento: `USP_MNT_Usuarios`.
     "sNombreUsuario": "admin", "sNombreRol": "Administrador", "sEstado": "Activo" } ]
 ```
 
-**Respuesta de `03`** — `SELECT *` del join usuario + login, con `dFechaNac` como texto
-`YYYY-MM-DD` además del `dFechaNacimiento` nativo. **Devuelve `sContrasenia` en texto plano.**
+**Respuesta de `03`** — join usuario + login, con `dFechaNac` como texto `YYYY-MM-DD`
+además del `dFechaNacimiento` nativo. No devuelve el hash de contraseña.
 
 **Respuesta de `04`, `05`, `06`** — este endpoint **no sigue** el contrato `cod`/`mensaje`:
 ```json
@@ -104,8 +105,8 @@ Procedimiento: `USP_MNT_Usuarios`.
 mensaje del procedimiento. Es el único módulo así.
 
 **Detalle a tener en cuenta:** la opción `04` genera el nombre de usuario automáticamente
-(primer nombre + `.` + primer apellido) y siempre le añade un sufijo numérico por un error en
-el contador. Ver `03-modelo-de-datos.md`, sección 4, hallazgo 9.
+(primer nombre + `.` + primer apellido). Si ya existe, añade `2`, `3`, etc. Ver
+`03-modelo-de-datos.md`, sección 4, hallazgo 9.
 
 ## 4. `POST /AlmacenesService`
 
@@ -312,7 +313,7 @@ API=https://localhost:44360
 # Login
 curl -k -X POST $API/LoginService \
   -H 'Content-Type: application/json' \
-  -d '{"sNombreUsuario":"admin","sContrasenia":"123456"}'
+  -d '{"sNombreUsuario":"demo.supervisor","sContrasenia":"SisgapoDemo2026!"}'
 
 # Listar usuarios
 curl -k -X POST $API/UsuariosService \

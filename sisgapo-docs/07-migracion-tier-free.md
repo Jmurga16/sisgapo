@@ -374,7 +374,7 @@ dotnet build SISGAPO_Back.sln        # 0 errores, y muchos menos warnings
 dotnet run --project SISGAPO_API
 curl -k -X POST https://localhost:44360/LoginService \
   -H 'Content-Type: application/json' \
-  -d '{"sNombreUsuario":"admin","sContrasenia":"123456"}'
+  -d '{"sNombreUsuario":"demo.supervisor","sContrasenia":"SisgapoDemo2026!"}'
 ```
 
 ### Fase 3 — Arreglar los bugs que se ven (2–3 horas)
@@ -432,7 +432,7 @@ Cors__Origins__0                    = https://<tu-app>.azurestaticapps.net
 3. Actualizar `environment.prod.ts` con **HTTPS** y la URL real del App Service.
 
 **Verificación final:**
-- [ ] El frontend carga y el login funciona con `admin` / `123456`
+- [ ] El frontend carga y el login funciona con `demo.supervisor` / `SisgapoDemo2026!`
 - [ ] Las cinco pantallas listan datos
 - [ ] Crear, editar y dar de baja funcionan en cada módulo
 - [ ] `/swagger` responde

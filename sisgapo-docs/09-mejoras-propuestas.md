@@ -3,8 +3,8 @@
 Catálogo de mejoras más allá del alcance original de 2021. Cada una lleva esfuerzo estimado,
 impacto para la demo y una recomendación explícita de **hacerla o no hacerla**.
 
-Todo lo de aquí es **opcional**. El alcance funcional está completo: 12 de 12 casos de uso
-implementados. Estas mejoras son sobre calidad, no sobre funcionalidad que falte.
+Todo lo de aquí es **opcional**. El alcance original está completo: 12 de 12 casos de uso
+implementados. Algunas mejoras son de calidad y otras amplían el producto más allá de 2021.
 
 ## Cómo leer las recomendaciones
 
@@ -27,12 +27,12 @@ implementados. Estas mejoras son sobre calidad, no sobre funcionalidad que falte
 | M-04 | Corregir C-02 y C-03 | 2 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ✅ | **hecho** |
 | M-05 | Limpiar código muerto | 30 min | ⭐ | ⭐⭐⭐ | ✅ | **hecho** |
 | M-06 | Sustituir `pParametro` por JSON | 2 días | ⭐ | ⭐⭐⭐⭐ | 🤔 | mitigado |
-| M-07 | Actualizar Angular | 3–5 días | ⭐⭐ | ⭐⭐⭐ | 🤔 | pendiente |
+| M-07 | Actualizar Angular | 3–5 días | ⭐⭐ | ⭐⭐⭐ | ❌ | fuera del alcance |
 | M-08 | Pruebas reales | 2–3 días | ⭐ | ⭐⭐⭐⭐⭐ | 🤔 | **inicial hecho** |
 | M-09 | Múltiples lotes por producto | 2 días | ⭐⭐⭐ | ⭐⭐⭐ | 🤔 | pendiente |
 | M-10 | Lógica de T-SQL a C# | 4–6 días | ⭐⭐ | ⭐⭐⭐⭐⭐ | 🤔 | pendiente |
 | M-11 | Reportes y panel | 3 días | ⭐⭐⭐⭐ | ⭐⭐⭐ | 🤔 | **hecho** |
-| M-12 | Movimientos de inventario | 4 días | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ❌ | pendiente |
+| M-12 | Movimientos de inventario | 4 días | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ | siguiente expansión |
 | M-13 | Módulo de proveedores (PN3) | 5 días | ⭐⭐ | ⭐⭐ | ❌ | pendiente |
 | M-14 | Reescritura completa | 3–4 semanas | ⭐⭐⭐ | ⭐⭐⭐⭐ | ❌ | pendiente |
 
@@ -283,7 +283,7 @@ para un beneficio que el cliente no ve.
 **Si lo haces:** una entidad completa a la vez —procedimiento, C# y TypeScript— antes de
 empezar la siguiente. `ZonaController` ya funciona así y sirve de plantilla.
 
-## 🤔 M-07 · Actualizar Angular
+## ❌ M-07 · Actualizar Angular
 
 **Resuelve:** `06-hallazgos.md`, D-02 · **Esfuerzo:** 3–5 días
 
@@ -296,9 +296,8 @@ que además permite empezar con componentes autónomos, señales y control de fl
 con `--openssl-legacy-provider`. La actualización no desbloquea nada; solo mejora cómo se ve
 el `package.json`.
 
-**Recomendación:** ❌ para la demo, 🤔 para el portafolio. Si tu objetivo es demostrar que
-dominas Angular actual, es mejor inversión **un proyecto nuevo pequeño con Angular 20** que
-modernizar este. Un CRUD de 2021 modernizado sigue leyéndose como un CRUD.
+**Decisión:** fuera del alcance. Si el objetivo fuera demostrar Angular actual, tendría más
+sentido un proyecto nuevo pequeño que reescribir este trabajo histórico.
 
 **Alternativa barata (30 min):** deja Angular 9, pero fija el flag en `package.json` con
 `cross-env` para que `npm start` funcione sin trucos, y documenta por qué en el README. Eso
@@ -308,7 +307,7 @@ convierte una limitación en una decisión explicada.
 
 **Resuelve:** `06-hallazgos.md`, C-10 · **Esfuerzo:** 2–3 días
 
-La primera suite real ya está incorporada: 11 pruebas unitarias de `LoginBusiness`,
+La primera suite real ya está incorporada: 13 pruebas unitarias de `LoginBusiness`,
 `UsuarioBusiness` y el filtro de modo demo, ejecutadas por GitHub Actions junto con la
 compilación de ambas capas.
 Los ocho `.spec.ts` del frontend conservan todavía el `should create` del generador.
@@ -375,34 +374,20 @@ Al final tendrías: la aplicación entera en un contenedor, sin base de datos qu
 US$ 0 garantizado para siempre, cobertura de pruebas real, y una historia de modernización
 completa que contar. Es el mejor destino posible para este proyecto — pero es una semana.
 
-## 🤔 M-11 · Reportes y panel de inicio
+## ✅ M-11 · Reportes y panel de inicio
 
 **Esfuerzo:** 3 días
 
-El documento de casos de uso menciona los reportes como una necesidad explícita del cliente
-(*"no cuenta con reportes automatizados para conocer los ingresos y salidas"*), pero **no hay
-ningún caso de uso que los especifique** y no se implementaron.
+El panel ya muestra almacenes y productos activos, valor del inventario, distribución por
+categoría y almacén, y próximos vencimientos. Las consultas viven en `USP_MNT_Panel` y el
+frontend usa la misma URL configurada que el resto de la aplicación.
 
-Hoy `InicioComponent` es una pantalla vacía con una URL cableada.
-
-Lo mínimo que la llenaría:
-- Tarjetas: total de almacenes activos, productos, valor del inventario, productos por vencer en 30 días.
-- Gráfico de productos por categoría, y de existencias por almacén.
-- Tabla de productos próximos a vencer, ordenada por fecha.
-
-**A favor:** es lo que más impresiona visualmente en una demo, es de las pocas mejoras que un
-cliente **no técnico** aprecia, y son consultas de agregación sobre el modelo actual —no hay
-que cambiar nada de estructura.
-
-**En contra:** no estaba en el alcance, así que técnicamente es funcionalidad nueva.
-
-**Recomendación:** 🤔 el mejor retorno visual del catálogo. Si el objetivo es impresionar a un
-cliente no técnico, esto rinde más que M-07 o M-10. Y la pantalla de inicio vacía es hoy un
-punto débil evidente del recorrido.
+**Resultado:** es la entrada visual de la demo y resume el estado actual. Cuando existan
+movimientos, conviene añadir actividad reciente y entradas/salidas del período.
 
 ---
 
-## ❌ M-12 · Movimientos de inventario
+## ✅ M-12 · Movimientos de inventario
 
 **Esfuerzo:** 4 días
 
@@ -414,9 +399,10 @@ Sería el paso natural del producto: `TBL_MOVIMIENTO` con tipo (entrada/salida),
 fecha, usuario y motivo, y la existencia calculada como suma de movimientos en vez de un
 campo mutable.
 
-**Recomendación:** ❌ para una demo. Es funcionalidad nueva de verdad, no una mejora. Pero es
-**la respuesta correcta** si alguien pregunta "¿y cómo lo extenderías?": tenerla pensada vale
-más que tenerla implementada.
+**Recomendación:** ✅ como siguiente expansión. El catálogo y el panel ya están limpios; este
+es el módulo que convierte la aplicación de una foto del stock en un flujo operativo. Debe
+incluir una vista de Kardex con filtros por producto, lote, almacén y fecha. El Asistente
+podría registrar entradas y salidas, mientras el Supervisor conserva ajustes y maestros.
 
 ## ❌ M-13 · Módulo de proveedores (PN3)
 

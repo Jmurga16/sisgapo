@@ -80,11 +80,11 @@ Si cambias los ids de `TBL_ROL`, rompes las dos cosas.
 ### Usuarios y credenciales
 
 `TBL_USUARIO` y `TBL_LOGIN` tienen relación 1:1, separadas para aislar las credenciales de
-los datos personales. La intención es buena; la ejecución tiene dos problemas:
+los datos personales. El esquema reparado aplica estas garantías:
 
-- **`sContrasenia` guarda texto plano.** El seed crea `admin` / `123456`.
-- **`TBL_LOGIN` no tiene clave primaria ni restricción `UNIQUE`** en el original. Nada impide
-  dos filas con el mismo `sNombreUsuario`, y `USP_MNT_Login` devolvería ambas.
+- **`sContrasenia` guarda hashes bcrypt**, generados antes de llamar al procedimiento.
+- **`TBL_LOGIN` tiene clave primaria y `UNIQUE(sNombreUsuario)`**. El original no tenía
+  ninguna de las dos restricciones.
 
 `USP_MNT_Usuarios` opción `04` genera el nombre de usuario automáticamente:
 
@@ -94,9 +94,9 @@ SET @sNombreUsuario = CONCAT(
     SUBSTRING(@sApellidos, 1, CHARINDEX(' ', @sApellidos+' ', 1) - 1))
 ```
 
-Es decir: primer nombre + `.` + primer apellido. Después intenta desambiguar con un contador,
-pero el contador está mal (ver la sección 4, hallazgo 9): siempre vale al menos 1, así que **todos los
-usuarios creados desde la aplicación terminan con un `1` pegado al final** — `juan.perez1`.
+Es decir: primer nombre + `.` + primer apellido. Si ese nombre ya existe en `TBL_LOGIN`, el
+procedimiento prueba los sufijos `2`, `3`, etc. hasta encontrar uno libre. Usuario y Login se
+insertan en la misma transacción.
 
 ### Almacenes
 
@@ -229,7 +229,7 @@ restricción declarada — todas las demás sí la tienen. Permite lotes huérfa
 
 Estos no impiden crear la base, pero producen comportamiento incorrecto en ejecución.
 
-**9. `USP_MNT_Usuarios` opción 04 — el contador de desambiguación siempre suma.**
+**9. `USP_MNT_Usuarios` opción 04 — el contador de desambiguación siempre sumaba.**
 
 ```sql
 SET @nContador = (SELECT COUNT(*) FROM [TBL_USUARIO]
@@ -254,9 +254,9 @@ SELECT sNombreUsuario FROM TBL_LOGIN WHERE nIdUsuario = 7;
 -- → pedro.ramos2
 ```
 
-El primer "Pedro Ramos" del sistema recibe el usuario `pedro.ramos2`. Nunca existe un
-`pedro.ramos` sin sufijo, y el segundo sería `pedro.ramos3`. El mecanismo de desambiguación
-funciona por accidente, con la numeración desplazada en uno.
+Ese era el comportamiento original. El procedimiento reparado usa primero `pedro.ramos` y
+solo añade `2`, `3`, etc. ante colisiones reales. También revierte el alta completa si no
+puede crear las credenciales.
 
 **10. `USP_MNT_Zonas` opción 03 — la comprobación de duplicados no funciona.**
 
@@ -295,11 +295,9 @@ triggers, así que funciona; si alguien añade uno, este código empieza a inser
 relacionadas de forma silenciosa. `USP_MNT_Usuarios` usa correctamente `SCOPE_IDENTITY()`
 para el mismo propósito — la inconsistencia está dentro del mismo repositorio.
 
-**13. Ninguna escritura usa transacciones.**
-`USP_MNT_Productos` opción 06 hace cuatro `INSERT` encadenados (`TBL_PRODUCTO` →
-`TBL_CAT_PROD` → `TBL_LOTE` → `TBL_DET_PRODUCTO`). Si el tercero falla, los dos primeros
-quedan confirmados: producto sin lote ni detalle. Lo mismo en `USP_MNT_Usuarios` opción 04
-(usuario sin credenciales) y en la opción 07 de productos (cuatro `UPDATE` sueltos).
+**13. Las escrituras multi-tabla originalmente no usaban transacciones.**
+`USP_MNT_Productos` 06/07 y `USP_MNT_Usuarios` 04 ya ejecutan sus cambios dentro de una
+transacción y revierten el conjunto ante un error.
 
 ## 5. Cómo recrear la base de datos
 
@@ -307,9 +305,8 @@ Usa `sql/`, no los scripts originales. Ver `sql/README.md` para el procedimiento
 
 > **Verificado.** Los nueve scripts de `sql/` se ejecutaron de principio a fin contra
 > `mcr.microsoft.com/mssql/server:2022-latest` sin un solo error, con los conteos esperados y
-> los acentos correctos. Los siete procedimientos responden. `USP_MNT_Login` con
-> `admin`/`123456` devuelve `Result = 1, nIdRol = 1`; con contraseña incorrecta devuelve
-> 0 filas.
+> los acentos correctos. Los siete procedimientos responden y el login completo fue
+> verificado por HTTP con `demo.supervisor` y `demo.asistente`.
 
 Resumen:
 

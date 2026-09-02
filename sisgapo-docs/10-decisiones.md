@@ -183,12 +183,15 @@ Quedan documentados y priorizados.
 **La duda.** El seed original tenía 3 zonas, 2 usuarios, 2 almacenes y 5 productos. ¿Copiarlo
 tal cual (fiel al original) o ampliarlo (mejor para demo)?
 
-**Decisión: ampliarlo** a 5 zonas, 7 usuarios, 5 almacenes, 7 categorías y 25 productos.
+**Decisión: ampliarlo** a 5 zonas, 9 usuarios, 5 almacenes, 7 categorías y 25 productos.
 
 **Por qué.** Es para una demo. Una tabla con dos filas hace que la paginación, los filtros y
 la ordenación parezcan decorativos; con veinticinco, se ven trabajando. Incluí a propósito **un
 usuario inactivo, un almacén inactivo y una categoría inactiva** para que el filtro por estado
 —que existe y funciona— tenga algo que filtrar.
+
+Dos usuarios adicionales son cuentas públicas genéricas: un Supervisor para recorrer las
+escrituras operativas y un Asistente para comprobar el acceso limitado por rol.
 
 El catálogo reparte S/ 69 475 entre 21 productos activos sin que una sola línea domine el
 panel. Las cinco unidades de medida quedan representadas con magnitudes coherentes; por

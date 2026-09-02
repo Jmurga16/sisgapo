@@ -105,10 +105,10 @@ se ha tocado sin rehacer las cuentas — ver la cabecera de `03-seed.sql`.
 Prueba de humo de los stored procedures, una vez cargado todo:
 
 ```sql
-EXEC USP_MNT_Login     @sNombreUsuario = 'admin', @sContrasenia = '123456';  -- 1 fila, nIdRol = 1
-EXEC USP_MNT_Usuarios  @sOpcion = '01', @pParametro = '';                    -- 7 usuarios
+EXEC USP_MNT_Login     @sNombreUsuario = 'demo.supervisor';                  -- 1 fila; el hash se valida en la API
+EXEC USP_MNT_Usuarios  @sOpcion = '01', @pParametro = '';                    -- 9 usuarios
 EXEC USP_MNT_Almacenes @sOpcion = '01', @pParametro = '';                    -- 5 almacenes
-EXEC USP_MNT_Almacenes @sOpcion = '04', @pParametro = '';                    -- 4 supervisores
+EXEC USP_MNT_Almacenes @sOpcion = '04', @pParametro = '';                    -- 5 supervisores
 EXEC USP_MNT_Categorias @sOpcion = '01', @pParametro = '';                   -- 7 categorías
 EXEC USP_MNT_Productos @sOpcion = '03', @pParametro = '';                    -- 25 productos
 EXEC USP_MNT_Zonas     @sOpcion = '01', @nIdZona = 0, @sNombre = '', @sRutaImagen = '';  -- 5 zonas
@@ -119,12 +119,19 @@ EXEC USP_MNT_Zonas     @sOpcion = '01', @nIdZona = 0, @sNombre = '', @sRutaImage
 
 ## Credenciales de demostración
 
-Todas las cuentas usan la contraseña `123456`, en texto plano, como en el diseño
-original.
+Las contraseñas se almacenan con bcrypt. Para el recorrido público se usan estas cuentas:
+
+| Usuario | Contraseña | Rol | Para probar |
+|---|---|---|---|
+| `demo.supervisor` | `SisgapoDemo2026!` | Supervisor | Escrituras operativas, sin acceso a Usuarios |
+| `demo.asistente` | `SisgapoDemo2026!` | Asistente | Panel y consultas de inventario |
+
+El seed también conserva estas cuentas históricas para revisar escenarios y responsables
+de almacén:
 
 | Usuario | Rol | Para probar |
 |---|---|---|
-| `admin` | Administrador | Acceso completo |
+| `admin` | Administrador | Mantenimiento local |
 | `jose.m` | Supervisor | Almacén Central Satipo |
 | `alex.quispe` | Supervisor | Almacén Norte Huaraz |
 | `maria.ramirez` | Supervisor | Almacén Lima Callao |
@@ -132,4 +139,5 @@ original.
 | `lucia.fernandez` | Asistente | Rol sin casos de uso definidos |
 | `jorge.salazar` | Asistente | **Usuario inactivo** — verifica el filtro de estado |
 
-Son credenciales públicas de demostración. Ver `../06-hallazgos.md`, S-02.
+Las cuentas genéricas son credenciales públicas de demostración. Ver
+`../06-hallazgos.md`, S-02.

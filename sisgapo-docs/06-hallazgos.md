@@ -37,7 +37,7 @@ SQL Server 2022 en Docker y, donde aplica, por HTTP contra la API.
 | C-03 · Editar una zona crea un duplicado | ✅ Corregido — existen actualización y baja lógica |
 | C-04 · NLog no escribe en ningún sitio | ✅ Corregido — `nlog.config` a consola y archivo |
 | C-05 · La comprobación de zonas duplicadas no funciona | ✅ Corregido — con rama `ELSE` y mensaje al usuario |
-| C-07 · Escrituras multi-tabla sin transacción | ✅ Corregido en `USP_MNT_Productos` 06 y 07 |
+| C-07 · Escrituras multi-tabla sin transacción | ✅ Corregido en Productos 06/07 y Usuarios 04 |
 | C-08 · Los controllers devuelven `null` | ✅ Corregido — `BadRequest` con el motivo |
 | C-09 · Sin middleware de excepciones | ✅ Corregido — `UseExceptionHandler` con cuerpo consistente |
 | C-11 · El módulo Cliente es código muerto | ⚠️ **Hallazgo rectificado** — no era código muerto; ver el detalle |
@@ -59,8 +59,8 @@ SQL Server 2022 en Docker y, donde aplica, por HTTP contra la API.
 | S-05 · `System.Data.SqlClient` con CVE | ✅ Corregido — migrado a `Microsoft.Data.SqlClient` 5.1.6 |
 | S-06 · `Microsoft.ApplicationBlocks.Data` sin mantenimiento | ✅ Eliminado del proyecto |
 | S-07 · El delimitador `\|` no se escapa | ✅ Corregido — el frontend envía valores separados y el backend los valida antes de reconstruir `pParametro` |
-| C-06 · El nombre de usuario siempre lleva sufijo | ⏳ Pendiente |
-| C-10 · El único test no puede pasar | ✅ Corregido — 11 pruebas unitarias ejecutadas por GitHub Actions |
+| C-06 · El nombre de usuario siempre lleva sufijo | ✅ Corregido — sufijos solo ante colisiones reales |
+| C-10 · El único test no puede pasar | ✅ Corregido — 13 pruebas unitarias ejecutadas por GitHub Actions |
 | D-01 · .NET 5 fuera de soporte | ✅ Corregido — migrado a .NET 8, 0 warnings |
 | D-02 · Angular 9 fuera de soporte | ⏳ Pendiente |
 | D-03 · Sin inyección de dependencias | ⚠️ Parcial — `LoginBusiness` y `UsuarioBusiness` admiten dobles; el resto conserva instanciación directa |
@@ -364,12 +364,15 @@ guardó.**
 
 ### 🟠 C-06 · El nombre de usuario generado siempre lleva sufijo
 
-`USP_MNT_Usuarios` opción `04` calcula `@nContador = COUNT(*) + 1` y luego comprueba
+En el procedimiento original, `USP_MNT_Usuarios` opción `04` calculaba
+`@nContador = COUNT(*) + 1` y luego comprobaba
 `IF (@nContador > 0)`, condición que se cumple siempre. Además el `COUNT(*)` se ejecuta
 después del `INSERT` del propio usuario.
 
-Verificado: crear "Pedro Ramos" genera el usuario **`pedro.ramos2`**. Nunca existe un
-`pedro.ramos` sin sufijo. Detalle en `03-modelo-de-datos.md`, sección 4, hallazgo 9.
+**Arreglo aplicado:** se intenta primero el nombre base y se añade `2`, `3`, etc. únicamente
+si ya existe en `TBL_LOGIN`. La creación de Usuario y Login comparte una transacción.
+Verificado por HTTP: dos altas con el mismo nombre base generaron `prueba.duplicada` y
+`prueba.duplicada2`, con el mismo número de filas en ambas tablas.
 
 ### 🟠 C-07 · Las escrituras multi-tabla no usan transacciones
 
@@ -384,6 +387,9 @@ nunca) y en la opción `07` de productos (cuatro `UPDATE` sueltos).
 `Conexion.cs` tiene un campo `SqlTransaction sqlTransaction` que se consulta en varios sitios
 (`if (sqlTransaction != null)`) pero **nunca se asigna**: siempre es `null`. Es soporte
 transaccional a medio escribir que quedó abandonado.
+
+**Arreglo aplicado:** las opciones 06 y 07 de Productos y la opción 04 de Usuarios usan
+transacciones locales en sus procedimientos y revierten el conjunto completo ante errores.
 
 ### 🟠 C-08 · Los controllers devuelven `null`
 
@@ -436,10 +442,10 @@ En el estado original, la cobertura real de pruebas era **cero** en las dos punt
 `sonar-project.properties` y `npm run test -- --code-coverage` configurados, la intención
 estaba pero no se llegó a completar.
 
-**Arreglo aplicado:** el proyecto `Test` forma parte de la solución y contiene 11 pruebas
+**Arreglo aplicado:** el proyecto `Test` forma parte de la solución y contiene 13 pruebas
 unitarias. `LoginBusiness` cubre hash correcto, usuario inactivo y hash corrupto;
 `UsuarioBusiness` cubre bcrypt, edición sin cambio de contraseña, delimitador, longitud
-mínima y mayoría de edad; el filtro de demo cubre escrituras bloqueadas y lecturas
+mínima, mayoría de edad y documento según tipo; el filtro de demo cubre escrituras bloqueadas y lecturas
 permitidas. Las dependencias de datos se sustituyen por dobles mediante interfaces pequeñas.
 GitHub Actions compila API y frontend, ejecuta las pruebas y recoge cobertura en cada push y
 pull request a `main`.
