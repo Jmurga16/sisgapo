@@ -14,9 +14,9 @@ implementados. Estas mejoras son sobre calidad, no sobre funcionalidad que falte
 
 ## Resumen
 
-> **Estado a 2 de septiembre de 2026.** Siete de estas mejoras ya están aplicadas y
+> **Estado a 2 de septiembre de 2026.** Siete de estas mejoras ya están aplicadas total o parcialmente y
 > verificadas: M-01, M-02, M-03 (parcial: `Conexion.cs` reescrito, sin inyección de
-> dependencias todavía), M-04, M-05, M-11 y la parte de rendimiento que no estaba en
+> dependencias completa), M-04, M-05, M-08, M-11 y la parte de rendimiento que no estaba en
 > esta lista. El detalle de cada una, con las mediciones, está en `06-hallazgos.md`.
 
 | # | Mejora | Esfuerzo | Demo | Portafolio | Reco. | Estado |
@@ -26,9 +26,9 @@ implementados. Estas mejoras son sobre calidad, no sobre funcionalidad que falte
 | M-03 | Reescribir `Conexion.cs` + DI | 3 h | ⭐⭐ | ⭐⭐⭐⭐ | ✅ | **parcial** |
 | M-04 | Corregir C-02 y C-03 | 2 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ✅ | **hecho** |
 | M-05 | Limpiar código muerto | 30 min | ⭐ | ⭐⭐⭐ | ✅ | **hecho** |
-| M-06 | Sustituir `pParametro` por JSON | 2 días | ⭐ | ⭐⭐⭐⭐ | 🤔 | pendiente |
+| M-06 | Sustituir `pParametro` por JSON | 2 días | ⭐ | ⭐⭐⭐⭐ | 🤔 | mitigado |
 | M-07 | Actualizar Angular | 3–5 días | ⭐⭐ | ⭐⭐⭐ | 🤔 | pendiente |
-| M-08 | Pruebas reales | 2–3 días | ⭐ | ⭐⭐⭐⭐⭐ | 🤔 | pendiente |
+| M-08 | Pruebas reales | 2–3 días | ⭐ | ⭐⭐⭐⭐⭐ | 🤔 | **inicial hecho** |
 | M-09 | Múltiples lotes por producto | 2 días | ⭐⭐⭐ | ⭐⭐⭐ | 🤔 | pendiente |
 | M-10 | Lógica de T-SQL a C# | 4–6 días | ⭐⭐ | ⭐⭐⭐⭐⭐ | 🤔 | pendiente |
 | M-11 | Reportes y panel | 3 días | ⭐⭐⭐⭐ | ⭐⭐⭐ | 🤔 | **hecho** |
@@ -157,10 +157,9 @@ consola ya no debe dar acceso a nada.
 
 > **Hecho a medias.** `Conexion.cs` ya está reescrito con ADO.NET plano: fuera el
 > descubrimiento de firmas en tiempo de ejecución, fuera `Microsoft.ApplicationBlocks.Data`
-> y una llamada a la base por escritura en vez de dos. Lo que **no** se hizo es la
-> inyección de dependencias: los controllers siguen instanciando su capa de negocio con
-> `new` en un campo, así que el código sigue sin poder probarse con dobles. Es el
-> prerrequisito de M-08 y de la migración a .NET 8.
+> y una llamada a la base por escritura en vez de dos. `LoginBusiness` y `UsuarioBusiness`
+> ya reciben interfaces de datos para poder probarse con dobles. Los controllers y el resto
+> de clases de negocio siguen instanciando dependencias con `new`.
 
 **Resuelve:** `06-hallazgos.md`, D-03, D-04, D-05, S-06 · **Esfuerzo:** 3 h
 
@@ -251,6 +250,10 @@ en uno solo.
 
 ## 🤔 M-06 · Sustituir `pParametro` por JSON tipado
 
+> **Mitigación aplicada.** El frontend ya envía un arreglo de valores y el backend rechaza
+> `|` antes de reconstruir `pParametro`. Los procedimientos continúan usando `dbo.Split`,
+> por lo que la sustitución completa descrita aquí sigue pendiente.
+
 **Resuelve:** `06-hallazgos.md`, S-07 · **Esfuerzo:** 2 días
 
 Elimina de raíz el acoplamiento posicional y el problema del delimitador sin escapar.
@@ -304,24 +307,24 @@ convierte una limitación en una decisión explicada.
 
 **Resuelve:** `06-hallazgos.md`, C-10 · **Esfuerzo:** 2–3 días
 
-Hoy la cobertura real es **cero** en las dos puntas: un test de backend que no puede pasar y
-ocho `.spec.ts` con el `should create` del generador.
+La primera suite real ya está incorporada: seis pruebas unitarias de `LoginBusiness` y
+`UsuarioBusiness`, ejecutadas por GitHub Actions junto con la compilación de ambas capas.
+Los ocho `.spec.ts` del frontend conservan todavía el `should create` del generador.
 
 Lo interesante es que **el andamiaje ya está montado**: xUnit configurado, Karma con
 `--code-coverage`, `sonar-project.properties` y `sonar-scanner` en las dependencias. Alguien
 tuvo la intención.
 
-**Requiere M-03 primero.** Sin inyección de dependencias no se pueden usar dobles, y por eso
-el test existente ataca la base de datos real.
+Las interfaces pequeñas añadidas a la capa de datos permiten usar dobles en las dos clases
+priorizadas sin migrar toda la aplicación al contenedor de dependencias.
 
 Lo que aportaría más por hora:
 1. **Tests de integración de los procedimientos** contra SQL Server en contenedor (Testcontainers). Habrían detectado C-02 y C-06 automáticamente.
 2. **Tests unitarios de la capa de negocio** con `Data` simulado — una vez que M-01 y M-02 pongan lógica real ahí.
 3. **Un test de extremo a extremo** con Playwright que recorra login → listar → crear → editar → dar de baja.
 
-**Recomendación:** 🤔 alto valor para portafolio, bajo para la demo. Si vas a hacer una sola
-cosa aquí, haz el punto 1: los tests de integración son los que habrían encontrado los bugs
-reales de este sistema, y contarlo en una entrevista es muy sólido.
+**Siguiente paso recomendado:** pruebas de integración de los procedimientos contra un SQL
+Server efímero. Son las que habrían detectado los bugs históricos del flujo de productos.
 
 ## 🤔 M-09 · Múltiples lotes por producto
 

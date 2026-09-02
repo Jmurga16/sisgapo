@@ -55,15 +55,15 @@ SQL Server 2022 en Docker y, donde aplica, por HTTP contra la API.
 | D-09 · Restos de andamiaje y archivos generados | ✅ Limpiado |
 | S-02 · Contraseñas en texto plano | ✅ Corregido — bcrypt (factor 11); la opción 03 ya no devuelve la contraseña |
 | S-03 / S-04 · Sin autenticación ni rutas protegidas | ✅ Corregido — JWT, `[Authorize]`, guards por rol |
-| S-09 · Sin límite de intentos de autenticación | ⏳ Pendiente |
+| S-09 · Sin límite de intentos de autenticación | ✅ Corregido — cinco solicitudes por IP y minuto; las siguientes reciben HTTP 429 |
 | S-05 · `System.Data.SqlClient` con CVE | ✅ Corregido — migrado a `Microsoft.Data.SqlClient` 5.1.6 |
 | S-06 · `Microsoft.ApplicationBlocks.Data` sin mantenimiento | ✅ Eliminado del proyecto |
-| S-07 · El delimitador `\|` no se escapa | ⏳ Pendiente |
+| S-07 · El delimitador `\|` no se escapa | ✅ Corregido — el frontend envía valores separados y el backend los valida antes de reconstruir `pParametro` |
 | C-06 · El nombre de usuario siempre lleva sufijo | ⏳ Pendiente |
-| C-10 · El único test no puede pasar | ⚠️ Test eliminado; sin pruebas reales todavía |
+| C-10 · El único test no puede pasar | ✅ Corregido — seis pruebas unitarias ejecutadas por GitHub Actions |
 | D-01 · .NET 5 fuera de soporte | ✅ Corregido — migrado a .NET 8, 0 warnings |
 | D-02 · Angular 9 fuera de soporte | ⏳ Pendiente |
-| D-03 · Sin inyección de dependencias | ⏳ Pendiente |
+| D-03 · Sin inyección de dependencias | ⚠️ Parcial — `LoginBusiness` y `UsuarioBusiness` admiten dobles; el resto conserva instanciación directa |
 | D-05 · Consulta de metadatos en cada escritura | ✅ Corregido — una llamada a la base en vez de dos |
 | D-06 / D-07 / D-08 | ⏳ Pendiente |
 
@@ -207,7 +207,7 @@ Se usa solo en `Conexion.cs`, para `SqlHelper.ExecuteReader`, `ExecuteScalar` y
 `ExecuteDataset`. Reemplazarlo por ADO.NET plano o Dapper son unas 80 líneas.
 Ver `09-mejoras-propuestas.md`, M-03.
 
-### 🟠 S-07 · El delimitador `|` no se escapa
+### 🟠 S-07 · El delimitador `|` no se escapa — **corregido**
 
 Todo `pParametro` es una concatenación con `|` que el procedimiento vuelve a separar con
 `dbo.Split`. **Nada valida ni escapa el delimitador en los datos.**
@@ -223,6 +223,12 @@ escrituras con valores que la interfaz nunca le ofreció.
 **Arreglo mínimo:** rechazar `|` en la validación del formulario y también en el backend.
 **Arreglo real:** abandonar el formato delimitado y pasar objetos JSON tipados.
 Ver `09-mejoras-propuestas.md`, M-06.
+
+**Arreglo aplicado:** los servicios Angular envían cada valor por separado en `parametros`.
+La capa de negocio rechaza cualquier valor que contenga `|` y solo después construye el
+`pParametro` que esperan los procedimientos existentes. Las escrituras ya no aceptan el
+contrato plano antiguo, porque una cadena ya concatenada no permite distinguir datos de
+separadores. Verificado por HTTP: `Norte|Sur` devuelve 400 antes de ejecutar SQL.
 
 ### 🟠 S-08 · Mezcla de HTTP y HTTPS, y CORS que no cuadra
 
@@ -265,7 +271,7 @@ pública cuatro años: **hay que rotarla** y comprobar que no está reutilizada.
 conserva los commits huérfanos de los *push* anteriores y los sigue sirviendo por URL
 directa, así que el valor antiguo continúa siendo recuperable por quien tenga un hash previo.
 
-### 🟡 S-09 · Sin límite de intentos de autenticación
+### 🟡 S-09 · Sin límite de intentos de autenticación — **corregido**
 
 CUS-0009 lo especifica explícitamente ("si el usuario ha excedido el número de intentos…").
 No está implementado en ninguna capa. Sin *rate limiting*, `USP_MNT_Login` acepta intentos
@@ -273,6 +279,11 @@ ilimitados.
 
 Con contraseñas de seis dígitos numéricos como las del seed, un ataque de fuerza bruta es
 trivial. Relevante solo si la demo queda expuesta públicamente con datos que importen.
+
+**Arreglo aplicado:** política de ventana fija en ASP.NET Core, particionada por dirección
+IP. Permite cinco solicitudes a `LoginService` por minuto, no mantiene cola y devuelve 429
+con un mensaje explícito a partir de la sexta. El frontend distingue esa respuesta de unas
+credenciales incorrectas. Verificado por HTTP con la secuencia 401, 401, 429.
 
 ---
 
@@ -402,7 +413,7 @@ Y como NLog no está configurado (C-04), tampoco queda registro en el servidor.
 Falta un `UseExceptionHandler` que devuelva un cuerpo de error consistente y registre el
 detalle del lado del servidor.
 
-### 🟡 C-10 · El único test no puede pasar
+### 🟡 C-10 · El único test no puede pasar — **corregido**
 
 `sisgapo-api/Test/UnitTest1.cs`:
 
@@ -424,6 +435,13 @@ generado por el CLI, sin adaptar.
 Cobertura real de pruebas: **cero**, en las dos puntas. Con `sonar-project.properties` y
 `npm run test -- --code-coverage` configurados, lo que sugiere que la intención estaba pero
 no se llegó.
+
+**Arreglo aplicado:** el proyecto `Test` forma parte de la solución y contiene seis pruebas
+unitarias. `LoginBusiness` cubre hash correcto, usuario inactivo y hash corrupto;
+`UsuarioBusiness` cubre alta con bcrypt, edición sin cambio de contraseña y rechazo del
+delimitador. Las dependencias de datos se sustituyen por dobles mediante interfaces pequeñas.
+GitHub Actions compila API y frontend, ejecuta las pruebas y recoge cobertura en cada push y
+pull request a `main`.
 
 ### 🟡 C-11 · El módulo Cliente parecía código muerto — **corregido: no lo era**
 
@@ -636,7 +654,7 @@ También hay un desajuste de versiones: `@ng-bootstrap/ng-bootstrap` 6.2.0 está
 Bootstrap 4, pero el proyecto trae Bootstrap 5.0.2. Y conviven tres sistemas de estilos
 —Angular Material, Bootstrap y CSS propio— lo que explica varias inconsistencias visuales.
 
-### 🟠 D-03 · Sin inyección de dependencias
+### 🟠 D-03 · Sin inyección de dependencias — **parcialmente corregido**
 
 `Startup.ConfigureServices` registra solo CORS, controllers y Swagger. Todo lo propio se
 instancia con `new` en campos de instancia:
@@ -648,12 +666,16 @@ public AlmacenData() { oCon = new Conexion(1); }                          // Dat
 ```
 
 Consecuencias en cadena:
-- **No se puede testear con dobles.** Es la causa de fondo de C-10.
+- La mayor parte de la capa de negocio todavía no se puede probar con dobles.
 - **La configuración se relee del disco en cada request**: `Conexion` construye un `ConfigurationBuilder` y parsea `appsettings.json` en cada instanciación (D-04).
 - No se puede sustituir una implementación sin recompilar.
 
 Es la mejora con mejor relación esfuerzo/beneficio del backend: ~15 líneas en `Startup` más
 cambiar constructores. Ver `09-mejoras-propuestas.md`, M-03.
+
+**Avance aplicado:** `ILoginData` e `IUsuarioData` permiten probar las dos clases de negocio
+priorizadas sin conexión real. Los controllers y las demás áreas todavía requieren una
+adopción completa del contenedor de dependencias.
 
 ### 🟠 D-04 · La configuración se lee del disco en cada petición
 

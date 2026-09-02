@@ -1,5 +1,7 @@
 # SISGAPO
 
+[![CI](https://github.com/Jmurga16/sisgapo/actions/workflows/ci.yml/badge.svg)](https://github.com/Jmurga16/sisgapo/actions/workflows/ci.yml)
+
 Sistema de gestión de almacén de productos orgánicos. Multi-almacén, con categorías,
 lotes y control de vencimientos.
 
@@ -12,6 +14,21 @@ priorizados— está en [`sisgapo-docs/06-hallazgos.md`](sisgapo-docs/06-hallazg
 | Frontend | Angular 9 + Angular Material |
 | Backend | ASP.NET Core 8 (API / Business / Data / Entity), JWT |
 | Datos | SQL Server, lógica en stored procedures |
+
+---
+
+## Capturas
+
+### Panel de control
+
+![Panel de control con resumen y distribución del inventario](sisgapo-docs/capturas/panel.png)
+
+| Acceso | Gestión de productos |
+|---|---|
+| ![Pantalla de acceso](sisgapo-docs/capturas/login.png) | ![Listado y filtros de productos](sisgapo-docs/capturas/productos.png) |
+
+Las capturas usan los datos que crea `docker compose`: muestran el sistema ejecutándose
+contra SQL Server, no una maqueta estática.
 
 ---
 
@@ -88,6 +105,19 @@ openssl rand -base64 48
 
 En despliegue, `MSSQL_SA_PASSWORD` del `docker-compose.yml` deja de aplicar: ahí la base
 la da el proveedor y su contraseña vive dentro de `SISGAPO_CONNECTION_STRING`.
+
+---
+
+## Pruebas y CI
+
+```bash
+dotnet test sisgapo-api/SISGAPO_Back.sln --configuration Release
+```
+
+La suite cubre autenticación con bcrypt, usuarios inactivos, hashes corruptos, actualización
+de contraseñas y rechazo del delimitador legado. El workflow de GitHub Actions ejecuta esas
+pruebas, compila la solución .NET y genera el build de producción de Angular en cada push y
+pull request a `main`.
 
 ---
 
