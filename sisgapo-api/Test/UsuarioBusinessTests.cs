@@ -104,6 +104,44 @@ namespace Test
             Assert.Contains("mayor de edad", error.Message);
         }
 
+        [Fact]
+        public void DniConLetrasEsRechazado()
+        {
+            UsuarioBusiness negocio = new UsuarioBusiness(new UsuarioDataFalso());
+            UsuarioEntity usuario = new UsuarioEntity
+            {
+                sOpcion = "04",
+                parametros = new[]
+                {
+                    "Ana", "Torres", "1", "AB345678", "F", "2",
+                    "Lima", "999999999", "2000-01-01", "secreto8"
+                }
+            };
+
+            ArgumentException error = Assert.Throws<ArgumentException>(() => negocio.LIS_UsuarioBusiness(usuario));
+            Assert.Contains("DNI", error.Message);
+        }
+
+        [Fact]
+        public void CarnetAlfanumericoEsAceptado()
+        {
+            UsuarioDataFalso datos = new UsuarioDataFalso();
+            UsuarioBusiness negocio = new UsuarioBusiness(datos);
+            UsuarioEntity usuario = new UsuarioEntity
+            {
+                sOpcion = "04",
+                parametros = new[]
+                {
+                    "Ana", "Torres", "2", "CE998877", "F", "2",
+                    "Lima", "999999999", "2000-01-01", "secreto8"
+                }
+            };
+
+            negocio.LIS_UsuarioBusiness(usuario);
+
+            Assert.Equal("CE998877", datos.UltimoParametro.Split('|')[3]);
+        }
+
         private sealed class UsuarioDataFalso : IUsuarioData
         {
             public string UltimoParametro { get; private set; }

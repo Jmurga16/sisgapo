@@ -85,9 +85,24 @@ namespace Business
                 throw new ArgumentException("La cantidad de datos del usuario no es válida.");
             }
 
-            if (!Regex.IsMatch(arValores[3] ?? String.Empty, @"^\d{8}$"))
+            if (!Int32.TryParse(arValores[2], out int nTipoDocumento)
+                || nTipoDocumento < 1
+                || nTipoDocumento > 3)
             {
-                throw new ArgumentException("El documento debe tener 8 dígitos.");
+                throw new ArgumentException("El tipo de documento no es válido.");
+            }
+
+            string sDocumento = arValores[3] ?? String.Empty;
+            bool bDocumentoValido = nTipoDocumento == 1
+                ? Regex.IsMatch(sDocumento, @"^\d{8}$")
+                : Regex.IsMatch(sDocumento, @"^[A-Za-z0-9]{6,15}$");
+
+            if (!bDocumentoValido)
+            {
+                string sMensaje = nTipoDocumento == 1
+                    ? "El DNI debe tener 8 dígitos."
+                    : "El documento debe tener entre 6 y 15 caracteres alfanuméricos.";
+                throw new ArgumentException(sMensaje);
             }
 
             if (!Regex.IsMatch(arValores[7] ?? String.Empty, @"^9\d{8}$"))

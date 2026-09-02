@@ -153,30 +153,48 @@ BEGIN
 			SET @sContrasenia		= (SELECT valor FROM @tParametro WHERE id = 10);
 		END	
 
-		BEGIN
+		BEGIN TRY
+			BEGIN TRANSACTION;
 
 			INSERT INTO [TBL_USUARIO]
 					(sNombres,sApellidos,nTipoDoc,sNumDoc,sSexo,nRol,sDireccion,nTelefono,dFechaNacimiento,bEstado)
-			VALUES(@sNombres,@sApellidos,@nTipoDoc,@sNumDoc,@sSexo,@nIdRol,@sDireccion,@nTelefono,@dFechaNacimiento,1)
+			VALUES(@sNombres,@sApellidos,@nTipoDoc,@sNumDoc,@sSexo,@nIdRol,@sDireccion,@nTelefono,@dFechaNacimiento,1);
 
-			SET @nIdUsuario = SCOPE_IDENTITY()
+			SET @nIdUsuario = SCOPE_IDENTITY();
+			SET @sNombreUsuario = LOWER(CONCAT(
+				SUBSTRING(@sNombres,1,CHARINDEX(' ', @sNombres+' ',1)-1),
+				'.',
+				SUBSTRING(@sApellidos,1,CHARINDEX(' ', @sApellidos+' ',1)-1)
+			));
 
-			SET @sNombreUsuario = CONCAT(SUBSTRING(@sNombres,1,CHARINDEX(' ', @sNombres+' ',1)-1),'.',SUBSTRING(@sApellidos,1,CHARINDEX(' ', @sApellidos+' ',1)-1))
-
-			SET @nContador = (SELECT COUNT(*) FROM [TBL_USUARIO] WHERE sNombres=LOWER(@sNombres) AND sApellidos=LOWER(@sApellidos))+1
-			
-			IF(@nContador>0)
+			IF EXISTS (SELECT 1 FROM [TBL_LOGIN] WHERE sNombreUsuario = @sNombreUsuario)
 			BEGIN
-				SET @sNombreUsuario = CONCAT(@sNombreUsuario,@nContador)
-			END
+				SET @nContador = 2;
 
+				WHILE EXISTS (
+					SELECT 1
+					FROM [TBL_LOGIN]
+					WHERE sNombreUsuario = CONCAT(@sNombreUsuario, @nContador)
+				)
+				BEGIN
+					SET @nContador = @nContador + 1;
+				END;
+
+				SET @sNombreUsuario = CONCAT(@sNombreUsuario, @nContador);
+			END;
 
 			INSERT INTO [TBL_LOGIN]
 					(nIdUsuario, sNombreUsuario, sContrasenia)
-			VALUES(@nIdUsuario , LOWER(@sNombreUsuario),@sContrasenia)
+			VALUES(@nIdUsuario, @sNombreUsuario, @sContrasenia);
 
+			COMMIT TRANSACTION;
+		END TRY
+		BEGIN CATCH
+			IF @@TRANCOUNT > 0
+				ROLLBACK TRANSACTION;
 
-		END
+			THROW;
+		END CATCH;
 		
 	END
 	   

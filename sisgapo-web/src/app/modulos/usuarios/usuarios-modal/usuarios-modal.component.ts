@@ -44,6 +44,7 @@ export class UsuariosModalComponent implements OnInit {
   readonly lDocumentos: ListaOpcion[] = [
     { valor: 1, nombre: 'DNI' },
     { valor: 2, nombre: 'Carnet Ext.' },
+    { valor: 3, nombre: 'Pasaporte' },
   ];
   readonly lRoles: ListaOpcion[] = [
     { valor: 2, nombre: 'Supervisor' },
@@ -179,11 +180,17 @@ export class UsuariosModalComponent implements OnInit {
   }
 
   fnValidarDocumento(): boolean {
-    const documento = Number(this.formUsuario.controls.sNumDoc.value);
-    const valido = documento >= 10000000 && documento <= 99999999;
+    const tipoDocumento = Number(this.formUsuario.controls.nTipoDoc.value);
+    const documento = String(this.formUsuario.controls.sNumDoc.value || '').trim();
+    const valido = tipoDocumento === 1
+      ? /^\d{8}$/.test(documento)
+      : /^[a-zA-Z0-9]{6,15}$/.test(documento);
 
     if (!valido) {
-      Swal.fire({ title: 'El campo N° Documento debe tener 8 dígitos.', icon: 'warning', timer: 1500 });
+      const mensaje = tipoDocumento === 1
+        ? 'El DNI debe tener 8 dígitos.'
+        : 'El documento debe tener entre 6 y 15 caracteres alfanuméricos.';
+      Swal.fire({ title: mensaje, icon: 'warning', timer: 1500 });
     }
 
     return valido;

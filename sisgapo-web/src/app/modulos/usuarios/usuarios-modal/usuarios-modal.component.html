@@ -37,7 +37,8 @@
             <div class="col-md-3">
                 <mat-form-field appearance="outline" class="campo-formulario">
                     <mat-label>N° Documento</mat-label>
-                    <input matInput type="number" max="99999999" maxlength="8" required formControlName="sNumDoc"
+                    <input matInput type="text" maxlength="15" required formControlName="sNumDoc"
+                        [attr.inputmode]="formUsuario.get('nTipoDoc').value === 1 ? 'numeric' : 'text'"
                         autocomplete="off" name="Documento">
                 </mat-form-field>
             </div>
