@@ -1,4 +1,4 @@
-﻿using Entity;
+using Entity;
 using Microsoft.Extensions.Configuration;
 using NLog;
 using System;
@@ -15,7 +15,6 @@ namespace Data
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
         public string ConfConexion()
         {
-            //La cadena se resuelve una sola vez por proceso en ConfiguracionBD.
             conf = ConfiguracionBD.sCadenaConexion;
             return conf;
         }
@@ -87,7 +86,7 @@ namespace Data
                         usrEntId.nIdRol       = Convert.ToInt32(reader["nRol"]);
                         usrEntId.sDireccion   = reader["sDireccion"].ToString();
                         usrEntId.nTelefono    = Convert.ToInt32(reader["nTelefono"]);
-                        usrEntId.sContrasenia = reader["sContrasenia"].ToString();
+                        usrEntId.sNombreUsuario = reader["sNombreUsuario"].ToString();
                         usrEntId.dFechaNac    = reader["dFechaNac"].ToString();
                         usrEntId.dFechaNacimiento = Convert.ToDateTime(reader["dFechaNacimiento"]);
 

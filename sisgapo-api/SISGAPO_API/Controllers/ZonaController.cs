@@ -1,5 +1,6 @@
 using Business;
 using Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 using System;
@@ -7,15 +8,9 @@ using System.Collections.Generic;
 
 namespace SISGAPO_API.Controllers
 {
-    /// <summary>
-    /// Único controller REST del sistema; el resto usa el patrón sOpcion/pParametro.
-    ///
-    /// Las escrituras devuelven { cod, mensaje }, igual que los demás módulos.
-    /// Antes CREATE_Zona devolvía una cadena suelta y no existían la actualización
-    /// ni la baja: editar una zona desde la pantalla creaba un duplicado.
-    /// Ver 06-hallazgos.md §C-03.
-    /// </summary>
+
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class ZonaController : Controller
     {
@@ -119,7 +114,6 @@ namespace SISGAPO_API.Controllers
             }
         }
 
-        //El procedimiento responde "cod|mensaje", igual que el resto de módulos.
         private static object fnRespuesta(string sResultado)
         {
             if (String.IsNullOrWhiteSpace(sResultado))

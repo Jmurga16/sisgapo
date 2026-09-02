@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -5,9 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NLog;
+using SISGAPO_API.Seguridad;
 using System;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -29,9 +33,6 @@ namespace SISGAPO_API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //Los orígenes permitidos vienen de configuración (appsettings / variables de
-            //entorno), no escritos en el código. Antes el origen de producción estaba
-            //cableado y ni siquiera coincidía con el dominio donde se desplegaba el front.
             string[] arOrigenes = Configuration.GetSection("Cors:OrigenesPermitidos").Get<string[]>()
                                   ?? new[] { "http://localhost:4200" };
 
@@ -45,19 +46,60 @@ namespace SISGAPO_API
                 });
             });
 
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(opciones =>
+                    {
+                        opciones.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            ValidIssuer = ConfiguracionJwt.sEmisor,
+                            ValidAudience = ConfiguracionJwt.sAudiencia,
+                            IssuerSigningKey = new SymmetricSecurityKey(
+                                Encoding.UTF8.GetBytes(ConfiguracionJwt.sClave)),
+                            ClockSkew = TimeSpan.Zero
+                        };
+                    });
+
+            services.AddAuthorization();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SISGAPO_API", Version = "v1" });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Pega aquí el token que devuelve /LoginService."
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //Manejo de excepciones: registra el detalle del lado del servidor y devuelve
-            //un cuerpo consistente. Antes la excepción subía intacta y el cliente recibía
-            //un 500 vacío, sin rastro en ningún log.
             app.UseExceptionHandler(manejador =>
             {
                 manejador.Run(async contexto =>
@@ -89,8 +131,6 @@ namespace SISGAPO_API
             }
             else
             {
-                //En desarrollo la redirección a HTTPS devuelve un 307 al preflight de CORS
-                //y rompe las llamadas del frontend. Ver 06-hallazgos.md §S-08.
                 app.UseHttpsRedirection();
             }
 
@@ -98,6 +138,7 @@ namespace SISGAPO_API
 
             app.UseCors(sPoliticaCors);
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

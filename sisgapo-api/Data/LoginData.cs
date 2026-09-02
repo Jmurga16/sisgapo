@@ -1,19 +1,17 @@
-﻿using Entity;
+using Entity;
 using NLog;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data
 {
-     public class LoginData
+    public class LoginData
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         #region Conexion
         private readonly Conexion oCon;
+
         public LoginData()
         {
             oCon = new Conexion(1);
@@ -21,30 +19,26 @@ namespace Data
         #endregion
 
 
-
-        #region Login
-        public object DataLogin(LoginEntity logEnt)
+        #region Obtener credencial
+        public CredencialEntity ObtenerPorUsuario(string sNombreUsuario)
         {
-
             try
             {
-                List<ResultEntity> listaLogin = new List<ResultEntity>();
-                using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Login", logEnt.sNombreUsuario, logEnt.sContrasenia))
+                using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Login", sNombreUsuario))
                 {
-                    while (dr.Read())
+                    if (!dr.Read())
                     {
-                        ResultEntity resEnt = new ResultEntity();
-
-
-                        resEnt.Result = Int32.Parse(Convert.ToString(dr["Result"]));
-                        resEnt.nIdRol = Int32.Parse(Convert.ToString(dr["nIdRol"]));
-
-
-                        listaLogin.Add(resEnt);
-
+                        return null;
                     }
 
-                    return listaLogin;
+                    return new CredencialEntity
+                    {
+                        nIdUsuario = Convert.ToInt32(dr["nIdUsuario"]),
+                        nIdRol = Convert.ToInt32(dr["nIdRol"]),
+                        sNombreUsuario = Convert.ToString(dr["sNombreUsuario"]),
+                        sContrasenia = Convert.ToString(dr["sContrasenia"]),
+                        sNombrePersona = Convert.ToString(dr["sNombrePersona"])
+                    };
                 }
             }
             catch (Exception e)
@@ -52,8 +46,6 @@ namespace Data
                 logger.Error(e);
                 throw;
             }
-
-
         }
         #endregion
     }

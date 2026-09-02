@@ -4,7 +4,7 @@
    Reemplaza a:  sisgapo-web/src/scripts/CreacionTablas.sql
                  sisgapo-web/src/scripts/CreacionTablasParte2.sql  (era un duplicado)
 
-   Correcciones respecto al original — ver sisgapo-docs/03-modelo-de-datos.md §4:
+   Correcciones respecto al original — ver sisgapo-docs/03-modelo-de-datos.md, sección 4:
      [1] TBL_USUARIO.nRol        : la columna faltaba por completo, pero la usan
                                    PoblacionDatos.sql, USP_MNT_Usuarios,
                                    USP_MNT_Login y USP_MNT_Almacenes.
@@ -76,7 +76,7 @@ CREATE TABLE TBL_USUARIO (
     sSexo            VARCHAR(1)   NULL,     -- 'M' | 'F'
     nRol             INT          NOT NULL, -- [1] CORRECCIÓN: columna que faltaba
     sDireccion       VARCHAR(300) NULL,
-    nTelefono        INT          NULL,     -- ver 06-hallazgos.md §D-07: debería ser VARCHAR
+    nTelefono        INT          NULL,     -- ver 06-hallazgos.md, D-07: debería ser VARCHAR
     dFechaNacimiento DATE         NULL,
     bEstado          BIT          NOT NULL DEFAULT 1,   -- baja lógica
 
@@ -86,8 +86,7 @@ CREATE TABLE TBL_USUARIO (
 GO
 
 -- Credenciales. Relación 1:1 con TBL_USUARIO.
--- ADVERTENCIA: sContrasenia guarda texto plano en el diseño original.
--- Ver 06-hallazgos.md §S-02 y 09-mejoras-propuestas.md §M-01 (migrar a BCrypt).
+-- sContrasenia guarda el hash BCrypt (60 caracteres) que genera LoginBusiness.
 CREATE TABLE TBL_LOGIN (
     nIdUsuario     INT          NOT NULL,
     sNombreUsuario VARCHAR(100) NOT NULL,
@@ -166,7 +165,7 @@ CREATE TABLE TBL_DET_PRODUCTO (
     sDescripcion    VARCHAR(500) NULL,
     nIdUnidadMedida INT          NULL,
     nCantidad       INT          NULL,
-    nPrecio         INT          NULL,     -- ver 06-hallazgos.md §D-06: debería ser DECIMAL
+    nPrecio         INT          NULL,     -- ver 06-hallazgos.md, D-06: debería ser DECIMAL
     nIdLote         INT          NULL,
 
     CONSTRAINT FK_DETPROD_PRODUCTO FOREIGN KEY (nIdProducto)     REFERENCES TBL_PRODUCTO(nIdProducto),

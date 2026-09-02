@@ -4,17 +4,6 @@ using System.IO;
 
 namespace Data
 {
-    /// <summary>
-    /// Resuelve la cadena de conexión una sola vez por proceso.
-    ///
-    /// Orden de precedencia:
-    ///   1. Variable de entorno SISGAPO_CONNECTION_STRING
-    ///   2. Clave ConnectionStrings:connectionString de appsettings.json
-    ///
-    /// La cadena real no se versiona: en local va en la variable de entorno
-    /// (o en dotnet user-secrets) y en despliegue en la configuración del servicio.
-    /// appsettings.json solo conserva un marcador de posición.
-    /// </summary>
     public static class ConfiguracionBD
     {
         private const string sVariableEntorno = "SISGAPO_CONNECTION_STRING";
@@ -22,6 +11,9 @@ namespace Data
         private static readonly Lazy<string> oCadena = new Lazy<string>(fnResolverCadena);
 
         public static string sCadenaConexion => oCadena.Value;
+
+        private static string sEntorno =>
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
 
         private static string fnResolverCadena()
         {
@@ -32,18 +24,18 @@ namespace Data
                 IConfiguration configuration = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile($"appsettings.{sEntorno}.json", optional: true, reloadOnChange: false)
                     .Build();
 
                 sCadena = configuration["ConnectionStrings:connectionString"];
             }
 
-            //Fallar aquí y con un mensaje claro, en vez de dejar la cadena nula
-            //y que el error salga después como un NullReferenceException sin relación.
             if (String.IsNullOrWhiteSpace(sCadena))
             {
                 throw new InvalidOperationException(
-                    "No hay cadena de conexión configurada. Define la variable de entorno " +
-                    sVariableEntorno + " o la clave ConnectionStrings:connectionString en appsettings.json.");
+                    "No hay cadena de conexión configurada. En " + sEntorno + " define la " +
+                    "variable de entorno " + sVariableEntorno + ". En Development se usa la " +
+                    "cadena de appsettings.Development.json, que apunta a docker compose.");
             }
 
             return sCadena;

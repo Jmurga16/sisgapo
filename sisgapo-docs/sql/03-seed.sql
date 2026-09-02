@@ -14,10 +14,10 @@
          5 zonas, 7 usuarios, 5 almacenes, 4 categorías, 12 productos.
      [5] Catálogo ampliado a 7 categorías y 25 productos.
      [6] Imágenes de zona recortadas a 3:2.
+     [7] Las contraseñas se guardan como hash bcrypt, no en claro.
 
-   ADVERTENCIA: las contraseñas se insertan en texto plano porque así lo espera
-   USP_MNT_Login en su forma actual. Son credenciales de demostración públicas.
-   No usar este esquema con datos reales. Ver 09-mejoras-propuestas.md §M-01.
+   ADVERTENCIA: son credenciales de demostración públicas, todas con la misma
+   contraseña y documentada más abajo. No usar este seed con datos reales.
 
    Ejecutar después de 01-esquema.sql.
    Este script no borra nada; ejecutar antes 01-esquema.sql.
@@ -71,15 +71,17 @@ VALUES
     ('Jorge',   'Salazar Vega',      2, 'CE998877', 'M', 3, 'Av. Tarapoto 12, Moyobamba', 944556677, '1995-02-18', 0);
 GO
 
--- Credenciales de demostración. Contraseña de todos: 123456
+-- Credenciales de demostración. La contraseña de los siete es 123456.
+-- Se guarda el hash bcrypt (factor 11), generado con BCrypt.Net-Next: T-SQL no
+-- sabe calcularlo. Son distintos entre sí porque cada uno lleva su propia sal.
 INSERT INTO TBL_LOGIN (nIdUsuario, sNombreUsuario, sContrasenia) VALUES
-    (1, 'admin',           '123456'),
-    (2, 'jose.m',          '123456'),
-    (3, 'alex.quispe',     '123456'),
-    (4, 'maria.ramirez',   '123456'),
-    (5, 'carlos.mendoza',  '123456'),
-    (6, 'lucia.fernandez', '123456'),
-    (7, 'jorge.salazar',   '123456');
+    (1, 'admin',           '$2a$11$xNtX2/mJdZ0MdslIKGkuau9GAI9lRwSym2aHxRbQ/2vBpSiZR3Uvy'),
+    (2, 'jose.m',          '$2a$11$jV41/GhLAh9ht61Xaje46u2fTlKPCnpgrxKS2e4XaIk0F1WeMKco.'),
+    (3, 'alex.quispe',     '$2a$11$opirKv64DtGBJvho1D2rBe4.i9WRKBc2rWfe9XHUq0udN9sF4cCPO'),
+    (4, 'maria.ramirez',   '$2a$11$DbORf2GnMNq5/5NqO4Y.huB7fa4wGhzyy2GNd1QP90eUIN3YV1Dki'),
+    (5, 'carlos.mendoza',  '$2a$11$Is4Og6odAQhcsh0XJG1mAOY962.AUy0VprgznerhT8NqTRcjweroK'),
+    (6, 'lucia.fernandez', '$2a$11$/qkh7ixCzBmdKbYA7hwMwOgvXsH3P/q86.7W.SrNdPPmZHtdi/Mga'),
+    (7, 'jorge.salazar',   '$2a$11$wH6eLGJ6Z8ymJhSC.hktW.VOrB0RS/h8jeCzndVUCnJOI7WiwITrG');
 GO
 
 /* ---------------------------- ALMACENES ---------------------------- */

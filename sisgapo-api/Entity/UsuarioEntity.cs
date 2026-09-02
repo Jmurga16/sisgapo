@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Entity
 {
@@ -34,8 +34,8 @@ namespace Entity
         public string sSexo { get; set; }
         public int nIdRol { get; set; }
         public string sDireccion { get; set; }
-        public int nTelefono { get; set; }       
-        public string sContrasenia { get; set; }
+        public int nTelefono { get; set; }
+        public string sNombreUsuario { get; set; }
         public DateTime dFechaNacimiento { get; set; }
         public string dFechaNac { get; set; }
     }

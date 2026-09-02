@@ -1,5 +1,6 @@
-﻿using Business;
+using Business;
 using Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 using System;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 namespace SISGAPO_API.Controllers
 {
     [ApiController]
+    [Authorize(Roles = "1")]
     public class UsuarioController : Controller
     {
         private readonly UsuarioBusiness objUsuarios = new UsuarioBusiness();
@@ -54,9 +56,7 @@ namespace SISGAPO_API.Controllers
             }
             else
             {
-                //Antes esto era 'return null', que ASP.NET Core traduce a 204 No Content
-                //con cuerpo vacio: el frontend recibia null y fallaba al leer sus
-                //propiedades, sin mensaje para el usuario. Ver 06-hallazgos.md C-08.
+
                 return BadRequest(new { cod = "0", mensaje = $"Opcion no soportada: {erp.sOpcion}" });
             }
 

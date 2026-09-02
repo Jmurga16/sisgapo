@@ -116,8 +116,20 @@ BEGIN
 		END	
 		
 		BEGIN
-			SELECT 
-				*,
+
+			SELECT
+				usr.nIdUsuario,
+				usr.sNombres,
+				usr.sApellidos,
+				usr.nTipoDoc,
+				usr.sNumDoc,
+				usr.sSexo,
+				usr.nRol,
+				usr.sDireccion,
+				usr.nTelefono,
+				usr.dFechaNacimiento,
+				usr.bEstado,
+				lgn.sNombreUsuario,
 				CONVERT(VARCHAR, usr.dFechaNacimiento,23) AS 'dFechaNac'
 			FROM [TBL_USUARIO] usr
 			INNER JOIN [TBL_LOGIN] lgn ON lgn.nIdUsuario=usr.nIdUsuario
@@ -199,11 +211,15 @@ BEGIN
 		 WHERE 
 			nIdUsuario = @nIdUsuario                          
 		 
-		 UPDATE [TBL_LOGIN]                           
-		 SET 
-			sContrasenia	= @sContrasenia
-		 WHERE 
-			nIdUsuario = @nIdUsuario  
+
+		 IF (LEN(LTRIM(RTRIM(ISNULL(@sContrasenia, '')))) > 0)
+		 BEGIN
+			 UPDATE [TBL_LOGIN]
+			 SET
+				sContrasenia	= @sContrasenia
+			 WHERE
+				nIdUsuario = @nIdUsuario
+		 END
                                                        
 	END;                            
 

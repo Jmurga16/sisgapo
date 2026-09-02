@@ -1,22 +1,15 @@
 using Business;
 using Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 using System;
 
 namespace SISGAPO_API.Controllers
 {
-    /// <summary>
-    /// Panel de inicio. Modulo nuevo: hasta ahora la pantalla que se abria
-    /// despues de entrar estaba vacia (inicio.component.html pesaba 0 bytes).
-    ///
-    /// Solo lectura. Sigue el patron sOpcion/pParametro del resto del sistema:
-    ///   01  tarjetas de resumen
-    ///   02  existencias por almacen
-    ///   03  existencias por categoria
-    ///   04  proximos a vencer (pParametro = dias, por defecto 90)
-    /// </summary>
+
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class PanelController : Controller
     {
