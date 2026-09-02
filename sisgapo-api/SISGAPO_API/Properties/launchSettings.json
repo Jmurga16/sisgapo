@@ -19,7 +19,7 @@
     },
     "SISGAPO_API": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
+      "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:44360;http://localhost:5000",
