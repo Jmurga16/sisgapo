@@ -3,11 +3,6 @@ using System.Collections.Generic;
 
 namespace Entity
 {
-    /// <summary>
-    /// DTOs del panel de inicio. Módulo nuevo: agregaciones de solo lectura
-    /// sobre el modelo existente, sin cambios de estructura.
-    /// </summary>
-
     //Opción 01 — tarjetas de resumen
     public class EPanelResumen
     {

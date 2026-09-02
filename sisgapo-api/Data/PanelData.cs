@@ -6,10 +6,6 @@ using System.Data;
 
 namespace Data
 {
-    /// <summary>
-    /// Acceso a datos del panel de inicio. Solo lectura: cuatro consultas de
-    /// agregación contra USP_MNT_Panel.
-    /// </summary>
     public class PanelData
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();

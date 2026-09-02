@@ -19,7 +19,6 @@ namespace Data
         private string conf;
         public string ConfConexion()
         {
-            //La cadena se resuelve una sola vez por proceso en ConfiguracionBD.
             conf = ConfiguracionBD.sCadenaConexion;
             return conf;
         }
@@ -123,9 +122,6 @@ namespace Data
 
 
         //Crear zona
-        //Antes usaba ExecuteNonQuery y devolvia "OK" a ciegas: si el procedimiento
-        //rechazaba el nombre por duplicado, devolvia "" y la pantalla navegaba igual
-        //al listado. Ahora se lee la respuesta 'cod|mensaje' del procedimiento.
         public String CREATE_ZonaData(ZonaEntity objZonaEnt)
         {
             return fnEjecutarEscritura("03", objZonaEnt.nIdZona, objZonaEnt.sNombre, objZonaEnt.sRutaImagen, true);
@@ -146,7 +142,6 @@ namespace Data
         }
 
 
-        //Las tres escrituras comparten firma y contrato de respuesta.
         private String fnEjecutarEscritura(string sOpcion, int nIdZona, string sNombre, string sRutaImagen, bool bEstado)
         {
             String strResultado = "";
