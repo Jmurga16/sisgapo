@@ -14,10 +14,10 @@ implementados. Estas mejoras son sobre calidad, no sobre funcionalidad que falte
 
 ## Resumen
 
-> **Estado a 25 de agosto de 2026.** Cinco de estas mejoras ya están aplicadas y
-> verificadas: M-03 (parcial: `Conexion.cs` reescrito, sin inyección de dependencias
-> todavía), M-04, M-05, M-11 y la parte de rendimiento que no estaba en esta lista. El
-> detalle de cada una, con las mediciones, está en `06-hallazgos.md`.
+> **Estado a 2 de septiembre de 2026.** Siete de estas mejoras ya están aplicadas y
+> verificadas: M-01, M-02, M-03 (parcial: `Conexion.cs` reescrito, sin inyección de
+> dependencias todavía), M-04, M-05, M-11 y la parte de rendimiento que no estaba en
+> esta lista. El detalle de cada una, con las mediciones, está en `06-hallazgos.md`.
 
 | # | Mejora | Esfuerzo | Demo | Portafolio | Reco. | Estado |
 |---|---|---|---|---|---|---|

@@ -24,10 +24,11 @@ revisión inicial. Es lo normal: el primero de ellos tapaba a los otros tres.
 
 ---
 
-## Estado — 23 de agosto de 2026
+## Estado — 2 de septiembre de 2026
 
-Primera tanda de arreglos aplicada. Todo lo marcado como corregido está **verificado
-ejecutándolo** contra SQL Server 2022 en Docker y, donde aplica, por HTTP contra la API.
+Dos tandas de arreglos aplicadas: la de agosto y la de la migración a .NET 8 con
+autenticación. Todo lo marcado como corregido está **verificado ejecutándolo** contra
+SQL Server 2022 en Docker y, donde aplica, por HTTP contra la API.
 
 | Hallazgo | Estado |
 |---|---|
