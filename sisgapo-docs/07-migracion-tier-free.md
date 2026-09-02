@@ -54,7 +54,7 @@ Lo mismo pasa con casi cualquier plataforma gratuita: las imágenes base de cont
 .NET 5 ya no reciben actualizaciones.
 
 **Conclusión: migrar a .NET 8 (LTS) no es opcional, es el requisito de entrada al tier
-gratuito.** La buena noticia es que en este proyecto es un trabajo acotado —§5 lo detalla
+gratuito.** La buena noticia es que en este proyecto es un trabajo acotado —la sección 5 lo detalla
 paso a paso, unas 3–4 horas.
 
 ## 4. La decisión de base de datos
@@ -105,7 +105,7 @@ colgada 40 segundos, la demo ya fracasó. Mitigaciones, de mejor a peor:
 
 **C — PostgreSQL gratuito** (Neon, Supabase) sería la opción por defecto si empezaras de
 cero. Aquí no: los 950 líneas de T-SQL no son portables. El inventario completo de
-construcciones específicas de SQL Server está en `03-modelo-de-datos.md` §6. Y hay una
+construcciones específicas de SQL Server está en `03-modelo-de-datos.md`, sección 6. Y hay una
 trampa adicional: PostgreSQL pliega a minúsculas los identificadores sin comillas, mientras
 la capa `Data` accede a las columnas por nombre exacto (`dr["nIdAlmacen"]`). Habría que
 revisar cada uno de esos accesos. Son 3–5 días para ahorrar US$ 0 respecto a la opción A.
@@ -119,9 +119,9 @@ son 4–6 días.
 que "funciona". Mover la lógica de los procedimientos a servicios de C# con pruebas unitarias
 es, con diferencia, el cambio que más elevaría el proyecto como pieza de portafolio. Pero es
 un proyecto de una semana, no un ajuste de infraestructura. Está desarrollado en
-`09-mejoras-propuestas.md` §M-10.
+`09-mejoras-propuestas.md`, M-10.
 
-Ver `10-decisiones.md` §D-01 para el razonamiento completo de esta decisión.
+Ver `10-decisiones.md`, D-01 para el razonamiento completo de esta decisión.
 
 ## 5. La decisión de hosting
 
@@ -150,7 +150,7 @@ crear un F1 no cancela el S1.
 | GitHub Pages | US$ 0 | No | Requiere ajustar el `base href` si va en subruta |
 
 **Recomendado: quedarte en Static Web Apps.** Ya está configurado y ya es gratis. Solo hay
-que borrar el workflow duplicado y arreglar el que queda (§6).
+que borrar el workflow duplicado y arreglar el que queda (sección 6).
 
 Si algún día quieres el sitio fuera de Azure por completo, Cloudflare Pages es un cambio de
 15 minutos.
@@ -183,7 +183,7 @@ docker compose up    →    SQL Server 2022 + API .NET 8 + Angular      US$ 0
 ### Fase 0 — Higiene (1 hora) · hazlo antes que nada
 
 - [ ] Portal de Azure: inventariar recursos, **borrar cualquier App Service Plan huérfano**.
-- [ ] Cambiar las contraseñas de `appsettings.json:11` y `ProductoData.cs:190` si están reutilizadas en otro sitio (`06-hallazgos.md` §S-01).
+- [ ] Cambiar las contraseñas de `appsettings.json:11` y `ProductoData.cs:190` si están reutilizadas en otro sitio (`06-hallazgos.md`, S-01).
 - [ ] `git init` en los dos proyectos y primer commit **con los secretos ya quitados**.
 - [ ] `.gitignore`: añadir `appsettings.Development.json`, `.vs/`, `.sonarqube/`, `node_modules/`, `dist/`, `bin/`, `obj/`.
 - [ ] Sacar la cadena de conexión a variable de entorno; dejar un marcador en `appsettings.json`.
@@ -240,7 +240,7 @@ Ver `sql/README.md` para las pruebas de humo.
 | Acción | Paquete |
 |---|---|
 | **Eliminar** | `Microsoft.AspNet.WebApi.Cors` 5.2.7 — es de .NET Framework, no hace nada |
-| **Eliminar** | `Microsoft.EntityFrameworkCore.SqlServer` y `.Tools` — no se usan (`06-hallazgos.md` §D-09) |
+| **Eliminar** | `Microsoft.EntityFrameworkCore.SqlServer` y `.Tools` — no se usan (`06-hallazgos.md`, D-09) |
 | **Eliminar** | `.config/dotnet-tools.json` — manifiesto de `dotnet-ef`, sin uso |
 | **Sustituir** | `System.Data.SqlClient` 4.8.2 → `Microsoft.Data.SqlClient` (resuelve dos CVE) |
 | **Sustituir** | `Microsoft.ApplicationBlocks.Data` → eliminarlo (ver 2.3) |
@@ -259,7 +259,7 @@ Al cambiar a `Microsoft.Data.SqlClient`, sustituye `using System.Data.SqlClient;
 **2.3 · Reescribir `Conexion.cs`** — es el único trabajo de código real de esta fase.
 
 `Microsoft.ApplicationBlocks.Data` es un ensamblado solo para .NET Framework; que funcione
-en .NET 8 no está garantizado. Y hay que quitarlo igualmente por lo de `06-hallazgos.md` §D-05
+en .NET 8 no está garantizado. Y hay que quitarlo igualmente por lo de `06-hallazgos.md`, D-05
 (la consulta de metadatos innecesaria en cada escritura).
 
 Las 253 líneas actuales se reducen a unas 60. Toda la introspección con
@@ -323,9 +323,9 @@ contenedor de dependencias — es el paso 2.5, y es el momento natural de hacerl
 así que **`Program.cs` puede quedarse como está**. Es el camino de menor riesgo.
 
 Si prefieres el hosting mínimo (más idiomático en .NET 8), es una tarde más de trabajo y
-queda mejor en un portafolio. Decide con `10-decisiones.md` §D-05.
+queda mejor en un portafolio. Decide con `10-decisiones.md`, D-05.
 
-**2.5 · Añadir inyección de dependencias** (`06-hallazgos.md` §D-03)
+**2.5 · Añadir inyección de dependencias** (`06-hallazgos.md`, D-03)
 
 ```csharp
 // Startup.ConfigureServices
@@ -341,7 +341,7 @@ services.AddScoped<LoginData>();        services.AddScoped<LoginBusiness>();
 Y cambiar los campos `new X()` por parámetros de constructor. Es mecánico y elimina de paso
 el problema de releer `appsettings.json` en cada petición.
 
-**2.6 · CORS por configuración** (`06-hallazgos.md` §S-08)
+**2.6 · CORS por configuración** (`06-hallazgos.md`, S-08)
 
 ```csharp
 // appsettings.json
@@ -361,7 +361,7 @@ En App Service se sobrescribe con la variable `Cors__Origins__0`.
 Para una demo, poder enseñar `/swagger` con los endpoints documentados vale mucho. Saca
 `UseSwagger()` y `UseSwaggerUI()` del `if (env.IsDevelopment())`.
 
-**2.8 · Configurar el registro** (`06-hallazgos.md` §C-04)
+**2.8 · Configurar el registro** (`06-hallazgos.md`, C-04)
 
 Lo más rápido y lo mejor para contenedores: eliminar NLog y usar `ILogger<T>`, que escribe en
 la salida estándar —que es donde App Service y Docker leen los logs—. Son 24 sustituciones
@@ -381,16 +381,16 @@ curl -k -X POST https://localhost:44360/LoginService \
 
 Estos tres son los que un cliente encuentra en los primeros cinco minutos de probar.
 
-- [ ] **`06-hallazgos.md` §C-02** — editar producto. En `productos-modal.component.ts`, insertar `nIdProducto` en la posición 10 y dejar `nIdCatProd` en la 11. En `USP_MNT_Productos` opción `07`, obtener `@nIdLote` a partir de `@nIdProducto` antes del `UPDATE TBL_LOTE`.
-- [ ] **`06-hallazgos.md` §C-03** — editar zona. Añadir una opción `04` (actualizar) a `USP_MNT_Zonas`, un `PUT /api/zona/{id}` en el controller, y hacer que `zona-form` elija entre alta y edición en vez de borrar el id.
-- [ ] **`06-hallazgos.md` §C-08** — sustituir `return null` por `BadRequest(...)` en los seis controllers.
-- [ ] **`06-hallazgos.md` §D-09** — borrar `WeatherForecast.cs`, `Correo.cs`, `Test/Entities.cs`, el módulo `Cliente` completo y las cinco clases de entidad vacías.
+- [ ] **`06-hallazgos.md`, C-02** — editar producto. En `productos-modal.component.ts`, insertar `nIdProducto` en la posición 10 y dejar `nIdCatProd` en la 11. En `USP_MNT_Productos` opción `07`, obtener `@nIdLote` a partir de `@nIdProducto` antes del `UPDATE TBL_LOTE`.
+- [ ] **`06-hallazgos.md`, C-03** — editar zona. Añadir una opción `04` (actualizar) a `USP_MNT_Zonas`, un `PUT /api/zona/{id}` en el controller, y hacer que `zona-form` elija entre alta y edición en vez de borrar el id.
+- [ ] **`06-hallazgos.md`, C-08** — sustituir `return null` por `BadRequest(...)` en los seis controllers.
+- [ ] **`06-hallazgos.md`, D-09** — borrar `WeatherForecast.cs`, `Correo.cs`, `Test/Entities.cs`, el módulo `Cliente` completo y las cinco clases de entidad vacías.
 
 ### Fase 4 — Que la demo no dé vergüenza (4–6 horas)
 
-- [ ] **Hashear contraseñas** (§S-02). `BCrypt.Net-Next`, columna a `VARCHAR(255)`, verificación en C# en vez de en el `WHERE` del procedimiento, y quitar `sContrasenia` del `SELECT` de la opción `03`.
-- [ ] **Autenticación JWT** (§S-03). `LoginService` emite un token con el rol como *claim*; `[Authorize]` en los controllers; interceptor HTTP en Angular que añada la cabecera.
-- [ ] **Guards de ruta** (§S-04). Un `AuthGuard` en `app-routing.module.ts`.
+- [ ] **Hashear contraseñas** (S-02). `BCrypt.Net-Next`, columna a `VARCHAR(255)`, verificación en C# en vez de en el `WHERE` del procedimiento, y quitar `sContrasenia` del `SELECT` de la opción `03`.
+- [ ] **Autenticación JWT** (S-03). `LoginService` emite un token con el rol como *claim*; `[Authorize]` en los controllers; interceptor HTTP en Angular que añada la cabecera.
+- [ ] **Guards de ruta** (S-04). Un `AuthGuard` en `app-routing.module.ts`.
 - [ ] **Filtrar el menú y los botones por rol**, que es lo que dice el documento de casos de uso y hoy no se cumple.
 
 Con esto el proyecto deja de ser "una demo universitaria con agujeros" y pasa a ser "un
@@ -413,7 +413,7 @@ Cors__Origins__0                    = https://<tu-app>.azurestaticapps.net
 
 **Frontend.**
 
-1. Borrar el workflow `blue-sea` (tiene `output_location: dist`, que es incorrecto — ver `05-frontend.md` §9).
+1. Borrar el workflow `blue-sea` (tiene `output_location: dist`, que es incorrecto — ver `05-frontend.md`, sección 9).
 2. En el workflow que queda, añadir la versión de Node y el flag de OpenSSL:
 
 ```yaml
@@ -512,7 +512,7 @@ COPY --from=build /app .
 ENTRYPOINT ["dotnet", "SISGAPO_API.dll"]
 ```
 
-`sisgapo-web/Dockerfile` — el `ENV NODE_OPTIONS` es imprescindible (ver `05-frontend.md` §1):
+`sisgapo-web/Dockerfile` — el `ENV NODE_OPTIONS` es imprescindible (ver `05-frontend.md`, sección 1):
 
 ```dockerfile
 FROM node:18 AS build
@@ -554,7 +554,7 @@ Por eso, si quieres conservar el T-SQL, **Azure es la única vía gratuita**. Si
 a reescribirlo, se abre todo lo demás — y en ese caso conviene ir directamente a SQLite
 (opción D), que además elimina el servidor de base de datos.
 
-Ver `10-decisiones.md` §D-02.
+Ver `10-decisiones.md`, D-02.
 
 ## 10. Resumen
 

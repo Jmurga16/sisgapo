@@ -28,7 +28,7 @@ Dos rarezas que conviene conocer de antemano:
 `sisgapo-web/src/scripts/`. Es contraintuitivo, y es así desde 2021. Se conservan como
 registro del estado original y **no se pueden ejecutar**: les falta una columna, un
 procedimiento usa `ALTER` en vez de `CREATE` y dos archivos duplican objetos. La versión
-que sí funciona está en `sisgapo-docs/sql/`. El detalle, en `03-modelo-de-datos.md` §4.
+que sí funciona está en `sisgapo-docs/sql/`. El detalle, en `03-modelo-de-datos.md`, sección 4.
 
 **El repositorio es un monorepo con dos historiales importados.** En 2021 el proyecto
 vivía en dos repositorios separados; sus 57 commits se conservan bajo `sisgapo-api/` y
@@ -95,7 +95,7 @@ Dos advertencias sobre el patrón:
 - **No hay tipado.** Todo viaja como texto y el orden posicional es la única
   documentación. Un parámetro de más o de menos no da error de compilación.
 - **El delimitador no se escapa.** Un almacén llamado `Norte|Sur` desplaza todos los
-  parámetros siguientes. Está registrado como §S-07 y sigue abierto: valida en el
+  parámetros siguientes. Está registrado como S-07 y sigue abierto: valida en el
   formulario que el texto no contenga `|`.
 
 **Excepción:** `ZonaController` usa REST convencional —`GET /api/zona`,
@@ -114,7 +114,7 @@ Controller  →  Business  →  Data  →  Stored procedure
 - **Data** abre la conexión y mapea `IDataReader` a DTOs.
 - **El procedimiento tiene toda la lógica real.**
 
-Es una decisión de 2021 que se mantiene (`10-decisiones.md` §D-04). Tiene una ventaja
+Es una decisión de 2021 que se mantiene (`10-decisiones.md`, D-04). Tiene una ventaja
 —se puede parchear sin desplegar— y una desventaja grande: la lógica no se puede probar
 con dobles ni revisar en un diff con comodidad.
 
@@ -143,7 +143,7 @@ pase por `Business` funciona, pero rompe la simetría que hace el código predec
 - **Ningún valor de entorno va escrito en el código.** Los orígenes CORS salen de
   `Cors:OrigenesPermitidos`; la URL de la API, de `src/environments/`.
 - **Los datos de demostración son públicos a propósito** y están documentados en
-  `sql/README.md`. Las contraseñas siguen en texto plano —§S-02, pendiente—, así que
+  `sql/README.md`. Las contraseñas siguen en texto plano —S-02, pendiente—, así que
   **esta aplicación no se despliega en internet** hasta que eso se resuelva.
 
 ## 8. Estilo

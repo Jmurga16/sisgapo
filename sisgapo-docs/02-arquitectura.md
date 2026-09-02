@@ -97,7 +97,7 @@ else if (genEnt.sOpcion == "05" || genEnt.sOpcion == "06" || genEnt.sOpcion == "
 }
 else
 {
-    return null;    // ← ver 06-hallazgos.md §C-08
+    return null;    // ← ver 06-hallazgos.md, C-08
 }
 ```
 
@@ -159,7 +159,7 @@ El controller lo parte y responde `{ "cod": "1", "mensaje": "Se registró con é
 
 1. **Sin tipado.** Todo viaja como string. Los `CAST(... AS INT)` fallan en tiempo de ejecución si el orden cambia.
 2. **Acoplamiento posicional.** El significado de un valor depende de su índice. Insertar un campo en medio rompe silenciosamente las tres capas.
-3. **El delimitador no se escapa.** Un almacén llamado `Norte|Sur` desplaza todos los parámetros siguientes. No es inyección SQL —los parámetros sí van parametrizados— pero sí corrupción de datos. Ver `06-hallazgos.md` §S-07.
+3. **El delimitador no se escapa.** Un almacén llamado `Norte|Sur` desplaza todos los parámetros siguientes. No es inyección SQL —los parámetros sí van parametrizados— pero sí corrupción de datos. Ver `06-hallazgos.md`, S-07.
 4. **Swagger queda inútil.** El contrato documentado es siempre `{ sOpcion, pParametro }`, sin decir qué significa cada uno.
 5. **No hay verbos HTTP.** Todo es `POST`, incluidas las lecturas. Sin caché, sin semántica REST.
 
@@ -170,7 +170,7 @@ disciplina es más mantenible que cuatro patrones distintos aplicados a medias. 
 implica tocar simultáneamente el SP, el `*Data.cs` y el `*.service.ts` de cada entidad.
 
 Si lo cambias, ve entidad por entidad y termina cada una antes de empezar la siguiente.
-Ver `09-mejoras-propuestas.md` §M-06.
+Ver `09-mejoras-propuestas.md`, M-06.
 
 ### La excepción: `ZonaController`
 
@@ -232,7 +232,7 @@ SqlHelper.ExecuteScalar(oSqlConnIN, CommandType.StoredProcedure, sProcedure, arP
 Server— para descubrir la firma del SP en tiempo de ejecución. Como los seis SPs tienen
 exactamente la misma firma (`@sOpcion VARCHAR(2)`, `@pParametro VARCHAR(MAX)`), esta
 introspección no aporta nada: se puede reemplazar por dos `SqlParameter` explícitos y
-eliminar ~120 de las 253 líneas de `Conexion.cs`. Ver `09-mejoras-propuestas.md` §M-02.
+eliminar ~120 de las 253 líneas de `Conexion.cs`. Ver `09-mejoras-propuestas.md`, M-02.
 
 **7. `USP_MNT_Almacenes`, opción `05`**
 ```sql
@@ -318,7 +318,7 @@ Consecuencias:
 - La configuración se relee del disco en cada request.
 
 Introducir DI es de las mejoras con mejor relación esfuerzo/beneficio: son ~15 líneas en
-`Startup` y cambiar constructores. Ver `09-mejoras-propuestas.md` §M-03.
+`Startup` y cambiar constructores. Ver `09-mejoras-propuestas.md`, M-03.
 
 ## 7. Pipeline HTTP y CORS
 
@@ -346,7 +346,7 @@ Tres problemas concretos:
 
 1. **`UseAuthorization()` sin `UseAuthentication()`.** Como no hay ningún `[Authorize]`, no hace nada. Es decorativo.
 2. **El origen CORS de producción probablemente estaba mal.** Permite `https://sisgapo.azurewebsites.net`, pero el frontend se desplegaba en Azure Static Web Apps (`*.azurestaticapps.net` — hay dos workflows). Los dominios no coinciden.
-3. **El frontend llamaba por HTTP y la API redirige a HTTPS.** `environment.prod.ts` apunta a `http://sisgapoback.azurewebsites.net/`, y `UseHttpsRedirection()` devuelve un 307. En un `POST` con preflight CORS eso suele romperse. Ver `06-hallazgos.md` §S-08.
+3. **El frontend llamaba por HTTP y la API redirige a HTTPS.** `environment.prod.ts` apunta a `http://sisgapoback.azurewebsites.net/`, y `UseHttpsRedirection()` devuelve un 307. En un `POST` con preflight CORS eso suele romperse. Ver `06-hallazgos.md`, S-08.
 
 **Swagger solo existe en Development.** Para una demo esto conviene invertirlo: exponer
 Swagger en producción es una de las cosas que mejor se ven al enseñar una API.
@@ -369,7 +369,7 @@ Con dos agravantes:
 - **No hay middleware de excepciones.** En producción (sin `UseDeveloperExceptionPage`) la excepción sale como un 500 sin cuerpo. El frontend hace `console.log(error)` y el usuario no ve nada.
 
 Resultado: cuando algo falla en producción, no hay traza en el servidor ni mensaje en el
-cliente. Ver `06-hallazgos.md` §C-09 y §D-04.
+cliente. Ver `06-hallazgos.md`, C-09 y D-04.
 
 ## 9. Resumen para quien vaya a modificar el sistema
 

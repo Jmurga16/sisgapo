@@ -120,7 +120,7 @@ escribiste tú, dilo así:
 > hicimos entre varios; el desarrollo del backend y el frontend lo hice yo."
 
 Una respuesta precisa siempre suena mejor que una absoluta, y no te expone si alguien
-encuentra el documento con los seis nombres. Ver `10-decisiones.md` §D-09.
+encuentra el documento con los seis nombres. Ver `10-decisiones.md`, D-09.
 
 **"¿Puedo verlo funcionando?"**
 Ten las dos vías listas: el enlace público **y** el `docker compose up` en tu portátil. Si el
@@ -131,7 +131,7 @@ enlace está frío, arranca Docker mientras se despierta y no pierdes el ritmo.
 **Una vez, la primera vez**
 - [x] Repositorio público en GitHub, **sin secretos** — verificado también en el historial
 - [x] `README.md` en la raíz, con el arranque en tres pasos
-- [x] Los bugs visibles corregidos (§C-02, §C-03, §C-08, §C-12 a §C-18)
+- [x] Los bugs visibles corregidos (C-02, C-03, C-08, C-12 a C-18)
 - [x] `docker compose up` probado desde cero
 - [x] Base de datos poblada (5 zonas, 5 almacenes, 7 categorías, 25 productos)
 - [ ] Captura de pantalla del panel en el README
@@ -173,11 +173,11 @@ fechado en 2021, y las versiones del stack cantan— y te deja en mala posición
 **No pidas disculpas por él.** "Es viejo, no lo mires mucho" invita justamente a mirarlo mal.
 Fecharlo no es disculparse: es dar contexto.
 
-**No lo dejes público con la API abierta y contraseñas en claro** (§S-01 a §S-04). Si alguien
+**No lo dejes público con la API abierta y contraseñas en claro** (S-01 a S-04). Si alguien
 con criterio técnico lo revisa por su cuenta y encuentra eso sin que tú lo hayas mencionado,
 el efecto es el contrario del que buscas.
 
-**No enseñes la edición de productos sin haber arreglado §C-02.** Es la acción que un cliente
+**No enseñes la edición de productos sin haber arreglado C-02.** Es la acción que un cliente
 prueba, y falla en silencio.
 
 **No inventes funcionalidad.** Si te preguntan por reportes o por gestión de proveedores, di
@@ -192,7 +192,7 @@ Ordenadas por lo que más cambian la percepción del proyecto:
 |---|---|---|
 | **`docker compose up` que funcione** | 3 h | ⭐⭐⭐⭐⭐ Elimina toda fricción; es lo primero que prueba un técnico |
 | Autenticación JWT + contraseñas hasheadas | 6 h | ⭐⭐⭐⭐⭐ Quita la objeción más obvia |
-| Corregir §C-02 y §C-03 | 2 h | ⭐⭐⭐⭐ Evita que falle justo cuando lo prueban |
+| Corregir C-02 y C-03 | 2 h | ⭐⭐⭐⭐ Evita que falle justo cuando lo prueban |
 | Actualizar el frontend a Angular moderno | 3–5 días | ⭐⭐⭐ Se nota, pero no es lo que más pesa |
 | Mover la lógica de T-SQL a C# con tests | 4–6 días | ⭐⭐⭐⭐ Es la mejor pieza técnica, pero es un proyecto en sí |
 

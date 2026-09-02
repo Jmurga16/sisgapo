@@ -7,7 +7,7 @@ GO
 
 /*  Zonas — mantenimiento.
 
-    Cambios respecto al original de 2021 (ver 06-hallazgos.md §C-03 y §C-05):
+    Cambios respecto al original de 2021 (ver 06-hallazgos.md, C-03 y C-05):
       [1] No existía la actualización. El formulario de edición cargaba la zona
           por id y al guardar llamaba igual a la opción 03 (INSERT), así que
           editar una zona creaba un duplicado.

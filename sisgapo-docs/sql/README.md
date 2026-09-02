@@ -2,7 +2,7 @@
 
 Versión ejecutable del esquema de SISGAPO. Los scripts originales están en
 `sisgapo-web/src/scripts/` y **no se pueden ejecutar tal cual** — ver
-`../03-modelo-de-datos.md` §4 para el detalle de cada fallo.
+`../03-modelo-de-datos.md`, sección 4 para el detalle de cada fallo.
 
 Estos archivos no reemplazan a los originales: conviven con ellos. Los originales
 quedan como evidencia del estado de 2021.
@@ -132,4 +132,4 @@ original.
 | `lucia.fernandez` | Asistente | Rol sin casos de uso definidos |
 | `jorge.salazar` | Asistente | **Usuario inactivo** — verifica el filtro de estado |
 
-Son credenciales públicas de demostración. Ver `../06-hallazgos.md` §S-02.
+Son credenciales públicas de demostración. Ver `../06-hallazgos.md`, S-02.

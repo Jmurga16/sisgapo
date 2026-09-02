@@ -32,7 +32,7 @@ a plantas procesadoras.
 > Nota sobre autoría: la carátula del documento de CUS lista seis integrantes de equipo y
 > atribuye la redacción del documento a dos de ellos. Si vas a presentar el proyecto como
 > trabajo propio, conviene ser preciso sobre qué parte hiciste tú (por ejemplo: "desarrollé el
-> backend y el frontend completos de un proyecto de equipo"). Ver `10-decisiones.md` §D-09.
+> backend y el frontend completos de un proyecto de equipo"). Ver `10-decisiones.md`, D-09.
 
 ## 2. Alcance funcional implementado
 
@@ -48,7 +48,7 @@ Doce casos de uso especificados, organizados en tres iteraciones.
 | 0006 | Editar Almacén | Administrador | Implementado (`sOpcion 06`) |
 | 0007 | Eliminar Almacén | Administrador | Implementado como baja lógica (`sOpcion 07`) |
 | 0008 | Agregar Producto | Administrador | Implementado (`sOpcion 06`) |
-| 0009 | Autenticar Usuario | Ambos | Implementado parcialmente — ver §4 |
+| 0009 | Autenticar Usuario | Ambos | Implementado parcialmente — ver la sección 4 |
 | 0010 | Crear Categoría | Supervisor | Implementado (`sOpcion 03`) |
 | 0011 | Editar Categoría | Supervisor | Implementado (`sOpcion 04`) |
 | 0012 | Eliminar Categoría | Supervisor | Implementado como baja lógica (`sOpcion 05`) |
@@ -67,7 +67,7 @@ lo cual es una fortaleza para una demo: no hay pantallas a medias.
 - PN3 (abastecimiento / proveedores) no se implementó. Existe un módulo `Cliente` en el
   backend que parece un intento abandonado en esa dirección: tiene controller, business y
   data, pero **no tiene tabla, ni stored procedure, ni pantalla**. Es código muerto que
-  revienta si se invoca. Ver `06-hallazgos.md` §C-11.
+  revienta si se invoca. Ver `06-hallazgos.md`, C-11.
 
 ## 3. Stack tecnológico
 
@@ -188,7 +188,7 @@ desplegar la demo.** Verificado en Node 22.23.1.
   direcciones entra directo, sin pasar por login.
 
 En términos prácticos: **la API es completamente pública.** Cualquiera con la URL puede
-listar, crear y borrar usuarios. Ver `06-hallazgos.md` §S-03 y §S-04.
+listar, crear y borrar usuarios. Ver `06-hallazgos.md`, S-03 y S-04.
 
 ### Habia secretos en la copia local, no en el repositorio
 

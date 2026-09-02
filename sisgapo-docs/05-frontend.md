@@ -84,7 +84,7 @@ dividir en módulos con carga diferida es la mejora obvia si el sistema creciera
 Dos cosas a notar:
 
 **No hay ni un `canActivate` en todo el archivo.** Cualquier ruta es accesible escribiéndola
-en la barra de direcciones. Ver `06-hallazgos.md` §S-04.
+en la barra de direcciones. Ver `06-hallazgos.md`, S-04.
 
 **La ruta `login` apunta a `NavMenuComponent`, no a `LoginComponent`.** `NavMenuComponent`
 decide qué mostrar según `localStorage.getItem("Rol")`: si no hay rol, renderiza el login
@@ -167,7 +167,7 @@ let pOpcion = this.data.accion == 0 ? '05' : '06';   // 05 alta / 06 edición
 
 `ZonaFormComponent` rompe el patrón: es una página completa en vez de un modal. Hasta
 2026 tenía además un defecto grave —su modo edición no editaba, siempre insertaba—,
-documentado en `06-hallazgos.md` §C-03 y ya corregido: ahora llama a `updateZona()` cuando
+documentado en `06-hallazgos.md`, C-03 y ya corregido: ahora llama a `updateZona()` cuando
 la ruta trae `:id`, y el módulo tiene actualización y baja lógica en las tres capas.
 
 La validación de imagen llama ahora a `fnValidarImagen()`, acepta las URL sin extensión de
@@ -204,7 +204,7 @@ al formato que espera el backend.
 
 El host de producción sigue pendiente hasta que exista el despliegue definitivo. Mientras
 tanto usa HTTPS local para no llamar al App Service eliminado ni romper CORS con una
-redirección desde HTTP. Ver `06-hallazgos.md` §S-08.
+redirección desde HTTP. Ver `06-hallazgos.md`, S-08.
 
 ## 9. Despliegue
 
@@ -221,7 +221,7 @@ creó un recurso, no funcionó, se creó otro y nunca se borró el primero.
 
 Además, **ninguno de los dos workflows funcionaría hoy**: usan `actions/checkout@v2` y no
 fijan la versión de Node, así que el runner usaría una versión moderna y el build fallaría
-con el error de OpenSSL descrito en §1 — salvo que se añada `NODE_OPTIONS`.
+con el error de OpenSSL descrito en la sección 1 — salvo que se añada `NODE_OPTIONS`.
 
 Para la demo, esto se arregla con dos líneas en el workflow:
 
@@ -230,7 +230,7 @@ env:
   NODE_OPTIONS: --openssl-legacy-provider
 ```
 
-y borrar el workflow sobrante. Ver `07-migracion-tier-free.md` §6.
+y borrar el workflow sobrante. Ver `07-migracion-tier-free.md`, sección 6.
 
 ## 10. Resumen de problemas del frontend
 

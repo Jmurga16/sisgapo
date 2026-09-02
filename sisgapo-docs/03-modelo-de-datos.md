@@ -2,7 +2,7 @@
 
 > **Antes de nada:** los scripts en `sisgapo-web/src/scripts/` **no se pueden ejecutar tal
 > cual**. Falta una columna, un procedimiento usa `ALTER` en vez de `CREATE`, dos archivos
-> duplican objetos y las codificaciones están mezcladas. El detalle está en §4.
+> duplican objetos y las codificaciones están mezcladas. El detalle está en la sección 4.
 > La versión corregida y lista para ejecutar está en `sql/`.
 
 ## 1. Diagrama entidad-relación
@@ -95,7 +95,7 @@ SET @sNombreUsuario = CONCAT(
 ```
 
 Es decir: primer nombre + `.` + primer apellido. Después intenta desambiguar con un contador,
-pero el contador está mal (ver §4, hallazgo 9): siempre vale al menos 1, así que **todos los
+pero el contador está mal (ver la sección 4, hallazgo 9): siempre vale al menos 1, así que **todos los
 usuarios creados desde la aplicación terminan con un `1` pegado al final** — `juan.perez1`.
 
 ### Almacenes
@@ -127,7 +127,7 @@ códigos de lote idénticos.
 a un solo lote. **Un producto no puede tener dos lotes simultáneos.** Para un sistema de
 almacén con control de vencimientos, esa es una limitación real: es exactamente el caso de
 uso de "tengo 50 kg del lote que vence en marzo y 30 kg del que vence en junio".
-Ver `09-mejoras-propuestas.md` §M-09.
+Ver `09-mejoras-propuestas.md`, M-09.
 
 ## 3. Los stored procedures
 
@@ -148,7 +148,7 @@ delimitado, y no tiene valor por defecto para `@sRutaImagen` (hay que pasarlo si
 Es coherente con que `ZonaController` sea el único controller REST.
 
 **`USP_MNT_Clientes` no existe.** `ClienteData.cs` lo invoca, pero no hay script que lo cree
-ni tabla `TBL_CLIENTE`. Ver `06-hallazgos.md` §C-11.
+ni tabla `TBL_CLIENTE`. Ver `06-hallazgos.md`, C-11.
 
 ### La función `dbo.Split`
 
@@ -378,4 +378,4 @@ del sistema.
 
 Estimación honesta: **3 a 5 días** para portar los seis procedimientos y la capa de datos, más
 pruebas. No es imposible, pero para una demo hay caminos más baratos.
-Ver `07-migracion-tier-free.md` §4, donde se comparan las opciones.
+Ver `07-migracion-tier-free.md`, sección 4, donde se comparan las opciones.
