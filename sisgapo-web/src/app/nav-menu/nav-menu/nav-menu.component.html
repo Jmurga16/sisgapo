@@ -7,7 +7,11 @@
 
         <span class="usuario-sesion" *ngIf="sNombrePersona">{{sNombrePersona}}</span>
         
-        <a class="btnCerrarSesion" routerLink="/login" (click)="fnClean()">Cerrar Sesión</a>
+        <a class="btnCerrarSesion" routerLink="/login" (click)="fnClean()"
+            matTooltip="Cerrar sesión" aria-label="Cerrar sesión">
+            <mat-icon>logout</mat-icon>
+            <span class="btnCerrarSesion-texto">Cerrar Sesión</span>
+        </a>
     </mat-toolbar>
 
     <div class="aviso-demo" *ngIf="configuracionService.bDemoSoloLectura">

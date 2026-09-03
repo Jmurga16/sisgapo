@@ -30,14 +30,20 @@ body {
 }
 
 .header-app {
-    text-align: center;
+    text-align: left;
     margin-top: 1rem;
+    margin-bottom: 1.25rem;
 }
 
 .header-app h1 {
     font-weight: 700;
-    margin: 0 0 .5rem;
+    margin: 0;
     font-size: 1.75rem;
+}
+
+.subtitulo {
+    margin: .25rem 0 0;
+    color: #6b7280;
 }
 
 .pagina-contenido .header-app {
@@ -175,6 +181,78 @@ body {
     font-size: .8rem;
 }
 
+.mat-dialog-title.clstitulo {
+    margin: -24px -24px 1.25rem;
+    padding: .85rem 1.5rem;
+    background-color: #334d6e;
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.contenido-formulario.mat-dialog-content {
+    padding-top: .35rem;
+    padding-bottom: .25rem;
+}
+
+.campo-formulario {
+    width: 100%;
+}
+
+.fila-formulario {
+    padding-bottom: 1rem;
+}
+
+.seccion-formulario {
+    margin: .1rem 0 .6rem;
+    color: #6b7280;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-prefix .prefijo-moneda,
+.mat-form-field-appearance-outline .mat-form-field-suffix .sufijo-um {
+    position: relative;
+    top: -.25em;
+    color: rgba(0, 0, 0, .54);
+}
+
+.prefijo-moneda {
+    padding-right: .2rem;
+}
+
+.mat-autocomplete-panel .mat-option {
+    height: auto;
+    line-height: 1.4;
+    padding-top: .45rem;
+    padding-bottom: .45rem;
+}
+
+.mat-option .opcion-principal,
+.mat-option .opcion-secundaria {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mat-option .opcion-secundaria {
+    color: #6b7280;
+    font-size: .75rem;
+}
+
+.icono-buscar {
+    color: rgba(0, 0, 0, .38);
+}
+
+.mat-button-toggle-checked,
+.mat-button-toggle-checked.mat-button-toggle-appearance-standard {
+    background-color: #334d6e;
+    color: #fff;
+}
+
 .dias-restantes {
     display: inline-block;
     margin-left: .35rem;
@@ -223,6 +301,10 @@ body {
     font-weight: 600;
 }
 
+.dato-vacio {
+    color: rgba(0, 0, 0, .3);
+}
+
 .celda-sin-datos {
     padding: 1rem;
     text-align: center;
@@ -230,6 +312,40 @@ body {
 
 .mat-paginator {
     overflow-x: auto;
+}
+
+.tabla-cuentas-demo {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .88rem;
+    text-align: left;
+}
+
+.tabla-cuentas-demo th,
+.tabla-cuentas-demo td {
+    padding: .5rem .6rem;
+    border-bottom: 1px solid rgba(0, 0, 0, .08);
+    vertical-align: top;
+}
+
+.tabla-cuentas-demo th {
+    color: #6b7280;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.tabla-cuentas-demo code,
+.pie-cuentas-demo code {
+    color: #334d6e;
+}
+
+.pie-cuentas-demo {
+    margin: .9rem 0 0;
+    color: #6b7280;
+    font-size: .85rem;
+    text-align: left;
 }
 
 @media (max-width: 768px) {
@@ -256,6 +372,16 @@ body {
         height: 3rem;
     }
 
+    .barra-filtros > [class*="col-md-"] {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+
+    .barra-filtros > .barra-filtros-botones {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
     .mat-paginator .mat-paginator-container {
         flex-wrap: wrap;
         justify-content: center;
@@ -269,5 +395,83 @@ body {
 
     .mat-paginator .mat-paginator-range-label {
         margin: 0 .5rem;
+    }
+
+    /* Los listados se leen como tarjetas: el rótulo de cada dato sale del
+       atributo data-label, porque la cabecera de la tabla queda oculta. */
+    .tabla-scroll.tabla-tarjetas {
+        overflow-x: visible;
+        padding: .75rem;
+        background: #f1f3f6;
+    }
+
+    .tabla-scroll.tabla-tarjetas table {
+        min-width: 0;
+        background: transparent;
+    }
+
+    .tabla-tarjetas .mat-header-row {
+        display: none;
+    }
+
+    .tabla-tarjetas .mat-row {
+        display: block;
+        height: auto;
+        padding: .55rem .85rem;
+        border: 0;
+        border-radius: .5rem;
+        background: #fff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, .14);
+    }
+
+    .tabla-tarjetas .mat-row + .mat-row {
+        margin-top: .7rem;
+    }
+
+    .tabla-tarjetas .mat-row .mat-cell {
+        display: flex;
+        align-items: baseline;
+        gap: .5rem;
+        padding: .28rem 0;
+        border: 0;
+        font-size: .9rem;
+    }
+
+    .tabla-tarjetas .mat-row .mat-cell::before {
+        content: attr(data-label);
+        flex: 0 0 6.5rem;
+        color: #6b7280;
+        font-size: .78rem;
+        font-weight: 600;
+    }
+
+    .tabla-tarjetas .mat-row .col-acciones {
+        display: block;
+        width: auto;
+        padding: 0;
+        white-space: normal;
+    }
+
+    .tabla-tarjetas .mat-row .col-acciones::before,
+    .tabla-tarjetas .mat-row .celda-sin-datos::before {
+        display: none;
+    }
+
+    .tabla-tarjetas .acciones {
+        flex-wrap: wrap;
+        gap: .5rem;
+        margin-top: .45rem;
+        padding-top: .6rem;
+        border-top: 1px solid rgba(0, 0, 0, .08);
+    }
+
+    .tabla-tarjetas .acciones .mat-button-base {
+        flex: 1 1 7rem;
+    }
+
+    .tabla-tarjetas .mat-row .celda-sin-datos {
+        display: block;
+        padding: .5rem 0;
+        text-align: center;
     }
 }

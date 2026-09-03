@@ -43,47 +43,47 @@
 </div>
 
 <div class="mat-elevation-z8">
-    <div class="tabla-scroll tabla-10col">
+    <div class="tabla-scroll tabla-10col tabla-tarjetas">
         <table mat-table [dataSource]="dsProducto" matSort aria-describedby="tituloProductos">
             <ng-container matColumnDef="nIdCatProd">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Código</th>
-                <td mat-cell *matCellDef="let element">{{element.nIdCatProd}}</td>
+                <td mat-cell *matCellDef="let element" data-label="Código">{{element.nIdCatProd}}</td>
             </ng-container>
             <ng-container matColumnDef="sNombreAlmacen">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Almacén</th>
-                <td mat-cell *matCellDef="let element">{{element.sNombreAlmacen}}</td>
+                <td mat-cell *matCellDef="let element" data-label="Almacén">{{element.sNombreAlmacen}}</td>
             </ng-container>
             <ng-container matColumnDef="sNombreCategoria">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Categoría</th>
-                <td mat-cell *matCellDef="let element">{{element.sNombreCategoria}}</td>
+                <td mat-cell *matCellDef="let element" data-label="Categoría">{{element.sNombreCategoria}}</td>
             </ng-container>
             <ng-container matColumnDef="sNombreProducto">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Producto</th>
-                <td mat-cell *matCellDef="let element">{{element.sNombreProducto}}</td>
+                <td mat-cell *matCellDef="let element" data-label="Producto">{{element.sNombreProducto}}</td>
             </ng-container>
             <ng-container matColumnDef="nLotes">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Lotes</th>
-                <td mat-cell *matCellDef="let element">{{element.nLotes}}</td>
+                <td mat-cell *matCellDef="let element" data-label="Lotes">{{element.nLotes}}</td>
             </ng-container>
             <ng-container matColumnDef="nCantidad">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Existencia</th>
-                <td mat-cell *matCellDef="let element">{{element.nCantidad}}</td>
+                <td mat-cell *matCellDef="let element" data-label="Existencia">{{element.nCantidad | number}}</td>
             </ng-container>
             <ng-container matColumnDef="sNombreUM">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>U.M.</th>
-                <td mat-cell *matCellDef="let element">{{element.sNombreUM}}</td>
+                <td mat-cell *matCellDef="let element" data-label="U.M.">{{element.sNombreUM}}</td>
             </ng-container>
             <ng-container matColumnDef="nValor">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Valor</th>
-                <td mat-cell *matCellDef="let element">{{element.nValor}}</td>
+                <td mat-cell *matCellDef="let element" data-label="Valor">S/ {{element.nValor | number}}</td>
             </ng-container>
             <ng-container matColumnDef="dFechaVenc">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Próx. venc.</th>
-                <td mat-cell *matCellDef="let element">{{element.dFechaVenc}}</td>
+                <td mat-cell *matCellDef="let element" data-label="Próx. venc.">{{element.dFechaVenc}}</td>
             </ng-container>
             <ng-container matColumnDef="sEstado">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-                <td mat-cell *matCellDef="let element">
+                <td mat-cell *matCellDef="let element" data-label="Estado">
                     <span class="estado-registro" [class.estado-registro-inactivo]="element.sEstado === 'Inactivo'">
                         {{element.sEstado}}
                     </span>

@@ -1,120 +1,123 @@
 <div>
-    <h1 mat-dialog-title class="clstitulo">{{sAccionModal}} Usuario</h1>
+    <h1 mat-dialog-title class="clstitulo">{{sAccionModal}} usuario</h1>
     <form [formGroup]="formUsuario" ngNativeValidate autocomplete="off" name="Formulario" id="new-form"
         (ngSubmit)="fnGrabar()">
+        <mat-dialog-content class="contenido-formulario">
 
-        <div class="row" style="padding-bottom: 1rem;">
-            <div class="col-md-6">
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Nombres</mat-label>
-                    <input matInput type="text" maxlength="50" onkeydown="return /[a-zA-ZñÑá-úÁ-Ú ]/i.test(event.key)"
-                        formControlName="sNombres" autocomplete="nope" name="Nombres">
-                </mat-form-field>
-            </div>
-            <div class="col-md-6">
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Apellidos</mat-label>
-                    <input matInput type="text" maxlength="50" onkeydown="return /[a-zA-ZñÑá-úÁ-Ú ]/i.test(event.key)"
-                        formControlName="sApellidos" autocomplete="nope" name="Apellidos">
-                </mat-form-field>
-            </div>
-        </div>
-
-
-        <div class="row">
-
-            <div class="col-md-3">
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Tipo Documento</mat-label>
-                    <mat-select formControlName="nTipoDoc">
-                        <mat-option *ngFor="let opc of lDocumentos" [value]="opc.valor">
-                            {{opc.nombre}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
+            <div class="row fila-formulario">
+                <div class="col-md-6">
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Nombres</mat-label>
+                        <input matInput type="text" maxlength="50" onkeydown="return /[a-zA-ZñÑá-úÁ-Ú ]/i.test(event.key)"
+                            formControlName="sNombres" autocomplete="nope" name="Nombres">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-6">
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Apellidos</mat-label>
+                        <input matInput type="text" maxlength="50" onkeydown="return /[a-zA-ZñÑá-úÁ-Ú ]/i.test(event.key)"
+                            formControlName="sApellidos" autocomplete="nope" name="Apellidos">
+                    </mat-form-field>
+                </div>
             </div>
 
-            <div class="col-md-3">
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>N° Documento</mat-label>
-                    <input matInput type="text" maxlength="15" required formControlName="sNumDoc"
-                        [attr.inputmode]="formUsuario.get('nTipoDoc').value === 1 ? 'numeric' : 'text'"
-                        autocomplete="off" name="Documento">
-                </mat-form-field>
-            </div>
 
-            <div class="col-md-3">
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Sexo</mat-label>
-                    <mat-select formControlName="sSexo">
-                        <mat-option *ngFor="let opc of lSexo" [value]="opc.abrev">
-                            {{opc.nombre}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
+            <div class="row">
 
-            <div class="col-md-3">
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Rol</mat-label>
-                    <mat-select formControlName="nIdRol">
-                        <mat-option *ngFor="let opc of lRoles" [value]="opc.valor">
-                            {{opc.nombre}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Tipo Documento</mat-label>
+                        <mat-select formControlName="nTipoDoc">
+                            <mat-option *ngFor="let opc of lDocumentos" [value]="opc.valor">
+                                {{opc.nombre}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
 
-        </div>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>N° Documento</mat-label>
+                        <input matInput type="text" maxlength="15" required formControlName="sNumDoc"
+                            [attr.inputmode]="formUsuario.get('nTipoDoc').value === 1 ? 'numeric' : 'text'"
+                            autocomplete="off" name="Documento">
+                    </mat-form-field>
+                </div>
 
-        <div class="row">
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Sexo</mat-label>
+                        <mat-select formControlName="sSexo">
+                            <mat-option *ngFor="let opc of lSexo" [value]="opc.abrev">
+                                {{opc.nombre}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
 
-            <div class="col-md-6">
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Dirección</mat-label>
-                    <input matInput type="search" formControlName="sDireccion" autocomplete="off" name="Direccion"
-                        id="Direccion" />
-                </mat-form-field>
-            </div>
-
-            <div class="col-md-3">
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Teléfono</mat-label>
-                    <input matInput type="number" max="999999999" required formControlName="nTelefono"
-                        autocomplete="nope" name="Telefono">
-                </mat-form-field>
-            </div>
-
-            <div class="col-md-3">
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Fecha de Nacimiento</mat-label>
-                    <input matInput type="search" [matDatepicker]="picker" formControlName="dFechaNacimiento"
-                        (dateChange)="fnCambiarFecha($event)" autocomplete="off" name="Fecha" id="Fecha"
-                        [max]="dFechaMaxima">
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-            </div>
-
-        </div>
-
-        <div class="row" *ngIf="bEsAlta">
-
-            <div class="col-md-12  justify-content-center">
-
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Contraseña inicial</mat-label>
-                    <input matInput type="password" formControlName="sContrasenia" name="somePassword"
-                        autocomplete="new-password" minlength="8" #password />
-                    <mat-hint>Mínimo 8 caracteres.</mat-hint>
-                    <mat-error *ngIf="formUsuario.get('sContrasenia').hasError('minlength')">
-                        La contraseña debe tener al menos 8 caracteres.
-                    </mat-error>
-                </mat-form-field>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Rol</mat-label>
+                        <mat-select formControlName="nIdRol">
+                            <mat-option *ngFor="let opc of lRoles" [value]="opc.valor">
+                                {{opc.nombre}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
 
             </div>
 
-        </div>
+            <div class="row">
+
+                <div class="col-md-6">
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Dirección</mat-label>
+                        <input matInput type="search" formControlName="sDireccion" autocomplete="off" name="Direccion"
+                            id="Direccion" />
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Teléfono</mat-label>
+                        <input matInput type="number" max="999999999" required formControlName="nTelefono"
+                            autocomplete="nope" name="Telefono">
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Fecha de Nacimiento</mat-label>
+                        <input matInput type="search" [matDatepicker]="picker" formControlName="dFechaNacimiento"
+                            (dateChange)="fnCambiarFecha($event)" autocomplete="off" name="Fecha" id="Fecha"
+                            [max]="dFechaMaxima">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+
+            </div>
+
+            <div class="row" *ngIf="bEsAlta">
+
+                <div class="col-md-12  justify-content-center">
+
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Contraseña inicial</mat-label>
+                        <input matInput type="password" formControlName="sContrasenia" name="somePassword"
+                            autocomplete="new-password" minlength="8" #password />
+                        <mat-hint>Mínimo 8 caracteres.</mat-hint>
+                        <mat-error *ngIf="formUsuario.get('sContrasenia').hasError('minlength')">
+                            La contraseña debe tener al menos 8 caracteres.
+                        </mat-error>
+                    </mat-form-field>
+
+                </div>
+
+            </div>
+
+        </mat-dialog-content>
 
         <mat-dialog-actions class="acciones-formulario" align="end">
             <button type="button" mat-button (click)="fnCerrarModal(0)">Cancelar</button>
