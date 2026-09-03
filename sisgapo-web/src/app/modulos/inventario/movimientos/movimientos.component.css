@@ -1,0 +1,192 @@
+/* Barra que elige entre la tabla y la cronología. */
+.barra-vista {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin: .5rem 0 1rem;
+}
+
+.barra-vista-titulo {
+  font-weight: 600;
+  color: #374151;
+}
+
+.grupo-vista mat-icon {
+  margin-right: .35rem;
+  font-size: 1.1rem;
+  height: 1.1rem;
+  width: 1.1rem;
+  vertical-align: text-bottom;
+}
+
+/* Pastilla del tipo de movimiento. La usan la tabla y la cronología. */
+.chip-tipo {
+  display: inline-flex;
+  padding: .15rem .6rem;
+  border-radius: 1rem;
+  font-size: .72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tipo-entrada {
+  background: #e6f4ea;
+  color: #1e7e34;
+}
+
+.tipo-salida {
+  background: #fdeaea;
+  color: #b02a37;
+}
+
+.tipo-ajuste {
+  background: #fff4e5;
+  color: #b45309;
+}
+
+.kardex {
+  padding-bottom: 1rem;
+}
+
+.kardex-dia {
+  margin-bottom: 1.5rem;
+}
+
+.kardex-dia-cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 .25rem .4rem;
+  border-bottom: 1px solid rgba(0, 0, 0, .12);
+}
+
+.kardex-dia-fecha {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.kardex-dia-totales {
+  display: flex;
+  gap: .75rem;
+  font-size: .85rem;
+  white-space: nowrap;
+}
+
+.kardex-linea {
+  display: flex;
+  align-items: flex-start;
+  gap: .85rem;
+  padding: .7rem .25rem;
+  border-bottom: 1px solid #f1f2f6;
+}
+
+.kardex-linea:last-child {
+  border-bottom: 0;
+}
+
+.kardex-hito {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.kardex-hito mat-icon {
+  font-size: 1.15rem;
+  height: 1.15rem;
+  width: 1.15rem;
+}
+
+.kardex-cuerpo {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.kardex-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+}
+
+.kardex-hora {
+  font-variant-numeric: tabular-nums;
+  color: #6b7280;
+  font-size: .8rem;
+}
+
+.kardex-producto {
+  font-weight: 600;
+}
+
+.kardex-pie {
+  margin-top: .15rem;
+  color: #6b7280;
+  font-size: .78rem;
+}
+
+.kardex-motivo {
+  margin-top: .1rem;
+  font-size: .82rem;
+  color: #374151;
+}
+
+.kardex-cifras {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.kardex-cantidad {
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.kardex-saldo {
+  color: #6b7280;
+  font-size: .75rem;
+  white-space: nowrap;
+}
+
+.kardex-mas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .75rem .25rem 0;
+}
+
+.kardex-mas-cuenta {
+  color: #6b7280;
+  font-size: .8rem;
+}
+
+.kardex-mas mat-icon {
+  margin-right: .35rem;
+}
+
+.kardex-vacio {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+@media (max-width: 600px) {
+  .kardex-linea {
+    gap: .6rem;
+  }
+
+  .kardex-hito {
+    width: 1.7rem;
+    height: 1.7rem;
+  }
+}

@@ -16,7 +16,9 @@ import { AlmacenesService } from './modulos/almacen/almacenes.service';
 import { InventarioService } from './modulos/inventario/inventario.service';
 import { UsuariosService } from './modulos/usuarios/usuarios.service';
 
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -81,6 +83,8 @@ import { TokenInterceptor } from './shared/services/token.interceptor';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
+    MatAutocompleteModule,
+    MatButtonToggleModule,
     MatCardModule,
     MatCheckboxModule,
     MatDatepickerModule,

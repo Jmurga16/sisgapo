@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
 import {
@@ -17,6 +17,11 @@ export interface DatosMovimiento {
   nIdDetProd: number;
 }
 
+
+function fnLoteSeleccionado(control: AbstractControl): ValidationErrors | null {
+  return control.value && typeof control.value === 'object' ? null : { seleccion: true };
+}
+
 @Component({
   selector: 'app-movimientos-modal',
   templateUrl: './movimientos-modal.component.html',
@@ -25,6 +30,7 @@ export interface DatosMovimiento {
 export class MovimientosModalComponent implements OnInit {
   formMovimiento: FormGroup;
   lLotes: LoteCombo[] = [];
+  lLotesFiltrados: LoteCombo[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<MovimientosModalComponent>,
@@ -37,11 +43,14 @@ export class MovimientosModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.formMovimiento = this.formBuilder.group({
-      nIdDetProd: [this.data && this.data.nIdDetProd ? this.data.nIdDetProd : 0, Validators.required],
+      oLote: [null, fnLoteSeleccionado],
       sTipo: ['E', Validators.required],
       nCantidad: [0, Validators.required],
       sMotivo: ['', [Validators.required, Validators.pattern(/^[^|]*$/)]],
     });
+
+    this.formMovimiento.get('oLote').valueChanges
+      .subscribe(valor => this.fnFiltrarLotes(valor));
 
     this.fnListarLotes();
   }
@@ -55,8 +64,8 @@ export class MovimientosModalComponent implements OnInit {
   }
 
   get oLote(): LoteCombo | undefined {
-    const nIdDetProd = Number(this.formMovimiento.get('nIdDetProd').value);
-    return this.lLotes.filter(lote => lote.nIdDetProd === nIdDetProd)[0];
+    const valor = this.formMovimiento.get('oLote').value;
+    return valor && typeof valor === 'object' ? valor as LoteCombo : undefined;
   }
 
   //El ajuste no recibe la diferencia sino la cantidad contada: el procedimiento
@@ -65,16 +74,80 @@ export class MovimientosModalComponent implements OnInit {
     return this.sTipo === 'A' ? 'Cantidad contada' : 'Cantidad';
   }
 
+  get nCantidadIngresada(): number {
+    return Number(this.formMovimiento.get('nCantidad').value) || 0;
+  }
+
+  get nSaldoResultante(): number {
+    const lote = this.oLote;
+
+    if (!lote) {
+      return 0;
+    }
+
+    if (this.sTipo === 'A') {
+      return this.nCantidadIngresada;
+    }
+
+    if (this.sTipo === 'S') {
+      return lote.nCantidad - this.nCantidadIngresada;
+    }
+
+    return lote.nCantidad + this.nCantidadIngresada;
+  }
+
+  get nDelta(): number {
+    const lote = this.oLote;
+    return lote ? this.nSaldoResultante - lote.nCantidad : 0;
+  }
+
+  get sDelta(): string {
+    return `${this.nDelta > 0 ? '+' : ''}${this.nDelta}`;
+  }
+
+  get bSalidaExcede(): boolean {
+    const lote = this.oLote;
+    return !!lote && this.sTipo === 'S' && this.nCantidadIngresada > lote.nCantidad;
+  }
+
+  get bAjusteSinCambio(): boolean {
+    const lote = this.oLote;
+    return !!lote && this.sTipo === 'A' && this.nCantidadIngresada === lote.nCantidad;
+  }
+
   async fnListarLotes(): Promise<void> {
     try {
       this.lLotes = await this.inventarioService.fnServMovimiento<LoteCombo[]>('03', [0, 0]);
+      this.lLotesFiltrados = this.lLotes;
+
+      const nIdDetProd = this.data && this.data.nIdDetProd ? this.data.nIdDetProd : 0;
+      const lote = this.lLotes.filter(opc => opc.nIdDetProd === nIdDetProd)[0];
+
+      if (lote) {
+        this.formMovimiento.get('oLote').setValue(lote);
+      }
     } catch (error) {
       console.error(error as HttpErrorResponse);
     }
   }
 
+  fnMostrarLote = (lote: LoteCombo): string => {
+    return lote ? `${lote.sNombreLote} — ${lote.sNombreProducto}` : '';
+  }
+
+  fnFiltrarLotes(valor: LoteCombo | string): void {
+    const sTexto = typeof valor === 'string' ? valor.trim().toLowerCase() : '';
+
+    this.lLotesFiltrados = sTexto
+      ? this.lLotes.filter(opc =>
+        `${opc.sNombreLote} ${opc.sNombreProducto} ${opc.sNombreAlmacen}`
+          .toLowerCase().indexOf(sTexto) !== -1)
+      : this.lLotes;
+  }
+
   async fnGrabar(): Promise<void> {
     if (this.formMovimiento.invalid) {
+      this.formMovimiento.markAllAsTouched();
       await Swal.fire({ title: 'Ingrese todos los campos.', icon: 'warning', timer: 1500 });
       return;
     }
@@ -87,7 +160,7 @@ export class MovimientosModalComponent implements OnInit {
     }
 
     const parametros: ParametroApi[] = [
-      this.formMovimiento.get('nIdDetProd').value,
+      this.oLote.nIdDetProd,
       this.formMovimiento.get('sTipo').value,
       nCantidad,
       this.formMovimiento.get('sMotivo').value,

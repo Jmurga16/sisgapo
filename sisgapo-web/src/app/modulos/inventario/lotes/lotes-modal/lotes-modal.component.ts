@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
@@ -21,6 +21,12 @@ interface EventoFecha {
   value: Date;
 }
 
+//El autocompletado guarda el objeto, no el id: mientras se escribe el control
+//vale una cadena y hay que impedir que eso pase por una selección.
+function fnProductoSeleccionado(control: AbstractControl): ValidationErrors | null {
+  return control.value && typeof control.value === 'object' ? null : { seleccion: true };
+}
+
 @Component({
   selector: 'app-lotes-modal',
   templateUrl: './lotes-modal.component.html',
@@ -37,6 +43,7 @@ export class LotesModalComponent implements OnInit {
   sAccionModal: string;
   sNombreProducto: string = '';
   lProductos: ProductoCombo[] = [];
+  lProductosFiltrados: ProductoCombo[] = [];
   lUnidadMedida: UnidadMedidaCombo[] = [];
   dFechaFab: string = '';
   dFechaVenc: string = '';
@@ -65,8 +72,11 @@ export class LotesModalComponent implements OnInit {
     // La cantidad solo existe en el alta: es la existencia con la que entra la
     // partida. A partir de ahí se mueve desde Movimientos.
     if (this.bEsAlta) {
-      this.formLote.addControl('nIdProducto', this.formBuilder.control(0, Validators.required));
+      this.formLote.addControl('oProducto', this.formBuilder.control(null, fnProductoSeleccionado));
       this.formLote.addControl('nCantidad', this.formBuilder.control(0, Validators.required));
+
+      this.formLote.get('oProducto').valueChanges
+        .subscribe(valor => this.fnFiltrarProductos(valor));
 
       this.fnListarProductos();
     }
@@ -116,9 +126,25 @@ export class LotesModalComponent implements OnInit {
   async fnListarProductos(): Promise<void> {
     try {
       this.lProductos = await this.inventarioService.fnServLote<ProductoCombo[]>('06', [0]);
+      this.lProductosFiltrados = this.lProductos;
     } catch (error) {
       console.error(error as HttpErrorResponse);
     }
+  }
+
+  fnMostrarProducto = (producto: ProductoCombo): string => {
+    return producto ? `${producto.sNombreProducto} — ${producto.sNombreAlmacen}` : '';
+  }
+
+  //Se busca por producto y por almacén a la vez: el catálogo repite nombres entre
+  //almacenes y el nombre suelto no basta para saber cuál es cuál.
+  fnFiltrarProductos(valor: ProductoCombo | string): void {
+    const sTexto = typeof valor === 'string' ? valor.trim().toLowerCase() : '';
+
+    this.lProductosFiltrados = sTexto
+      ? this.lProductos.filter(opc =>
+        `${opc.sNombreProducto} ${opc.sNombreAlmacen}`.toLowerCase().indexOf(sTexto) !== -1)
+      : this.lProductos;
   }
 
   async fnListarUnidadMedida(): Promise<void> {
@@ -132,6 +158,7 @@ export class LotesModalComponent implements OnInit {
 
   async fnGrabar(): Promise<void> {
     if (this.formLote.invalid) {
+      this.formLote.markAllAsTouched();
       await Swal.fire({ title: 'Ingrese todos los campos.', icon: 'warning', timer: 1500 });
       return;
     }
@@ -142,7 +169,7 @@ export class LotesModalComponent implements OnInit {
 
     const parametros: ParametroApi[] = this.bEsAlta
       ? [
-        this.formLote.get('nIdProducto').value,
+        (this.formLote.get('oProducto').value as ProductoCombo).nIdProducto,
         this.formLote.get('sNombreLote').value,
         this.dFechaFab,
         this.dFechaVenc,
