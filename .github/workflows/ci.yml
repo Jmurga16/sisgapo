@@ -24,6 +24,25 @@ jobs:
       - run: dotnet build SISGAPO_Back.sln --configuration Release --no-restore
       - run: dotnet test Test/Test.csproj --configuration Release --no-build --collect:"XPlat Code Coverage"
 
+
+  sql:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+      - name: Levantar SQL Server y cargar el esquema
+        run: |
+          docker compose up -d db
+          docker compose up db-init
+          test "$(docker inspect -f '{{.State.ExitCode}}' sisgapo-db-init)" = "0"
+      - name: Pruebas de integracion
+        working-directory: sisgapo-api
+        env:
+          SISGAPO_TEST_CONNECTION_STRING: Server=localhost,14330;Database=DB_SISGAPO;User ID=sa;Password=Sisgapo!Demo2026;TrustServerCertificate=True
+        run: dotnet test Test/Test.csproj --configuration Release
+
   web:
     runs-on: ubuntu-latest
     defaults:

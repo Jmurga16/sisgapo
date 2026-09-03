@@ -78,6 +78,59 @@ namespace Test
                 .Build();
         }
 
+        [Fact]
+        public async Task ElAltaDeLotesEsEscrituraEnModoDemo()
+        {
+            DemoSoloLecturaFilter filtro = new DemoSoloLecturaFilter(fnConfiguracion(true));
+            ActionExecutingContext contexto = fnContexto("Inventario", "CrudLotes", "03");
+            bool bEjecutada = false;
+
+            await filtro.OnActionExecutionAsync(contexto, () =>
+            {
+                bEjecutada = true;
+                return Task.FromResult(fnContextoEjecutado(contexto));
+            });
+
+            ObjectResult resultado = Assert.IsType<ObjectResult>(contexto.Result);
+            Assert.Equal(StatusCodes.Status403Forbidden, resultado.StatusCode);
+            Assert.False(bEjecutada);
+        }
+
+        [Fact]
+        public async Task RegistrarUnMovimientoEsEscrituraEnModoDemo()
+        {
+            DemoSoloLecturaFilter filtro = new DemoSoloLecturaFilter(fnConfiguracion(true));
+            ActionExecutingContext contexto = fnContexto("Inventario", "CrudMovimientos", "02");
+            bool bEjecutada = false;
+
+            await filtro.OnActionExecutionAsync(contexto, () =>
+            {
+                bEjecutada = true;
+                return Task.FromResult(fnContextoEjecutado(contexto));
+            });
+
+            ObjectResult resultado = Assert.IsType<ObjectResult>(contexto.Result);
+            Assert.Equal(StatusCodes.Status403Forbidden, resultado.StatusCode);
+            Assert.False(bEjecutada);
+        }
+
+        [Fact]
+        public async Task ElKardexSeConsultaEnModoDemo()
+        {
+            DemoSoloLecturaFilter filtro = new DemoSoloLecturaFilter(fnConfiguracion(true));
+            ActionExecutingContext contexto = fnContexto("Inventario", "CrudMovimientos", "01");
+            bool bEjecutada = false;
+
+            await filtro.OnActionExecutionAsync(contexto, () =>
+            {
+                bEjecutada = true;
+                return Task.FromResult(fnContextoEjecutado(contexto));
+            });
+
+            Assert.True(bEjecutada);
+            Assert.Null(contexto.Result);
+        }
+
         private static ActionExecutingContext fnContexto(
             string sControlador,
             string sAccion,
