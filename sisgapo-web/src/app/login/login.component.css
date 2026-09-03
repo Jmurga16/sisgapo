@@ -29,24 +29,39 @@
     max-width: 26rem;
 }
 
+.marca {
+    /* Baja el conjunto para que no quede pisado por la onda superior. */
+    margin-top: 8vh;
+}
 
 .txtLogo,
 .txtBienvenido {
     display    : block;
-    font-size  : clamp(2.25rem, 6vw, 4rem);
     line-height: 1.15;
     color      : #3F51B5;
 }
 
-.txtLogo {
-    font-weight   : normal;
-    letter-spacing: 0.1em;
+.txtBienvenido {
+    font-size: clamp(2.25rem, 6vw, 4rem);
 }
 
+.txtLogo {
+    font-size     : clamp(2rem, 5vw, 3.25rem);
+    font-weight   : 300;
+    letter-spacing: 0.14em;
+}
+
+.txtLema {
+    display   : block;
+    margin    : 0.6rem auto 0;
+    color     : #6b7280;
+    font-size : 0.9rem;
+    line-height: 1.45;
+}
 
 .imgLogo,
 .imgLogin {
-    margin: 1.5rem auto 0;
+    margin: 0 auto;
 }
 
 .imgLogo img,
@@ -58,11 +73,13 @@
 }
 
 .imgLogo {
-    max-width: 14rem;
+    max-width   : 11rem;
+    margin-bottom: 1.25rem;
 }
 
 .imgLogin {
-    max-width: 11rem;
+    max-width : 11rem;
+    margin-top: 1.5rem;
 }
 
 
@@ -81,6 +98,65 @@
 .btnIngresar {
     width     : 100%;
     margin-top: 1rem;
+}
+
+.acceso-demo {
+    margin-top : 1.5rem;
+    padding-top: 1rem;
+    border-top : 1px solid rgba(0, 0, 0, .12);
+}
+
+.acceso-demo-titulo {
+    display       : block;
+    color         : #6b7280;
+    font-size     : .72rem;
+    font-weight   : 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.acceso-demo-roles {
+    display        : flex;
+    flex-wrap      : wrap;
+    justify-content: center;
+    gap            : .5rem;
+    margin-top     : .7rem;
+}
+
+.chip-rol {
+    flex         : 1 1 auto;
+    padding      : .45rem .85rem;
+    border       : 1px solid rgba(63, 81, 181, .4);
+    border-radius: 2rem;
+    background   : #fff;
+    color        : #3F51B5;
+    font         : inherit;
+    font-size    : .82rem;
+    font-weight  : 500;
+    white-space  : nowrap;
+    cursor       : pointer;
+}
+
+.chip-rol:hover,
+.chip-rol:focus {
+    background: #eef1fa;
+}
+
+.acceso-demo-detalle {
+    display        : block;
+    margin         : .7rem auto 0;
+    padding        : 0;
+    border         : 0;
+    background     : none;
+    color          : #6b7280;
+    font           : inherit;
+    font-size      : .75rem;
+    text-decoration: underline;
+    cursor         : pointer;
+}
+
+.acceso-demo-detalle:hover {
+    color: #3F51B5;
 }
 
 
@@ -104,7 +180,7 @@
     top     : 0;
     left    : 0;
     width   : 100%;
-    height  : 38%;
+    height  : 34%;
 }
 
 .containerWaveBottomLeft {
@@ -124,6 +200,8 @@
 }
 
 
+/* Apilado: la marca pasa a ser una banda azul con el texto en blanco. Las ondas
+   se retiran porque en vertical el trazo cruzaría el lema. */
 @media (max-width: 900px) {
 
     .login-layout {
@@ -134,38 +212,42 @@
         flex: 0 0 auto;
     }
 
+    .panel-acceso {
+        flex   : 1 1 auto;
+        padding: 2rem 1rem 3.5rem;
+    }
+
     .panel-marca {
-        padding-bottom: 3rem;
+        padding   : 2.5rem 1rem 2.75rem;
+        background: #3F51B5;
     }
-
-    .panel-marca .imgLogo {
-        max-width: 9rem;
-    }
-
-    .containerWave {
-        height: 60%;
-    }
-
-    .containerWaveBottomLeft {
-        height: 45%;
-    }
-
-    .containerWaveBottomRight {
-        width : 100%;
-        height: 22%;
-    }
-}
-
-
-@media (max-width: 600px) {
 
     .panel-marca .imgLogo {
         display: none;
     }
 
-    .panel-marca {
-        padding: 3rem 1rem 2.5rem;
+    .marca {
+        margin-top: 0;
     }
+
+    .panel-marca .txtLogo,
+    .panel-marca .txtLema {
+        color: #fff;
+    }
+
+    .containerWave,
+    .containerWaveBottomLeft {
+        display: none;
+    }
+
+    .containerWaveBottomRight {
+        width : 100%;
+        height: 18%;
+    }
+}
+
+
+@media (max-width: 600px) {
 
     .panel-acceso .imgLogin {
         max-width: 8rem;
@@ -173,16 +255,28 @@
 }
 
 
-@media (max-height: 620px) {
+@media (max-height: 760px) {
 
     .imgLogo,
     .imgLogin {
         display: none;
     }
 
+    .marca {
+        margin-top: 4vh;
+    }
+}
+
+
+@media (max-height: 620px) {
+
     .txtLogo,
     .txtBienvenido {
         font-size: clamp(1.75rem, 4vw, 2.5rem);
+    }
+
+    .txtLema {
+        display: none;
     }
 
     .formLogin {

@@ -1,4 +1,4 @@
-/* ============================================================================
+﻿/* ============================================================================
    SISGAPO — Datos de demostración
    ----------------------------------------------------------------------------
    Reemplaza a:  sisgapo-web/src/scripts/PoblacionDatos.sql
@@ -73,11 +73,13 @@ VALUES
     ('Lucía',   'Fernández Paz',     1, '46781234', 'F', 3, 'Jr. Amazonas 78, Lima',    955443322, '1999-07-30', 1),
     ('Jorge',   'Salazar Vega',      2, 'CE998877', 'M', 3, 'Av. Tarapoto 12, Moyobamba', 944556677, '1995-02-18', 0),
     ('Usuario', 'Demo Supervisor',   1, '90000001', 'M', 2, 'Cuenta pública de demostración', 900000001, '1990-01-01', 1),
-    ('Usuario', 'Demo Asistente',    1, '90000002', 'F', 3, 'Cuenta pública de demostración', 900000002, '1990-01-01', 1);
+    ('Usuario', 'Demo Asistente',    1, '90000002', 'F', 3, 'Cuenta pública de demostración', 900000002, '1990-01-01', 1),
+    ('Usuario', 'Demo Administrador',1, '90000003', 'M', 1, 'Cuenta pública de demostración', 900000003, '1990-01-01', 1);
 GO
 
--- Las cuentas históricas no públicas conservan 123456. Las cuentas genéricas usan
--- SisgapoDemo2026! y el administrador tiene una clave de mantenimiento separada.
+-- Las cuentas históricas no públicas conservan 123456. Las tres cuentas demo.* usan
+-- SisgapoDemo2026! y son las que ofrece la pantalla de acceso; el 'admin' de 2021
+-- tiene una clave de mantenimiento separada que no se publica.
 -- Los hashes bcrypt tienen factor 11 y sal independiente.
 INSERT INTO TBL_LOGIN (nIdUsuario, sNombreUsuario, sContrasenia) VALUES
     (1, 'admin',           '$2a$11$WZnoZHZNQKkpANbCkNAoyOeukBUMh8xPnTqtRVodWKn1lumNOzrTy'),
@@ -88,7 +90,8 @@ INSERT INTO TBL_LOGIN (nIdUsuario, sNombreUsuario, sContrasenia) VALUES
     (6, 'lucia.fernandez', '$2a$11$/qkh7ixCzBmdKbYA7hwMwOgvXsH3P/q86.7W.SrNdPPmZHtdi/Mga'),
     (7, 'jorge.salazar',   '$2a$11$wH6eLGJ6Z8ymJhSC.hktW.VOrB0RS/h8jeCzndVUCnJOI7WiwITrG'),
     (8, 'demo.supervisor', '$2a$11$slATV1ATzlPqcfsuRTiy9.VZWYrcYmKUwLaEYN590cD5Hg.mxccU2'),
-    (9, 'demo.asistente',  '$2a$11$o1Xkxx2I7/1fvWUjRKD5S.g938DsCK680ysT4znE7MAg.EHfadQeS');
+    (9, 'demo.asistente',  '$2a$11$o1Xkxx2I7/1fvWUjRKD5S.g938DsCK680ysT4znE7MAg.EHfadQeS'),
+    (10, 'demo.admin',     '$2a$11$0dExtqJWU/5MoIPvLks.AuE9VV56j4HX8DuteABImwCa./7NNASWO');
 GO
 
 /* ---------------------------- ALMACENES ---------------------------- */

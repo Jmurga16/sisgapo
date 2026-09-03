@@ -11,11 +11,19 @@
         </div>
 
         <div class="panel-contenido">
-            <span class="txtLogo">SISGAPO</span>
 
-            <div class="imgLogo">
-                <img src="./../../assets/Logo.svg" alt="Logotipo de SISGAPO" />
+            <div class="marca">
+
+                <div class="imgLogo">
+                    <img src="./../../assets/Logo.svg" alt="" aria-hidden="true" />
+                </div>
+
+                <span class="txtLogo">SISGAPO</span>
+
+                <span class="txtLema">Sistema de gestión de almacén de productos orgánicos</span>
+
             </div>
+
         </div>
 
         <div class="containerWaveBottomLeft" aria-hidden="true">
@@ -39,12 +47,12 @@
 
             <form class="formLogin" (ngSubmit)="fnLogin()">
 
-                <mat-form-field class="campo">
+                <mat-form-field class="campo" appearance="outline">
                     <mat-label>Usuario</mat-label>
                     <input matInput type="text" [formControl]="sUser" autocomplete="username" name="usuario">
                 </mat-form-field>
 
-                <mat-form-field class="campo">
+                <mat-form-field class="campo" appearance="outline">
                     <mat-label>Contraseña</mat-label>
                     <input matInput type="password" [formControl]="sPassword" autocomplete="current-password"
                         name="contrasenia">
@@ -53,6 +61,23 @@
                 <button type="submit" color="primary" class="btnIngresar" mat-raised-button>Ingresar</button>
 
             </form>
+
+            <div class="acceso-demo">
+
+                <span class="acceso-demo-titulo">Entrar a la demo como</span>
+
+                <div class="acceso-demo-roles">
+                    <button type="button" class="chip-rol" *ngFor="let cuenta of lCuentasDemo"
+                        [matTooltip]="cuenta.sAlcance" (click)="fnEntrarComo(cuenta.sUsuario)">
+                        {{cuenta.sRol}}
+                    </button>
+                </div>
+
+                <button type="button" class="acceso-demo-detalle" (click)="fnVerCuentasDemo()">
+                    Ver usuarios y contraseña
+                </button>
+
+            </div>
 
         </div>
 
