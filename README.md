@@ -27,6 +27,15 @@ priorizados— está en [`sisgapo-docs/06-hallazgos.md`](sisgapo-docs/06-hallazg
 |---|---|
 | ![Pantalla de acceso](sisgapo-docs/capturas/login.png) | ![Listado y filtros de productos](sisgapo-docs/capturas/productos.png) |
 
+### En un teléfono
+
+Los listados no se leen como tabla: cada registro pasa a ser una tarjeta con sus rótulos,
+y el kardex entra por la cronología en vez de por la tabla de diez columnas.
+
+| Lotes | Kardex |
+|---|---|
+| ![Listado de lotes en un teléfono](sisgapo-docs/capturas/movil-lotes.png) | ![Cronología de movimientos en un teléfono](sisgapo-docs/capturas/movil-kardex.png) |
+
 Las capturas usan los datos que crea `docker compose`: muestran el sistema ejecutándose
 contra SQL Server, no una maqueta estática.
 

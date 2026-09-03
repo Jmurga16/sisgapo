@@ -66,9 +66,11 @@ Mismo cuerpo si el usuario no existe, si la contraseña no coincide o si el usua
 dado de baja: distinguirlos permitiría averiguar qué usuarios hay.
 
 El resto de endpoints exige `Authorization: Bearer <sToken>`. Sin cabecera responden `401`;
-con un rol insuficiente, `403`. `UsuariosService` exige administrador; las escrituras de
-almacenes, zonas e inventario exigen administrador o supervisor. El token dura 8 horas por
-defecto (`Jwt:MinutosVigencia`).
+con un rol insuficiente, `403`. `UsuariosService` y las escrituras de `/api/Zona` exigen
+administrador; las escrituras de almacenes e inventario, administrador o supervisor; las
+entradas y salidas de `MovimientosService`, cualquier rol, y los ajustes, administrador o
+supervisor. Las lecturas están abiertas a todo usuario autenticado. El token dura 8 horas
+por defecto (`Jwt:MinutosVigencia`).
 
 > Contrato anterior, por si te encuentras código viejo: devolvía `[ { "nIdRol": 1,
 > "result": 1 } ]`, donde `result` era un `ROW_NUMBER()` y no un código de estado, y no
@@ -135,6 +137,9 @@ Ordena por `bEstado DESC, nIdZona`: los activos primero.
 
 **Respuesta de `05`, `06`, `07`** — `{ "cod": "1", "mensaje": "Se registró con éxito" }`
 
+La opción `07` puede rechazar el cambio con `cod = "0"`: no desactiva un almacén con
+productos activos, ni reactiva uno cuya zona esté de baja. Ver `10-decisiones.md`, D-35.
+
 > El frontend envía 5 valores en la opción `05`, pero el procedimiento solo lee 4. El quinto
 > (`nIdAlmacen`, que en alta viene vacío) se ignora sin efecto. Es inofensivo, pero explica
 > por qué el mismo método sirve para alta y edición.
@@ -159,6 +164,9 @@ Procedimiento: `USP_MNT_Categorias`.
 
 Es el módulo más coherente del conjunto: los índices de `pParametro` coinciden exactamente
 con lo que el procedimiento lee, en todas las opciones.
+
+La opción `05` responde `cod = "0"` si la categoría todavía tiene productos activos, igual
+que la baja de almacén. Ver `10-decisiones.md`, D-35.
 
 ## 6. `POST /InventarioService/Producto`
 
@@ -307,34 +315,50 @@ vez, la segunda lee el saldo ya actualizado en vez de pisarlo.
 
 `ZonaController` no usa el patrón `sOpcion`. Recibe y devuelve objetos tipados.
 
+Las lecturas están abiertas a cualquier usuario autenticado —el alta de un almacén necesita
+el desplegable de zonas—; las tres escrituras exigen rol Administrador. Ver
+`10-decisiones.md`, D-34.
+
+| Verbo y ruta | Rol | Qué hace |
+|---|---|---|
+| `GET /api/zona` | cualquiera | Todas las zonas, activas primero |
+| `GET /api/zona/editar/{id}` | cualquiera | Una zona, en un arreglo de un elemento |
+| `POST /api/zona` | `1` | Insertar |
+| `PUT /api/zona` | `1` | Actualizar |
+| `PUT /api/zona/estado/{id}/{estado}` | `1` | Activar o dar de baja |
+
 ### `GET /api/zona`
 ```json
-[ { "sOpcion": null, "nIdZona": 1, "sNombre": "Junín", "sRutaImagen": "https://..." } ]
+[ { "sOpcion": null, "nIdZona": 1, "sNombre": "Junín", "sRutaImagen": "https://...",
+    "bEstado": true, "sEstado": "Activo" } ]
 ```
 `sOpcion` aparece en la respuesta porque `ZonaEntity` reutiliza el mismo DTO para entrada y
 salida; en las lecturas siempre viene `null`.
 
-### `GET /api/zona/editar/{id}`
-Devuelve un arreglo con un elemento (no un objeto).
-
-### `POST /api/zona`
+### `POST /api/zona` y `PUT /api/zona`
 ```json
 { "nIdZona": 0, "sNombre": "Ucayali", "sRutaImagen": "https://..." }
 ```
-Respuesta: el string `"OK"` (texto plano, no JSON), o `""` si no se insertó ninguna fila.
+Las dos responden `{ "cod": "1", "mensaje": "Se registró con éxito" }`, con el mismo formato
+de dos campos que el resto de la API. `cod = "0"` si el nombre ya existe o si falta el
+identificador en el `PUT`.
 
-### Limitaciones
+### `PUT /api/zona/estado/{id}/{estado}`
+`estado` es `true` para activar y `false` para dar de baja. Responde `0|No se puede dar de
+baja: la zona tiene almacenes activos` si quedan almacenes dentro.
 
-- **No existe operación de actualización.** El procedimiento solo implementa `01` consultar todos, `02` consultar por id y `03` insertar.
-- **No existe operación de baja.**
-- Por eso, la pantalla "editar zona" del frontend **crea un duplicado** en lugar de actualizar. El componente carga la zona por id y luego llama al mismo `saveZona()`, que hace `POST` → insertar. Peor aún, borra el id explícitamente antes de enviar:
+### Lo que estaba roto en 2021
 
-```typescript
-// zona-form.component.ts
-delete this.lZona.nIdZona;
-```
+Se documenta porque el código original sigue en `sisgapo-web/src/scripts/` y las tres cosas
+se leen ahí:
 
-- La comprobación de duplicados del procedimiento tampoco funciona (compara contra `LOWER(@sNombre)`), así que el duplicado se crea sin obstáculo. Ver `03-modelo-de-datos.md`, sección 4, hallazgo 10.
+- **No existía la actualización.** La pantalla «editar zona» cargaba la zona por id y al
+  guardar llamaba al mismo `POST`, así que editar creaba un duplicado. Además borraba el id
+  antes de enviar (`delete this.lZona.nIdZona;`).
+- **No existía la baja.**
+- La comprobación de duplicados comparaba contra `LOWER(@sNombre)` sin rama `ELSE`, así que
+  ni detectaba el duplicado ni devolvía nada, y la pantalla navegaba como si hubiera
+  guardado. Ver `03-modelo-de-datos.md`, sección 4, hallazgo 10.
 
 ## 8. `POST /ClientesService` — fuera del alcance actual
 

@@ -149,6 +149,14 @@ cliente potencial con perfil técnico va a mirar primero.
 `sContrasenia` de la proyección de la opción `03`. Para el seed, generar los hashes de las
 contraseñas de demo. Ver `09-mejoras-propuestas.md`, M-01.
 
+**Nota sobre las cuentas `demo.*`.** Las tres —`demo.admin`, `demo.supervisor`,
+`demo.asistente`— comparten `SisgapoDemo2026!` y la pantalla de acceso la muestra en claro.
+No es un descuido: son credenciales públicas por diseño, contra una base sin datos reales y
+con la demo desplegada en modo consulta (`Demo:SoloLectura`). Se guardan con el mismo bcrypt
+que las demás, porque el mecanismo tiene que ser el real aunque el dato no lo sea. La cuenta
+`admin` de 2021 conserva una clave de mantenimiento distinta, que no se publica en ningún
+sitio. Ver `10-decisiones.md`, D-37.
+
 ### 🔴 S-03 · La API no tiene autenticación — **corregido**
 
 Ningún controller lleva `[Authorize]`. `Startup.Configure` invoca `app.UseAuthorization()`

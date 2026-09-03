@@ -662,6 +662,225 @@ La regla se aplica en SQL tanto al alta como a la edición y tiene una prueba de
 
 ---
 
+## D-32 · Los estilos de los modales y del encabezado, una sola vez
+
+**La duda.** Los modales de Lotes y Movimientos no se parecían a los otros tres: título sin
+barra azul y campos estrechos y descuadrados. La causa no era el CSS que faltaba escribir,
+sino dónde estaba escrito: `clstitulo` y `campo-formulario` vivían repetidos en el CSS de
+`productos-modal`, `usuarios-modal` y `almacenes-modal`, y Angular encapsula los estilos de
+componente, así que las clases no existían para nadie más. Los dos módulos nuevos las usaron
+en la plantilla y no aplicaron nada.
+
+**Opciones**
+
+| Opción | Esfuerzo | Riesgo |
+|---|---|---|
+| Copiar el bloque también a los dos CSS nuevos | 5 min | Cinco copias del mismo estilo; el sexto modal repite el fallo |
+| **Subirlo a `styles.css` y borrar las copias** | 30 min | Toca los cinco modales a la vez |
+| Un componente contenedor de modal | 3–4 h | Reescribir las cinco plantillas |
+
+**Decisión: subirlo a `styles.css`**, extender D-21 —que ya hizo lo mismo con los listados—
+a los formularios, y unificar de paso el encabezado de página.
+
+**Por qué.** La primera opción arregla la pantalla y deja el defecto en pie. La tercera es lo
+correcto en un producto, pero aquí serían horas para un resultado que no se ve. La segunda
+cuesta media hora, quita cuatro duplicados y hace que el próximo módulo herede el estilo sin
+escribir CSS.
+
+Se unificaron tres cosas más, todas del mismo tipo —una convención que existía y no se
+respetaba—:
+
+- **La alineación del título.** Siete pantallas lo centraban y dos lo alineaban a la
+  izquierda con subtítulo. Gana la izquierda: es donde empieza el contenido que va debajo, y
+  es lo que hacían las dos pantallas más recientes.
+- **El texto del título.** «Gestión de Almacenes» y «Gestión de zonas» frente a «Productos» o
+  «Lotes». Gana el nombre a secas, igual que la etiqueta del menú, que es lo que le dice al
+  usuario dónde está. Los formularios usan verbo más nombre en minúscula: «Agregar lote»,
+  «Registrar movimiento».
+- **Los subtítulos.** «Organiza los productos disponibles en el inventario» describía la
+  pantalla a quien ya estaba en ella, y el de Zonas repetía en texto el número de tarjetas que
+  se veían debajo. Fuera los dos. El del panel de inicio se queda: dice de cuándo son los
+  datos, que no se deduce del título.
+
+**Qué lo haría cambiar.** Si el proyecto adoptara Angular Material 15 o superior, la cabecera
+con márgenes negativos —el truco que la lleva hasta el borde del diálogo— habría que
+rehacerla: el relleno del contenedor dejó de ser 24 px fijos.
+
+---
+
+## D-33 · El kardex, con dos vistas en vez de una
+
+**La duda.** El kardex se presentaba solo como tabla de diez columnas con scroll horizontal.
+Es correcta para comparar y ordenar, pero contesta mal a la pregunta que trae quien pulsa
+«Kardex» en un lote: *qué pasó con esta partida*. Leer una secuencia de hechos en una tabla
+paginada de diez columnas obliga a reconstruirla mentalmente.
+
+**Opciones consideradas**
+
+| Opción | Esfuerzo | Qué aporta |
+|---|---|---|
+| Dejar solo la tabla | 0 | Nada; el problema es de lectura, no de datos |
+| **Añadir una cronología y un selector de vista** | 3 h | Se lee como un libro de almacén, sin tocar la API |
+| Gráfico de evolución del saldo | 1–2 días | Vistoso, pero necesita una librería de gráficos y un endpoint nuevo |
+| Vista de tarjetas por lote | 4 h | Duplica el listado de Lotes, que ya existe |
+
+**Decisión: añadir la cronología** como segunda vista de la misma pantalla, con un selector, y
+que el botón «Kardex» de Lotes entre directamente en ella.
+
+**Por qué.** Ninguna de las dos vistas sobra: la tabla sirve para auditar y ordenar, la
+cronología para contar. Y el coste fue bajo porque **no hizo falta tocar el backend**: la
+cronología se arma en el navegador sobre las filas que ya devuelve la opción `01` de
+`USP_MNT_Movimientos`, agrupando por la parte de fecha de `dFechaMov`. La opción del gráfico
+habría añadido una dependencia de 100 KB al bundle —que ya roza el presupuesto— para una
+demo que se presenta en pantalla grande.
+
+Detalle de implementación: la cronología se construye sobre `filteredData` del
+`MatTableDataSource`, no sobre la página visible, así que respeta el filtro de texto pero no
+la paginación —un kardex paginado por diez no se lee—. Y la tabla se oculta con la clase
+`hidden` en vez de con `*ngIf`, para que el `MatPaginator` y el `MatSort` no se destruyan al
+cambiar de vista y queden desconectados del origen de datos.
+
+**Qué lo haría cambiar.** Ya cambió: ver D-36. La carga incremental que aquí se descartaba
+resultó necesaria antes de lo previsto, no por volumen de datos sino por longitud de scroll.
+
+---
+
+## D-34 · El mantenimiento de zonas es del Administrador
+
+**La duda.** Zonas, Almacenes y Usuarios eran las tres pantallas de mantenimiento. Usuarios
+ya era solo del Administrador; las otras dos las compartían Administrador y Supervisor. La
+pregunta es si una zona es un dato operativo —lo toca quien trabaja con él— o un dato maestro
+—lo toca quien administra el sistema—.
+
+**Opciones consideradas**
+
+| Opción | Qué implica |
+|---|---|
+| Dejarlo como estaba (roles 1 y 2) | Un supervisor puede desactivar la zona de los almacenes de otro |
+| **Consultar todos, mantener solo el Administrador** | Coherente con Usuarios; el desplegable de Almacenes sigue funcionando |
+| Ocultar Zonas al Supervisor | Rompe el alta de almacenes, que necesita elegir zona |
+
+**Decisión: lectura para cualquier rol autenticado, escritura solo para el Administrador.**
+`ZonaController` pasa de `[Authorize(Roles = "1,2")]` a `[Authorize(Roles = "1")]` en las tres
+escrituras; las rutas `zonas/agregar` y `zonas/editar/:id` piden rol 1 en `AuthGuard`, y el
+listado esconde los botones y avisa de quién mantiene el catálogo.
+
+**Por qué.** Una zona agrupa almacenes de varios supervisores: darla de baja es una decisión
+que se sale del ámbito de cualquiera de ellos —tanto, que `USP_MNT_Zonas` ya la rechazaba si
+quedaba algún almacén activo dentro—. El almacén sí es operativo y se queda en los dos roles.
+El efecto secundario útil es que la demo pasa a tener tres perfiles con permisos distintos y
+visibles, en vez de dos que hacían casi lo mismo.
+
+**Consecuencia.** Sin una cuenta pública de Administrador, ni Zonas ni Usuarios se podían
+enseñar en la demo. Por eso el seed añade `demo.admin` (ver D-37).
+
+---
+
+## D-35 · Las bajas de almacén y de categoría comprueban antes de desactivar
+
+**El problema.** `USP_MNT_Almacenes` (opción 07) y `USP_MNT_Categorias` (opción 05)
+desactivaban con un `UPDATE` sin condiciones y respondían siempre `1|Se eliminó con éxito`.
+Con eso se podía dejar un producto activo colgando de un almacén de baja —exactamente lo que
+comprueba el invariante «Productos activos en almacén o categoría de baja = 0» del seed—. El
+panel seguiría sumando esas existencias y el listado mostraría una categoría que ya no
+existe.
+
+**Decisión.** Las dos rechazan la baja mientras queden productos activos, y el almacén no se
+puede reactivar si su zona está de baja. El mensaje dice qué falta, no solo que no se pudo.
+
+**Por qué en el procedimiento y no en la API.** Es donde ya está el resto de la regla: la
+misma comprobación existe desde antes en `USP_MNT_Zonas` para los almacenes, y la capa
+`Business` es un pass-through. Poner la validación en C# la dejaría en un sitio donde nadie
+la busca.
+
+**Efecto en la demo.** Con el seed cargado, los cuatro almacenes activos tienen productos, así
+que «Desactivar» siempre contesta con el motivo. Es la forma más rápida de enseñar que las
+reglas están en la base y no en la pantalla.
+
+---
+
+## D-36 · La cronología crece por tandas de días, no por páginas
+
+**La duda.** La cronología no paginaba: pintaba de golpe todas las filas que pasaban el
+filtro. Con el kardex completo son 61 movimientos repartidos en unas seis semanas y la
+página se convierte en un scroll largo, sin idea de cuánto queda por debajo.
+
+**Opciones consideradas**
+
+| Opción | Por qué no |
+|---|---|
+| Un `MatPaginator` como el de la tabla | Parte un día por la mitad; la agrupación por fecha deja de significar nada |
+| Limitar el rango de fechas por defecto | Esconde datos sin decirlo, y ya hay filtros «Desde» y «Hasta» a la vista |
+| Dejarlo como estaba | Es el problema |
+| **Mostrar los días más recientes y crecer bajo demanda** | Mantiene el día como unidad y dice siempre cuánto falta |
+
+**Decisión: diez días por tanda**, con un pie que dice cuántos movimientos y cuántos días se
+están viendo del total y un botón «Mostrar más días». El contador vuelve a diez cada vez que
+cambian los filtros.
+
+**Por qué el día y no el movimiento.** La cronología existe para leerse como un libro de
+almacén; cortar dentro de una jornada obliga a buscar la continuación en la siguiente página.
+Y con el corte por días el pie puede decir las dos cosas —movimientos y días—, que es lo que
+contesta «¿me falta mucho?».
+
+---
+
+## D-37 · Las credenciales de la demo salen en la pantalla de acceso
+
+**La duda.** El enlace público llevaba a un formulario de usuario y contraseña sin ninguna
+pista. Quien abre el enlace desde un portafolio no tiene por qué ir a buscar las credenciales
+en un README.
+
+**Decisión.** Debajo del formulario hay tres pastillas —Administrador, Supervisor,
+Asistente— que entran con un clic, y un enlace, *Ver usuarios y contraseña*, que abre el
+detalle: qué puede hacer cada rol, el nombre de usuario de cada cuenta y la contraseña común
+a las tres.
+
+**Por qué el detalle en un diálogo y no en la propia pantalla.** El primer diseño listaba las
+tres cuentas con su alcance y la contraseña en claro bajo el formulario: ocupaba más alto que
+el propio formulario y le quitaba protagonismo. El acceso de un clic es lo que hace falta en
+el 90 % de las visitas; el usuario y la contraseña solo los necesita quien vaya a probar la
+API con `curl` o Swagger, y a ese le sobra un clic más.
+
+**Por qué la contraseña sigue en claro.** Esconderla no protegería nada: es pública por
+diseño, la base no tiene datos reales y el modo consulta bloquea las escrituras cuando la
+demo está desplegada. Ver `06-hallazgos.md`, S-02.
+
+**Lo que trajo consigo.** El seed añade `demo.admin` (rol 1). Antes, ninguna cuenta pública
+llegaba a Usuarios —y con D-34, tampoco al mantenimiento de Zonas—: dos módulos que existían
+y no se podían enseñar. El `admin` de 2021 se queda con su clave de mantenimiento, que no se
+publica.
+
+---
+
+## D-38 · En un teléfono los listados son tarjetas, no tablas
+
+**La duda.** Los seis listados son tablas de cinco a once columnas dentro de un contenedor
+con desplazamiento horizontal. En un teléfono eso obliga a arrastrar de lado para leer una
+fila, y la cabecera —que es la que dice qué significa cada celda— se pierde al hacerlo.
+
+**Decisión.** Por debajo de 768 px la misma tabla se lee como una lista de tarjetas: la
+cabecera se oculta, cada fila pasa a ser una tarjeta y cada celda muestra su rótulo, que sale
+del atributo `data-label` del `<td>`. El estilo vive una sola vez en `styles.css`, bajo la
+clase `tabla-tarjetas` que llevan los contenedores de los listados.
+
+**Por qué en CSS y no con una plantilla aparte.** Una segunda plantilla para móvil obligaría
+a mantener dos veces cada columna, cada `*ngIf` de permisos y cada formato. Con `data-label`
+el dato sigue declarado en un solo sitio, y el filtro, el paginador y el modo consulta
+funcionan igual en las dos presentaciones. Lo que se pierde es el ordenamiento por columna,
+que vive en la cabecera oculta: en un teléfono se filtra, no se ordena.
+
+**Movimientos es la excepción.** No cambia de forma, cambia de vista: en pantalla estrecha
+entra por la cronología de D-33, que ya está pensada como lista vertical, en vez de por la
+tabla de diez columnas. El conmutador sigue ahí para quien quiera la tabla.
+
+**Lo que trajo consigo.** Los filtros pasan a dos columnas —siete campos apilados dejaban el
+contenido a 600 px de la primera pantalla—, las tarjetas del panel se ponen de dos en dos, y
+en la barra superior «Cerrar Sesión» se queda en icono para que quepa el nombre de quien
+entró.
+
+---
+
 ## Resumen de las decisiones
 
 | # | Decisión | Nivel de duda |
@@ -697,6 +916,13 @@ La regla se aplica en SQL tanto al alta como a la edición y tiene una prueba de
 | D-29 | El usuario del movimiento sale del token | Ninguno |
 | D-30 | Las pruebas de integración se omiten solas | Bajo |
 | D-31 | Los lotes de un producto comparten unidad de medida | Bajo |
+| D-32 | Estilos de modal y encabezado comunes, en `styles.css` | Bajo — extiende D-21 |
+| D-33 | El kardex con dos vistas: tabla y cronología | Bajo |
+| D-34 | El mantenimiento de zonas, solo del Administrador | Bajo |
+| D-35 | Las bajas de almacén y categoría validan antes | Ninguno — cierra un invariante que ya existía |
+| D-36 | La cronología crece por tandas de días | Bajo — revisa el cierre de D-33 |
+| D-37 | Acceso de un clic en la pantalla de entrada; credenciales en un diálogo | Bajo — es una demo sin datos reales |
+| D-38 | En móvil los listados se leen como tarjetas | Bajo — el dato sigue declarado una sola vez |
 
 **Las tres que más merecen tu revisión: D-01, D-04 y D-09.**
 De las anteriores, la discutible es **D-24**: `localStorage` es la opción cómoda, no la

@@ -78,8 +78,8 @@ dividir en módulos con carga diferida es la mejora obvia si el sistema creciera
 | `usuarios` | `UsuariosListComponent` | administrador |
 | `almacenes` | `AlmacenesListComponent` | administrador o supervisor |
 | `zonas` | `ZonaListComponent` | administrador o supervisor |
-| `zonas/agregar` | `ZonaFormComponent` | administrador o supervisor |
-| `zonas/editar/:id` | `ZonaFormComponent` | administrador o supervisor |
+| `zonas/agregar` | `ZonaFormComponent` | administrador |
+| `zonas/editar/:id` | `ZonaFormComponent` | administrador |
 | `categoria` | `CategoriaComponent` | sesión |
 | `productos` | `ProductosComponent` | sesión |
 | `lotes` | `LotesComponent` | sesión |
@@ -109,9 +109,11 @@ const peticion = sToken
   : req;
 ```
 
-El menú se filtra por rol. El administrador gestiona usuarios; administrador y supervisor
-gestionan almacenes, zonas, catálogo y lotes; el asistente consulta el inventario y **registra
-entradas y salidas**. El ajuste —corregir la existencia sin documento que lo respalde— queda
+El menú se filtra por rol. El administrador gestiona usuarios y el catálogo de zonas;
+administrador y supervisor gestionan almacenes, catálogo y lotes; el asistente consulta el
+inventario y **registra entradas y salidas**. El supervisor entra al listado de Zonas
+—necesita saber en qué zona está su almacén— pero sin los botones de mantenimiento, y las
+rutas de alta y edición le responden con el guardián. Ver `10-decisiones.md`, D-34. El ajuste —corregir la existencia sin documento que lo respalde— queda
 para administrador y supervisor: `SesionService.fnPuedeAjustarInventario()` oculta la opción
 y `InventarioController` la rechaza con 403 aunque llegue por otra vía. La API vuelve a
 comprobar los permisos, por lo que ocultar botones no es la única barrera. En modo demo, la
@@ -170,7 +172,28 @@ let pOpcion = this.data.accion == 0 ? '05' : '06';   // 05 alta / 06 edición
 
 `MovimientosModalComponent` es el otro que se sale del patrón: no tiene modo edición porque
 un movimiento no se edita ni se borra —se corrige con otro movimiento—, así que recibe el
-lote preseleccionado en vez de `{ accion, nId }`.
+lote preseleccionado en vez de `{ accion, nId }`. El formulario adelanta la existencia
+resultante del lote con las mismas reglas que aplica `USP_MNT_Movimientos`, incluidas las dos
+que el procedimiento rechaza: una salida mayor que el saldo y un ajuste que coincide con la
+existencia.
+
+`MovimientosComponent` presenta el mismo kardex de dos formas, que se eligen con un
+selector: la **lista** —tabla paginada y ordenable, con el detalle completo— y la
+**cronología** —los movimientos agrupados por día, con el total de entradas y salidas de cada
+jornada y el saldo que dejó cada operación—. El botón «Kardex» del listado de Lotes abre
+directamente la cronología del lote. Ver `10-decisiones.md`, D-33.
+
+La cronología no pagina como la tabla: muestra los diez días más recientes y crece de diez en
+diez con «Mostrar más días», con un pie que dice cuántos movimientos y cuántos días quedan
+por ver. El corte va por días completos porque partir una jornada rompe la agrupación, que es
+lo único que aporta la vista. Ver `10-decisiones.md`, D-36.
+
+Los dos selectores que elegían entre listas largas son ahora **autocompletados**: el producto
+en el alta de un lote —se busca por nombre de producto o de almacén— y el lote en el alta de
+un movimiento —por código de lote, producto o almacén—. El control guarda el objeto elegido y
+no el id, así que un texto escrito a mano que no corresponda a ninguna opción deja el
+formulario inválido en vez de enviar un id vacío. Las opciones se pintan en dos líneas: arriba
+lo que se escribe para buscar, debajo lo que distingue una coincidencia de otra.
 
 `ZonaFormComponent` rompe el patrón: es una página completa en vez de un modal. Hasta
 2026 tenía además un defecto grave —su modo edición no editaba, siempre insertaba—,
@@ -182,7 +205,7 @@ Unsplash y admite `.png`, `.jpg`, `.jpeg` y `.webp` aunque haya parámetros de c
 
 ## 7. Interfaz y estilos
 
-- **Angular Material 9** como base: `MatTable`, `MatDialog`, `MatSidenav`, `MatPaginator`, `MatDatepicker`, `MatSelect`.
+- **Angular Material 9** como base: `MatTable`, `MatDialog`, `MatSidenav`, `MatPaginator`, `MatDatepicker`, `MatSelect`, `MatAutocomplete`.
 - **Bootstrap 5.0.2**, del que solo se cargan *reboot* y *grid*: la aplicacion usa
   unicamente `row`, `col-md-*` y `justify-content-center`. Cargar el framework completo
   costaba 96 KB de CSS bloqueante sin usarlos.
@@ -195,6 +218,31 @@ botones de Material junto a botones de Bootstrap, espaciados que no cuadran— y
 el CSS global sea más difícil de mantener. Las listas comparten ahora cabecera, filtros,
 scroll horizontal, acciones y paginador responsive en `styles.css`; los estilos propios
 quedan en cada componente.
+
+Los **cinco modales** comparten esqueleto: cabecera `clstitulo`, cuerpo en
+`mat-dialog-content.contenido-formulario` —que le da scroll propio y deja fijos el título y
+la botonera— y `mat-dialog-actions.acciones-formulario`. Esos estilos viven una sola vez en
+`styles.css`. Antes estaban repetidos en el CSS de tres componentes y, como Angular encapsula
+los estilos de componente, los dos módulos nuevos —Lotes y Movimientos— se quedaron sin
+ellos: el título salía sin barra azul y los campos con el ancho por defecto de Material, que
+es lo que descuadraba sus columnas. Ver `10-decisiones.md`, D-32.
+
+El **encabezado de página** es también uno solo, `header-app`: título a la izquierda, con el
+mismo texto que la etiqueta del menú, y sin subtítulo salvo en el panel de inicio. Antes
+convivían tres variantes —centrado, alineado a la izquierda con subtítulo descriptivo, y
+«Gestión de X»—, que era lo primero que se notaba al pasar de una pantalla a otra.
+
+La **pantalla de acceso** tiene tres pastillas, una por rol, que entran directamente, y un
+enlace que abre el detalle de las cuentas —usuario, alcance y la contraseña común— en un
+diálogo. Sin eso, el enlace público terminaba en un formulario vacío. Al apilarse, el panel
+de marca pasa a ser una banda azul con el texto en blanco: las ondas decorativas cruzaban el
+lema. Ver `10-decisiones.md`, D-37.
+
+En **pantalla estrecha los listados no se muestran como tabla**. Por debajo de 768 px la
+clase `tabla-tarjetas` oculta la cabecera y convierte cada fila en una tarjeta cuyas celdas
+llevan su rótulo en `data-label`; el filtro, el paginador y el modo consulta siguen siendo los
+mismos. Movimientos no se convierte: en ese ancho arranca en la vista de cronología. Ver
+`10-decisiones.md`, D-38.
 
 `AppDateAdapter` (`shared/services/AppDateAdapter.ts`) adapta el formato de fecha de Material
 al formato que espera el backend.

@@ -354,7 +354,9 @@ services.AddCors(o => o.AddDefaultPolicy(p => p
     .AllowAnyHeader()));
 ```
 
-En App Service se sobrescribe con la variable `Cors__Origins__0`.
+En App Service se sobrescribe con una variable de entorno. **La clave definitiva no fue
+`Cors:Origins` sino `Cors:OrigenesPermitidos`**, así que la variable es
+`Cors__OrigenesPermitidos__0` — ver la tabla de la fase 5.
 
 **2.7 · Swagger también en producción**
 
@@ -399,17 +401,60 @@ sistema con autenticación real". Es el salto de percepción más grande por hor
 ### Fase 5 — Desplegar (2 horas)
 
 **Base de datos.** Crear la base en Azure SQL con la oferta gratuita, **marcando la opción de
-auto-pausar al agotar la asignación** en lugar de seguir facturando. Ejecutar los nueve
-scripts de `sql/`. Añadir tu IP a las reglas del firewall y activar "Permitir que los
-servicios de Azure accedan al servidor".
+auto-pausar al agotar la asignación** en lugar de seguir facturando. Añadir tu IP a las reglas
+del firewall y activar "Permitir que los servicios de Azure accedan al servidor". Después,
+cargar el esquema y los datos con el script de `sql/`:
+
+```powershell
+cd sisgapo-docs/sql
+.\cargar-base.ps1 -Servidor <servidor>.database.windows.net -Base <base> -Usuario <admin>
+```
+
+Dos avisos: hay que lanzarlo **desde PowerShell**, no desde `cmd`, o Windows abre el `.ps1`
+con el programa asociado en vez de ejecutarlo; y `-Base` es obligatorio salvo que la base se
+llame `DB_SISGAPO`, que es el valor por defecto. Los scripts no llevan `USE`, así que el
+nombre puede ser cualquiera —pero tiene que coincidir con el `Initial Catalog` de la cadena
+de conexión.
+
+El script **no se edita**: el servidor y el usuario van por parámetro y la contraseña se pide
+por consola. Lo único que hace es pasar los doce archivos `01`–`12` por `sqlcmd`, en orden,
+contra la base que le indiques —vale igual para Azure SQL, para el contenedor de Docker y
+para un SQL Server instalado en la máquina—. Si prefieres no usarlo, abre esos mismos doce
+archivos en SSMS o Azure Data Studio con `DB_SISGAPO` seleccionada y ejecútalos en ese orden:
+es exactamente el mismo trabajo.
+
+Lo que sí tienes que crear a mano es la base: los scripts no llevan `CREATE DATABASE` porque
+Azure SQL no lo admite dentro de una conexión a otra base.
+
+**No hay migraciones**: ni el despliegue de la API ni el del frontend crean nada, así que este
+paso es obligatorio y se hace una sola vez por base. Verifica con los conteos que imprime
+`03-seed.sql` (ver `sql/README.md`).
 
 **API.** Crear un App Service en un plan **F1 (Free)**, Linux, pila .NET 8. Publicar con
-`dotnet publish` + zip deploy, o con GitHub Actions. Configurar en el portal:
+`dotnet publish` + zip deploy, o con GitHub Actions.
 
-```
-ConnectionStrings__connectionString = Server=tcp:...;Encrypt=True;...
-Cors__Origins__0                    = https://<tu-app>.azurestaticapps.net
-```
+Después, en **Configuración → Configuración de la aplicación**, estas cinco. Van todas ahí,
+como *application settings*: la hoja «Cadenas de conexión» del portal **no sirve** —Azure la
+expone con el prefijo `SQLAZURECONNSTR_` y `ConfiguracionBD` no lee ese proveedor—.
+
+| Nombre | Valor | Por qué |
+|---|---|---|
+| `SISGAPO_CONNECTION_STRING` | `Server=tcp:<servidor>.database.windows.net,1433;Initial Catalog=<base>;User ID=<admin>;Password=<clave>;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;` | Es la primera que consulta `ConfiguracionBD`. Sin ella, fuera de `Development` la API no arranca |
+| `SISGAPO_JWT_KEY` | 32 caracteres o más, al azar | Firma los tokens. `ConfiguracionJwt` rechaza claves más cortas con un mensaje explícito |
+| `Cors__OrigenesPermitidos__0` | `https://<tu-app>.azurestaticapps.net` | Sobrescribe el `localhost:4200` de `appsettings.json`. Sin barra final y con el esquema |
+| `Demo__SoloLectura` | `true` | Deja la demo pública en modo consulta: `DemoSoloLecturaFilter` responde 403 a las escrituras y el frontend las deshabilita |
+| `ASPNETCORE_ENVIRONMENT` | `Production` | Redundante —es el valor por defecto— pero deja explícito que `appsettings.Development.json` no se carga |
+
+Dos detalles que cuestan una tarde si se pasan por alto:
+
+- El nombre de la variable de CORS es `OrigenesPermitidos`, no `Origins`: es la clave que lee
+  `Startup.ConfigureServices`. Si necesitas más de un origen, añade
+  `Cors__OrigenesPermitidos__1`, `__2`… El índice `0` sustituye al del JSON, no se suma.
+- El doble guion bajo `__` es el separador de niveles de configuración en Linux. En Windows
+  también funciona.
+
+Opcionales: `Jwt__MinutosVigencia` (480 por defecto) y `Jwt__Emisor` / `Jwt__Audiencia`
+(`SISGAPO` los dos).
 
 **Frontend.**
 
@@ -432,7 +477,8 @@ Cors__Origins__0                    = https://<tu-app>.azurestaticapps.net
 3. Actualizar `environment.prod.ts` con **HTTPS** y la URL real del App Service.
 
 **Verificación final:**
-- [ ] El frontend carga y el login funciona con `demo.supervisor` / `SisgapoDemo2026!`
+- [ ] Los acentos llegaron bien: `SELECT COUNT(*) FROM TBL_ALMACEN WHERE sNombre LIKE '%Ã%';` da 0
+- [ ] El frontend carga y los tres botones de cuenta de la pantalla de acceso entran
 - [ ] Las cinco pantallas listan datos
 - [ ] Crear, editar y dar de baja funcionan en cada módulo
 - [ ] `/swagger` responde
