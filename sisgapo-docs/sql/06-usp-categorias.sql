@@ -1,4 +1,4 @@
-GO
+﻿GO
                                    
 CREATE OR ALTER PROCEDURE [dbo].[USP_MNT_Categorias]          
             
@@ -131,15 +131,26 @@ BEGIN
 			SET @bEstado	  = (SELECT valor FROM @tParametro WHERE id = 2);	
 		END	
         
+		--Misma regla que en almacenes: una categoria con productos activos no se
+		--puede desactivar, o el listado de Productos mostraria una categoria de baja.
+		IF (@bEstado = 0 AND EXISTS (SELECT 1
+		                               FROM TBL_CAT_PROD cp
+		                               INNER JOIN TBL_PRODUCTO prod ON prod.nIdProducto = cp.nIdProducto
+		                              WHERE cp.nIdCategoria = @nIdCategoria
+		                                AND prod.bEstado    = 1))
+		BEGIN
+			SELECT '0|No se puede desactivar: la categoría tiene productos activos'
+		END
+		ELSE
 		BEGIN
 		
 			--Eliminacion Logica
 			UPDATE [TBL_CATEGORIA]
 				SET	 bEstado = @bEstado
 			WHERE nIdCategoria = @nIdCategoria
-        END
 
-      SELECT CONCAT('1|',IIF(@bEstado=1,'Se activó con éxito', 'Se eliminó con éxito'))
+			SELECT CONCAT('1|',IIF(@bEstado=1,'Se activó con éxito', 'Se desactivó con éxito'))
+		END
         
 	END;                                                        
                                        	 

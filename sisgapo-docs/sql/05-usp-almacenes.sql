@@ -1,4 +1,4 @@
-GO
+﻿GO
 /****** Object:  StoredProcedure [dbo].[USP_MNT_Almacenes]    Script Date: 04/07/2021 3:44:27 ******/
 SET ANSI_NULLS ON
 GO
@@ -163,15 +163,36 @@ BEGIN
 			SET @bEstado	  = (SELECT valor FROM @tParametro WHERE id = 2);	
 		END	
         
+		--Un almacen con productos activos no se puede desactivar: los productos
+		--quedarian en un almacen inexistente y el panel los seguiria sumando.
+		--Al reves, un almacen no puede volver a estar activo dentro de una zona
+		--dada de baja. Es la misma regla que aplica USP_MNT_Zonas.
+		IF (@bEstado = 0 AND EXISTS (SELECT 1
+		                               FROM TBL_CAT_PROD cp
+		                               INNER JOIN TBL_PRODUCTO prod ON prod.nIdProducto = cp.nIdProducto
+		                              WHERE cp.nIdAlmacen = @nIdAlmacen
+		                                AND prod.bEstado  = 1))
+		BEGIN
+			SELECT '0|No se puede desactivar: el almacén tiene productos activos'
+		END
+		ELSE IF (@bEstado = 1 AND EXISTS (SELECT 1
+		                                    FROM TBL_ALMACEN alm
+		                                    INNER JOIN TBL_ZONA zon ON zon.nIdZona = alm.nIdZona
+		                                   WHERE alm.nIdAlmacen = @nIdAlmacen
+		                                     AND zon.bEstado    = 0))
+		BEGIN
+			SELECT '0|No se puede activar: la zona del almacén está dada de baja'
+		END
+		ELSE
 		BEGIN
 		
 			--Eliminacion Logica
 			UPDATE [TBL_ALMACEN]
 				SET	 bEstado = @bEstado
 			WHERE nIdAlmacen = @nIdAlmacen
-        END
 
-      SELECT CONCAT('1|',IIF(@bEstado=1,'Se activó con éxito', 'Se eliminó con éxito'))
+			SELECT CONCAT('1|',IIF(@bEstado=1,'Se activó con éxito', 'Se desactivó con éxito'))
+		END
         
 	END;                                                        
                                        	 
