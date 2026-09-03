@@ -16,6 +16,8 @@
 **/coverage/
 
 # ---------- Herramientas e IDE ----------
+# Plantillas ARM que genera Visual Studio al publicar en Azure.
+**/ServiceDependencies/
 .vs/
 .sonarqube/
 .idea/
