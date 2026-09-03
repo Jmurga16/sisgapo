@@ -30,12 +30,14 @@ export class NavMenuComponent implements OnInit, OnDestroy {
     { id: 2, name: 'Usuarios', route: 'usuarios', icon: 'manage_accounts', subMenu: 0, mostrar: false, roles: [Rol.Administrador] },
     { id: 3, name: 'Almacenes', route: 'almacenes', icon: 'store', subMenu: 0, mostrar: false, roles: [Rol.Administrador, Rol.Supervisor] },
     { id: 4, name: 'Zonas', route: 'zonas', icon: 'room', subMenu: 0, mostrar: false, roles: [Rol.Administrador, Rol.Supervisor] },
-    { id: 5, name: 'Inventario', route: '', icon: 'view_in_ar', subMenu: 2, mostrar: false, roles: [Rol.Administrador, Rol.Supervisor, Rol.Asistente] },
+    { id: 5, name: 'Inventario', route: '', icon: 'view_in_ar', subMenu: 4, mostrar: false, roles: [Rol.Administrador, Rol.Supervisor, Rol.Asistente] },
   ];
 
   readonly listaSubNav = [
     { idHijo: 1, idPadre: 5, name: 'Categorías', route: 'categoria', icon: 'category' },
     { idHijo: 2, idPadre: 5, name: 'Productos', route: 'productos', icon: 'inventory_2' },
+    { idHijo: 3, idPadre: 5, name: 'Lotes', route: 'lotes', icon: 'inventory' },
+    { idHijo: 4, idPadre: 5, name: 'Movimientos', route: 'movimientos', icon: 'swap_vert' },
   ];
 
   listaNav: OpcionMenu[] = [];

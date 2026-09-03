@@ -168,6 +168,61 @@ body {
     color: white;
 }
 
+.nota-formulario {
+    margin: 0;
+    padding: .25rem 1rem 0;
+    color: rgba(0, 0, 0, .6);
+    font-size: .8rem;
+}
+
+.dias-restantes {
+    display: inline-block;
+    margin-left: .35rem;
+    font-size: .75rem;
+    color: rgba(0, 0, 0, .6);
+}
+
+.dias-restantes-alerta {
+    color: #b02a37;
+    font-weight: 600;
+}
+
+.tarjetas-resumen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.tarjeta-resumen {
+    flex: 1 1 10rem;
+    padding: .75rem 1rem;
+    border-radius: .5rem;
+    background: #f4f6f8;
+}
+
+.tarjeta-resumen .valor {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #334d6e;
+}
+
+.tarjeta-resumen .rotulo {
+    font-size: .8rem;
+    color: rgba(0, 0, 0, .6);
+}
+
+.movimiento-entrada {
+    color: #1e7e34;
+    font-weight: 600;
+}
+
+.movimiento-salida {
+    color: #b02a37;
+    font-weight: 600;
+}
+
 .celda-sin-datos {
     padding: 1rem;
     text-align: center;

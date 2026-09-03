@@ -1,0 +1,162 @@
+<section class="pagina-contenido" aria-labelledby="tituloMovimientos">
+<div class="header-app">
+    <h1 id="tituloMovimientos">Movimientos</h1>
+</div>
+
+<button class="fab-listado" mat-mini-fab color="primary" matTooltip="Registrar movimiento"
+    matTooltipPosition="left" aria-label="Registrar movimiento" (click)="fnAbrirModal()"
+    *ngIf="sesionService.fnPuedeRegistrarMovimientos() && !configuracionService.bDemoSoloLectura">
+    <mat-icon>add</mat-icon>
+</button>
+
+<div class="tarjetas-resumen">
+    <div class="tarjeta-resumen">
+        <span class="valor">{{oResumen.nMovimientos}}</span>
+        <span class="rotulo">Movimientos</span>
+    </div>
+    <div class="tarjeta-resumen">
+        <span class="valor">{{oResumen.nEntradas}}</span>
+        <span class="rotulo">Unidades ingresadas</span>
+    </div>
+    <div class="tarjeta-resumen">
+        <span class="valor">{{oResumen.nSalidas}}</span>
+        <span class="rotulo">Unidades despachadas</span>
+    </div>
+    <div class="tarjeta-resumen">
+        <span class="valor">{{oResumen.nAjustes}}</span>
+        <span class="rotulo">Ajustes</span>
+    </div>
+</div>
+
+<div class="barra-filtros row">
+    <div class="col-md-2">
+        <mat-form-field appearance="outline">
+            <mat-label>Filtro</mat-label>
+            <input matInput (input)="fnFiltrarTabla($event)" placeholder="Buscar" #input>
+        </mat-form-field>
+    </div>
+    <div class="col-md-2">
+        <mat-form-field appearance="outline">
+            <mat-label>Almacén</mat-label>
+            <mat-select [formControl]="fAlmacen" (selectionChange)="fnCambiarAlmacen()">
+                <mat-option [value]="0">Todos</mat-option>
+                <mat-option *ngFor="let opc of listaAlmacenes" [value]="opc.nIdAlmacen">{{opc.sNombreAlmacen}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="col-md-2">
+        <mat-form-field appearance="outline">
+            <mat-label>Producto</mat-label>
+            <mat-select [formControl]="fProducto" (selectionChange)="fnCambiarProducto()">
+                <mat-option [value]="0">Todos</mat-option>
+                <mat-option *ngFor="let opc of listaProductos" [value]="opc.nIdProducto">{{opc.sNombreProducto}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="col-md-2">
+        <mat-form-field appearance="outline">
+            <mat-label>Lote</mat-label>
+            <mat-select [formControl]="fLote" (selectionChange)="fnListarMovimientos()">
+                <mat-option [value]="0">Todos</mat-option>
+                <mat-option *ngFor="let opc of listaLotes" [value]="opc.nIdDetProd">{{opc.sNombreLote}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="col-md-2">
+        <mat-form-field appearance="outline">
+            <mat-label>Tipo</mat-label>
+            <mat-select [formControl]="fTipo" (selectionChange)="fnListarMovimientos()">
+                <mat-option value="">Todos</mat-option>
+                <mat-option value="E">Entrada</mat-option>
+                <mat-option value="S">Salida</mat-option>
+                <mat-option value="A">Ajuste</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="col-md-2 barra-filtros-botones">
+        <button class="boton-limpiar" mat-stroked-button type="button" (click)="fnCleanFilter(input)">
+            <mat-icon>filter_alt_off</mat-icon>
+            Limpiar
+        </button>
+    </div>
+</div>
+
+<div class="barra-filtros row">
+    <div class="col-md-3">
+        <mat-form-field appearance="outline">
+            <mat-label>Desde</mat-label>
+            <input matInput type="search" [matDatepicker]="pickerDesde" [formControl]="fDesde"
+                (dateChange)="fnCambiarFecha($event,1)" autocomplete="off" name="Desde" id="Desde">
+            <mat-datepicker-toggle matSuffix [for]="pickerDesde"></mat-datepicker-toggle>
+            <mat-datepicker #pickerDesde></mat-datepicker>
+        </mat-form-field>
+    </div>
+    <div class="col-md-3">
+        <mat-form-field appearance="outline">
+            <mat-label>Hasta</mat-label>
+            <input matInput type="search" [matDatepicker]="pickerHasta" [formControl]="fHasta"
+                (dateChange)="fnCambiarFecha($event,2)" autocomplete="off" name="Hasta" id="Hasta"
+                [min]="fDesde.value">
+            <mat-datepicker-toggle matSuffix [for]="pickerHasta"></mat-datepicker-toggle>
+            <mat-datepicker #pickerHasta></mat-datepicker>
+        </mat-form-field>
+    </div>
+</div>
+
+<div class="mat-elevation-z8">
+    <div class="tabla-scroll tabla-10col">
+        <table mat-table [dataSource]="dsMovimiento" matSort aria-describedby="tituloMovimientos">
+            <ng-container matColumnDef="dFechaMov">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
+                <td mat-cell *matCellDef="let element">{{element.dFechaMov}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sTipoNombre">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+                <td mat-cell *matCellDef="let element">{{element.sTipoNombre}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sNombreProducto">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Producto</th>
+                <td mat-cell *matCellDef="let element">{{element.sNombreProducto}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sNombreLote">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Lote</th>
+                <td mat-cell *matCellDef="let element">{{element.sNombreLote}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sNombreAlmacen">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Almacén</th>
+                <td mat-cell *matCellDef="let element">{{element.sNombreAlmacen}}</td>
+            </ng-container>
+            <ng-container matColumnDef="nEntrada">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Entrada</th>
+                <td mat-cell *matCellDef="let element">
+                    <span class="movimiento-entrada" *ngIf="element.nEntrada > 0">{{element.nEntrada}}</span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="nSalida">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Salida</th>
+                <td mat-cell *matCellDef="let element">
+                    <span class="movimiento-salida" *ngIf="element.nSalida > 0">{{element.nSalida}}</span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="nSaldo">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Saldo</th>
+                <td mat-cell *matCellDef="let element">{{element.nSaldo}} {{element.sNombreUM}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sMotivo">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Motivo</th>
+                <td mat-cell *matCellDef="let element">{{element.sMotivo}}</td>
+            </ng-container>
+            <ng-container matColumnDef="sNombrePersona">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Registró</th>
+                <td mat-cell *matCellDef="let element">{{element.sNombrePersona}}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell celda-sin-datos" colspan="10">No se encontraron movimientos con esos filtros</td>
+            </tr>
+        </table>
+    </div>
+    <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
+</div>
+</section>

@@ -83,6 +83,16 @@ namespace SISGAPO_API.Seguridad
                 return sOpcion == "06" || sOpcion == "07" || sOpcion == "08";
             }
 
+            if (sControlador == "Inventario" && sAccion == "CrudLotes")
+            {
+                return sOpcion == "03" || sOpcion == "04" || sOpcion == "05";
+            }
+
+            if (sControlador == "Inventario" && sAccion == "CrudMovimientos")
+            {
+                return sOpcion == "02";
+            }
+
             return false;
         }
     }

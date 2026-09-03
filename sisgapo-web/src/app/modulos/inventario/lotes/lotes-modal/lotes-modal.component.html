@@ -1,0 +1,125 @@
+<div>
+
+    <h1 mat-dialog-title class="clstitulo">{{sAccionModal}} Lote</h1>
+
+    <form [formGroup]="formLote" ngNativeValidate autocomplete="off" name="Formulario" id="new-form"
+        (ngSubmit)="fnGrabar()">
+
+        <div class="row" style="padding-bottom: 1rem;">
+
+            <div class="col-md-8" *ngIf="bEsAlta">
+                <mat-form-field appearance="outline" class="campo-formulario">
+                    <mat-label>Producto</mat-label>
+                    <mat-select formControlName="nIdProducto">
+                        <mat-option *ngFor="let opc of lProductos" [value]="opc.nIdProducto">
+                            {{opc.sNombreProducto}} — {{opc.sNombreAlmacen}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-8" *ngIf="!bEsAlta">
+                <mat-form-field appearance="outline" class="campo-formulario">
+                    <mat-label>Producto</mat-label>
+                    <input matInput type="text" [value]="sNombreProducto" disabled>
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-4">
+                <mat-form-field appearance="outline" class="campo-formulario">
+                    <mat-label>Código del lote</mat-label>
+                    <input matInput type="text" formControlName="sNombreLote" autocomplete="off" name="NombreLote">
+                    <mat-hint *ngIf="bEsAlta">Si lo dejas vacío se genera automáticamente</mat-hint>
+                </mat-form-field>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-3" *ngIf="bEsAlta">
+                <mat-form-field appearance="outline" class="campo-formulario">
+                    <mat-label>Cantidad inicial</mat-label>
+                    <input matInput type="number" formControlName="nCantidad" autocomplete="nope" name="Cantidad">
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-3">
+                <mat-form-field appearance="outline" class="campo-formulario">
+                    <mat-label>Unidad de Medida</mat-label>
+                    <mat-select formControlName="nIdUnidadMedida">
+                        <mat-option *ngFor="let opc of lUnidadMedida" [value]="opc.nIdUnidadMedida">
+                            {{opc.sNombreUM}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-3">
+                <mat-form-field appearance="outline" class="campo-formulario">
+                    <mat-label>Precio por U.M</mat-label>
+                    <input matInput type="number" formControlName="nPrecio" autocomplete="nope" name="Precio">
+                </mat-form-field>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-6">
+                <mat-form-field appearance="outline" class="campo-formulario">
+                    <mat-label>Fecha de Fabricación</mat-label>
+                    <input matInput type="search" [matDatepicker]="pickerFab" formControlName="dFechaFab"
+                        (dateChange)="fnCambiarFecha($event,1)" autocomplete="off" name="FechaFab" id="FechaFabLote">
+                    <mat-datepicker-toggle matSuffix [for]="pickerFab"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerFab></mat-datepicker>
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-6">
+                <mat-form-field appearance="outline" class="campo-formulario">
+                    <mat-label>Fecha de Vencimiento</mat-label>
+                    <input matInput type="search" [matDatepicker]="pickerVenc" formControlName="dFechaVenc"
+                        (dateChange)="fnCambiarFecha($event,2)" autocomplete="off" name="FechaVenc" id="FechaVencLote"
+                        [min]="formLote.controls.dFechaFab.value">
+                    <mat-datepicker-toggle matSuffix [for]="pickerVenc"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerVenc></mat-datepicker>
+                </mat-form-field>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-12  justify-content-center">
+
+                <mat-form-field appearance="outline" class="campo-formulario">
+                    <mat-label>Descripción</mat-label>
+                    <textarea matInput type="text" formControlName="sDescripcion" name="Descripc"
+                        autocomplete="off"></textarea>
+                </mat-form-field>
+
+            </div>
+
+        </div>
+
+        <p class="nota-formulario" *ngIf="bEsAlta">
+            La cantidad inicial se registra como una entrada en el kardex del lote.
+        </p>
+
+        <p class="nota-formulario" *ngIf="!bEsAlta">
+            La existencia no se edita aquí: se corrige con un ajuste desde Movimientos,
+            que deja constancia de quién lo hizo y por qué.
+        </p>
+
+        <mat-dialog-actions class="acciones-formulario" align="end">
+            <button type="button" mat-button (click)="fnCerrarModal(0)">Cancelar</button>
+            <button type="submit" mat-raised-button color="primary"
+                [disabled]="configuracionService.bDemoSoloLectura">
+                <mat-icon>save</mat-icon>
+                Guardar
+            </button>
+        </mat-dialog-actions>
+    </form>
+
+</div>

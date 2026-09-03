@@ -5,37 +5,37 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import {
   AccionModal,
   AlmacenCombo,
   CategoriaCombo,
   DatosModal,
-  ProductoListado,
+  LoteListado,
+  ProductoCombo,
   RespuestaApi,
   ValorEstado
 } from 'src/app/shared/models';
 import { InventarioService } from '../inventario.service';
-import { ProductosModalComponent } from './productos-modal/productos-modal.component';
+import { LotesModalComponent } from './lotes-modal/lotes-modal.component';
 import { ConfiguracionService } from 'src/app/shared/services/configuracion.service';
 import { SesionService } from 'src/app/shared/services/sesion.service';
 
 @Component({
-  selector: 'app-productos',
-  templateUrl: './productos.component.html',
-  styleUrls: ['./productos.component.css']
+  selector: 'app-lotes',
+  templateUrl: './lotes.component.html',
+  styleUrls: ['./lotes.component.css']
 })
-export class ProductosComponent implements OnInit, AfterViewInit {
+export class LotesComponent implements OnInit, AfterViewInit {
   readonly displayedColumns: string[] = [
-    'nIdCatProd',
+    'sNombreLote',
+    'sNombreProducto',
     'sNombreAlmacen',
     'sNombreCategoria',
-    'sNombreProducto',
-    'nLotes',
     'nCantidad',
     'sNombreUM',
-    'nValor',
+    'nPrecio',
     'dFechaVenc',
     'sEstado',
     'Acciones',
@@ -43,9 +43,11 @@ export class ProductosComponent implements OnInit, AfterViewInit {
 
   listaAlmacenes: AlmacenCombo[] = [];
   listaCategorias: CategoriaCombo[] = [];
+  listaProductos: ProductoCombo[] = [];
   fAlmacen = new FormControl(0);
   fCategoria = new FormControl(0);
-  dsProducto = new MatTableDataSource<ProductoListado>([]);
+  fProducto = new FormControl(0);
+  dsLote = new MatTableDataSource<LoteListado>([]);
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -56,25 +58,34 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     public sesionService: SesionService,
     public dialog: MatDialog,
     private router: Router,
+    private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
+    //Se llega aquí desde el botón "Lotes" del listado de productos.
+    const nIdProducto = Number(this.route.snapshot.queryParamMap.get('producto'));
+
+    if (nIdProducto > 0) {
+      this.fProducto.setValue(nIdProducto);
+    }
+
     this.fnListarAlmacenes();
     this.fnListarCategorias();
     this.fnListarProductos();
+    this.fnListarLotes();
   }
 
   ngAfterViewInit(): void {
-    this.dsProducto.paginator = this.paginator;
-    this.dsProducto.sort = this.sort;
+    this.dsLote.paginator = this.paginator;
+    this.dsLote.sort = this.sort;
   }
 
   fnFiltrarTabla(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dsProducto.filter = filterValue.trim().toLowerCase();
+    this.dsLote.filter = filterValue.trim().toLowerCase();
 
-    if (this.dsProducto.paginator) {
-      this.dsProducto.paginator.firstPage();
+    if (this.dsLote.paginator) {
+      this.dsLote.paginator.firstPage();
     }
   }
 
@@ -98,33 +109,55 @@ export class ProductosComponent implements OnInit, AfterViewInit {
 
   async fnListarProductos(): Promise<void> {
     try {
-      this.dsProducto.data = await this.inventarioService.fnServProducto<ProductoListado[]>(
-        '03',
-        [this.fAlmacen.value || 0, this.fCategoria.value || 0]
+      this.listaProductos = await this.inventarioService
+        .fnServLote<ProductoCombo[]>('06', [this.fAlmacen.value || 0]);
+    } catch (error) {
+      console.error(error as HttpErrorResponse);
+    }
+  }
+
+  async fnListarLotes(): Promise<void> {
+    try {
+      this.dsLote.data = await this.inventarioService.fnServLote<LoteListado[]>(
+        '01',
+        [this.fAlmacen.value || 0, this.fCategoria.value || 0, this.fProducto.value || 0]
       );
     } catch (error) {
       console.error(error as HttpErrorResponse);
     }
   }
 
+  //Al cambiar de almacén el producto elegido puede no estar en él.
+  async fnCambiarAlmacen(): Promise<void> {
+    this.fProducto.setValue(0);
+    await this.fnListarProductos();
+    await this.fnListarLotes();
+  }
+
   fnCleanFilter(input?: HTMLInputElement): void {
     if (input) {
       input.value = '';
-      this.dsProducto.filter = '';
+      this.dsLote.filter = '';
     }
 
     this.fAlmacen.setValue(0);
     this.fCategoria.setValue(0);
+    this.fProducto.setValue(0);
     this.fnListarProductos();
+    this.fnListarLotes();
   }
 
-  fnVerLotes(nIdProducto: number): void {
-    this.router.navigate(['/lotes'], { queryParams: { producto: nIdProducto } });
+  fnEtiquetaVencimiento(lote: LoteListado): string {
+    return lote.nDiasRestantes < 0 ? 'vencido' : `${lote.nDiasRestantes} d`;
   }
 
-  fnAbrirModal(accion: AccionModal, nIdCatProd: number): void {
-    const datos: DatosModal = { accion, nId: nIdCatProd };
-    const dialogRef = this.dialog.open(ProductosModalComponent, {
+  fnVerKardex(nIdDetProd: number): void {
+    this.router.navigate(['/movimientos'], { queryParams: { lote: nIdDetProd } });
+  }
+
+  fnAbrirModal(accion: AccionModal, nIdDetProd: number): void {
+    const datos: DatosModal = { accion, nId: nIdDetProd };
+    const dialogRef = this.dialog.open(LotesModalComponent, {
       width: '50rem',
       maxWidth: '95vw',
       disableClose: true,
@@ -133,15 +166,16 @@ export class ProductosComponent implements OnInit, AfterViewInit {
 
     dialogRef.afterClosed().subscribe((result: number | undefined) => {
       if (result !== undefined) {
-        this.fnListarProductos();
+        this.fnListarLotes();
       }
     });
   }
 
-  async fnCambiarEstado(nIdProducto: number, estado: ValorEstado): Promise<void> {
+  async fnCambiarEstado(nIdDetProd: number, estado: ValorEstado): Promise<void> {
     const activar = estado === ValorEstado.Activo;
     const confirmacion = await Swal.fire({
-      title: activar ? '¿Desea activar el producto?' : '¿Desea desactivar el producto?',
+      title: activar ? '¿Desea activar el lote?' : '¿Desea dar de baja el lote?',
+      text: activar ? '' : 'Solo se puede dar de baja un lote sin existencia.',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -155,21 +189,18 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     }
 
     try {
-      const respuesta = await this.inventarioService.fnServProducto<RespuestaApi>(
-        '08',
-        [nIdProducto, estado]
+      const respuesta = await this.inventarioService.fnServLote<RespuestaApi>(
+        '05',
+        [nIdDetProd, estado]
       );
 
       if (respuesta.cod === '1') {
-        const mensaje = activar
-          ? 'Se activó el producto con éxito'
-          : 'Se desactivó el producto con éxito';
-        await Swal.fire({ title: mensaje, icon: 'success', timer: 3500 });
+        await Swal.fire({ title: respuesta.mensaje, icon: 'success', timer: 3500 });
       } else {
         await Swal.fire({ title: 'No se pudo cambiar el estado', text: respuesta.mensaje, icon: 'error' });
       }
 
-      await this.fnListarProductos();
+      await this.fnListarLotes();
     } catch (error) {
       console.error(error as HttpErrorResponse);
     }

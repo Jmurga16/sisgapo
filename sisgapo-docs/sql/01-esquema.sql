@@ -20,12 +20,20 @@
                                    Así el script sirve igual en Azure SQL, donde
                                    USE no está permitido.
      [6] Se eliminan objetos si existen, para que el script sea reejecutable.
+     [7] TBL_DET_PRODUCTO         : pasa a tener una fila por producto Y lote, con
+                                   estado propio. Antes solo admitía un lote por
+                                   producto, que es justo el caso de uso central de
+                                   un almacén con control de vencimientos.
+     [8] TBL_MOVIMIENTO           : tabla nueva. Registra entradas, salidas y ajustes
+                                   sobre un lote, con fecha, usuario, motivo y saldo.
+                                   Las existencias dejan de sobrescribirse a mano.
 
    Ejecutar en este orden:
-     01-esquema.sql  →  02-funcion-split.sql  →  03-seed.sql  →  04..09-usp-*.sql
+     01-esquema.sql  →  02-funcion-split.sql  →  03-seed.sql  →  04..12-usp-*.sql
    ============================================================================ */
 
 /* ---------- Limpieza (permite reejecutar el script) ---------- */
+IF OBJECT_ID('TBL_MOVIMIENTO',   'U') IS NOT NULL DROP TABLE TBL_MOVIMIENTO;
 IF OBJECT_ID('TBL_DET_PRODUCTO', 'U') IS NOT NULL DROP TABLE TBL_DET_PRODUCTO;
 IF OBJECT_ID('TBL_CAT_PROD',     'U') IS NOT NULL DROP TABLE TBL_CAT_PROD;
 IF OBJECT_ID('TBL_LOTE',         'U') IS NOT NULL DROP TABLE TBL_LOTE;
@@ -141,7 +149,10 @@ CREATE TABLE TBL_LOTE (
     nIdLote     INT          NOT NULL IDENTITY(1,1) PRIMARY KEY,
     sNombreLote VARCHAR(100) NOT NULL,
     dFechaFab   DATE         NULL,
-    dFechaVenc  DATE         NULL
+    dFechaVenc  DATE         NULL,
+
+    -- [7] El código de lote identifica la partida: no puede repetirse.
+    CONSTRAINT UQ_LOTE_CODIGO UNIQUE (sNombreLote)
 );
 GO
 
@@ -158,20 +169,56 @@ CREATE TABLE TBL_CAT_PROD (
 );
 GO
 
--- Detalle: cantidad, precio, unidad y lote de un producto.
+-- Existencia de un producto en un lote concreto: cantidad, precio y unidad.
+-- [7] Una fila por producto Y lote. La cantidad es el saldo del lote y solo la
+--     mueve USP_MNT_Movimientos; nadie la sobrescribe desde la pantalla.
 CREATE TABLE TBL_DET_PRODUCTO (
     nIdDetProd      INT          NOT NULL IDENTITY(1,1) PRIMARY KEY,
-    nIdProducto     INT          NULL,
+    nIdProducto     INT          NOT NULL,
     sDescripcion    VARCHAR(500) NULL,
-    nIdUnidadMedida INT          NULL,
-    nCantidad       INT          NULL,
+    nIdUnidadMedida INT          NOT NULL,
+    nCantidad       INT          NOT NULL DEFAULT 0,
     nPrecio         INT          NULL,     -- ver 06-hallazgos.md, D-06: debería ser DECIMAL
-    nIdLote         INT          NULL,
+    nIdLote         INT          NOT NULL,
+    bEstado         BIT          NOT NULL DEFAULT 1,   -- baja lógica del lote
 
     CONSTRAINT FK_DETPROD_PRODUCTO FOREIGN KEY (nIdProducto)     REFERENCES TBL_PRODUCTO(nIdProducto),
     CONSTRAINT FK_DETPROD_UM       FOREIGN KEY (nIdUnidadMedida) REFERENCES TBL_UNIDADMEDIDA(nIdUnidadMedida),
     -- [3] CORRECCIÓN: esta clave foránea faltaba en el original.
-    CONSTRAINT FK_DETPROD_LOTE     FOREIGN KEY (nIdLote)         REFERENCES TBL_LOTE(nIdLote)
+    CONSTRAINT FK_DETPROD_LOTE     FOREIGN KEY (nIdLote)         REFERENCES TBL_LOTE(nIdLote),
+    -- [7] Un lote pertenece a un solo producto y no se repite dentro de él.
+    CONSTRAINT UQ_DETPROD_PROD_LOTE UNIQUE (nIdProducto, nIdLote),
+    CONSTRAINT CK_DETPROD_CANTIDAD  CHECK (nCantidad >= 0)
+);
+GO
+
+/* ============================ MOVIMIENTOS ============================ */
+
+-- [8] Libro de movimientos del almacén: una fila por entrada, salida o ajuste
+--     sobre un lote. nCantidad lleva el signo (positivo suma, negativo resta) y
+--     nSaldo guarda la existencia del lote justo después del movimiento, que es
+--     lo que convierte la tabla en un kardex y no en una simple bitácora.
+CREATE TABLE TBL_MOVIMIENTO (
+    nIdMovimiento INT          NOT NULL IDENTITY(1,1) PRIMARY KEY,
+    nIdDetProd    INT          NOT NULL,   -- producto + lote sobre el que se mueve
+    sTipo         VARCHAR(1)   NOT NULL,   -- 'E' entrada | 'S' salida | 'A' ajuste
+    nCantidad     INT          NOT NULL,   -- con signo
+    nSaldo        INT          NOT NULL,   -- existencia resultante del lote
+    sMotivo       VARCHAR(300) NULL,
+    nIdUsuario    INT          NOT NULL,   -- quién lo registró
+    dFechaMov     DATETIME     NOT NULL CONSTRAINT DF_MOVIMIENTO_FECHA DEFAULT GETDATE(),
+
+    CONSTRAINT FK_MOVIMIENTO_DETPROD FOREIGN KEY (nIdDetProd) REFERENCES TBL_DET_PRODUCTO(nIdDetProd),
+    CONSTRAINT FK_MOVIMIENTO_USUARIO FOREIGN KEY (nIdUsuario) REFERENCES TBL_USUARIO(nIdUsuario),
+
+    CONSTRAINT CK_MOVIMIENTO_TIPO     CHECK (sTipo IN ('E', 'S', 'A')),
+    CONSTRAINT CK_MOVIMIENTO_CANTIDAD CHECK (nCantidad <> 0),
+    -- Una entrada nunca resta y una salida nunca suma; el ajuste puede ir en
+    -- los dos sentidos, que es justamente para lo que existe.
+    CONSTRAINT CK_MOVIMIENTO_SIGNO    CHECK ((sTipo = 'E' AND nCantidad > 0)
+                                          OR (sTipo = 'S' AND nCantidad < 0)
+                                          OR (sTipo = 'A')),
+    CONSTRAINT CK_MOVIMIENTO_SALDO    CHECK (nSaldo >= 0)
 );
 GO
 
@@ -186,4 +233,13 @@ CREATE INDEX IX_CATPROD_ALMACEN     ON TBL_CAT_PROD(nIdAlmacen);
 CREATE INDEX IX_CATPROD_CATEGORIA   ON TBL_CAT_PROD(nIdCategoria);
 CREATE INDEX IX_CATPROD_PRODUCTO    ON TBL_CAT_PROD(nIdProducto);
 CREATE INDEX IX_DETPROD_PRODUCTO    ON TBL_DET_PRODUCTO(nIdProducto);
+CREATE INDEX IX_DETPROD_LOTE        ON TBL_DET_PRODUCTO(nIdLote);
+
+-- El panel filtra por fecha de vencimiento en tres de sus cuatro consultas y la
+-- pantalla de lotes ordena por ella. Ver 06-hallazgos.md.
+CREATE INDEX IX_LOTE_VENCIMIENTO    ON TBL_LOTE(dFechaVenc);
+
+-- El kardex se consulta siempre por lote y por rango de fechas.
+CREATE INDEX IX_MOVIMIENTO_DETPROD  ON TBL_MOVIMIENTO(nIdDetProd, nIdMovimiento);
+CREATE INDEX IX_MOVIMIENTO_FECHA    ON TBL_MOVIMIENTO(dFechaMov);
 GO

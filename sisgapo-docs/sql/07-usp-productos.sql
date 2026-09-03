@@ -23,6 +23,7 @@ BEGIN
     DECLARE @nIdUnidadMedida  INT;
     DECLARE @nIdLote          INT;
     DECLARE @nIdCatProd       INT;
+    DECLARE @nIdDetProd       INT;
     DECLARE @nCantidad	      INT;
     DECLARE @nPrecioUnitario	INT;
     DECLARE @sNombreLote      VARCHAR(MAX);;
@@ -96,6 +97,13 @@ BEGIN
 
 		BEGIN
 
+			--[LOTES] Un producto ya puede tener varios lotes, así que la fila del
+			--        listado deja de ser una foto de un lote y pasa a ser el resumen
+			--        del producto: existencia total, número de lotes, valor y el
+			--        vencimiento más próximo. El detalle por lote vive en la
+			--        pantalla de Lotes (USP_MNT_Lotes).
+			--        LEFT JOIN: un producto sin lotes activos sigue apareciendo, con
+			--        existencia cero, en vez de desaparecer del listado.
 			SELECT 
 				nIdCatProd,
 				Alm.nIdAlmacen,
@@ -104,25 +112,28 @@ BEGIN
 				Cat.sNombre AS 'sNombreCategoria',
 				Prod.nIdProducto,
 				Prod.sNombre AS 'sNombreProducto',
-				DetProd.nIdDetProd,
-				DetProd.nCantidad,
-				UM.sNombre AS 'sNombreUM',
-				DetProd.nPrecio,
-				Lot.sNombreLote,
-				Lot.dFechaVenc,
+				COUNT(DetProd.nIdDetProd) AS 'nLotes',
+				ISNULL(SUM(DetProd.nCantidad), 0) AS 'nCantidad',
+				ISNULL(MIN(UM.sNombre), '') AS 'sNombreUM',
+				ISNULL(SUM(CAST(DetProd.nCantidad AS BIGINT) * DetProd.nPrecio), 0) AS 'nValor',
+				ISNULL(CONVERT(VARCHAR(10), MIN(Lot.dFechaVenc), 23), '') AS 'dFechaVenc',
 				IIF(Prod.bEstado=1,'Activo', 'Inactivo') AS 'sEstado'
 			FROM TBL_CAT_PROD Tbl
 			INNER JOIN TBL_ALMACEN		Alm		ON Alm.nIdAlmacen	= Tbl.nIdAlmacen
 			INNER JOIN TBL_CATEGORIA	Cat		ON Cat.nIdCategoria	= Tbl.nIdCategoria
 			INNER JOIN TBL_PRODUCTO		Prod	ON Prod.nIdProducto	= Tbl.nIdProducto
-			INNER JOIN TBL_DET_PRODUCTO DetProd ON DetProd.nIdProducto = Prod.nIdProducto
-			INNER JOIN TBL_LOTE			Lot		ON Lot.nIdLote	= DetProd.nIdLote
-			INNER JOIN TBL_UNIDADMEDIDA UM		ON UM.nIdUnidadMedida	= DetProd.nIdUnidadMedida
+			LEFT  JOIN TBL_DET_PRODUCTO DetProd ON DetProd.nIdProducto = Prod.nIdProducto
+											   AND DetProd.bEstado = 1
+			LEFT  JOIN TBL_LOTE			Lot		ON Lot.nIdLote	= DetProd.nIdLote
+			LEFT  JOIN TBL_UNIDADMEDIDA UM		ON UM.nIdUnidadMedida	= DetProd.nIdUnidadMedida
 			WHERE
 				(@nIdAlmacen   = 0 OR Tbl.nIdAlmacen   = @nIdAlmacen)
 				AND (@nIdCategoria = 0 OR Tbl.nIdCategoria = @nIdCategoria)
+			GROUP BY
+				nIdCatProd, Alm.nIdAlmacen, Alm.sNombre, Cat.nIdCategoria, Cat.sNombre,
+				Prod.nIdProducto, Prod.sNombre, Prod.bEstado
 			ORDER BY
-				Prod.bEstado DESC, Lot.dFechaVenc
+				Prod.bEstado DESC, MIN(Lot.dFechaVenc)
 
 		END
 		
@@ -150,30 +161,19 @@ BEGIN
 
 		BEGIN
 
-			--[FIX] Faltaban sDescripcion y nIdLote, y las fechas salian con el formato
-			--      regional del servidor. El modal de edicion no podia precargarlas:
-			--      la descripcion y los dos datepicker quedaban vacios. Ver 06-hallazgos.
+			--[LOTES] El modal de edición ya no toca cantidad, precio ni fechas: esos
+			--        datos pertenecen al lote y se mantienen desde la pantalla de
+			--        Lotes. Aquí solo viajan el nombre del producto y su ubicación.
 			SELECT 
 				nIdCatProd,
 				Alm.nIdAlmacen,				
 				Cat.nIdCategoria,				
 				Prod.nIdProducto,
-        Prod.sNombre AS 'sNombreProducto',
-				DetProd.nIdDetProd,
-				DetProd.nCantidad,
-				UM.nIdUnidadMedida,
-				DetProd.nPrecio,
-				DetProd.sDescripcion,
-				Lot.nIdLote,
-				CONVERT(VARCHAR(10), Lot.dFechaFab,  23) AS 'dFechaFab',
-				CONVERT(VARCHAR(10), Lot.dFechaVenc, 23) AS 'dFechaVenc'
+        Prod.sNombre AS 'sNombreProducto'
 			FROM TBL_CAT_PROD Tbl
 			INNER JOIN TBL_ALMACEN		Alm		ON Alm.nIdAlmacen	= Tbl.nIdAlmacen
 			INNER JOIN TBL_CATEGORIA	Cat		ON Cat.nIdCategoria	= Tbl.nIdCategoria
 			INNER JOIN TBL_PRODUCTO		Prod	ON Prod.nIdProducto	= Tbl.nIdProducto
-			INNER JOIN TBL_DET_PRODUCTO DetProd ON DetProd.nIdProducto = Prod.nIdProducto
-			INNER JOIN TBL_LOTE			Lot		ON Lot.nIdLote	= DetProd.nIdLote
-			INNER JOIN TBL_UNIDADMEDIDA UM		ON UM.nIdUnidadMedida	= DetProd.nIdUnidadMedida
       WHERE
         Tbl.nIdCatProd = @nIdCatProd
       		
@@ -194,6 +194,9 @@ BEGIN
       SET @dFechaFab	      = (SELECT valor FROM @tParametro WHERE id = 7);
       SET @dFechaVenc	      = (SELECT valor FROM @tParametro WHERE id = 8);
 			SET @sDescripcion		  = (SELECT valor FROM @tParametro WHERE id = 9);
+      --[LOTES] El id del usuario lo añade el controlador desde el token; no
+      --        llega desde el formulario. Es quien firma el movimiento de alta.
+      SET @nIdUsuario		    = (SELECT valor FROM @tParametro WHERE id = 10);
          			
 		END	
 
@@ -215,8 +218,18 @@ BEGIN
 			VALUES(@nIdAlmacen, @nIdCategoria, @nIdProducto)
 
 
-			SET @nContador = (SELECT COUNT(*) FROM TBL_PRODUCTO WHERE sNombre = @sNombreProducto)
-			SET @sNombreLote = CONCAT(LEFT(@sNombreProducto,3),RIGHT(CONCAT('0000',@nContador),4))
+			--[LOTES] El correlativo contaba productos con el mismo nombre, no lotes:
+			--        dos productos distintos que empezaran igual generaban el mismo
+			--        código. Ahora se busca el primer correlativo libre, igual que
+			--        hace USP_MNT_Usuarios con el nombre de usuario.
+			SET @nContador = 1
+			SET @sNombreLote = CONCAT(UPPER(LEFT(@sNombreProducto,3)),RIGHT(CONCAT('0000',@nContador),4))
+
+			WHILE EXISTS (SELECT 1 FROM TBL_LOTE WHERE sNombreLote = @sNombreLote)
+			BEGIN
+				SET @nContador = @nContador + 1
+				SET @sNombreLote = CONCAT(UPPER(LEFT(@sNombreProducto,3)),RIGHT(CONCAT('0000',@nContador),4))
+			END
 
 			INSERT INTO TBL_LOTE
 					  (sNombreLote,  dFechaFab,  dFechaVenc)
@@ -225,8 +238,20 @@ BEGIN
 			SET @nIdLote = SCOPE_IDENTITY()
 
 			INSERT INTO TBL_DET_PRODUCTO
-					  ( nIdProducto, sDescripcion, nIdUnidadMedida, nCantidad, nPrecio, nIdLote)
-			VALUES( @nIdProducto, @sDescripcion, @nIdUnidadMedida, @nCantidad, @nPrecioUnitario, @nIdLote)
+					  ( nIdProducto, sDescripcion, nIdUnidadMedida, nCantidad, nPrecio, nIdLote, bEstado)
+			VALUES( @nIdProducto, @sDescripcion, @nIdUnidadMedida, @nCantidad, @nPrecioUnitario, @nIdLote, 1)
+
+			SET @nIdDetProd = SCOPE_IDENTITY()
+
+			--[LOTES] La existencia inicial entra al kardex como cualquier otro
+			--        movimiento. Si no, el saldo del lote no cuadraría con la suma
+			--        de sus movimientos desde el primer día.
+			IF @nCantidad > 0
+			BEGIN
+				INSERT INTO TBL_MOVIMIENTO
+						  (nIdDetProd,  sTipo, nCantidad,  nSaldo,     sMotivo,                 nIdUsuario)
+				VALUES(@nIdDetProd, 'E',   @nCantidad, @nCantidad, 'Alta del producto', @nIdUsuario)
+			END
 
 			COMMIT TRANSACTION;
 
@@ -249,22 +274,15 @@ BEGIN
 			SET @sNombreProducto	= (SELECT valor FROM @tParametro WHERE id = 1);
       SET @nIdAlmacen	      = (SELECT valor FROM @tParametro WHERE id = 2);
       SET @nIdCategoria	    = (SELECT valor FROM @tParametro WHERE id = 3);
-      SET @nIdUnidadMedida	= (SELECT valor FROM @tParametro WHERE id = 4);
-      SET @nCantidad	      = (SELECT valor FROM @tParametro WHERE id = 5);
-      SET @nPrecioUnitario	= (SELECT valor FROM @tParametro WHERE id = 6);
-      SET @dFechaFab	      = (SELECT valor FROM @tParametro WHERE id = 7);
-      SET @dFechaVenc	      = (SELECT valor FROM @tParametro WHERE id = 8);
-			SET @sDescripcion		  = (SELECT valor FROM @tParametro WHERE id = 9);
-      SET @nIdProducto		  = (SELECT valor FROM @tParametro WHERE id = 10);
-      SET @nIdCatProd		    = (SELECT valor FROM @tParametro WHERE id = 11);
-
-      --[FIX] @nIdLote no llega en pParametro y nunca se asignaba, asi que el
-      --      UPDATE de TBL_LOTE corria con WHERE nIdLote = NULL y no afectaba a
-      --      ninguna fila: cambiar la fecha de vencimiento no hacia nada.
-      SET @nIdLote = (SELECT TOP 1 nIdLote FROM TBL_DET_PRODUCTO WHERE nIdProducto = @nIdProducto);
+      SET @nIdProducto		  = (SELECT valor FROM @tParametro WHERE id = 4);
+      SET @nIdCatProd		    = (SELECT valor FROM @tParametro WHERE id = 5);
 		END	
-		--[FIX] Los cuatro UPDATE van en una transaccion, por el mismo motivo que la
-		--      opcion 06: antes podian quedar a medias sin que nadie se enterara.
+
+		--[LOTES] La edición se queda con lo que de verdad pertenece al producto:
+		--        nombre y ubicación. Cantidad, precio y fechas eran del lote y
+		--        ahora se mantienen en USP_MNT_Lotes; la existencia solo se mueve
+		--        con USP_MNT_Movimientos, que deja rastro de quién y por qué.
+		--        Los dos UPDATE siguen en una transacción, como la opción 06.
 		BEGIN TRY
 
 			BEGIN TRANSACTION;
@@ -282,24 +300,6 @@ BEGIN
 				nIdCategoria     = @nIdCategoria
 			WHERE
 				nIdCatProd = @nIdCatProd
-
-			--
-			UPDATE [TBL_LOTE]
-				SET
-				dFechaFab       = @dFechaFab,
-				dFechaVenc      = @dFechaVenc
-			WHERE
-				nIdLote = @nIdLote
-
-			--
-			UPDATE [TBL_DET_PRODUCTO]
-				SET
-				sDescripcion    = @sDescripcion,
-				nIdUnidadMedida = @nIdUnidadMedida,
-				nCantidad       = @nCantidad,
-				nPrecio         = @nPrecioUnitario
-			WHERE
-				nIdProducto = @nIdProducto
 
 			COMMIT TRANSACTION;
 

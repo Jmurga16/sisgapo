@@ -40,71 +40,90 @@
                 </mat-form-field>
             </div>
 
-            <div class="col-md-3">
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Cantidad</mat-label>
-                    <input matInput type="number" formControlName="nCantidad" autocomplete="nope" name="Telefono">
-                </mat-form-field>
-            </div>
+            <ng-container *ngIf="bEsAlta">
 
-            <div class="col-md-3">
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Unidad de Medida</mat-label>
-                    <mat-select formControlName="nIdUnidadMedida">
-                        <mat-option *ngFor="let opc of lUnidadMedida" [value]="opc.nIdUnidadMedida">
-                            {{opc.sNombreUM}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Cantidad</mat-label>
+                        <input matInput type="number" formControlName="nCantidad" autocomplete="nope" name="Cantidad">
+                    </mat-form-field>
+                </div>
 
-            <div class="col-md-3">
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Precio por U.M</mat-label>
-                    <input matInput type="number" formControlName="nPrecio" autocomplete="nope" name="Telefono">
-                </mat-form-field>
-            </div>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Unidad de Medida</mat-label>
+                        <mat-select formControlName="nIdUnidadMedida">
+                            <mat-option *ngFor="let opc of lUnidadMedida" [value]="opc.nIdUnidadMedida">
+                                {{opc.sNombreUM}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
 
-        </div>
+                <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Precio por U.M</mat-label>
+                        <input matInput type="number" formControlName="nPrecio" autocomplete="nope" name="Precio">
+                    </mat-form-field>
+                </div>
 
-        <div class="row">
-
-            <div class="col-md-6">
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Fecha de Fabricación</mat-label>
-                    <input matInput type="search" [matDatepicker]="pickerFab" formControlName="dFechaFab"
-                        (dateChange)="fnCambiarFecha($event,1)" autocomplete="off" name="FechaFab" id="FechaFab">
-                    <mat-datepicker-toggle matSuffix [for]="pickerFab"></mat-datepicker-toggle>
-                    <mat-datepicker #pickerFab></mat-datepicker>
-                </mat-form-field>
-            </div>
-
-            <div class="col-md-6">
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Fecha de Vencimiento</mat-label>
-                    <input matInput type="search" [matDatepicker]="pickerVenc" formControlName="dFechaVenc"
-                        (dateChange)="fnCambiarFecha($event,2)" autocomplete="off" name="FechaVenc" id="FechaVenc"
-                        [min]="formProducto.controls.dFechaFab.value">
-                    <mat-datepicker-toggle matSuffix [for]="pickerVenc"></mat-datepicker-toggle>
-                    <mat-datepicker #pickerVenc></mat-datepicker>
-                </mat-form-field>
-            </div>
+            </ng-container>
 
         </div>
 
-        <div class="row">
+        <ng-container *ngIf="bEsAlta">
 
-            <div class="col-md-12  justify-content-center">
+            <div class="row">
 
-                <mat-form-field appearance="outline" class="campo-formulario">
-                    <mat-label>Descripción</mat-label>
-                    <textarea matInput type="text" formControlName="sDescripcion" name="Descripc"
-                        autocomplete="off"></textarea>
-                </mat-form-field>
+                <div class="col-md-6">
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Fecha de Fabricación</mat-label>
+                        <input matInput type="search" [matDatepicker]="pickerFab" formControlName="dFechaFab"
+                            (dateChange)="fnCambiarFecha($event,1)" autocomplete="off" name="FechaFab" id="FechaFab">
+                        <mat-datepicker-toggle matSuffix [for]="pickerFab"></mat-datepicker-toggle>
+                        <mat-datepicker #pickerFab></mat-datepicker>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-6">
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Fecha de Vencimiento</mat-label>
+                        <input matInput type="search" [matDatepicker]="pickerVenc" formControlName="dFechaVenc"
+                            (dateChange)="fnCambiarFecha($event,2)" autocomplete="off" name="FechaVenc" id="FechaVenc"
+                            [min]="formProducto.controls.dFechaFab.value">
+                        <mat-datepicker-toggle matSuffix [for]="pickerVenc"></mat-datepicker-toggle>
+                        <mat-datepicker #pickerVenc></mat-datepicker>
+                    </mat-form-field>
+                </div>
 
             </div>
 
-        </div>
+            <div class="row">
+
+                <div class="col-md-12  justify-content-center">
+
+                    <mat-form-field appearance="outline" class="campo-formulario">
+                        <mat-label>Descripción</mat-label>
+                        <textarea matInput type="text" formControlName="sDescripcion" name="Descripc"
+                            autocomplete="off"></textarea>
+                    </mat-form-field>
+
+                </div>
+
+            </div>
+
+            <p class="nota-formulario">
+                El alta crea la primera partida del producto con esa existencia. Las
+                siguientes se registran desde Lotes y las entradas y salidas, desde
+                Movimientos.
+            </p>
+
+        </ng-container>
+
+        <p class="nota-formulario" *ngIf="!bEsAlta">
+            La existencia, el precio y las fechas pertenecen a cada lote: se mantienen
+            desde la pantalla de Lotes.
+        </p>
 
         <mat-dialog-actions class="acciones-formulario" align="end">
             <button type="button" mat-button (click)="fnCerrarModal(0)">Cancelar</button>

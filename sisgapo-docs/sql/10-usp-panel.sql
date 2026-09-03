@@ -16,6 +16,10 @@ GO
     Son consultas de solo lectura sobre el modelo existente: no cambia ninguna
     tabla. Sigue el mismo contrato que el resto: @sOpcion + @pParametro.
 
+    Desde que un producto puede tener varios lotes, todas las consultas descartan
+    los lotes dados de baja (TBL_DET_PRODUCTO.bEstado = 0); las agregaciones ya
+    sumaban por producto, así que no hubo que rehacerlas.
+
     Opciones:
       01  Tarjetas de resumen (una fila con los totales)
       02  Existencias por almacén
@@ -47,27 +51,27 @@ BEGIN
             ISNULL((SELECT SUM(CAST(d.nCantidad AS BIGINT) * d.nPrecio)
                       FROM TBL_DET_PRODUCTO d
                       INNER JOIN TBL_PRODUCTO p ON p.nIdProducto = d.nIdProducto
-                     WHERE p.bEstado = 1), 0) AS 'nValorInventario',
+                     WHERE p.bEstado = 1 AND d.bEstado = 1), 0) AS 'nValorInventario',
 
             --Unidades totales en existencia
             ISNULL((SELECT SUM(d.nCantidad)
                       FROM TBL_DET_PRODUCTO d
                       INNER JOIN TBL_PRODUCTO p ON p.nIdProducto = d.nIdProducto
-                     WHERE p.bEstado = 1), 0) AS 'nUnidades',
+                     WHERE p.bEstado = 1 AND d.bEstado = 1), 0) AS 'nUnidades',
 
             --Lo que de verdad importa en un almacén de productos orgánicos
             (SELECT COUNT(*)
                FROM TBL_DET_PRODUCTO d
                INNER JOIN TBL_PRODUCTO p ON p.nIdProducto = d.nIdProducto
                INNER JOIN TBL_LOTE     l ON l.nIdLote     = d.nIdLote
-              WHERE p.bEstado = 1
+              WHERE p.bEstado = 1 AND d.bEstado = 1
                 AND l.dFechaVenc <= DATEADD(DAY, 30, CAST(GETDATE() AS DATE))) AS 'nPorVencer30',
 
             (SELECT COUNT(*)
                FROM TBL_DET_PRODUCTO d
                INNER JOIN TBL_PRODUCTO p ON p.nIdProducto = d.nIdProducto
                INNER JOIN TBL_LOTE     l ON l.nIdLote     = d.nIdLote
-              WHERE p.bEstado = 1
+              WHERE p.bEstado = 1 AND d.bEstado = 1
                 AND l.dFechaVenc < CAST(GETDATE() AS DATE)) AS 'nVencidos';
 
     END;
@@ -87,7 +91,7 @@ BEGIN
         INNER JOIN TBL_ZONA z ON z.nIdZona = a.nIdZona
         LEFT  JOIN TBL_CAT_PROD     cp ON cp.nIdAlmacen  = a.nIdAlmacen
         LEFT  JOIN TBL_PRODUCTO     p  ON p.nIdProducto  = cp.nIdProducto AND p.bEstado = 1
-        LEFT  JOIN TBL_DET_PRODUCTO d  ON d.nIdProducto  = p.nIdProducto
+        LEFT  JOIN TBL_DET_PRODUCTO d  ON d.nIdProducto  = p.nIdProducto AND d.bEstado = 1
         WHERE
             a.bEstado = 1
         GROUP BY
@@ -110,7 +114,7 @@ BEGIN
         FROM TBL_CATEGORIA c
         LEFT JOIN TBL_CAT_PROD     cp ON cp.nIdCategoria = c.nIdCategoria
         LEFT JOIN TBL_PRODUCTO     p  ON p.nIdProducto   = cp.nIdProducto AND p.bEstado = 1
-        LEFT JOIN TBL_DET_PRODUCTO d  ON d.nIdProducto   = p.nIdProducto
+        LEFT JOIN TBL_DET_PRODUCTO d  ON d.nIdProducto   = p.nIdProducto AND d.bEstado = 1
         WHERE
             c.bEstado = 1
         GROUP BY
@@ -148,6 +152,7 @@ BEGIN
         INNER JOIN TBL_UNIDADMEDIDA um ON um.nIdUnidadMedida = d.nIdUnidadMedida
         WHERE
             p.bEstado = 1
+            AND d.bEstado = 1
             AND l.dFechaVenc <= DATEADD(DAY, @nDias, CAST(GETDATE() AS DATE))
         ORDER BY
             l.dFechaVenc;

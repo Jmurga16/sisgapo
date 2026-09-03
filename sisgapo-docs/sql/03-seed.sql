@@ -15,6 +15,9 @@
      [5] Catálogo ampliado a 7 categorías y 25 productos.
      [6] Imágenes de zona recortadas a 3:2.
      [7] Las contraseñas se guardan como hash bcrypt, no en claro.
+     [8] Ocho productos tienen dos lotes, con vencimientos y existencias
+         distintos, y todo el inventario nace de movimientos: 33 entradas
+         iniciales más 28 operaciones de las últimas ocho semanas.
 
    ADVERTENCIA: son credenciales públicas de demostración. No usar este seed
    con datos reales.
@@ -178,7 +181,17 @@ INSERT INTO TBL_LOTE (sNombreLote, dFechaFab, dFechaVenc) VALUES
     ('SUP0001', DATEADD(MONTH, -25, @dHoy), DATEADD(DAY,   -31, @dHoy)),
     ('SUP0002', DATEADD(MONTH, -24, @dHoy), DATEADD(DAY,   -12, @dHoy)),
     ('FRU0005', DATEADD(MONTH, -14, @dHoy), DATEADD(DAY,   -58, @dHoy)),
-    ('INF0004', DATEADD(MONTH, -20, @dHoy), DATEADD(DAY,    -5, @dHoy));
+    ('INF0004', DATEADD(MONTH, -20, @dHoy), DATEADD(DAY,    -5, @dHoy)),
+    -- Segundas partidas de ocho productos que ya tienen lote. Son las que
+    -- justifican el módulo: el mismo café con dos vencimientos distintos.
+    ('CAF0005', DATEADD(MONTH,  -1, @dHoy), DATEADD(MONTH,  11, @dHoy)),
+    ('FRU0006', DATEADD(MONTH,  -2, @dHoy), DATEADD(MONTH,   5, @dHoy)),
+    ('FRU0007', DATEADD(MONTH,  -1, @dHoy), DATEADD(MONTH,   9, @dHoy)),
+    ('CAC0005', DATEADD(MONTH,  -1, @dHoy), DATEADD(MONTH,  15, @dHoy)),
+    ('CAC0006', DATEADD(MONTH,  -2, @dHoy), DATEADD(MONTH,  16, @dHoy)),
+    ('GRA0004', DATEADD(MONTH,  -2, @dHoy), DATEADD(MONTH,  20, @dHoy)),
+    ('MIE0004', DATEADD(MONTH,  -1, @dHoy), DATEADD(MONTH,  22, @dHoy)),
+    ('INF0005', DATEADD(MONTH,  -3, @dHoy), DATEADD(DAY,    40, @dHoy));
 GO
 
 -- nIdUnidadMedida: 1 kg, 2 g, 3 unidad, 4 paquete, 5 saco de 50 kg.
@@ -209,7 +222,17 @@ VALUES
     (22, 'Maca negra gelatinizada y pulverizada, origen Junín',                  1,   60,  30, 22),
     (23, 'Pulpa atomizada de alto contenido de vitamina C',                      1,   45,  44, 23),
     (24, 'Paquete de 100 g deshidratado a baja temperatura',                     4,   90,  18, 24),
-    (25, 'Hoja secada a la sombra para infusión, origen San Martín',             1,   30,  20, 25);
+    (25, 'Hoja secada a la sombra para infusión, origen San Martín',             1,   30,  20, 25),
+    -- Segunda partida de ocho productos: mismo producto, otro vencimiento y otra
+    -- existencia. Es lo que el modelo de 2021 no permitía representar.
+    ( 1, 'Tueste medio de la cosecha siguiente, a granel',                       1,   80,  39, 26),
+    ( 5, 'Segunda partida de pecanas activadas, misma finca',                    1,   35,  57, 27),
+    ( 7, 'Paquete de 500 g de la mezcla de temporada',                           4,   60,  33, 28),
+    ( 9, 'Grano fermentado de la campaña siguiente, saco de 50 kg',              5,    4, 790, 29),
+    (12, 'Tableta artesanal de 90 g del segundo lote de producción',             3,  200,  12, 30),
+    (13, 'Quinua perlada de la campaña siguiente, origen Puno',                  1,  150,  15, 31),
+    (16, 'Frasco de 1 kg de miel de la cosecha de verano',                       3,   90,  23, 32),
+    (19, 'Caja de 25 filtrantes del segundo acopio',                             4,  120,   8, 33);
 GO
 
 -- Ningún producto activo apunta al almacén 5 ni a la categoría 4, ambos inactivos.
@@ -241,8 +264,89 @@ INSERT INTO TBL_CAT_PROD (nIdAlmacen, nIdCategoria, nIdProducto) VALUES
     (5, 7, 25);
 GO
 
+/* ---------------------------- MOVIMIENTOS ---------------------------- */
+-- El kardex arranca con la entrada que dio origen a cada lote, fechada en su
+-- fabricación y firmada por el supervisor del almacén donde está la partida.
+INSERT INTO TBL_MOVIMIENTO (nIdDetProd, sTipo, nCantidad, nSaldo, sMotivo, nIdUsuario, dFechaMov)
+SELECT
+    det.nIdDetProd,
+    'E',
+    det.nCantidad,
+    det.nCantidad,
+    'Ingreso inicial de la partida',
+    alm.nIdSupervisor,
+    CAST(lot.dFechaFab AS DATETIME)
+FROM TBL_DET_PRODUCTO det
+INNER JOIN TBL_LOTE     lot ON lot.nIdLote      = det.nIdLote
+INNER JOIN TBL_CAT_PROD cp  ON cp.nIdProducto   = det.nIdProducto
+INNER JOIN TBL_ALMACEN  alm ON alm.nIdAlmacen   = cp.nIdAlmacen
+ORDER BY det.nIdDetProd;
+GO
+
+-- Operación de las últimas ocho semanas. Las entradas y salidas las registran los
+-- asistentes (usuarios 6 y 9); los ajustes, solo los supervisores (2, 3 y 4), que
+-- es exactamente la regla que aplica el controlador.
+-- nSaldo entra en 0 y se recalcula abajo: escribirlo a mano en 28 filas es la
+-- forma más fácil de que el kardex y la existencia dejen de cuadrar.
+INSERT INTO TBL_MOVIMIENTO (nIdDetProd, sTipo, nCantidad, nSaldo, sMotivo, nIdUsuario, dFechaMov) VALUES
+    ( 1, 'S', -20, 0, 'Despacho a distribuidor mayorista',    6, DATEADD(DAY, -52, GETDATE())),
+    ( 1, 'S', -15, 0, 'Despacho a tienda propia Satipo',      9, DATEADD(DAY, -21, GETDATE())),
+    (26, 'E',  40, 0, 'Recepción de acopio Chanchamayo',      6, DATEADD(DAY, -12, GETDATE())),
+    ( 2, 'S', -10, 0, 'Muestras para feria de cafés especiales', 6, DATEADD(DAY, -33, GETDATE())),
+    ( 4, 'S', -25, 0, 'Despacho a cafetería Miraflores',      9, DATEADD(DAY, -26, GETDATE())),
+    ( 4, 'A',  -3, 0, 'Ajuste por inventario físico',         2, DATEADD(DAY, -14, GETDATE())),
+    ( 5, 'S',  -8, 0, 'Despacho a tienda naturista',          9, DATEADD(DAY, -40, GETDATE())),
+    (27, 'S',  -5, 0, 'Despacho a tienda naturista',          9, DATEADD(DAY, -10, GETDATE())),
+    ( 6, 'S', -12, 0, 'Despacho a distribuidor Lima Norte',   6, DATEADD(DAY, -35, GETDATE())),
+    ( 7, 'S', -18, 0, 'Despacho a supermercado',              9, DATEADD(DAY, -28, GETDATE())),
+    (28, 'E',  25, 0, 'Recepción de producción propia',       6, DATEADD(DAY,  -9, GETDATE())),
+    ( 9, 'S',  -1, 0, 'Exportación — contenedor Callao',      6, DATEADD(DAY, -44, GETDATE())),
+    (29, 'E',   2, 0, 'Recepción de acopio San Martín',       6, DATEADD(DAY, -16, GETDATE())),
+    (10, 'S', -30, 0, 'Despacho a chocolatería artesanal',    9, DATEADD(DAY, -30, GETDATE())),
+    (11, 'A',  -4, 0, 'Merma detectada en inventario físico', 2, DATEADD(DAY, -13, GETDATE())),
+    (12, 'S', -50, 0, 'Despacho a cadena de tiendas',         9, DATEADD(DAY, -38, GETDATE())),
+    (12, 'S', -40, 0, 'Despacho a cadena de tiendas',         9, DATEADD(DAY, -17, GETDATE())),
+    (30, 'S', -25, 0, 'Despacho a tienda propia Callao',      9, DATEADD(DAY,  -7, GETDATE())),
+    (13, 'S', -35, 0, 'Despacho a distribuidor Huaraz',       6, DATEADD(DAY, -42, GETDATE())),
+    (13, 'A',   5, 0, 'Ajuste por inventario físico',         3, DATEADD(DAY, -11, GETDATE())),
+    (31, 'S', -20, 0, 'Despacho a distribuidor Huaraz',       6, DATEADD(DAY,  -6, GETDATE())),
+    (16, 'S', -40, 0, 'Despacho a feria regional',            9, DATEADD(DAY, -36, GETDATE())),
+    (32, 'E',  30, 0, 'Recepción de acopio apícola',          6, DATEADD(DAY, -15, GETDATE())),
+    (17, 'S', -60, 0, 'Despacho a distribuidor mayorista',    9, DATEADD(DAY, -31, GETDATE())),
+    (17, 'A', -10, 0, 'Merma por rotura de sacos',            3, DATEADD(DAY,  -8, GETDATE())),
+    (19, 'S', -45, 0, 'Despacho a cadena de farmacias',       6, DATEADD(DAY, -25, GETDATE())),
+    (33, 'S', -30, 0, 'Despacho a cadena de farmacias',       9, DATEADD(DAY,  -5, GETDATE())),
+    (20, 'S',  -6, 0, 'Despacho a restaurante',               9, DATEADD(DAY, -19, GETDATE()));
+GO
+
+-- nSaldo es la existencia del lote justo después del movimiento: se recalcula
+-- como suma acumulada en el orden real del kardex.
+WITH acumulado AS (
+    SELECT
+        nIdMovimiento,
+        SUM(nCantidad) OVER (PARTITION BY nIdDetProd
+                             ORDER BY dFechaMov, nIdMovimiento
+                             ROWS UNBOUNDED PRECEDING) AS nSaldoAcumulado
+    FROM TBL_MOVIMIENTO
+)
+UPDATE mov
+    SET mov.nSaldo = acu.nSaldoAcumulado
+FROM TBL_MOVIMIENTO mov
+INNER JOIN acumulado acu ON acu.nIdMovimiento = mov.nIdMovimiento;
+GO
+
+-- Y la existencia del lote es el saldo del último movimiento. Es el invariante
+-- que USP_MNT_Movimientos mantiene en cada alta y que verifica la prueba de
+-- integración: TBL_DET_PRODUCTO.nCantidad = SUM(TBL_MOVIMIENTO.nCantidad).
+UPDATE det
+    SET det.nCantidad = ISNULL((SELECT SUM(mov.nCantidad)
+                                  FROM TBL_MOVIMIENTO mov
+                                 WHERE mov.nIdDetProd = det.nIdDetProd), 0)
+FROM TBL_DET_PRODUCTO det;
+GO
+
 /* ---------------------------- VERIFICACIÓN ---------------------------- */
--- Debe devolver: 3, 3, 5, 9, 9, 5, 7, 5, 25, 25, 25, 25
+-- Los valores esperados están en README.md.
 SELECT 'TBL_DOCUMENTO' AS tabla, COUNT(*) AS filas FROM TBL_DOCUMENTO
 UNION ALL SELECT 'TBL_ROL',            COUNT(*) FROM TBL_ROL
 UNION ALL SELECT 'TBL_ZONA',           COUNT(*) FROM TBL_ZONA
@@ -254,7 +358,8 @@ UNION ALL SELECT 'TBL_UNIDADMEDIDA',   COUNT(*) FROM TBL_UNIDADMEDIDA
 UNION ALL SELECT 'TBL_PRODUCTO',       COUNT(*) FROM TBL_PRODUCTO
 UNION ALL SELECT 'TBL_LOTE',           COUNT(*) FROM TBL_LOTE
 UNION ALL SELECT 'TBL_DET_PRODUCTO',   COUNT(*) FROM TBL_DET_PRODUCTO
-UNION ALL SELECT 'TBL_CAT_PROD',       COUNT(*) FROM TBL_CAT_PROD;
+UNION ALL SELECT 'TBL_CAT_PROD',       COUNT(*) FROM TBL_CAT_PROD
+UNION ALL SELECT 'TBL_MOVIMIENTO',     COUNT(*) FROM TBL_MOVIMIENTO;
 GO
 
 -- Valores esperados documentados en README.md.
@@ -292,5 +397,13 @@ UNION ALL SELECT 'Productos activos en almacén o categoría de baja', COUNT(*)
   JOIN TBL_PRODUCTO  p ON p.nIdProducto  = cp.nIdProducto
   JOIN TBL_ALMACEN   a ON a.nIdAlmacen   = cp.nIdAlmacen
   JOIN TBL_CATEGORIA c ON c.nIdCategoria = cp.nIdCategoria
- WHERE p.bEstado = 1 AND (a.bEstado = 0 OR c.bEstado = 0);
+ WHERE p.bEstado = 1 AND (a.bEstado = 0 OR c.bEstado = 0)
+UNION ALL SELECT 'Productos con más de un lote', COUNT(*)
+  FROM (SELECT nIdProducto FROM TBL_DET_PRODUCTO GROUP BY nIdProducto HAVING COUNT(*) > 1) t
+-- El invariante del módulo de movimientos: la existencia de un lote es la suma de
+-- su kardex. Si esta cuenta deja de ser 0, alguien tocó nCantidad por su cuenta.
+UNION ALL SELECT 'Lotes cuyo saldo no cuadra con su kardex', COUNT(*)
+  FROM TBL_DET_PRODUCTO d
+ WHERE d.nCantidad <> ISNULL((SELECT SUM(m.nCantidad) FROM TBL_MOVIMIENTO m
+                               WHERE m.nIdDetProd = d.nIdDetProd), 0);
 GO

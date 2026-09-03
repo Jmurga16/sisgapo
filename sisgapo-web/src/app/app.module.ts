@@ -43,6 +43,10 @@ import { ProductosComponent } from './modulos/inventario/productos/productos.com
 import { CategoriaComponent } from './modulos/inventario/categoria/categoria.component';
 import { CategoriaModalComponent } from './modulos/inventario/categoria/categoria-modal/categoria-modal.component';
 import { ProductosModalComponent } from './modulos/inventario/productos/productos-modal/productos-modal.component';
+import { LotesComponent } from './modulos/inventario/lotes/lotes.component';
+import { LotesModalComponent } from './modulos/inventario/lotes/lotes-modal/lotes-modal.component';
+import { MovimientosComponent } from './modulos/inventario/movimientos/movimientos.component';
+import { MovimientosModalComponent } from './modulos/inventario/movimientos/movimientos-modal/movimientos-modal.component';
 import { LoginComponent } from './login/login.component';
 import { InicioComponent } from './inicio/inicio.component';
 import { TokenInterceptor } from './shared/services/token.interceptor';
@@ -62,6 +66,10 @@ import { TokenInterceptor } from './shared/services/token.interceptor';
     CategoriaComponent,
     CategoriaModalComponent,
     ProductosModalComponent,
+    LotesComponent,
+    LotesModalComponent,
+    MovimientosComponent,
+    MovimientosModalComponent,
     LoginComponent,
     InicioComponent,
   ],

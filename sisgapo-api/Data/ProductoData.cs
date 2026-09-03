@@ -1,4 +1,4 @@
-﻿using Entity;
+using Entity;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -104,11 +104,10 @@ namespace Data
                                 prodEnt.sNombreCategoria = Convert.ToString(dr["sNombreCategoria"]);
                                 prodEnt.nIdProducto = Int32.Parse(Convert.ToString(dr["nIdProducto"]));
                                 prodEnt.sNombreProducto = Convert.ToString(dr["sNombreProducto"]);
-                                prodEnt.nIdDetProd = Int32.Parse(Convert.ToString(dr["nIdDetProd"]));
+                                prodEnt.nLotes = Int32.Parse(Convert.ToString(dr["nLotes"]));
                                 prodEnt.nCantidad = Int32.Parse(Convert.ToString(dr["nCantidad"]));
                                 prodEnt.sNombreUM = Convert.ToString(dr["sNombreUM"]);
-                                prodEnt.nPrecio = Int32.Parse(Convert.ToString(dr["nPrecio"]));
-                                prodEnt.sNombreLote = Convert.ToString(dr["sNombreLote"]);
+                                prodEnt.nValor = Int64.Parse(Convert.ToString(dr["nValor"]));
                                 prodEnt.dFechaVenc = Convert.ToString(dr["dFechaVenc"]);
                                 prodEnt.sEstado = Convert.ToString(dr["sEstado"]);
 
@@ -160,13 +159,6 @@ namespace Data
                                 prodEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));                                
                                 prodEnt.nIdProducto = Int32.Parse(Convert.ToString(dr["nIdProducto"]));
                                 prodEnt.sNombreProducto = Convert.ToString(dr["sNombreProducto"]);      
-                                prodEnt.nCantidad = Int32.Parse(Convert.ToString(dr["nCantidad"]));
-                                prodEnt.nIdUnidadMedida = Int32.Parse(Convert.ToString(dr["nIdUnidadMedida"]));                                
-                                prodEnt.nPrecio = Int32.Parse(Convert.ToString(dr["nPrecio"]));
-                                prodEnt.sDescripcion = Convert.ToString(dr["sDescripcion"]);
-                                prodEnt.nIdLote = Int32.Parse(Convert.ToString(dr["nIdLote"]));
-                                prodEnt.dFechaFab = Convert.ToString(dr["dFechaFab"]);                                
-                                prodEnt.dFechaVenc = Convert.ToString(dr["dFechaVenc"]);
                                 
 
                                 listaProductosId.Add(prodEnt);

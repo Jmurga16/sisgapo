@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +28,7 @@ namespace Entity
         public string sNombreUM { get; set; }
     }
 
+
     public class EListaProductos
     {
         public int nIdCatProd { get; set; }
@@ -37,11 +38,10 @@ namespace Entity
         public string sNombreCategoria { get; set; }
         public int nIdProducto { get; set; }
         public string sNombreProducto { get; set; }
-        public int nIdDetProd { get; set; }
+        public int nLotes { get; set; }
         public int nCantidad { get; set; }
         public string sNombreUM { get; set; }
-        public int nPrecio { get; set; }
-        public string sNombreLote { get; set; }
+        public long nValor { get; set; }
         public string dFechaVenc { get; set; }
         public string sEstado { get; set; }
     }
@@ -53,14 +53,6 @@ namespace Entity
         public int nIdCategoria { get; set; }        
         public int nIdProducto { get; set; }
         public string sNombreProducto { get; set; }
-        public int nIdDetProd { get; set; }
-        public int nCantidad { get; set; }
-        public int nIdUnidadMedida { get; set; }
-        public int nPrecio { get; set; }
-        public string sDescripcion { get; set; }
-        public int nIdLote { get; set; }
-        public string dFechaFab { get; set; }
-        public string dFechaVenc { get; set; }
 
     }
 

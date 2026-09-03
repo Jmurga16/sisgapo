@@ -6,11 +6,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
 import {
   AccionModal,
-  AlmacenCombo,
-  CategoriaCombo,
   DatosModal,
+  LoteDetalle,
   ParametroApi,
-  ProductoDetalle,
+  ProductoCombo,
   RespuestaApi,
   UnidadMedidaCombo
 } from 'src/app/shared/models';
@@ -23,28 +22,27 @@ interface EventoFecha {
 }
 
 @Component({
-  selector: 'app-productos-modal',
-  templateUrl: './productos-modal.component.html',
-  styleUrls: ['./productos-modal.component.css'],
+  selector: 'app-lotes-modal',
+  templateUrl: './lotes-modal.component.html',
+  styleUrls: ['./lotes-modal.component.css'],
   providers: [
     { provide: DateAdapter, useClass: AppDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS }
   ]
 })
-export class ProductosModalComponent implements OnInit {
-  nIdCatProd: number = 0;
-  nIdProducto: number = 0;
+export class LotesModalComponent implements OnInit {
+  nIdDetProd: number = 0;
   bEsAlta: boolean = true;
-  formProducto: FormGroup;
+  formLote: FormGroup;
   sAccionModal: string;
-  lAlmacenes: AlmacenCombo[] = [];
-  lCategorias: CategoriaCombo[] = [];
+  sNombreProducto: string = '';
+  lProductos: ProductoCombo[] = [];
   lUnidadMedida: UnidadMedidaCombo[] = [];
   dFechaFab: string = '';
   dFechaVenc: string = '';
 
   constructor(
-    public dialogRef: MatDialogRef<ProductosModalComponent>,
+    public dialogRef: MatDialogRef<LotesModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DatosModal,
     private inventarioService: InventarioService,
     private formBuilder: FormBuilder,
@@ -54,31 +52,29 @@ export class ProductosModalComponent implements OnInit {
   ngOnInit(): void {
     this.bEsAlta = this.data.accion === AccionModal.Agregar;
     this.sAccionModal = this.bEsAlta ? 'Agregar' : 'Editar';
-    this.formProducto = this.formBuilder.group({
-      sNombreProducto: ['', [Validators.required, Validators.pattern(/^[^|]*$/)]],
-      nIdAlmacen: [0, Validators.required],
-      nIdCategoria: [0, Validators.required],
+
+    this.formLote = this.formBuilder.group({
+      sNombreLote: ['', Validators.pattern(/^[^|]*$/)],
+      dFechaFab: ['', Validators.required],
+      dFechaVenc: ['', Validators.required],
+      nIdUnidadMedida: [0, Validators.required],
+      nPrecio: [0, Validators.required],
+      sDescripcion: ['', [Validators.required, Validators.pattern(/^[^|]*$/)]],
     });
 
-    // El alta crea también el primer lote. La edición ya no toca cantidad, precio
-    // ni fechas: eso pertenece al lote y se mantiene desde la pantalla de Lotes.
+    // La cantidad solo existe en el alta: es la existencia con la que entra la
+    // partida. A partir de ahí se mueve desde Movimientos.
     if (this.bEsAlta) {
-      this.formProducto.addControl('nIdUnidadMedida', this.formBuilder.control(0, Validators.required));
-      this.formProducto.addControl('nCantidad', this.formBuilder.control(0, Validators.required));
-      this.formProducto.addControl('nPrecio', this.formBuilder.control(0, Validators.required));
-      this.formProducto.addControl('dFechaFab', this.formBuilder.control('', Validators.required));
-      this.formProducto.addControl('dFechaVenc', this.formBuilder.control('', Validators.required));
-      this.formProducto.addControl('sDescripcion',
-        this.formBuilder.control('', [Validators.required, Validators.pattern(/^[^|]*$/)]));
+      this.formLote.addControl('nIdProducto', this.formBuilder.control(0, Validators.required));
+      this.formLote.addControl('nCantidad', this.formBuilder.control(0, Validators.required));
 
-      this.fnListarUnidadMedida();
+      this.fnListarProductos();
     }
 
-    this.fnListarAlmacenes();
-    this.fnListarCategorias();
+    this.fnListarUnidadMedida();
 
     if (!this.bEsAlta) {
-      this.nIdCatProd = this.data.nId;
+      this.nIdDetProd = this.data.nId;
       this.fnCargarDatos();
     }
   }
@@ -89,36 +85,37 @@ export class ProductosModalComponent implements OnInit {
 
   async fnCargarDatos(): Promise<void> {
     try {
-      const productos = await this.inventarioService.fnServProducto<ProductoDetalle[]>(
-        '05',
-        [this.nIdCatProd]
+      const lotes = await this.inventarioService.fnServLote<LoteDetalle[]>(
+        '02',
+        [this.nIdDetProd]
       );
 
-      if (!productos.length) {
-        await Swal.fire({ title: 'No se encontró el producto', icon: 'error' });
+      if (!lotes.length) {
+        await Swal.fire({ title: 'No se encontró el lote', icon: 'error' });
         this.fnCerrarModal(0);
         return;
       }
 
-      const producto = productos[0];
-      this.nIdProducto = producto.nIdProducto;
-      this.formProducto.patchValue(producto);
+      const lote = lotes[0];
+      this.sNombreProducto = lote.sNombreProducto;
+      this.dFechaFab = lote.dFechaFab;
+      this.dFechaVenc = lote.dFechaVenc;
+      this.formLote.patchValue({
+        sNombreLote: lote.sNombreLote,
+        nIdUnidadMedida: lote.nIdUnidadMedida,
+        nPrecio: lote.nPrecio,
+        sDescripcion: lote.sDescripcion,
+        dFechaFab: this.fnTextoAFecha(lote.dFechaFab),
+        dFechaVenc: this.fnTextoAFecha(lote.dFechaVenc)
+      });
     } catch (error) {
       console.error(error as HttpErrorResponse);
     }
   }
 
-  async fnListarAlmacenes(): Promise<void> {
+  async fnListarProductos(): Promise<void> {
     try {
-      this.lAlmacenes = await this.inventarioService.fnServProducto<AlmacenCombo[]>('01', []);
-    } catch (error) {
-      console.error(error as HttpErrorResponse);
-    }
-  }
-
-  async fnListarCategorias(): Promise<void> {
-    try {
-      this.lCategorias = await this.inventarioService.fnServProducto<CategoriaCombo[]>('02', []);
+      this.lProductos = await this.inventarioService.fnServLote<ProductoCombo[]>('06', [0]);
     } catch (error) {
       console.error(error as HttpErrorResponse);
     }
@@ -134,40 +131,39 @@ export class ProductosModalComponent implements OnInit {
   }
 
   async fnGrabar(): Promise<void> {
-    if (this.formProducto.invalid) {
+    if (this.formLote.invalid) {
       await Swal.fire({ title: 'Ingrese todos los campos.', icon: 'warning', timer: 1500 });
       return;
     }
 
-    if (this.bEsAlta && !this.fnValidarNum()) {
+    if (!this.fnValidarNum()) {
       return;
     }
 
-    // Opción 06: producto, ubicación y primer lote. Opción 07: solo el producto y
-    // su ubicación; el id del producto va en la posición 4 y el de TBL_CAT_PROD en la 5.
     const parametros: ParametroApi[] = this.bEsAlta
       ? [
-        this.formProducto.get('sNombreProducto').value,
-        this.formProducto.get('nIdAlmacen').value,
-        this.formProducto.get('nIdCategoria').value,
-        this.formProducto.get('nIdUnidadMedida').value,
-        this.formProducto.get('nCantidad').value,
-        this.formProducto.get('nPrecio').value,
+        this.formLote.get('nIdProducto').value,
+        this.formLote.get('sNombreLote').value,
         this.dFechaFab,
         this.dFechaVenc,
-        this.formProducto.get('sDescripcion').value,
+        this.formLote.get('nIdUnidadMedida').value,
+        this.formLote.get('nCantidad').value,
+        this.formLote.get('nPrecio').value,
+        this.formLote.get('sDescripcion').value,
       ]
       : [
-        this.formProducto.get('sNombreProducto').value,
-        this.formProducto.get('nIdAlmacen').value,
-        this.formProducto.get('nIdCategoria').value,
-        this.nIdProducto,
-        this.nIdCatProd,
+        this.nIdDetProd,
+        this.formLote.get('sNombreLote').value,
+        this.dFechaFab,
+        this.dFechaVenc,
+        this.formLote.get('nIdUnidadMedida').value,
+        this.formLote.get('nPrecio').value,
+        this.formLote.get('sDescripcion').value,
       ];
 
     try {
       const respuesta = await this.inventarioService
-        .fnServProducto<RespuestaApi>(this.bEsAlta ? '06' : '07', parametros);
+        .fnServLote<RespuestaApi>(this.bEsAlta ? '03' : '04', parametros);
 
       if (respuesta.cod === '1') {
         await Swal.fire({ title: respuesta.mensaje, icon: 'success', timer: 3500 });
@@ -188,6 +184,11 @@ export class ProductosModalComponent implements OnInit {
     }
   }
 
+  fnTextoAFecha(sFecha: string): Date {
+    const partes = sFecha.substring(0, 10).split('-');
+    return new Date(Number(partes[0]), Number(partes[1]) - 1, Number(partes[2]));
+  }
+
   fnCambiarFecha(event: EventoFecha, nTipo: number): void {
     const fecha = this.fnFechaIso(event.value);
 
@@ -199,9 +200,9 @@ export class ProductosModalComponent implements OnInit {
   }
 
   fnValidarNum(): boolean {
-    const cantidad = Number(this.formProducto.controls.nCantidad.value);
-    const precio = Number(this.formProducto.controls.nPrecio.value);
-    const valido = cantidad > 0 && precio > 0;
+    const precio = Number(this.formLote.get('nPrecio').value);
+    const cantidad = this.bEsAlta ? Number(this.formLote.get('nCantidad').value) : 1;
+    const valido = precio > 0 && cantidad > 0;
 
     if (!valido) {
       Swal.fire({ title: 'La cantidad y el precio deben ser mayores que cero.', icon: 'warning', timer: 1500 });

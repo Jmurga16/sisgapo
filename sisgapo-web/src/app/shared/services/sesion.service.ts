@@ -60,6 +60,16 @@ export class SesionService {
     return nRol === Rol.Administrador || nRol === Rol.Supervisor;
   }
 
+  //Entradas y salidas las registra cualquier rol; el ajuste es del Supervisor,
+  //igual que en InventarioController.
+  fnPuedeRegistrarMovimientos(): boolean {
+    return this.fnEstaAutenticado();
+  }
+
+  fnPuedeAjustarInventario(): boolean {
+    return this.fnPuedeGestionarInventario();
+  }
+
   fnCerrar(): void {
     localStorage.removeItem(SesionService.sClave);
   }

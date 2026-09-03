@@ -38,6 +38,8 @@ namespace Data
                 ["USP_MNT_Almacenes"] = FirmaOpcionParametro(),
                 ["USP_MNT_Categorias"] = FirmaOpcionParametro(),
                 ["USP_MNT_Productos"] = FirmaOpcionParametro(),
+                ["USP_MNT_Lotes"] = FirmaOpcionParametro(),
+                ["USP_MNT_Movimientos"] = FirmaOpcionParametro(),
                 ["USP_MNT_Usuarios"] = FirmaOpcionParametro(),
                 ["USP_MNT_Panel"] = FirmaOpcionParametro(),
                 ["USP_MNT_Login"] = new[]

@@ -6,6 +6,8 @@ import { ZonaListComponent } from './modulos/zona/zona-list/zona-list.component'
 import { ZonaFormComponent } from './modulos/zona/zona-form/zona-form.component';
 import { CategoriaComponent } from './modulos/inventario/categoria/categoria.component';
 import { ProductosComponent } from './modulos/inventario/productos/productos.component';
+import { LotesComponent } from './modulos/inventario/lotes/lotes.component';
+import { MovimientosComponent } from './modulos/inventario/movimientos/movimientos.component';
 
 import { NavMenuComponent } from './nav-menu/nav-menu/nav-menu.component';
 import { InicioComponent } from './inicio/inicio.component';
@@ -50,6 +52,8 @@ const routes: Routes = [
   },
   { path: 'categoria', component: CategoriaComponent, canActivate: [AuthGuard] },
   { path: 'productos', component: ProductosComponent, canActivate: [AuthGuard] },
+  { path: 'lotes', component: LotesComponent, canActivate: [AuthGuard] },
+  { path: 'movimientos', component: MovimientosComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: 'login' },
 ];
 

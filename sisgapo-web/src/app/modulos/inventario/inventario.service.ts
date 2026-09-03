@@ -36,4 +36,28 @@ export class InventarioService {
     return this.http.post<T>(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();
   }
 
+  async fnServLote<T>(sOpcion: string, pParametro: ParametroApi[]): Promise<T> {
+    const urlEndPoint = this.url + 'InventarioService/Lote';
+    const httpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    const params = {
+      sOpcion,
+      parametros: pParametro.map(String)
+    };
+
+    return this.http.post<T>(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();
+  }
+
+  async fnServMovimiento<T>(sOpcion: string, pParametro: ParametroApi[]): Promise<T> {
+    const urlEndPoint = this.url + 'InventarioService/Movimiento';
+    const httpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    const params = {
+      sOpcion,
+      parametros: pParametro.map(String)
+    };
+
+    return this.http.post<T>(urlEndPoint, JSON.stringify(params), { headers: httpHeaders }).toPromise();
+  }
+
 }
