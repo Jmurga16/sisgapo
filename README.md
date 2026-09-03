@@ -120,10 +120,26 @@ CRUD completos.
 dotnet test sisgapo-api/SISGAPO_Back.sln --configuration Release
 ```
 
-La suite cubre autenticación con bcrypt, usuarios inactivos, hashes corruptos, validación de
-usuarios, modo demo y rechazo del delimitador legado. El workflow de GitHub Actions ejecuta esas
-pruebas, compila la solución .NET y genera el build de producción de Angular en cada push y
-pull request a `main`.
+La suite unitaria cubre autenticación con bcrypt, usuarios inactivos, hashes corruptos,
+validación de usuarios, modo demo y rechazo del delimitador legado.
+
+Las pruebas de integración se ejecutan contra SQL Server y cubren las reglas de Lotes y
+Movimientos —salida que deja el lote en negativo, ajuste sin diferencia, movimiento sin
+motivo, baja de un lote con existencia, código de lote repetido, unidad homogénea entre
+partidas— y el invariante del módulo: la existencia de un lote es siempre la suma de su
+kardex. Necesitan la base cargada:
+
+```bash
+docker compose up -d
+export SISGAPO_TEST_CONNECTION_STRING='Server=localhost,14330;Database=DB_SISGAPO;User ID=sa;Password=Sisgapo!Demo2026;TrustServerCertificate=True'
+dotnet test sisgapo-api/Test/Test.csproj --configuration Release
+```
+
+Sin esa variable se omiten y el resto de la suite pasa igual.
+
+El workflow de GitHub Actions tiene tres trabajos: compila la solución .NET y ejecuta las
+unitarias, levanta SQL Server con `docker compose` para las de integración, y genera el build
+de producción de Angular. Se ejecuta en cada push y pull request a `main`.
 
 El workflow es únicamente CI: no publica la aplicación. El despliegue de la demo se realiza
 manualmente después de comprobar que ambos jobs están en verde.
@@ -134,11 +150,12 @@ manualmente después de comprobar que ambos jobs están en verde.
 
 | Usuario | Contraseña | Rol | Para probar |
 |---|---|---|---|
-| `demo.supervisor` | `SisgapoDemo2026!` | Supervisor | Altas, ediciones y cambios de estado |
-| `demo.asistente` | `SisgapoDemo2026!` | Asistente | Panel y consulta de inventario |
+| `demo.supervisor` | `SisgapoDemo2026!` | Supervisor | Altas, ediciones, cambios de estado y ajustes de inventario |
+| `demo.asistente` | `SisgapoDemo2026!` | Asistente | Panel, consultas y registro de entradas y salidas |
 
-El Supervisor gestiona almacenes, zonas, categorías y productos, pero no Usuarios. El
-Asistente permite comprobar que menús y escrituras cambian según el rol.
+El Supervisor gestiona almacenes, zonas, categorías, productos y lotes, pero no Usuarios. El
+Asistente registra movimientos de inventario pero no puede ajustar existencias ni mantener
+lotes, así que sirve para comprobar que menús y escrituras cambian según el rol.
 
 > Las contraseñas se guardan con bcrypt. La contraseña compartida y documentada es una
 > licencia de la demo, no del diseño: en el original de 2021 estaban en texto plano

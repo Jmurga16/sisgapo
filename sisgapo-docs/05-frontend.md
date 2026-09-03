@@ -59,11 +59,13 @@ src/app/
     └── inventario/
         ├── categoria/         componente + modal
         ├── productos/         componente + modal
-        └── inventario.service.ts   (compartido por categoría y productos)
+        ├── lotes/             componente + modal
+        ├── movimientos/       componente + modal (kardex)
+        └── inventario.service.ts   (compartido por las cuatro pantallas)
 ```
 
-**Un solo `NgModule`.** Los 14 componentes se declaran en `app.module.ts` y se cargan todos en
-el bundle inicial: `main-es2015.js` pesa 877 kB. Para cinco pantallas es asumible, pero
+**Un solo `NgModule`.** Los 18 componentes se declaran en `app.module.ts` y se cargan todos en
+el bundle inicial: `main` pesa unos 966 kB. Para siete pantallas sigue siendo asumible, pero
 dividir en módulos con carga diferida es la mejora obvia si el sistema creciera.
 
 ## 3. Rutas
@@ -80,6 +82,13 @@ dividir en módulos con carga diferida es la mejora obvia si el sistema creciera
 | `zonas/editar/:id` | `ZonaFormComponent` | administrador o supervisor |
 | `categoria` | `CategoriaComponent` | sesión |
 | `productos` | `ProductosComponent` | sesión |
+| `lotes` | `LotesComponent` | sesión |
+| `movimientos` | `MovimientosComponent` | sesión |
+
+Las dos últimas aceptan un parámetro de consulta que preselecciona el filtro:
+`lotes?producto=1` llega desde el botón «Lotes» del listado de productos, y
+`movimientos?lote=1` desde el botón «Kardex» del listado de lotes. Es el recorrido natural
+de la demo: catálogo → partidas → historia de una partida.
 
 **La ruta `login` apunta a `NavMenuComponent`, no a `LoginComponent`.** `NavMenuComponent`
 decide qué mostrar según la sesión: si no existe, renderiza el login dentro de su plantilla;
@@ -101,7 +110,10 @@ const peticion = sToken
 ```
 
 El menú se filtra por rol. El administrador gestiona usuarios; administrador y supervisor
-gestionan almacenes, zonas e inventario; el asistente consulta inventario. La API vuelve a
+gestionan almacenes, zonas, catálogo y lotes; el asistente consulta el inventario y **registra
+entradas y salidas**. El ajuste —corregir la existencia sin documento que lo respalde— queda
+para administrador y supervisor: `SesionService.fnPuedeAjustarInventario()` oculta la opción
+y `InventarioController` la rechaza con 403 aunque llegue por otra vía. La API vuelve a
 comprobar los permisos, por lo que ocultar botones no es la única barrera. En modo demo, la
 interfaz deshabilita las escrituras y un filtro global de la API las rechaza con HTTP 403.
 
@@ -116,7 +128,7 @@ Los servicios de negocio usan `HttpClient`; `ZonaService` conserva observables p
 | `PanelService` | `POST /Panel` | `sOpcion` + `parametros[]` |
 | `UsuariosService` | `POST /UsuariosService` | `sOpcion` + `parametros[]` |
 | `AlmacenesService` | `POST /AlmacenesService` | `sOpcion` + `parametros[]` |
-| `InventarioService` | `POST /InventarioService/{Categoria,Producto}` | `sOpcion` + `parametros[]` |
+| `InventarioService` | `POST /InventarioService/{Categoria,Producto,Lote,Movimiento}` | `sOpcion` + `parametros[]` |
 | `ZonaService` | `GET/POST /api/zona` | REST, objeto tipado |
 | `ConfiguracionService` | `GET /ConfiguracionService` | estado público del modo demo |
 
@@ -155,6 +167,10 @@ datos por id. Al guardar, elige el código de operación con un ternario:
 ```typescript
 let pOpcion = this.data.accion == 0 ? '05' : '06';   // 05 alta / 06 edición
 ```
+
+`MovimientosModalComponent` es el otro que se sale del patrón: no tiene modo edición porque
+un movimiento no se edita ni se borra —se corrige con otro movimiento—, así que recibe el
+lote preseleccionado en vez de `{ accion, nId }`.
 
 `ZonaFormComponent` rompe el patrón: es una página completa en vez de un modal. Hasta
 2026 tenía además un defecto grave —su modo edición no editaba, siempre insertaba—,
@@ -199,8 +215,9 @@ redirección desde HTTP. Ver `06-hallazgos.md`, S-08.
 
 ## 9. Despliegue
 
-El repositorio conserva un único workflow, `.github/workflows/ci.yml`. Usa Node 22,
-`actions/checkout@v4`, instala con el lockfile y genera el build de producción en cada push
+El repositorio conserva un único workflow, `.github/workflows/ci.yml`, con tres trabajos:
+compilación y pruebas del backend, pruebas de integración contra un SQL Server levantado con
+`docker compose`, y build de producción del frontend con Node 22 y el lockfile, en cada push
 y pull request. Los workflows antiguos de Azure Static Web Apps se retiraron porque los
 recursos ya no existen. El despliegue público nuevo sigue pendiente; ver
 `07-migracion-tier-free.md` y `11-estado-portafolio.md`.

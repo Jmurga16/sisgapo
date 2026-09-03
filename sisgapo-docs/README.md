@@ -37,6 +37,9 @@ existe; la base de datos se reconstruye desde los scripts de `sql/`.
 | 10 | [Decisiones](10-decisiones.md) | Registro de decisiones tomadas y alternativas descartadas |
 | 11 | [Estado para portafolio](11-estado-portafolio.md) | Qué está hecho, qué queda pendiente y suficiencia de módulos |
 
+Los módulos de Lotes y Movimientos se documentan repartidos: modelo en el `03`, contratos en
+el `04`, pantallas en el `05` y las decisiones que los sostienen en el `10` (D-26 a D-30).
+
 También en esta carpeta:
 
 - [`sql/`](sql/) — esquema, procedimientos y datos de demostración. Es la versión
@@ -47,11 +50,13 @@ También en esta carpeta:
 ## El sistema en diez líneas
 
 1. CRUD de inventario bien delimitado: usuarios, zonas, almacenes, categorías y
-   productos, más un panel de control con existencias y control de vencimientos.
+   productos, más lotes, movimientos con kardex y un panel de control con existencias y
+   control de vencimientos.
 2. Backend .NET 8 en cuatro proyectos por capas, frontend Angular 9, y **toda la lógica
-   de negocio en siete procedimientos almacenados de T-SQL**.
-3. Doce casos de uso especificados en 2021, los doce con código y pantalla. El alcance
-   está cerrado: no hay módulos a medias.
+   de negocio en nueve procedimientos almacenados de T-SQL**.
+3. Doce casos de uso especificados en 2021, los doce con código y pantalla. Sobre eso, tres
+   módulos añadidos en 2026 —panel, lotes y movimientos— que cierran el dominio: un producto
+   puede tener varias partidas y la existencia deja de sobrescribirse.
 4. `docker compose up -d` levanta SQL Server, crea la base y carga datos de demostración
    realistas. Los scripts son reejecutables.
 5. Backend y frontend compilan hoy. El frontend necesita

@@ -60,7 +60,7 @@ SQL Server 2022 en Docker y, donde aplica, por HTTP contra la API.
 | S-06 · `Microsoft.ApplicationBlocks.Data` sin mantenimiento | ✅ Eliminado del proyecto |
 | S-07 · El delimitador `\|` no se escapa | ✅ Corregido — el frontend envía valores separados y el backend los valida antes de reconstruir `pParametro` |
 | C-06 · El nombre de usuario siempre lleva sufijo | ✅ Corregido — sufijos solo ante colisiones reales |
-| C-10 · El único test no puede pasar | ✅ Corregido — 13 pruebas unitarias ejecutadas por GitHub Actions |
+| C-10 · El único test no puede pasar | ✅ Corregido — 16 pruebas unitarias y 12 de integración contra SQL Server, ejecutadas por GitHub Actions |
 | D-01 · .NET 5 fuera de soporte | ✅ Corregido — migrado a .NET 8, 0 warnings |
 | D-02 · Angular 9 fuera de soporte | ⏳ Pendiente |
 | D-03 · Sin inyección de dependencias | ⚠️ Parcial — `LoginBusiness` y `UsuarioBusiness` admiten dobles; el resto conserva instanciación directa |
@@ -309,10 +309,15 @@ ninguna fila — y el procedimiento igual responde `'1|Se actualizó con éxito'
 
 Verificado contra SQL Server 2022: al pedir mover un producto al almacén 2 / categoría 2 y
 cambiar sus fechas, `TBL_CAT_PROD` se quedó en 1/1 y `TBL_LOTE` conservó las fechas
-originales. Detalle y reproducción en `04-api-referencia.md`, sección 6.
+originales.
 
 **Cambiar un producto de almacén no funciona. Cambiar su fecha de vencimiento tampoco.** Son
 las dos operaciones centrales de un sistema de gestión de almacén con control de caducidad.
+
+Se corrigió primero alineando las posiciones, y después el módulo de Lotes eliminó la clase
+entera de error: la opción `07` se quedó con cinco parámetros —nombre, almacén, categoría y
+los dos identificadores— y dos `UPDATE`. Las fechas y la existencia se mantienen desde
+`USP_MNT_Lotes` y `USP_MNT_Movimientos`. Ver `04-api-referencia.md`, secciones 6 a 6.2.
 
 ### 🔴 C-03 · Editar una zona crea un duplicado
 
@@ -442,13 +447,14 @@ En el estado original, la cobertura real de pruebas era **cero** en las dos punt
 `sonar-project.properties` y `npm run test -- --code-coverage` configurados, la intención
 estaba pero no se llegó a completar.
 
-**Arreglo aplicado:** el proyecto `Test` forma parte de la solución y contiene 13 pruebas
+**Arreglo aplicado:** el proyecto `Test` forma parte de la solución y contiene 16 pruebas
 unitarias. `LoginBusiness` cubre hash correcto, usuario inactivo y hash corrupto;
 `UsuarioBusiness` cubre bcrypt, edición sin cambio de contraseña, delimitador, longitud
 mínima, mayoría de edad y documento según tipo; el filtro de demo cubre escrituras bloqueadas y lecturas
 permitidas. Las dependencias de datos se sustituyen por dobles mediante interfaces pequeñas.
-GitHub Actions compila API y frontend, ejecuta las pruebas y recoge cobertura en cada push y
-pull request a `main`.
+Además, 12 pruebas de integración reconstruyen SQL Server y verifican Lotes, Movimientos y el
+invariante del kardex. GitHub Actions compila API y frontend, ejecuta ambas suites y recoge
+cobertura en cada push y pull request a `main`.
 
 ### 🟡 C-11 · El módulo Cliente parecía código muerto — **corregido: no lo era**
 
@@ -819,6 +825,10 @@ Lo de esta seccion se midio ejecutandolo, no se estimo.
 6. **Presupuestos de tamano en `angular.json`.** El build avisa si el bundle inicial pasa
    de 1,1 MB. No arregla nada por si solo; hace visible la proxima regresion.
 
+`TBL_LOTE.dFechaVenc` ya tiene índice: el panel lo filtra en tres de sus cuatro consultas y
+la pantalla de Lotes ordena por él. Se añadió con el módulo de Lotes, junto a los de
+`TBL_DET_PRODUCTO.nIdLote` y los dos de `TBL_MOVIMIENTO`.
+
 **Lo que queda sobre la mesa, por orden de retorno:**
 
 - **Carga diferida por modulo.** El bundle inicial son 898 KB de JavaScript porque los 15
@@ -827,8 +837,6 @@ Lo de esta seccion se midio ejecutandolo, no se estimo.
   queda, y tambien la mas invasiva.
 - **`OnPush` en los componentes de lista**, que hoy usan deteccion de cambios por defecto
   con `MatTableDataSource`.
-- **Indice sobre `TBL_LOTE.dFechaVenc`**, que el panel filtra en tres de sus cuatro
-  consultas. Con doce filas no se nota; con doce mil, si.
 - **`caniuse-lite` esta desactualizado** y el build lo avisa. Actualizarlo toca el archivo
   de bloqueo de dependencias, asi que conviene hacerlo en un cambio aparte.
 

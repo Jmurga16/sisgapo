@@ -25,9 +25,9 @@ En orden de impacto:
 
 | # | Elemento | Por qué funciona |
 |---|---|---|
-| 1 | **`06-hallazgos.md`** | 36 hallazgos priorizados de tu propio código, con lo corregido marcado y verificado. Demuestra criterio y honestidad, que es lo difícil de fingir |
+| 1 | **`06-hallazgos.md`** | 37 hallazgos priorizados de tu propio código, con lo corregido marcado y verificado. Demuestra criterio y honestidad, que es lo difícil de fingir |
 | 2 | **`docker compose up`** funcionando | Un comando y el sistema entero arranca. Elimina toda fricción de la demo |
-| 3 | La aplicación en vivo | Cinco módulos CRUD completos, con datos realistas |
+| 3 | La aplicación en vivo | Siete módulos con datos realistas, y un recorrido que llega hasta el kardex de un lote |
 | 4 | **`07-migracion-tier-free.md`** | Análisis de costos y decisiones de infraestructura. Lenguaje que un cliente entiende |
 | 5 | El repositorio | Estructura por capas, convenciones consistentes, documentación |
 | 6 | `/swagger` | La API documentada y navegable |
@@ -52,7 +52,19 @@ Fecharlo en la primera frase desactiva cualquier objeción sobre la antigüedad 
 Login → inicio → un recorrido corto:
 - **Usuarios**: lista con paginación, filtros por nombre, rol y estado. Alta en modal.
 - **Almacenes**: relación con zona y supervisor; baja lógica, no física.
-- **Inventario → Productos**: la pantalla más completa, con seis tablas relacionadas.
+- **Inventario → Productos**: el catálogo. Cada fila resume las partidas del producto.
+- **Lotes**: pulsa «Lotes» en un producto con dos partidas y enseña dos vencimientos
+  distintos del mismo café.
+- **Movimientos**: pulsa «Kardex» en una de ellas y enseña de dónde sale su existencia
+  actual: cada entrada, salida y ajuste, con fecha, motivo y quién lo hizo.
+
+Ese último salto es el que cambia la conversación. Dilo así:
+
+> "Al recuperarlo detecté que el modelo no soportaba el caso de uso principal de un almacén
+> de productos orgánicos: un producto solo podía tener un lote, así que no se podían llevar
+> dos vencimientos a la vez. Y la existencia era un número que se sobrescribía al editar el
+> producto, sin dejar constancia de quién ni por qué. Añadí lotes y un libro de movimientos:
+> ahora el stock no se edita, se mueve."
 
 Menciona la baja lógica de pasada: *"La especificación pedía borrado físico; decidí baja
 lógica para conservar la trazabilidad."* Es una decisión de diseño defendida en una frase.
@@ -72,19 +84,19 @@ punto a favor.
 
 Aquí es donde ganas la reunión. Abre `06-hallazgos.md`:
 
-> "Al recuperarlo hice una revisión completa: 36 hallazgos, clasificados en seguridad,
+> "Al recuperarlo hice una revisión completa: 37 hallazgos, clasificados en seguridad,
 > correctitud y deuda técnica, y priorizados. Los ocho bloqueantes son estos."
 
 Elige **dos** y cuéntalos bien:
 
-- **La edición de productos descarta la mitad de los cambios.** El frontend envía 10 parámetros y el procedimiento espera 11; dos de los cuatro `UPDATE` quedan con un `WHERE ... = NULL` y no afectan a ninguna fila. Y el sistema responde "actualizado con éxito". Lo reproduje contra SQL Server 2022. *(Es un buen ejemplo porque es sutil, real y lo demostraste.)*
+- **La edición de productos descarta la mitad de los cambios.** El frontend envía 10 parámetros y el procedimiento espera 11; dos de los cuatro `UPDATE` quedan con un `WHERE ... = NULL` y no afectan a ninguna fila. Y el sistema responde "actualizado con éxito". Lo reproduje contra SQL Server 2022. *(Es un buen ejemplo porque es sutil, real y lo demostraste.)* Y cierra bien: al añadir Lotes, esa opción se quedó con cinco parámetros y dos `UPDATE`, así que la clase entera de error desapareció.
 - **Los scripts SQL no recreaban la base de datos.** Faltaba una columna que usaban cuatro procedimientos. Es decir: el proyecto no era reproducible. Lo corregí y lo verifiqué ejecutándolo.
 
 **Minuto 9–10 · Costos**
 
 > "Estaba desplegado en Azure por unos 78 dólares al mes, y el 94 % era un App Service Plan
-> Standard sobredimensionado para una demo. Ahora corre en tier gratuito por cero, o en local
-> con un solo comando de Docker."
+> Standard sobredimensionado para una demo. Hoy corre en local con un solo comando de Docker
+> y el despliegue público está diseñado para un tier gratuito."
 
 Cerrar con costos es deliberado: es el único apartado que un cliente no técnico entiende
 completo, y demuestra que piensas en su factura.
@@ -133,8 +145,8 @@ enlace está frío, arranca Docker mientras se despierta y no pierdes el ritmo.
 - [x] `README.md` en la raíz, con el arranque en tres pasos
 - [x] Los bugs visibles corregidos (C-02, C-03, C-08, C-12 a C-18)
 - [x] `docker compose up` probado desde cero
-- [x] Base de datos poblada (5 zonas, 5 almacenes, 7 categorías, 25 productos)
-- [ ] Captura de pantalla del panel en el README
+- [x] Base de datos poblada (5 zonas, 5 almacenes, 7 categorías, 25 productos, 33 lotes, 61 movimientos)
+- [x] Capturas del panel, acceso y productos en el README
 - [ ] Recorrido completo en el navegador, con la consola abierta y en móvil
 
 **Cinco minutos antes de cada reunión**
@@ -148,19 +160,16 @@ enlace está frío, arranca Docker mientras se despierta y no pierdes el ritmo.
 
 Es lo primero que abre cualquiera, y ya está escrito: [`README.md`](../README.md) en la
 raíz del monorepo. Tiene lo que hace falta —qué es, el arranque en tres pasos, las
-credenciales de demostración y el índice de la documentación— y una advertencia explícita
-de que la aplicación no se despliega en internet mientras la autenticación siga abierta.
+credenciales de demostración y el índice de la documentación— y explica el modo de solo
+lectura disponible para una demo pública.
 
-Lo que le falta para la demo:
-
-- **Una captura del panel de control.** Es lo que hace que alguien siga leyendo. Guárdala
-  en `docs/` y enlázala desde el README.
-- **El enlace a la demo en vivo**, cuando exista.
+Lo que le falta para la demo es **el enlace a la instancia pública**, cuando exista. Las
+capturas del panel, acceso y productos ya están enlazadas desde el README.
 
 Y un párrafo que conviene no quitar nunca, porque es el que convierte un repositorio
 antiguo en una muestra de trabajo actual:
 
-> Al recuperarlo hice una auditoría completa: 36 hallazgos documentados y priorizados en
+> Al recuperarlo hice una auditoría completa: 37 hallazgos documentados y priorizados en
 > `sisgapo-docs/06-hallazgos.md`, incluidos varios bugs funcionales que reproduje contra
 > SQL Server 2022 antes de corregirlos. El registro de decisiones —qué elegí, qué descarté
 > y por qué— está en `sisgapo-docs/10-decisiones.md`.
@@ -206,7 +215,7 @@ No estás vendiendo un sistema de gestión de almacén. Estás vendiendo:
 - que **terminas** lo que empiezas (12 casos de uso, todos implementados);
 - que **documentas** (análisis previo en 2021, auditoría completa en 2026);
 - que **auditas con honestidad**, incluido tu propio trabajo;
-- que **priorizas** (29 hallazgos ordenados por impacto, no una lista plana);
+- que **priorizas** (37 hallazgos ordenados por impacto, no una lista plana);
 - que **piensas en el costo** (de US$ 78/mes a US$ 0, con el análisis de por qué);
 - que **haces que otro pueda ejecutarlo** (un comando).
 

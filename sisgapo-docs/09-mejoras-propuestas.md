@@ -28,11 +28,11 @@ implementados. Algunas mejoras son de calidad y otras amplían el producto más 
 | M-05 | Limpiar código muerto | 30 min | ⭐ | ⭐⭐⭐ | ✅ | **hecho** |
 | M-06 | Sustituir `pParametro` por JSON | 2 días | ⭐ | ⭐⭐⭐⭐ | 🤔 | mitigado |
 | M-07 | Actualizar Angular | 3–5 días | ⭐⭐ | ⭐⭐⭐ | ❌ | fuera del alcance |
-| M-08 | Pruebas reales | 2–3 días | ⭐ | ⭐⭐⭐⭐⭐ | 🤔 | **inicial hecho** |
-| M-09 | Múltiples lotes por producto | 2 días | ⭐⭐⭐ | ⭐⭐⭐ | 🤔 | pendiente |
+| M-08 | Pruebas reales | 2–3 días | ⭐ | ⭐⭐⭐⭐⭐ | 🤔 | **unitarias + integración SQL** |
+| M-09 | Múltiples lotes por producto | 2 días | ⭐⭐⭐ | ⭐⭐⭐ | ✅ | **hecho** |
 | M-10 | Lógica de T-SQL a C# | 4–6 días | ⭐⭐ | ⭐⭐⭐⭐⭐ | 🤔 | pendiente |
 | M-11 | Reportes y panel | 3 días | ⭐⭐⭐⭐ | ⭐⭐⭐ | 🤔 | **hecho** |
-| M-12 | Movimientos de inventario | 4 días | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ | siguiente expansión |
+| M-12 | Movimientos de inventario | 4 días | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ | **hecho** |
 | M-13 | Módulo de proveedores (PN3) | 5 días | ⭐⭐ | ⭐⭐ | ❌ | pendiente |
 | M-14 | Reescritura completa | 3–4 semanas | ⭐⭐⭐ | ⭐⭐⭐⭐ | ❌ | pendiente |
 
@@ -307,7 +307,7 @@ convierte una limitación en una decisión explicada.
 
 **Resuelve:** `06-hallazgos.md`, C-10 · **Esfuerzo:** 2–3 días
 
-La primera suite real ya está incorporada: 13 pruebas unitarias de `LoginBusiness`,
+La suite unitaria ya está incorporada: 16 pruebas de `LoginBusiness`,
 `UsuarioBusiness` y el filtro de modo demo, ejecutadas por GitHub Actions junto con la
 compilación de ambas capas.
 Los ocho `.spec.ts` del frontend conservan todavía el `should create` del generador.
@@ -324,26 +324,42 @@ Lo que aportaría más por hora:
 2. **Tests unitarios de la capa de negocio** con `Data` simulado — una vez que M-01 y M-02 pongan lógica real ahí.
 3. **Un test de extremo a extremo** con Playwright que recorra login → listar → crear → editar → dar de baja.
 
-**Siguiente paso recomendado:** pruebas de integración de los procedimientos contra un SQL
-Server efímero. Son las que habrían detectado los bugs históricos del flujo de productos.
+**Hecho para los módulos nuevos:** `Test/InventarioIntegracionTests.cs` ejecuta doce pruebas
+contra SQL Server —el mismo contenedor de `docker compose`— y cubre las reglas de Lotes y
+Movimientos, incluido el invariante «existencia = suma del kardex». Se omiten solas si no hay
+`SISGAPO_TEST_CONNECTION_STRING`, y CI las corre en un trabajo aparte.
 
-## 🤔 M-09 · Múltiples lotes por producto
+**Lo que queda:** llevar el mismo tratamiento a los procedimientos de 2021 —Productos,
+Almacenes, Usuarios—, que son los que tuvieron los bugs históricos.
+
+## ✅ M-09 · Múltiples lotes por producto
 
 **Esfuerzo:** 2 días
 
-Limitación real del modelo: `TBL_DET_PRODUCTO` tiene una fila por producto y esa fila apunta
-a un solo lote. **Un producto no puede tener dos lotes con vencimientos distintos.**
+Limitación real del modelo: `TBL_DET_PRODUCTO` tenía una fila por producto y esa fila apuntaba
+a un solo lote. **Un producto no podía tener dos lotes con vencimientos distintos.**
 
 Para un sistema de gestión de almacén con control de caducidad, es justamente el caso central:
 *"tengo 50 kg del lote que vence en marzo y 30 kg del que vence en junio"*.
 
-El cambio: `TBL_DET_PRODUCTO` pasa a tener una fila por producto **y lote**, la cantidad se
-mueve a ese nivel, y las consultas agregan con `SUM(nCantidad)`.
+**Qué se hizo:**
 
-**Recomendación:** 🤔 es la mejora funcional más defendible del catálogo, y la que mejor
-demuestra que entiendes el dominio. Pero cambia el modelo de datos, los procedimientos y las
-pantallas. Hazlo solo si quieres una historia potente que contar: *"al recuperarlo detecté que
-el modelo no soportaba el caso de uso principal del cliente"*.
+- `TBL_DET_PRODUCTO` pasa a tener una fila por producto **y lote**, con
+  `UNIQUE(nIdProducto, nIdLote)` y baja lógica propia.
+- Todos los lotes del producto comparten unidad de medida; el procedimiento rechaza mezclas
+  que volverían inválida la existencia agregada del listado.
+- `TBL_LOTE.sNombreLote` es `UNIQUE`, y el generador de códigos busca el primer correlativo
+  libre en vez de contar productos con el mismo nombre.
+- Procedimiento nuevo `USP_MNT_Lotes` con las seis opciones del mantenimiento, y pantalla
+  propia en Angular con filtros por almacén, categoría y producto.
+- El listado de productos deja de ser una foto de un lote y pasa a **resumir** los del
+  producto: número de lotes, existencia total, valor y vencimiento más próximo.
+- La edición de un producto se queda con nombre, almacén y categoría. Lo demás es del lote.
+
+**Resultado:** el seed trae ocho productos con dos partidas cada uno, con vencimientos
+distintos, y el panel de próximos vencimientos los distingue. Es la mejora que mejor demuestra
+que el dominio se entiende, y la que hizo evidente que el modelo de 2021 no cubría el caso de
+uso principal del cliente.
 
 ## 🤔 M-10 · Mover la lógica de T-SQL a C#
 
@@ -382,8 +398,9 @@ El panel ya muestra almacenes y productos activos, valor del inventario, distrib
 categoría y almacén, y próximos vencimientos. Las consultas viven en `USP_MNT_Panel` y el
 frontend usa la misma URL configurada que el resto de la aplicación.
 
-**Resultado:** es la entrada visual de la demo y resume el estado actual. Cuando existan
-movimientos, conviene añadir actividad reciente y entradas/salidas del período.
+**Resultado:** es la entrada visual de la demo y resume el estado actual. Con M-12 ya en el
+sistema, lo siguiente que le falta es actividad reciente y entradas/salidas del período:
+`USP_MNT_Movimientos` opción `04` ya devuelve esos totales, solo hay que traerlos al panel.
 
 ---
 
@@ -392,17 +409,28 @@ movimientos, conviene añadir actividad reciente y entradas/salidas del período
 **Esfuerzo:** 4 días
 
 El problema original hablaba de "entradas y salidas" y "seguimiento de despachos", pero
-**ningún caso de uso lo especifica** y el modelo no lo soporta: no hay tabla de movimientos,
-solo un `nCantidad` que se sobrescribe.
+**ningún caso de uso lo especificaba** y el modelo no lo soportaba: no había tabla de
+movimientos, solo un `nCantidad` que se sobrescribía al editar el producto.
 
-Sería el paso natural del producto: `TBL_MOVIMIENTO` con tipo (entrada/salida), cantidad,
-fecha, usuario y motivo, y la existencia calculada como suma de movimientos en vez de un
-campo mutable.
+**Qué se hizo:**
 
-**Recomendación:** ✅ como siguiente expansión. El catálogo y el panel ya están limpios; este
-es el módulo que convierte la aplicación de una foto del stock en un flujo operativo. Debe
-incluir una vista de Kardex con filtros por producto, lote, almacén y fecha. El Asistente
-podría registrar entradas y salidas, mientras el Supervisor conserva ajustes y maestros.
+- Tabla `TBL_MOVIMIENTO`: tipo (`E` entrada, `S` salida, `A` ajuste), cantidad con signo,
+  saldo resultante, motivo, usuario y fecha, con `CHECK` que impiden que una entrada reste o
+  que un saldo quede en negativo.
+- Procedimiento `USP_MNT_Movimientos`: kardex con filtros por almacén, producto, lote, tipo y
+  rango de fechas; totales del período; y el registro del movimiento en una transacción con
+  `UPDLOCK` sobre el lote.
+- La existencia solo cambia aquí. Editar un producto o un lote ya no la toca.
+- Un ajuste recibe la **cantidad contada** en el inventario físico, no la diferencia: el
+  procedimiento calcula el delta para que quede en el kardex como entrada o salida.
+- **El Asistente registra entradas y salidas; el ajuste queda para Supervisor y
+  Administrador.** Es el primer caso de uso propio del rol Asistente, que hasta ahora solo
+  consultaba.
+- El usuario que firma el movimiento sale del token, nunca del formulario.
+
+**Resultado:** el recorrido de la demo deja de ser un catálogo y pasa a explicar cómo cambia
+el inventario: `login → panel → almacén → producto → lote → kardex`. Y el invariante
+—existencia = suma del kardex— está cubierto por pruebas de integración contra SQL Server.
 
 ## ❌ M-13 · Módulo de proveedores (PN3)
 
@@ -444,8 +472,9 @@ Demo local funcionando, sin bugs visibles, US$ 0.
 **Ruta recomendada — 2,5 días.** La anterior + M-01 → M-02 → M-03 + despliegue.
 Demo pública con autenticación real. **Es el punto donde el retorno por hora se estabiliza.**
 
-**Ruta lucida — +3 días.** La anterior + M-11 (panel) + M-09 (múltiples lotes).
-Impresiona a clientes no técnicos y demuestra que entiendes el dominio.
+**Ruta lúcida — +3 días.** La anterior + M-11 (panel) + M-09 (múltiples lotes) + M-12
+(movimientos y kardex). Impresiona a clientes no técnicos y demuestra que entiendes el
+dominio. **Es donde está el proyecto hoy.**
 
 **Ruta técnica — +1 semana.** La recomendada + M-08 → M-10 → SQLite.
 La mejor versión posible del proyecto, y una historia de modernización completa.

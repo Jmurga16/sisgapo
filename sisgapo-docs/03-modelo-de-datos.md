@@ -46,18 +46,26 @@ TBL_DOCUMENTO          TBL_ROL
  │ sNombre          │                          │ nIdProducto  → PRODUCTO   │
  └──────────────────┘                          │ nIdUnidadMedida → UM      │
                                                │ nCantidad, nPrecio        │
- ┌──────────────┐                              │ sDescripcion              │
- │  TBL_LOTE    │──────────nIdLote────────────▶│ nIdLote → LOTE  (sin FK   │
- │ nIdLote (PK) │                              │          en el original)  │
- │ sNombreLote  │                              └───────────────────────────┘
- │ dFechaFab    │
- │ dFechaVenc   │
- └──────────────┘
+ ┌──────────────┐                              │ sDescripcion, bEstado     │
+ │  TBL_LOTE    │──────────nIdLote────────────▶│ nIdLote → LOTE            │
+ │ nIdLote (PK) │                              └─────────────┬─────────────┘
+ │ sNombreLote  │                                            │ nIdDetProd
+ │ dFechaFab    │                                            ▼
+ │ dFechaVenc   │                              ┌───────────────────────────┐
+ └──────────────┘                              │      TBL_MOVIMIENTO       │
+                                               │ nIdMovimiento (PK)        │
+                                               │ nIdDetProd → DET_PRODUCTO │
+                                               │ sTipo   E | S | A         │
+                                               │ nCantidad (con signo)     │
+                                               │ nSaldo, sMotivo, dFechaMov│
+                                               │ nIdUsuario → USUARIO      │
+                                               └───────────────────────────┘
 ```
 
-**Once tablas.** El modelo es correcto en lo esencial: normalizado, con catálogos separados,
+**Doce tablas.** El modelo es correcto en lo esencial: normalizado, con catálogos separados,
 baja lógica donde corresponde y una tabla puente (`TBL_CAT_PROD`) que ubica un producto de
-una categoría en un almacén.
+una categoría en un almacén. `TBL_DET_PRODUCTO` tiene una fila por producto **y lote**, y
+`TBL_MOVIMIENTO` explica cómo llegó cada lote a su existencia actual.
 
 ## 2. Detalle de las tablas
 
@@ -111,37 +119,81 @@ Es la parte más elaborada del modelo. Un producto se registra en `TBL_PRODUCTO`
 `TBL_CAT_PROD` (almacén + categoría) y su detalle físico —cantidad, precio, unidad y lote—
 vive en `TBL_DET_PRODUCTO`.
 
-El código de lote se genera en `USP_MNT_Productos` opción `06`:
+El código de lote lo genera `USP_MNT_Productos` opción `06` (y `USP_MNT_Lotes` opción `03`,
+con el mismo criterio) cuando no llega uno escrito a mano:
 
 ```sql
-SET @nContador   = (SELECT COUNT(*) FROM TBL_PRODUCTO WHERE sNombre = @sNombreProducto)
-SET @sNombreLote = CONCAT(LEFT(@sNombreProducto, 3), RIGHT(CONCAT('0000', @nContador), 4))
+SET @nContador   = 1
+SET @sNombreLote = CONCAT(UPPER(LEFT(@sNombreProducto, 3)), RIGHT(CONCAT('0000', @nContador), 4))
+
+WHILE EXISTS (SELECT 1 FROM TBL_LOTE WHERE sNombreLote = @sNombreLote)
+BEGIN
+    SET @nContador = @nContador + 1
+    SET @sNombreLote = CONCAT(UPPER(LEFT(@sNombreProducto, 3)), RIGHT(CONCAT('0000', @nContador), 4))
+END
 ```
 
-Las tres primeras letras del nombre del producto más un correlativo de cuatro dígitos:
-`Café Orgánico...` → `Caf0001`. Funciona, pero el correlativo cuenta productos con el
-**mismo nombre**, no lotes, así que dos productos distintos que empiecen igual generan
-códigos de lote idénticos.
+Las tres primeras letras del nombre del producto más el primer correlativo libre:
+`Café Orgánico...` → `CAF0001`. El original contaba productos con el **mismo nombre**, no
+lotes, así que dos productos distintos que empezaran igual generaban códigos idénticos.
+Ahora `TBL_LOTE.sNombreLote` es `UNIQUE` y el correlativo se busca como hace
+`USP_MNT_Usuarios` con el nombre de usuario.
 
-**Limitación del modelo:** `TBL_DET_PRODUCTO` tiene una fila por producto, y esa fila apunta
-a un solo lote. **Un producto no puede tener dos lotes simultáneos.** Para un sistema de
-almacén con control de vencimientos, esa es una limitación real: es exactamente el caso de
-uso de "tengo 50 kg del lote que vence en marzo y 30 kg del que vence en junio".
-Ver `09-mejoras-propuestas.md`, M-09.
+### Lotes y movimientos
+
+`TBL_DET_PRODUCTO` tiene **una fila por producto y lote**, con restricción
+`UNIQUE(nIdProducto, nIdLote)` y baja lógica propia. Un producto puede tener a la vez el lote
+que vence en marzo y el que vence en junio, cada uno con su existencia, su precio y su fecha:
+era el caso de uso central de un almacén con control de caducidad y el modelo de 2021 no lo
+soportaba (`09-mejoras-propuestas.md`, M-09).
+
+`TBL_MOVIMIENTO` es el libro del almacén. Una fila por entrada, salida o ajuste sobre un lote:
+
+| Columna | Para qué |
+|---|---|
+| `sTipo` | `E` entrada, `S` salida, `A` ajuste. Con `CHECK` |
+| `nCantidad` | La cantidad movida **con signo**: positiva suma, negativa resta. Un `CHECK` impide que una entrada reste o que una salida sume |
+| `nSaldo` | La existencia del lote justo después del movimiento. Es lo que convierte la tabla en un kardex y no en una bitácora |
+| `sMotivo` | Obligatorio. Es la mitad de la respuesta a «¿por qué cambió el stock?» |
+| `nIdUsuario` | La otra mitad. Lo pone el controlador desde el token, nunca el formulario |
+| `dFechaMov` | `GETDATE()` por defecto |
+
+**El invariante del módulo:** `TBL_DET_PRODUCTO.nCantidad` es siempre la suma de
+`TBL_MOVIMIENTO.nCantidad` del lote. `USP_MNT_Movimientos` lo mantiene en una transacción con
+`UPDLOCK`, el seed lo cumple y las pruebas de integración lo comprueban
+(`sisgapo-api/Test/InventarioIntegracionTests.cs`).
+
+Todos los lotes de un producto comparten `nIdUnidadMedida`. Aunque el legado guarda la U.M.
+en `TBL_DET_PRODUCTO`, el listado de productos suma sus cantidades y muestra una sola unidad;
+`USP_MNT_Lotes` rechaza un alta o edición que mezcle unidades incompatibles (D-31).
+
+Un ajuste recibe la **cantidad contada** en el inventario físico, no la diferencia: el
+procedimiento calcula el delta y lo guarda con signo, para que el kardex lo muestre en la
+columna de entrada o en la de salida según corresponda.
+
+Dar de baja un lote con existencia se rechaza: dejaría stock fuera del inventario sin ningún
+movimiento que lo explique.
 
 ## 3. Los stored procedures
 
-Seis procedimientos más una función. Toda la lógica de negocio del sistema está aquí.
+Nueve procedimientos más una función. Toda la lógica de negocio del sistema está aquí.
 
-| Procedimiento | Líneas | Opciones | Firma |
-|---|---|---|---|
-| `USP_MNT_Login` | 39 | — | `@sNombreUsuario`, `@sContrasenia` |
-| `USP_MNT_Zonas` | 51 | 01–03 | `@sOpcion`, `@nIdZona`, `@sNombre`, `@sRutaImagen` |
-| `USP_MNT_Categorias` | 142 | 01–05 | `@sOpcion`, `@pParametro` |
-| `USP_MNT_Almacenes` | 178 | 01–07 | `@sOpcion`, `@pParametro` |
-| `USP_MNT_Usuarios` | 232 | 01–06 | `@sOpcion`, `@pParametro` |
-| `USP_MNT_Productos` | 293 | 01–08 | `@sOpcion`, `@pParametro` |
-| `dbo.Split` (función) | 34 | — | `@String`, `@Delimitador` |
+| Procedimiento | Opciones | Firma |
+|---|---|---|
+| `USP_MNT_Login` | — | `@sNombreUsuario` |
+| `USP_MNT_Zonas` | 01–03 | `@sOpcion`, `@nIdZona`, `@sNombre`, `@sRutaImagen` |
+| `USP_MNT_Categorias` | 01–05 | `@sOpcion`, `@pParametro` |
+| `USP_MNT_Almacenes` | 01–07 | `@sOpcion`, `@pParametro` |
+| `USP_MNT_Usuarios` | 01–06 | `@sOpcion`, `@pParametro` |
+| `USP_MNT_Productos` | 01–08 | `@sOpcion`, `@pParametro` |
+| `USP_MNT_Panel` | 01–04 | `@sOpcion`, `@pParametro` |
+| `USP_MNT_Lotes` | 01–06 | `@sOpcion`, `@pParametro` |
+| `USP_MNT_Movimientos` | 01–04 | `@sOpcion`, `@pParametro` |
+| `dbo.Split` (función) | — | `@String`, `@Delimitador` |
+
+Los tres últimos son módulos nuevos: no existían en 2021 y no arrastran su estilo de errores.
+`USP_MNT_Lotes` y `USP_MNT_Movimientos` validan antes de escribir y devuelven `0|motivo`
+cuando la operación no procede, en vez de responder «éxito» sobre cero filas afectadas.
 
 **`USP_MNT_Zonas` es la excepción**: recibe parámetros tipados en vez de un string
 delimitado, y no tiene valor por defecto para `@sRutaImagen` (hay que pasarlo siempre).
@@ -303,10 +355,11 @@ transacción y revierten el conjunto ante un error.
 
 Usa `sql/`, no los scripts originales. Ver `sql/README.md` para el procedimiento completo.
 
-> **Verificado.** Los nueve scripts de `sql/` se ejecutaron de principio a fin contra
+> **Verificado.** Los doce scripts de `sql/` se ejecutaron de principio a fin contra
 > `mcr.microsoft.com/mssql/server:2022-latest` sin un solo error, con los conteos esperados y
-> los acentos correctos. Los siete procedimientos responden y el login completo fue
-> verificado por HTTP con `demo.supervisor` y `demo.asistente`.
+> los acentos correctos. Los nueve procedimientos responden, el login y los movimientos se
+> comprobaron por HTTP con `demo.supervisor` y `demo.asistente`, y las pruebas de integración
+> pasan contra esa misma base.
 
 Resumen:
 
@@ -323,7 +376,7 @@ docker exec sisgapo-db /opt/mssql-tools18/bin/sqlcmd \
   -S localhost -U sa -P 'Sisgapo!Demo2026' -C -Q "CREATE DATABASE DB_SISGAPO"
 
 # 3. Ejecutar los scripts en orden
-for f in 0*.sql; do
+for f in [0-9][0-9]-*.sql; do
   docker exec -i sisgapo-db /opt/mssql-tools18/bin/sqlcmd \
     -S localhost -U sa -P 'Sisgapo!Demo2026' -C -d DB_SISGAPO -b < "$f" || break
 done
@@ -345,6 +398,12 @@ Qué se corrigió en `sql/` respecto a los originales:
 | `ALTER PROCEDURE` → `CREATE PROCEDURE` | `05-usp-almacenes.sql` |
 | Se elimina `USE [DB_SISGAPO]` (Azure SQL no lo admite) | todos |
 | Datos de demostración ampliados y con acentos correctos | `03-seed.sql` |
+| `TBL_DET_PRODUCTO` pasa a una fila por producto y lote, con estado propio | `01-esquema.sql` |
+| `TBL_LOTE.sNombreLote` pasa a ser `UNIQUE` y el correlativo busca el primer hueco libre | `01-esquema.sql`, `07-usp-productos.sql` |
+| Tabla `TBL_MOVIMIENTO` y sus dos procedimientos | `01-esquema.sql`, `11`, `12` |
+
+Las tres últimas filas no son correcciones de compatibilidad sino funcionalidad nueva: son
+los módulos de Lotes y Movimientos. Ver la sección 2 y `09-mejoras-propuestas.md`, M-09 y M-12.
 
 **Los bugs de lógica 9–13 NO se corrigieron en `sql/`.** Son cambios de comportamiento, no de
 compatibilidad, y merecen decidirse a conciencia. Están priorizados en
@@ -374,6 +433,6 @@ PostgreSQL **pliega los identificadores sin comillas a minúsculas** — lo que 
 del C#, que accede por nombre exacto (`dr["nIdAlmacen"]`). Habría que revisar cada `dr[...]`
 del sistema.
 
-Estimación honesta: **3 a 5 días** para portar los seis procedimientos y la capa de datos, más
+Estimación honesta: **3 a 5 días** para portar los nueve procedimientos y la capa de datos, más
 pruebas. No es imposible, pero para una demo hay caminos más baratos.
 Ver `07-migracion-tier-free.md`, sección 4, donde se comparan las opciones.

@@ -565,6 +565,103 @@ Se conserva `Startup.cs` en vez de pasar al modelo de `Program.cs` de nivel supe
 
 ---
 
+## D-26 · La existencia se guarda, no se calcula
+
+**Decisión:** `TBL_DET_PRODUCTO.nCantidad` sigue existiendo como saldo vigente del lote, en
+vez de calcularse con un `SUM(TBL_MOVIMIENTO.nCantidad)` cada vez que se lee.
+
+**Por qué.** `09-mejoras-propuestas.md`, M-12 proponía lo segundo. Calcularlo obliga a añadir
+una agregación al listado de productos, al de lotes, a los cuatro bloques del panel y a los
+selectores: seis consultas reescritas para no ganar nada visible. Guardarlo cuesta mantener un
+invariante —existencia = suma del kardex— que un solo procedimiento controla, dentro de una
+transacción con `UPDLOCK`.
+
+Lo que hace defendible la copia es que **se verifica**: el seed la comprueba al cargarse y
+`Test/InventarioIntegracionTests.cs` la comprueba en cada ejecución de CI. Un dato
+denormalizado sin prueba es deuda; con prueba es una decisión.
+
+---
+
+## D-27 · El ajuste recibe la cantidad contada, no la diferencia
+
+**Decisión:** al registrar un ajuste, el formulario pide la cantidad que se contó en el
+inventario físico. El procedimiento calcula la diferencia y la guarda con signo.
+
+**Por qué.** Es lo que la persona tiene delante: ha contado 33 sacos. Pedirle que reste
+mentalmente de un saldo que quizá no recuerda es una fuente de errores de dedo, y encima
+ambigua —¿«-7» es sacar siete o dejar el lote en menos siete?—. El kardex, en cambio, necesita
+la diferencia para poder mostrarla en la columna de entrada o de salida, así que la conversión
+la hace el procedimiento y no el usuario.
+
+Efecto lateral útil: si la cantidad contada coincide con la existencia, no hay ajuste que
+registrar y la operación se rechaza en vez de dejar una fila de ruido en el libro.
+
+---
+
+## D-28 · El Asistente mueve inventario; el Supervisor lo ajusta
+
+**Decisión:** entradas y salidas las registra cualquier rol autenticado. El ajuste queda para
+Administrador y Supervisor.
+
+**Por qué.** Es la primera vez que el rol Asistente tiene un caso de uso propio: hasta ahora
+solo consultaba, lo que lo dejaba en un rol decorativo dentro de la demo. Una entrada o una
+salida responden a un documento —una recepción, un despacho—; un ajuste, no: corrige la
+existencia porque el sistema y el almacén no coinciden, y eso pide una firma con más
+responsabilidad.
+
+La regla se aplica en el controlador (`InventarioController.fnEsAjuste`) y se refleja en la
+interfaz ocultando la opción, no al revés: ocultar el botón sin cerrar la puerta no sería
+control de acceso.
+
+---
+
+## D-29 · El usuario del movimiento sale del token
+
+**Decisión:** el id de quien firma un movimiento —o el alta de un lote— lo añade el
+controlador desde el claim `NameIdentifier`, como último parámetro del `pParametro`
+delimitado. El formulario nunca lo envía.
+
+**Por qué.** El contrato de la aplicación es posicional y sin tipos: si el id del usuario
+viajara en el arreglo, cualquiera podría firmar un despacho con el nombre de otro cambiando un
+número en la petición. Es exactamente el tipo de dato que no debe pasar por el cliente.
+
+Rompe un poco la simetría del patrón —el arreglo que envía Angular no coincide con el que lee
+el procedimiento—, y por eso está anotado en las tres capas: en `04-api-referencia.md`, en el
+comentario del controlador y en el `SET @nIdUsuario` de cada procedimiento.
+
+---
+
+## D-30 · Las pruebas de integración se omiten solas
+
+**Decisión:** las doce pruebas contra SQL Server se saltan si no existe la variable
+`SISGAPO_TEST_CONNECTION_STRING`, en vez de fallar o de levantar un contenedor por su cuenta
+con Testcontainers.
+
+**Por qué.** `dotnet test` tiene que seguir funcionando en una máquina sin Docker y sin base
+de datos: es lo que hace el trabajo `api` de CI, que solo compila y ejecuta las unitarias.
+Testcontainers habría añadido una dependencia y el tiempo de arrancar SQL Server a **todas**
+las ejecuciones, incluidas las que no lo necesitan.
+
+El trabajo `sql` de CI hace lo mismo que se hace en local —`docker compose up db-init`— y
+define la variable. Una sola forma de levantar la base, en las dos partes.
+
+---
+
+## D-31 · Los lotes de un producto comparten unidad de medida
+
+**Decisión:** `USP_MNT_Lotes` rechaza crear o editar una partida con una unidad de medida
+distinta de la usada por los demás lotes del mismo producto.
+
+**Por qué.** El modelo heredado guarda `nIdUnidadMedida` en cada detalle, pero la pantalla de
+Productos agrega las cantidades de todas las partidas y muestra una sola U.M. Permitir 40 kg
+y 25 paquetes haría que la fila publicara una existencia ficticia de 65 en una unidad elegida
+arbitrariamente. La alternativa correcta a largo plazo sería mover la U.M. al producto; para
+esta demo, validar la homogeneidad conserva el esquema y evita un total sin significado.
+
+La regla se aplica en SQL tanto al alta como a la edición y tiene una prueba de integración.
+
+---
+
 ## Resumen de las decisiones
 
 | # | Decisión | Nivel de duda |
@@ -594,7 +691,16 @@ Se conserva `Startup.cs` en vez de pasar al modelo de `Program.cs` de nivel supe
 | D-23 | Hashear en `UsuarioBusiness`, no en el navegador | Bajo |
 | D-24 | El token en `localStorage` | **Medio** — una cookie `HttpOnly` sería lo correcto |
 | D-25 | .NET 8 y autenticación en la misma tanda | Bajo |
+| D-26 | La existencia se guarda, no se calcula | **Medio** — es un dato denormalizado, sostenido por pruebas |
+| D-27 | El ajuste recibe la cantidad contada | Bajo |
+| D-28 | El Asistente mueve inventario; el Supervisor lo ajusta | Bajo |
+| D-29 | El usuario del movimiento sale del token | Ninguno |
+| D-30 | Las pruebas de integración se omiten solas | Bajo |
+| D-31 | Los lotes de un producto comparten unidad de medida | Bajo |
 
 **Las tres que más merecen tu revisión: D-01, D-04 y D-09.**
-De las nuevas, la discutible es **D-24**: `localStorage` es la opción cómoda, no la
+De las anteriores, la discutible es **D-24**: `localStorage` es la opción cómoda, no la
 correcta. Con la autenticación ya cerrada, D-17 deja de ser una deuda.
+De las nuevas, la que conviene mirar es **D-26**: guardar la existencia además de poder
+calcularla es la clase de atajo que envejece mal, y aquí se sostiene solo porque hay una
+prueba que lo vigila. Si algún día esa prueba se cae del CI, la decisión deja de ser válida.
