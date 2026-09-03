@@ -31,8 +31,17 @@ deja de tocar existencias y fechas. Ver `../03-modelo-de-datos.md`.
 Los scripts `04`–`09` son los originales con tres cambios mecánicos:
 codificación normalizada a UTF-8, `ALTER PROCEDURE` → `CREATE PROCEDURE`
 (afectaba solo a `05-usp-almacenes.sql`) y eliminación de `USE [DB_SISGAPO]`
-(Azure SQL no permite `USE`). **La lógica T-SQL no se tocó**, incluidos sus bugs
-—están documentados en `../06-hallazgos.md`, no corregidos aquí.
+(Azure SQL no permite `USE`). Salvo por las bajas de `05` y `06` —ver abajo—, **la
+lógica T-SQL no se tocó**, incluidos sus bugs: están documentados en
+`../06-hallazgos.md`, no corregidos aquí.
+
+Las bajas sí cambiaron. `USP_MNT_Almacenes` (07) y `USP_MNT_Categorias` (05)
+desactivaban sin comprobar nada, y con eso se podía dejar un producto activo
+colgando de un almacén o de una categoría de baja —justo lo que verifica el
+invariante «Productos activos en almacén o categoría de baja = 0». Ahora rechazan
+la baja mientras queden productos activos, y un almacén no se puede reactivar si
+su zona está de baja. Es la regla que `USP_MNT_Zonas` ya aplicaba con los
+almacenes. Ver `../10-decisiones.md`, D-35.
 
 ## Cómo ejecutarlos
 
@@ -71,6 +80,42 @@ Crea primero la base desde el portal (`CREATE DATABASE` no se ejecuta desde esto
 scripts) y luego lanza los archivos `01`–`12` en orden con `sqlcmd`, Azure Data
 Studio o SSMS. No incluyen `USE`, así que basta con seleccionar la base correcta.
 
+### Con el script de carga (cualquiera de los tres destinos)
+
+`cargar-base.ps1` recorre los doce archivos en orden sobre una base que ya
+existe. Es el mismo trabajo que hace `db-init` en Docker, pero sirve también para
+Azure SQL y para un SQL Server instalado en la máquina:
+
+```powershell
+# Azure SQL — la base se crea antes en el portal
+.\cargar-base.ps1 -Servidor sisgapo.database.windows.net -Usuario sisgapoadmin
+
+# SQL Server local con autenticación de Windows
+.\cargar-base.ps1 -Servidor . -Integrado
+
+# El contenedor de docker compose
+.\cargar-base.ps1 -Servidor "localhost,14330" -Usuario sa
+```
+
+Pide la contraseña por consola en vez de recibirla por parámetro, para que no
+quede en el historial. Se detiene en el primer error (`sqlcmd -b`), así que si
+falla un script no deja la base a medias sin avisar. Y hay que lanzarlo **desde
+PowerShell**: en `cmd`, Windows abre el `.ps1` con el programa asociado y
+descarta los argumentos.
+
+> **Codificación.** Los doce archivos llevan BOM UTF-8 y el script pasa
+> `-f i:65001,o:65001`. Las dos cosas son necesarias: el `sqlcmd` de Windows lee
+> un `.sql` sin BOM con la página de códigos ANSI, y entonces «Almacén Central
+> Satipo» se guarda como «AlmacÃ©n Central Satipo». El `sqlcmd` del contenedor no
+> tiene el problema, así que la carga por Docker salía bien y ocultaba el fallo.
+> Si abres los archivos desde SSMS, el BOM es lo que hace que se lean bien.
+> Comprobación rápida tras cargar:
+> `SELECT COUNT(*) FROM TBL_ALMACEN WHERE sNombre LIKE '%Ã%';` debe dar 0.
+
+**Ningún despliegue hace esto por ti.** La API solo invoca procedimientos: no hay
+migraciones ni código que cree tablas al arrancar. Cada base nueva necesita esta
+carga una vez.
+
 ## Verificación
 
 `03-seed.sql` termina con dos `SELECT` de control. El primero cuenta las filas de
@@ -80,8 +125,8 @@ cada tabla y debe devolver:
 TBL_DOCUMENTO      3
 TBL_ROL            3
 TBL_ZONA           5
-TBL_USUARIO        9
-TBL_LOGIN          9
+TBL_USUARIO       10
+TBL_LOGIN         10
 TBL_ALMACEN        5
 TBL_CATEGORIA      7
 TBL_UNIDADMEDIDA   5
@@ -127,7 +172,7 @@ Prueba de humo de los stored procedures, una vez cargado todo:
 
 ```sql
 EXEC USP_MNT_Login     @sNombreUsuario = 'demo.supervisor';                  -- 1 fila; el hash se valida en la API
-EXEC USP_MNT_Usuarios  @sOpcion = '01', @pParametro = '';                    -- 9 usuarios
+EXEC USP_MNT_Usuarios  @sOpcion = '01', @pParametro = '';                    -- 10 usuarios
 EXEC USP_MNT_Almacenes @sOpcion = '01', @pParametro = '';                    -- 5 almacenes
 EXEC USP_MNT_Almacenes @sOpcion = '04', @pParametro = '';                    -- 5 supervisores
 EXEC USP_MNT_Categorias @sOpcion = '01', @pParametro = '';                   -- 7 categorías
@@ -148,15 +193,16 @@ Las contraseñas se almacenan con bcrypt. Para el recorrido público se usan est
 
 | Usuario | Contraseña | Rol | Para probar |
 |---|---|---|---|
-| `demo.supervisor` | `SisgapoDemo2026!` | Supervisor | Escrituras operativas y ajustes de inventario, sin acceso a Usuarios |
+| `demo.admin` | `SisgapoDemo2026!` | Administrador | Todo, incluidos Usuarios y el mantenimiento de Zonas |
+| `demo.supervisor` | `SisgapoDemo2026!` | Supervisor | Escrituras operativas y ajustes de inventario; ve Zonas pero no las edita |
 | `demo.asistente` | `SisgapoDemo2026!` | Asistente | Panel, consultas y registro de entradas y salidas |
 
-El seed también conserva estas cuentas históricas para revisar escenarios y responsables
-de almacén:
+Las tres salen en la pantalla de acceso, con un botón por cuenta. El seed también
+conserva estas cuentas históricas para revisar escenarios y responsables de almacén:
 
 | Usuario | Rol | Para probar |
 |---|---|---|
-| `admin` | Administrador | Mantenimiento local |
+| `admin` | Administrador | Mantenimiento local, con clave propia que no se publica |
 | `jose.m` | Supervisor | Almacén Central Satipo |
 | `alex.quispe` | Supervisor | Almacén Norte Huaraz |
 | `maria.ramirez` | Supervisor | Almacén Lima Callao |

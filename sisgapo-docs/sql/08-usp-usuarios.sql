@@ -1,4 +1,4 @@
-GO
+﻿GO
 /****** Object:  StoredProcedure [dbo].[USP_MNT_Usuarios]    Script Date: 22/08/2021 16:42:27 ******/
 SET ANSI_NULLS ON
 GO

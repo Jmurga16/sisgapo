@@ -26,4 +26,7 @@
 # repositorio; el archivo solo anade peso al clon.
 SISGAPO.7z
 
-.fake
+# ---------- Notas locales con credenciales ----------
+# cred.fake y companeros: datos de conexion de recursos creados a mano en el
+# portal. Nunca entran al historial. Ver CLAUDE.md, regla 1.
+*.fake

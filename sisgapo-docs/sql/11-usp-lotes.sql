@@ -1,4 +1,4 @@
-GO
+﻿GO
 /****** Object:  StoredProcedure [dbo].[USP_MNT_Lotes] ******/
 SET ANSI_NULLS ON
 GO

@@ -1,4 +1,4 @@
--- Reejecutable: se elimina la funcion antes de crearla.
+﻿-- Reejecutable: se elimina la funcion antes de crearla.
 IF OBJECT_ID('dbo.Split', 'TF') IS NOT NULL DROP FUNCTION dbo.Split;
 GO
 
