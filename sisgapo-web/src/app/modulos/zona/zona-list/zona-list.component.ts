@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { RespuestaApi, ZonaListado } from 'src/app/shared/models';
 import { ZonaService } from '../zona.service';
 import { ConfiguracionService } from 'src/app/shared/services/configuracion.service';
+import { SesionService } from 'src/app/shared/services/sesion.service';
 
 @Component({
   selector: 'app-zona-list',
@@ -19,8 +20,13 @@ export class ZonaListComponent implements OnInit {
   constructor(
     private zonaService: ZonaService,
     public configuracionService: ConfiguracionService,
+    public sesionService: SesionService,
     private router: Router
   ) { }
+
+  get bPuedeMantener(): boolean {
+    return this.sesionService.fnEsAdministrador() && !this.configuracionService.bDemoSoloLectura;
+  }
 
   ngOnInit(): void {
     this.fnGetZonas();

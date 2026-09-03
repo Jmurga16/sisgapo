@@ -50,7 +50,7 @@ namespace SISGAPO_API.Controllers
 
         //Crear zona
         [HttpPost]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1")]
         public IActionResult CREATE_Zona(ZonaEntity objZonaEnt)
         {
             try
@@ -71,7 +71,7 @@ namespace SISGAPO_API.Controllers
 
         //Actualizar zona
         [HttpPut]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1")]
         public IActionResult UPDATE_Zona(ZonaEntity objZonaEnt)
         {
             try
@@ -98,7 +98,7 @@ namespace SISGAPO_API.Controllers
         //Activar / dar de baja (baja lógica)
         [Route("estado/{id}/{estado}")]
         [HttpPut]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1")]
         public IActionResult ESTADO_Zona(int id, bool estado)
         {
             try

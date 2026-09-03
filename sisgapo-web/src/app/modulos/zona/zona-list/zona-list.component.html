@@ -1,14 +1,14 @@
 <section class="pagina-contenido zonas-pagina" aria-labelledby="tituloZonas">
-    <header class="zonas-encabezado">
-        <div>
-            <h1 id="tituloZonas">Gestión de zonas</h1>
-            <p>{{bCargando ? 'Cargando zonas…' : lZonas.length + ' zonas registradas'}}</p>
-        </div>
-    </header>
+    <div class="header-app">
+        <h1 id="tituloZonas">Zonas</h1>
+        <p class="subtitulo" *ngIf="!sesionService.fnEsAdministrador()">
+            Solo el Administrador da de alta, edita o desactiva zonas.
+        </p>
+    </div>
 
     <a class="fab-listado" mat-mini-fab color="primary" routerLink="/zonas/agregar"
         matTooltip="Agregar zona" matTooltipPosition="left" aria-label="Agregar zona"
-        *ngIf="!configuracionService.bDemoSoloLectura">
+        *ngIf="bPuedeMantener">
         <mat-icon>add</mat-icon>
     </a>
 
@@ -36,7 +36,7 @@
                 <img [alt]="'Vista de ' + item.sNombre" [src]="item.sRutaImagen" loading="lazy">
             </div>
 
-            <div class="zona-acciones" *ngIf="!configuracionService.bDemoSoloLectura">
+            <div class="zona-acciones" *ngIf="bPuedeMantener">
                 <button mat-raised-button color="accent" (click)="fnVerZona(item.nIdZona)">
                     <mat-icon>edit</mat-icon>
                     Editar

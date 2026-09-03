@@ -1,22 +1,3 @@
-.zonas-encabezado {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.zonas-encabezado h1 {
-  margin: 0;
-  font-size: 1.75rem;
-  font-weight: 700;
-}
-
-.zonas-encabezado p {
-  margin: .25rem 0 0;
-  color: #6b7280;
-}
-
 .zona-acciones mat-icon {
   margin-right: .35rem;
 }
@@ -164,11 +145,6 @@
 }
 
 @media (max-width: 600px) {
-  .zonas-encabezado {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
   .zonas-grid {
     grid-template-columns: 1fr;
   }

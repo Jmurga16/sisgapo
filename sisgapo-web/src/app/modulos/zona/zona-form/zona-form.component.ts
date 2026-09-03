@@ -13,7 +13,7 @@ import { ConfiguracionService } from 'src/app/shared/services/configuracion.serv
   styleUrls: ['./zona-form.component.css']
 })
 export class ZonaFormComponent implements OnInit {
-  sTitulo: string = 'Creación de Zona';
+  sTitulo: string = 'Agregar zona';
   sRutaImagen: string;
   nIdZona: number = 0;
   bEditar: boolean = false;
@@ -38,7 +38,7 @@ export class ZonaFormComponent implements OnInit {
     }
 
     this.nIdZona = nIdZona;
-    this.sTitulo = 'Editar Zona';
+    this.sTitulo = 'Editar zona';
     this.bEditar = true;
     this.zonaService.getOne(nIdZona).subscribe(
       (zonas: ZonaListado[]) => {

@@ -42,13 +42,13 @@ const routes: Routes = [
     path: 'zonas/agregar',
     component: ZonaFormComponent,
     canActivate: [AuthGuard],
-    data: { roles: rolesGestion }
+    data: { roles: [Rol.Administrador] }
   },
   {
     path: 'zonas/editar/:id',
     component: ZonaFormComponent,
     canActivate: [AuthGuard],
-    data: { roles: rolesGestion }
+    data: { roles: [Rol.Administrador] }
   },
   { path: 'categoria', component: CategoriaComponent, canActivate: [AuthGuard] },
   { path: 'productos', component: ProductosComponent, canActivate: [AuthGuard] },

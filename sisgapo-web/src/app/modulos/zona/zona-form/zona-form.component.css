@@ -1,11 +1,7 @@
-.header-app {
-    text-align: center;
-}
 
 .zona-formulario-contenido {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
 }
 
 .example-card {
