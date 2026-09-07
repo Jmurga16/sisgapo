@@ -22,6 +22,7 @@
             "assets": [
               "src/favicon.ico",
               "src/favicon.svg",
+              "src/staticwebapp.config.json",
               "src/assets"
             ],
             "styles": [
