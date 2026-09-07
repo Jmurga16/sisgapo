@@ -14,8 +14,13 @@ namespace SISGAPO_API.Controllers
     [Route("[controller]")]
     public class PanelController : Controller
     {
-        private readonly PanelBusiness objPanel = new PanelBusiness();
+        private readonly PanelBusiness objPanel;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public PanelController(PanelBusiness objPanel)
+        {
+            this.objPanel = objPanel;
+        }
 
         [HttpPost]
         public async Task<IActionResult> CrudPanel(GeneralEntity genEnt)

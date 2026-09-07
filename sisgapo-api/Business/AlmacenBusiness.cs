@@ -11,10 +11,17 @@ namespace Business
 {
     public class AlmacenBusiness
     {
-
-        private readonly AlmacenData almacenData = new AlmacenData();
+        private readonly IAlmacenData almacenData;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
+        public AlmacenBusiness() : this(new AlmacenData())
+        {
+        }
+
+        public AlmacenBusiness(IAlmacenData almacenData)
+        {
+            this.almacenData = almacenData ?? throw new ArgumentNullException(nameof(almacenData));
+        }
 
         public async Task<object> BusinessAlmacen(GeneralEntity genEnt)
         {

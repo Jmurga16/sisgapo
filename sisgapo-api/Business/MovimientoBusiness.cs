@@ -11,9 +11,18 @@ namespace Business
 {
     public class MovimientoBusiness
     {
-        private readonly MovimientoData movimientoData = new MovimientoData();
-
+        private readonly IMovimientoData movimientoData;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public MovimientoBusiness() : this(new MovimientoData())
+        {
+        }
+
+        public MovimientoBusiness(IMovimientoData movimientoData)
+        {
+            this.movimientoData = movimientoData ?? throw new ArgumentNullException(nameof(movimientoData));
+        }
+
         public async Task<object> BusinessMovimiento(GeneralEntity genEnt)
         {
             try

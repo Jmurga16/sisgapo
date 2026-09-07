@@ -11,9 +11,18 @@ namespace Business
 {
     public class ProductoBusiness
     {
-        private readonly ProductoData productoData = new ProductoData();
-
+        private readonly IProductoData productoData;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public ProductoBusiness() : this(new ProductoData())
+        {
+        }
+
+        public ProductoBusiness(IProductoData productoData)
+        {
+            this.productoData = productoData ?? throw new ArgumentNullException(nameof(productoData));
+        }
+
         public async Task<object> BusinessProducto(GeneralEntity genEnt)
         {
             try

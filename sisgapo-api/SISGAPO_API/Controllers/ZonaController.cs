@@ -15,8 +15,13 @@ namespace SISGAPO_API.Controllers
     [Route("api/[controller]")]
     public class ZonaController : Controller
     {
-        private readonly ZonaBusiness objZonas = new ZonaBusiness();
+        private readonly ZonaBusiness objZonas;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public ZonaController(ZonaBusiness objZonas)
+        {
+            this.objZonas = objZonas;
+        }
 
         //Obtener todas las zonas
         [HttpGet]

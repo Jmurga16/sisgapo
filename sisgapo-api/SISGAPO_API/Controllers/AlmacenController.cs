@@ -17,8 +17,13 @@ namespace SISGAPO_API.Controllers
     public class AlmacenController : Controller
     {
 
-        private readonly AlmacenBusiness objInventario = new AlmacenBusiness();
+        private readonly AlmacenBusiness objInventario;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public AlmacenController(AlmacenBusiness objInventario)
+        {
+            this.objInventario = objInventario;
+        }
 
         #region Almacen
 

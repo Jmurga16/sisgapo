@@ -12,7 +12,7 @@ using Microsoft.Data.SqlClient;
 
 namespace Data
 {
-    public class ProductoData
+    public class ProductoData : IProductoData
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
         #region Conexion
@@ -24,8 +24,6 @@ namespace Data
         }
         #endregion
         
-        private readonly List<EListaProductos> listaProductos = new List<EListaProductos>();
-
         #region Producto
         public async Task<object> DataProducto(GeneralEntity genEnt)
         {
@@ -90,7 +88,7 @@ namespace Data
                     #region 03. Lista de Productos
                     case "03":
 
-                        
+                        List<EListaProductos> listaProductos = new List<EListaProductos>();
                         using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro))
                         {
 

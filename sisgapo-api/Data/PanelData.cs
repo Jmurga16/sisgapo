@@ -8,7 +8,7 @@ using Microsoft.Data.SqlClient;
 
 namespace Data
 {
-    public class PanelData
+    public class PanelData : IPanelData
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 

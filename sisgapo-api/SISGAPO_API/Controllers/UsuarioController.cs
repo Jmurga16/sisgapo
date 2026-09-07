@@ -14,8 +14,13 @@ namespace SISGAPO_API.Controllers
     [Authorize(Roles = "1")]
     public class UsuarioController : Controller
     {
-        private readonly UsuarioBusiness objUsuarios = new UsuarioBusiness();
+        private readonly UsuarioBusiness objUsuarios;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public UsuarioController(UsuarioBusiness objUsuarios)
+        {
+            this.objUsuarios = objUsuarios;
+        }
 
         //Obtener Todos los usuarios
         [Route("UsuariosService")]

@@ -10,7 +10,7 @@ using Microsoft.Data.SqlClient;
 
 namespace Data
 {
-    public class MovimientoData
+    public class MovimientoData : IMovimientoData
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
         #region Conexion

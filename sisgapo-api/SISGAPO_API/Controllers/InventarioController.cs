@@ -20,12 +20,24 @@ namespace SISGAPO_API.Controllers
 
     public class InventarioController : Controller
     {
-        private readonly CategoriaBusiness objCategoria = new CategoriaBusiness();
-        private readonly ProductoBusiness objProducto = new ProductoBusiness();
-        private readonly LoteBusiness objLote = new LoteBusiness();
-        private readonly MovimientoBusiness objMovimiento = new MovimientoBusiness();
+        private readonly CategoriaBusiness objCategoria;
+        private readonly ProductoBusiness objProducto;
+        private readonly LoteBusiness objLote;
+        private readonly MovimientoBusiness objMovimiento;
 
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public InventarioController(
+            CategoriaBusiness objCategoria,
+            ProductoBusiness objProducto,
+            LoteBusiness objLote,
+            MovimientoBusiness objMovimiento)
+        {
+            this.objCategoria = objCategoria;
+            this.objProducto = objProducto;
+            this.objLote = objLote;
+            this.objMovimiento = objMovimiento;
+        }
 
         #region Categoria
 

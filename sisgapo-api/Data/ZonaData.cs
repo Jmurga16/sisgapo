@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Data
 {
 
-    public class ZonaData
+    public class ZonaData : IZonaData
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
         private string conf;

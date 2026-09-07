@@ -11,8 +11,17 @@ namespace Business
 {
     public class ZonaBusiness
     {
-        private readonly ZonaData zonaData = new ZonaData();
-        
+        private readonly IZonaData zonaData;
+
+        public ZonaBusiness() : this(new ZonaData())
+        {
+        }
+
+        public ZonaBusiness(IZonaData zonaData)
+        {
+            this.zonaData = zonaData ?? throw new ArgumentNullException(nameof(zonaData));
+        }
+
         public async Task<List<ZonaEntity>> LIS_ZonaBusiness()
         {
             return await zonaData.LIS_ZonaData();

@@ -11,9 +11,17 @@ namespace Business
 {
     public class CategoriaBusiness
     {
-        private readonly CategoriaData categoriaData = new CategoriaData();
+        private readonly ICategoriaData categoriaData;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
+        public CategoriaBusiness() : this(new CategoriaData())
+        {
+        }
+
+        public CategoriaBusiness(ICategoriaData categoriaData)
+        {
+            this.categoriaData = categoriaData ?? throw new ArgumentNullException(nameof(categoriaData));
+        }
 
         public async Task<object> BusinessCategoria(GeneralEntity genEnt)
         {

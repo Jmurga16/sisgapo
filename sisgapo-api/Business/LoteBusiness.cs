@@ -11,9 +11,18 @@ namespace Business
 {
     public class LoteBusiness
     {
-        private readonly LoteData loteData = new LoteData();
-
+        private readonly ILoteData loteData;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public LoteBusiness() : this(new LoteData())
+        {
+        }
+
+        public LoteBusiness(ILoteData loteData)
+        {
+            this.loteData = loteData ?? throw new ArgumentNullException(nameof(loteData));
+        }
+
         public async Task<object> BusinessLote(GeneralEntity genEnt)
         {
             try

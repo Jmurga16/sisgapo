@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Business;
+using Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -68,6 +70,26 @@ namespace SISGAPO_API
                     });
 
             services.AddAuthorization();
+
+            services.AddScoped<IAlmacenData, AlmacenData>();
+            services.AddScoped<ICategoriaData, CategoriaData>();
+            services.AddScoped<ILoginData, LoginData>();
+            services.AddScoped<ILoteData, LoteData>();
+            services.AddScoped<IMovimientoData, MovimientoData>();
+            services.AddScoped<IPanelData, PanelData>();
+            services.AddScoped<IProductoData, ProductoData>();
+            services.AddScoped<IUsuarioData, UsuarioData>();
+            services.AddScoped<IZonaData, ZonaData>();
+
+            services.AddScoped<AlmacenBusiness>();
+            services.AddScoped<CategoriaBusiness>();
+            services.AddScoped<LoginBusiness>();
+            services.AddScoped<LoteBusiness>();
+            services.AddScoped<MovimientoBusiness>();
+            services.AddScoped<PanelBusiness>();
+            services.AddScoped<ProductoBusiness>();
+            services.AddScoped<UsuarioBusiness>();
+            services.AddScoped<ZonaBusiness>();
 
             services.AddRateLimiter(opciones =>
             {

@@ -16,8 +16,13 @@ namespace SISGAPO_API.Controllers
     [EnableRateLimiting("Login")]
     public class LoginController : Controller
     {
-        private readonly LoginBusiness objLogin = new LoginBusiness();
+        private readonly LoginBusiness objLogin;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public LoginController(LoginBusiness objLogin)
+        {
+            this.objLogin = objLogin;
+        }
 
         [HttpPost]
         public async Task<IActionResult> CrudLogin(LoginEntity logEnt)

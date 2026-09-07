@@ -8,8 +8,17 @@ namespace Business
 {
     public class PanelBusiness
     {
-        private readonly PanelData panelData = new PanelData();
+        private readonly IPanelData panelData;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public PanelBusiness() : this(new PanelData())
+        {
+        }
+
+        public PanelBusiness(IPanelData panelData)
+        {
+            this.panelData = panelData ?? throw new ArgumentNullException(nameof(panelData));
+        }
 
         public async Task<object> BusinessPanel(GeneralEntity genEnt)
         {

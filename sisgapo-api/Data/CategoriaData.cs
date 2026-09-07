@@ -10,7 +10,7 @@ using Microsoft.Data.SqlClient;
 
 namespace Data
 {
-    public class CategoriaData
+    public class CategoriaData : ICategoriaData
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
         #region Conexion

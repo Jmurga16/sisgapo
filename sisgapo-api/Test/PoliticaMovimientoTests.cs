@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Security.Claims;
+using Business;
 using Entity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -52,7 +53,8 @@ namespace Test
         [Fact]
         public async Task ElControllerDevuelveForbidSiUnAsistenteIntentaUnAjuste()
         {
-            InventarioController oController = new InventarioController
+            InventarioController oController = new InventarioController(
+                new CategoriaBusiness(), new ProductoBusiness(), new LoteBusiness(), new MovimientoBusiness())
             {
                 ControllerContext = new ControllerContext
                 {

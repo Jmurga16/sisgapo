@@ -12,7 +12,7 @@ using Microsoft.Data.SqlClient;
 
 namespace Data
 {
-    public class AlmacenData
+    public class AlmacenData : IAlmacenData
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
         #region Conexion
@@ -23,9 +23,6 @@ namespace Data
             oCon = new Conexion(1);
         }
         #endregion
-
-        private readonly List<EListaAlmacenes> listaAlmacenes = new List<EListaAlmacenes>();
-        private readonly List<EListaAlmacenId> listaAlmacenId = new List<EListaAlmacenId>();
 
         #region Almacen
         public async Task<object> DataAlmacen(GeneralEntity genEnt)
@@ -40,10 +37,11 @@ namespace Data
               
                     #region 01. Lista de Almacenes
                     case "01":
-                                                    
+
+                        List<EListaAlmacenes> listaAlmacenes = new List<EListaAlmacenes>();
                         using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
                         {
-                        
+
                                 while (await dr.ReadAsync())
                                 {
                                     EListaAlmacenes almEnt = new EListaAlmacenes();
@@ -66,7 +64,8 @@ namespace Data
                     
                     #region 02. Almacen por Id
                     case "02":
-                      
+
+                       List<EListaAlmacenId> listaAlmacenId = new List<EListaAlmacenId>();
                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
                        {
                        
