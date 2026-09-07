@@ -165,8 +165,7 @@ consola ya no debe dar acceso a nada.
 
 Cuatro hallazgos de una vez, y es prerrequisito de la migración a .NET 8.
 
-El código concreto está en `07-migracion-tier-free.md` secciones 5.3 y 5.5. Resumen de lo que se
-consigue:
+Resumen de lo que se consigue:
 
 | Antes | Después |
 |---|---|
@@ -466,7 +465,7 @@ cualquiera de los dos por separado.
 
 ## Rutas recomendadas
 
-**Ruta mínima — 1 día.** M-04 → M-05 → migración a .NET 8 (`07-migracion-tier-free.md` fase 2).
+**Ruta mínima — 1 día.** M-04 → M-05 → migración a .NET 8 (`07-migracion-tier-free.md`, sección 3).
 Demo local funcionando, sin bugs visibles, US$ 0.
 
 **Ruta recomendada — 2,5 días.** La anterior + M-01 → M-02 → M-03 + despliegue.

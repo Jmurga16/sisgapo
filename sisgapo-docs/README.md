@@ -33,7 +33,7 @@ scripts de `sql/`.
 | 04 | [Referencia de API](04-api-referencia.md) | Endpoints, contratos y catálogo completo de códigos `sOpcion` |
 | 05 | [Frontend](05-frontend.md) | Módulos Angular, rutas, servicios, componentes, sesión |
 | 06 | [Hallazgos](06-hallazgos.md) | **La auditoría: 48 hallazgos de seguridad, correctitud y deuda técnica** |
-| 07 | [Migración a tier free](07-migracion-tier-free.md) | Plan paso a paso para llegar a US$ 0/mes |
+| 07 | [Infraestructura y costos](07-migracion-tier-free.md) | De dónde venía el gasto, qué se eligió y cómo redesplegar |
 | 08 | [Plan de demo](08-plan-demo.md) | Cómo presentar el proyecto: guion y qué decir |
 | 09 | [Mejoras propuestas](09-mejoras-propuestas.md) | Roadmap más allá del alcance original, con estimaciones |
 | 10 | [Decisiones](10-decisiones.md) | Registro de decisiones tomadas y alternativas descartadas |
@@ -72,6 +72,6 @@ También en esta carpeta:
    claro desde 2021 y se retiró reescribiendo el historial (S-10). La verificación
    original de S-01 buscaba solo cinco cadenas conocidas y no la vio.
 9. La infraestructura original costaba unos US$ 78/mes, y el 94 % era un App Service Plan
-   S1 sobredimensionado. El plan para llegar a US$ 0 —ya ejecutado— está en el documento 07.
+   S1 sobredimensionado. Cómo se llegó a US$ 0 y qué corre hoy está en el documento 07.
 10. Lo que más valor aporta como pieza de portafolio no es el hosting: es la auditoría del
     documento 06 y el registro de decisiones del documento 10.

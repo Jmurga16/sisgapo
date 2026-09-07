@@ -207,7 +207,7 @@ Empieza por [`sisgapo-docs/README.md`](sisgapo-docs/README.md).
 | `04-api-referencia.md` | Endpoints y catálogo de `sOpcion` |
 | `05-frontend.md` | Módulos, rutas y servicios de Angular |
 | `06-hallazgos.md` | **Auditoría: bugs, deuda técnica y seguridad** |
-| `07-migracion-tier-free.md` | Plan de despliegue a coste US$ 0 |
+| `07-migracion-tier-free.md` | Infraestructura y costos: qué corre hoy y cómo redesplegarlo |
 | `08-plan-demo.md` | Cómo presentarlo |
 | `09-mejoras-propuestas.md` | Roadmap |
 | `10-decisiones.md` | Decisiones tomadas y alternativas descartadas |

@@ -12,6 +12,24 @@ presentable—, no a un despliegue en producción:
 
 ## Resumen
 
+**48 hallazgos en total, 41 cerrados y verificados.** Esto es lo que sigue abierto:
+
+| Hallazgo | Estado | Por qué sigue abierto |
+|---|---|---|
+| S-11 · Modo solo lectura apagado por defecto | Reinterpretado | Las escrituras deben quedar abiertas; el control correcto es el reinicio periódico del seed, que es infraestructura |
+| S-12 · Cuentas históricas con `123456` | Corregido en el repositorio | Falta recargar la base de datos de la instancia pública |
+| D-02 · Angular 9 fuera de soporte | Fuera de alcance | Migrar Angular 9 es un proyecto, no un arreglo |
+| D-03 · Sin inyección de dependencias | Parcial | Falta DI real, y hacerla obliga a revisar los campos de instancia de `AlmacenData` y `ProductoData` |
+| D-08 · Duplicación alta y entidades vacías | Parcial | El `CrudController<T>` genérico sigue descartado por la regla de cambios mínimos |
+| D-13 · Frontend sin *lazy loading* | Aplazado | Riesgo de dejar una pantalla en blanco, sin beneficio medido |
+| D-14 · Ningún componente usa `OnPush` | Aplazado | Obliga a un `markForCheck` por cada carga asíncrona, con el mismo riesgo |
+
+Ninguno impide enseñar la demo, y dos —S-11 y S-12— dependen de la instancia pública, no de
+este repositorio.
+
+El inventario completo, con la gravedad que cada hallazgo tenía **cuando se encontró** —no la
+que tiene hoy, porque casi todos están cerrados—:
+
 | Grupo | 🔴 | 🟠 | 🟡 | Total |
 |---|---|---|---|---|
 | Seguridad | 6 | 5 | 1 | 12 |
@@ -1357,7 +1375,7 @@ Si solo vas a hacer una parte, este es el orden por retorno:
 | 8 | D-09 | 20 min | Quita ruido de la primera impresión |
 
 Los pasos 1–5 son un fin de semana y cubren los ocho bloqueantes.
-El plan completo con calendario está en `07-migracion-tier-free.md`, sección 7.
+El plan que se siguió está resumido en `07-migracion-tier-free.md`, sección 6.
 
 ### Ahora que la demo es pública (6 de septiembre de 2026)
 

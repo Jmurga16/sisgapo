@@ -147,7 +147,7 @@ cambio son un par de horas.
 
 **Recomendación práctica:** migra primero con `Startup`, verifica que todo funciona, y
 entonces —en un commit aparte— pásalo a hosting mínimo. Así el cambio de estilo es reversible
-sin tocar la migración. Anotado en `07-migracion-tier-free.md`, sección 5.4.
+sin tocar la migración. Anotado en `07-migracion-tier-free.md`, sección 3.
 
 ---
 
@@ -213,7 +213,7 @@ de una demo**, o descarga las imágenes al proyecto.
 **La duda.** No estaba en el alcance del análisis. ¿Es pasarse?
 
 **Decisión: recomendarlo con prioridad alta**, con los `Dockerfile` y el `docker-compose.yml`
-escritos en `07-migracion-tier-free.md`, sección 8, pero **sin crearlos** en el repositorio.
+esbozados en `07-migracion-tier-free.md` pero **sin crearlos** en el repositorio.
 
 **Por qué.** Es la respuesta directa a tu objetivo principal. Una demo tiene dos formas de
 fallar: que no se pueda levantar, o que el enlace público esté frío justo cuando la enseñas.
@@ -224,6 +224,10 @@ con un comando dice más sobre tu forma de trabajar que el código que hay dentr
 `Dockerfile` del backend depende del framework de destino), y crear archivos de
 infraestructura funcionales excede "análisis y documentación". Están escritos y listos para
 copiar.
+
+**Ejecutado después.** El `docker-compose.yml` existe hoy en la raíz del repositorio, con un
+servicio `db-init` que carga los scripts de `sql/`; el documento 07 remite a él en vez de
+reproducirlo.
 
 ---
 
