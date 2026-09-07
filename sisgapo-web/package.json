@@ -10,6 +10,9 @@
     "sonar": "sonar-scanner"
   },
   "private": true,
+  "overrides": {
+    "websocket-driver": "0.7.4"
+  },
   "dependencies": {
     "@angular/animations": "~9.1.2",
     "@angular/cdk": "^9.2.4",
