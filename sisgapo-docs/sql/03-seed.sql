@@ -77,18 +77,20 @@ VALUES
     ('Usuario', 'Demo Administrador',1, '90000003', 'M', 1, 'Cuenta pública de demostración', 900000003, '1990-01-01', 1);
 GO
 
--- Las cuentas históricas no públicas conservan 123456. Las tres cuentas demo.* usan
--- SisgapoDemo2026! y son las que ofrece la pantalla de acceso; el 'admin' de 2021
--- tiene una clave de mantenimiento separada que no se publica.
+-- Solo las tres cuentas demo.* sirven para iniciar sesión en la demo: usan
+-- SisgapoDemo2026! y son las que ofrece la pantalla de acceso. Las cuentas históricas
+-- son datos de relleno del listado de Usuarios y llevan una clave fuerte que no se
+-- publica, para que nadie entre con una contraseña obvia. El 'admin' de 2021 tiene su
+-- propia clave de mantenimiento, tampoco publicada.
 -- Los hashes bcrypt tienen factor 11 y sal independiente.
 INSERT INTO TBL_LOGIN (nIdUsuario, sNombreUsuario, sContrasenia) VALUES
     (1, 'admin',           '$2a$11$WZnoZHZNQKkpANbCkNAoyOeukBUMh8xPnTqtRVodWKn1lumNOzrTy'),
-    (2, 'jose.m',          '$2a$11$jV41/GhLAh9ht61Xaje46u2fTlKPCnpgrxKS2e4XaIk0F1WeMKco.'),
-    (3, 'alex.quispe',     '$2a$11$opirKv64DtGBJvho1D2rBe4.i9WRKBc2rWfe9XHUq0udN9sF4cCPO'),
-    (4, 'maria.ramirez',   '$2a$11$DbORf2GnMNq5/5NqO4Y.huB7fa4wGhzyy2GNd1QP90eUIN3YV1Dki'),
-    (5, 'carlos.mendoza',  '$2a$11$Is4Og6odAQhcsh0XJG1mAOY962.AUy0VprgznerhT8NqTRcjweroK'),
-    (6, 'lucia.fernandez', '$2a$11$/qkh7ixCzBmdKbYA7hwMwOgvXsH3P/q86.7W.SrNdPPmZHtdi/Mga'),
-    (7, 'jorge.salazar',   '$2a$11$wH6eLGJ6Z8ymJhSC.hktW.VOrB0RS/h8jeCzndVUCnJOI7WiwITrG'),
+    (2, 'jose.m',          '$2a$11$Y7djEm7Ur8oFOeHkcPpEcuaOPycCna.lAEA25h3GctbIgrgwYdKiS'),
+    (3, 'alex.quispe',     '$2a$11$QCNstmeZxOyAQxRWOjAEpuDS4IJlsJWCXhmK3g1KvRN034FcByQCK'),
+    (4, 'maria.ramirez',   '$2a$11$qLJ.EZ1Y4OSMHmhxAJLnk.5RkIpFScbtfLjquoAZMQlrvRnnPzkzO'),
+    (5, 'carlos.mendoza',  '$2a$11$zBDTLzo6PnMh.T11jxDX8ukHmfOhLpIizpJ2nu.gC.tYfSWesIMoq'),
+    (6, 'lucia.fernandez', '$2a$11$CCbeoWutRnPkW5yrwKbyOereo6n3EqTRe5pDtGp8EvVjsV0qIgI8u'),
+    (7, 'jorge.salazar',   '$2a$11$sgiRQpj26KLX/vLUczSNSuawVE1dHxC6Jv.d.zv1zGWCIwm5NOm/6'),
     (8, 'demo.supervisor', '$2a$11$slATV1ATzlPqcfsuRTiy9.VZWYrcYmKUwLaEYN590cD5Hg.mxccU2'),
     (9, 'demo.asistente',  '$2a$11$o1Xkxx2I7/1fvWUjRKD5S.g938DsCK680ysT4znE7MAg.EHfadQeS'),
     (10, 'demo.admin',     '$2a$11$0dExtqJWU/5MoIPvLks.AuE9VV56j4HX8DuteABImwCa./7NNASWO');
