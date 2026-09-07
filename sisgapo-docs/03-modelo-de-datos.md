@@ -91,6 +91,10 @@ Si cambias los ids de `TBL_ROL`, rompes las dos cosas.
 los datos personales. El esquema reparado aplica estas garantías:
 
 - **`sContrasenia` guarda hashes bcrypt**, generados antes de llamar al procedimiento.
+- **`sTelefono` es `VARCHAR(20)`, no un número.** Un teléfono es un identificador: admite
+  ceros a la izquierda y prefijos como `+51`, que un `INT` pierde o no acepta
+  (`06-hallazgos.md`, D-07). La regla de formato —nueve dígitos empezando por 9, con
+  prefijo `+51` opcional— la aplica `UsuarioBusiness`, no la columna.
 - **`TBL_LOGIN` tiene clave primaria y `UNIQUE(sNombreUsuario)`**. El original no tenía
   ninguna de las dos restricciones.
 
@@ -401,6 +405,8 @@ Qué se corrigió en `sql/` respecto a los originales:
 | `TBL_DET_PRODUCTO` pasa a una fila por producto y lote, con estado propio | `01-esquema.sql` |
 | `TBL_LOTE.sNombreLote` pasa a ser `UNIQUE` y el correlativo busca el primer hueco libre | `01-esquema.sql`, `07-usp-productos.sql` |
 | Tabla `TBL_MOVIMIENTO` y sus dos procedimientos | `01-esquema.sql`, `11`, `12` |
+| `TBL_DET_PRODUCTO.nPrecio` pasa de `INT` a `DECIMAL(10,2)`, con `CHECK (nPrecio >= 0)` | `01-esquema.sql`, `07`, `11`, `03-seed.sql` |
+| `TBL_USUARIO.nTelefono INT` pasa a `sTelefono VARCHAR(20)` | `01-esquema.sql`, `08-usp-usuarios.sql`, `03-seed.sql` |
 
 Las tres últimas filas no son correcciones de compatibilidad sino funcionalidad nueva: son
 los módulos de Lotes y Movimientos. Ver la sección 2 y `09-mejoras-propuestas.md`, M-09 y M-12.

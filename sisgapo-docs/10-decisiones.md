@@ -881,6 +881,108 @@ entró.
 
 ---
 
+## D-39 · `websocket-driver` fijado a 0.7.4 con `overrides`
+
+**El síntoma.** En Node 24, `ng serve` muere antes de compilar con
+`An unhandled exception occurred: No such module: http_parser`. El build de producción no se
+entera: el fallo está en el servidor de desarrollo.
+
+**La causa.** `webpack-dev-server` arrastra `sockjs`, que fija `websocket-driver` en la
+versión 0.6.5. Esa versión obtiene el analizador HTTP con `process.binding('http_parser')`,
+una API interna que Node dejó de exponer. `websocket-driver` 0.7.4 lo cambió por el paquete
+`http-parser-js` y no toca `process.binding`.
+
+**Decisión.** Un `overrides` en `sisgapo-web/package.json` fuerza `websocket-driver` a 0.7.4
+para todo el árbol. Es exactamente el salto que `sockjs` hizo en su 0.3.21, así que la
+interfaz es la misma; solo cambia de dónde sale el analizador.
+
+**Por qué no subir Angular.** Sacar el proyecto de Angular 9 arregla esto de camino, pero es
+una migración de cuatro versiones mayores en una demo que ya funciona. El `overrides` son
+tres líneas y deja intacto todo lo demás.
+
+---
+
+## D-40 · El precio lleva céntimos y el teléfono deja de ser un número
+
+**La duda.** Los hallazgos D-06 y D-07 estaban marcados como 🟡 y con una nota en
+`11-estado-portafolio.md` que decía, con razón, que «no se ven salvo que alguien meta un
+precio con céntimos». Cambiar un tipo de columna toca la base, los procedimientos, las
+entidades, la capa Data y el formulario: es de los cambios que más archivos mueven por menos
+efecto visible.
+
+**Decisión.** Se hacen los dos, y **con el dato del seed cambiado**. Un `DECIMAL(10,2)`
+poblado con precios enteros (`38`, `42`, `950`) deja el arreglo indistinguible del problema:
+sigue sin verse un céntimo por ninguna parte. Los 33 precios del seed llevan ahora decimales
+reales, así que la pantalla de Lotes y el panel muestran importes con dos decimales desde el
+primer arranque. El valor del inventario pasa de `81976` a `84616.90`, y ese es el número
+documentado en `sql/README.md`.
+
+**Por qué `sTelefono` y no `nTelefono VARCHAR`.** La notación húngara del proyecto es una
+convención de tipo, no un adorno: dejar el prefijo `n` en una columna de texto convierte la
+convención en ruido para el siguiente que la lea. Renombrar la columna cuesta ocho archivos
+—esquema, seed, `USP_MNT_Usuarios`, `UsuarioData`, `UsuarioEntity`, el modelo de TypeScript
+y el modal— y todos estaban ya abiertos por el cambio de tipo.
+
+**Y la validación se amplía con él.** Se podía cambiar el tipo y dejar la regla en
+`^9\d{8}$`, pero entonces el `VARCHAR(20)` no serviría para nada que el `INT` no hiciera.
+`UsuarioBusiness` y `usuarios-modal.component.ts` aceptan ahora un prefijo `+51` opcional
+sobre el valor sin espacios ni guiones. El campo del formulario pasa de `type="number"` a
+`type="tel"`, que es lo que corresponde a un identificador.
+
+---
+
+## D-41 · El backend pasa a asíncrono de punta a punta
+
+**La duda.** D-10 es 🟡 y su propio texto dice que «para el tráfico de una demo no se nota».
+La regla 2 de `CLAUDE.md` pide cambios mínimos. Y el cambio toca 25 archivos: `Conexion`,
+nueve `*Data`, nueve `*Business`, seis controllers y las pruebas.
+
+**Decisión.** Se hace igual, por un motivo que no es el rendimiento: **este proyecto es una
+demo de portafolio, y lo que la juzga es un revisor leyendo el código.** Un backend .NET 8
+con ADO.NET íntegramente síncrono se lee como código que no se ha tocado desde 2021, que es
+justo la impresión que el resto del trabajo intenta desmentir. El coste real fue bajo porque
+el patrón es uniforme —`ejecutarDataReader` + `while (dr.Read())` en todos los `*Data`— y
+porque las 38 pruebas cubren el recorrido completo.
+
+**Lo que cambia de nombre.** `ejecutarDataReader` y `EjecutarEscalar` pasan a
+`fnEjecutarDataReaderAsync` y `fnEjecutarEscalarAsync`. Un método que devuelve `Task` sin
+sufijo `Async` es la clase de detalle que un revisor anota, y `Conexion` tiene un solo
+consumidor por método.
+
+**Lo que no cambia.** No se introduce inyección de dependencias por el camino (D-03 sigue
+parcial), ni se toca el contrato `sOpcion`/`pParametro`, ni la forma de las respuestas. El
+frontend no se enteró: no hubo un solo cambio en `sisgapo-web` por esta decisión.
+
+---
+
+## D-42 · La validación de los DTO responde `{cod, mensaje}`, no `ValidationProblemDetails`
+
+**La duda.** D-11 señalaba que los DTO no tienen una sola Data Annotation, así que el
+`[ApiController]` de los seis controllers valida un `ModelState` que nunca falla. Poner
+`[Required]` es una línea; el problema es lo que pasa después: ASP.NET Core responde a un
+`ModelState` inválido con `ValidationProblemDetails`, un cuerpo `{type, title, status,
+errors:{...}}` que **no se parece en nada** al `{cod, mensaje}` que el frontend lee en todos
+sus `catch`. Añadir validación habría cambiado, en silencio, la forma del error de la mitad
+de las pantallas.
+
+**Decisión.** Las anotaciones entran, y `Startup` sustituye
+`ApiBehaviorOptions.InvalidModelStateResponseFactory` para que el 400 de validación salga
+con el mismo `{cod = "0", mensaje}` que emiten los controllers y los procedimientos. El
+frontend no distingue de dónde viene el error, que es exactamente lo que se quiere: hay un
+solo formato de error en toda la API.
+
+**Consecuencia deseada.** Dos comprobaciones manuales de `ZonaController` desaparecen: la
+anotación `[Required]` sobre `sNombre` emite el mismo mensaje y las dejaría inalcanzables.
+Es la primera vez que la validación baja de los controllers a los DTO; el resto sigue en los
+procedimientos, que es donde vive la lógica de negocio (D-04).
+
+**Lo que se descartó.** Anotar `pParametro` o los DTO de salida. `pParametro` es una cadena
+delimitada cuya forma depende de la opción: validarla con atributos exigiría un
+`IValidatableObject` por entidad, y esa validación ya existe donde puede ser correcta —en
+`UsuarioBusiness` y en los procedimientos—.
+
+---
+
 ## Resumen de las decisiones
 
 | # | Decisión | Nivel de duda |
@@ -923,6 +1025,10 @@ entró.
 | D-36 | La cronología crece por tandas de días | Bajo — revisa el cierre de D-33 |
 | D-37 | Acceso de un clic en la pantalla de entrada; credenciales en un diálogo | Bajo — es una demo sin datos reales |
 | D-38 | En móvil los listados se leen como tarjetas | Bajo — el dato sigue declarado una sola vez |
+| D-39 | `websocket-driver` fijado a 0.7.4 con `overrides` | Ninguno — sin ello `ng serve` no arranca en Node 24 |
+| D-40 | Precio `DECIMAL(10,2)` y `sTelefono VARCHAR`, con el seed y la validación al día | Bajo — el coste es la cantidad de archivos, no el riesgo |
+| D-41 | Backend asíncrono de punta a punta | **Medio** — 25 archivos por una mejora que la demo no necesita; se hace por cómo se lee el código |
+| D-42 | El 400 de validación conserva el formato `{cod, mensaje}` | Ninguno — sin esto, añadir anotaciones habría roto el manejo de errores del frontend |
 
 **Las tres que más merecen tu revisión: D-01, D-04 y D-09.**
 De las anteriores, la discutible es **D-24**: `localStorage` es la opción cómoda, no la

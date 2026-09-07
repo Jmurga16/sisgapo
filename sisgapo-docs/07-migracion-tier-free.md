@@ -2,6 +2,11 @@
 
 Objetivo: **US$ 0/mes**, con la aplicación funcionando y presentable a un cliente.
 
+> **Estado: ejecutado.** El backend corre en un App Service F1 y el frontend en Static Web
+> Apps, ambos gratuitos (ver el enlace de demo en el [README](../README.md)). Este documento
+> queda como el análisis y el plan que llevó ahí — el mismo que sigue sirviendo si algún día
+> hay que repetir la migración o justificar la elección de infraestructura.
+
 ## 1. Lo primero: puede que ya no estés pagando
 
 Antes de planificar nada, comprueba qué existe todavía en Azure. La resolución DNS sugiere

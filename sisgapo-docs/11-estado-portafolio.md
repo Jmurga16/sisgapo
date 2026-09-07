@@ -1,8 +1,9 @@
 # 11 — Estado para portafolio
 
-Estado verificado el 2 de septiembre de 2026, con los módulos de Lotes y Movimientos ya
-dentro. Este documento separa lo terminado de lo que solo está propuesto, para que el
-repositorio siga siendo comprensible aunque una mejora quede pendiente.
+Estado verificado el 6 de septiembre de 2026, con los módulos de Lotes y Movimientos, la
+autenticación real y la demo pública ya dentro. Este documento junta dos preguntas: qué está
+hecho frente a lo solo propuesto, y cómo se ve todo esto desde la perspectiva de alguien que
+abre la demo por primera vez sin saber nada del proyecto.
 
 ## Estado actual
 
@@ -11,18 +12,14 @@ repositorio siga siendo comprensible aunque una mejora quede pendiente.
 | Demo funcional | Hecho | Login, panel, usuarios, zonas, almacenes, categorías, productos, lotes y movimientos ejecutados contra SQL Server |
 | Seguridad | Hecho | BCrypt, JWT, autorización por rol, límite de login y validación del delimitador legado |
 | Pruebas y CI | Hecho | 16 pruebas unitarias, 12 de integración contra SQL Server, cobertura y compilación de API y Angular en GitHub Actions |
-| Entrega | Definido | GitHub Actions solo valida; el despliegue público es manual, sin CD |
-| Capturas | Hecho | Login, panel e inventario reales en el README |
+| Despliegue público | Hecho | Backend en Azure App Service, frontend en Azure Static Web Apps — enlace en el [README](../README.md) |
+| Entrega | Definido | GitHub Actions solo valida; el despliegue público se hace a mano tras comprobar que CI está en verde, sin CD |
+| Capturas | Hecho | Login, panel e inventario reales en el README, incluida vista móvil |
 | Cuentas públicas | Hecho | `demo.supervisor` prueba escrituras y ajustes; `demo.asistente` consulta y registra entradas y salidas |
-| Modo solo lectura | Hecho | `Demo__SoloLectura=true` bloquea escrituras en la API y deshabilita sus acciones en Angular |
-| Contraseña inicial | Hecho | Mínimo de 8 caracteres validado en frontend y backend |
-| Edición de usuarios | Hecho | La edición de datos personales ya no presenta el campo de contraseña |
-| Formularios | Hecho | `outline` en formularios CRUD y filtros; el login conserva el estilo subrayado de su diseño |
-| Ordenación de tablas | Hecho | `MatSortModule` está importado para los encabezados ordenables existentes |
-| Lotes | Hecho | Varias partidas por producto, con fabricación, vencimiento y existencia propias |
-| Movimientos y Kardex | Hecho | Entradas, salidas y ajustes con fecha, usuario, motivo y saldo; el Asistente opera y el Supervisor ajusta |
-| Despliegue público | Pendiente | Crear infraestructura para la demo interactiva |
-| Reinicio periódico de datos | Pendiente | Restaurar el seed de forma programada en la demo pública |
+| Acceso de un clic | Hecho | Tres botones de rol en la pantalla de acceso, sin que el visitante busque una cuenta |
+| Estado de carga y error en listados | Hecho | Componente `app-estado-carga` con reintento en los seis listados y en el login (C-21) |
+| Cuentas históricas con `123456` | Hecho en el seed | Rehasheadas con clave fuerte no publicada; falta recargar la BD pública para que surta efecto |
+| Reinicio periódico de datos | **Pendiente** | No hay ningún trabajo programado que recargue el seed; es la única pieza de infraestructura que falta |
 | Administrador público | Hecho | Tiene una clave separada y no se publica entre las credenciales de la demo |
 | Validación de documentos | Hecho | DNI de 8 dígitos; Carné y Pasaporte de 6 a 15 caracteres alfanuméricos |
 | Restablecimiento de contraseña | Fuera del alcance | La demo no tendrá cuentas reales |
@@ -42,7 +39,7 @@ repositorio siga siendo comprensible aunque una mejora quede pendiente.
 | Movimientos | Entrada, salida y ajuste sobre un lote; se rechaza la salida que deja el lote en negativo, el ajuste sin diferencia y el movimiento sin motivo |
 | Kardex | Filtros por almacén, producto, lote, tipo y rango de fechas, con entradas, salidas, saldo y totales del período |
 | Panel | Totales, valor del inventario, distribución y próximos vencimientos |
-| Demo pública | Supervisor manipula datos operativos y ajusta; Asistente consulta y mueve inventario; el modo solo lectura queda disponible como respaldo |
+| Demo pública | Supervisor manipula datos operativos y ajusta; Asistente consulta y mueve inventario; verificado por HTTP contra la instancia real, sin credenciales |
 
 ## ¿Son suficientes los módulos?
 
@@ -67,11 +64,70 @@ Lo que se resolvió con ellos:
 Un módulo de proveedores y compras sería la ampliación siguiente, no un requisito: el proceso
 PN3 no está en el alcance de la demo (`09-mejoras-propuestas.md`, M-13).
 
+## Veredicto desde la perspectiva de un visitante
+
+**Se puede enseñar sin peros.** De los cinco puntos de primera impresión que se revisaron el
+6 de septiembre —cuentas con `123456` activas, login sin señal de carga, README sin enlace a
+la demo, listados sin aviso de error, e `index.html` en inglés— los cuatro que eran cambios de
+código ya están aplicados y verificados. El detalle de cada uno está en `06-hallazgos.md`
+(S-12, C-18, C-21) y en el README.
+
+Lo que ya está bien y no hay que tocar:
+- **La entrada sin credenciales está resuelta.** Tres botones —Administrador, Supervisor,
+  Asistente— entran con un clic. Nadie queda trabado buscando un usuario.
+- **Los datos de prueba son serios.** Café de altura, cacao fino de aroma, quinua de Puno,
+  castañas de Madre de Dios, con descripciones creíbles y almacenes en ciudades reales del
+  Perú. Un cliente del rubro se reconoce en ellos.
+- **No hay basura de desarrollo.** Cero `console.log`, cero `TODO`/`FIXME` visibles, cero
+  texto en inglés en la interfaz.
+- **El README se entiende en 30 segundos:** qué es, el stack, capturas reales (incluido el
+  móvil), enlace a la demo en vivo y cómo levantarlo. Con badge de CI en verde.
+
+**Lo único que queda genuinamente pendiente:** el reinicio periódico del seed. Es la única
+pieza de infraestructura, no de código, que separa la demo actual de una demo que se sostiene
+sola sin vigilancia. Ver el punto siguiente.
+
+### El reinicio periódico del seed, no el modo solo lectura
+
+Para una demo de portafolio, las escrituras deben quedar **abiertas**: poder crear un producto
+o registrar un movimiento es lo que la hace interesante. El riesgo no es que la gente escriba
+—es para lo que está—, sino que sin reinicio los datos se degraden con el uso: alguien borra
+medio catálogo y el siguiente visitante ve una demo vacía.
+
+**Arreglo:** un trabajo programado que recargue `03-seed.sql` cada N horas. `Demo:SoloLectura`
+sigue disponible como respaldo puntual para cuando el reinicio no esté activo, no como estado
+por defecto (`06-hallazgos.md`, S-11).
+
+## Qué es ruido para una demo — ignóralo sin culpa
+
+Estos hallazgos de `06-hallazgos.md` son reales, pero **ningún visitante los va a percibir**.
+Solo importan si alguien audita el código fuente línea por línea, y para eso ya está el
+documento 06 explicándolos.
+
+| Hallazgo | Por qué es ruido aquí |
+|---|---|
+| D-13 · Bundle sin *lazy loading* | Carga una vez; un visitante no lo nota. Solo lo ve un revisor de código |
+| D-14 · Sin `OnPush` | Sin efecto perceptible a esta escala de datos |
+| D-02 · Angular 9 | Compila y funciona; solo importa para "presumir stack moderno" |
+
+Cerrarlos solo compensa **si un revisor técnico va a leer el código** — no son requisito para
+*mostrar* la demo funcionando.
+
+**Actualización del 6 de septiembre de 2026.** De esta lista salen cuatro, porque ya están
+cerrados: D-06 y D-07 (los precios llevan céntimos y el teléfono es texto), D-10 (el backend
+es asíncrono) y D-12 (la regla de rol vive en `PoliticaMovimiento`, con pruebas). Se
+cerraron aceptando el criterio de esta sección, no contra él: **son ruido para el visitante,
+pero no para el revisor**, y este proyecto se enseña para que lo lean. Los tres que quedan
+siguen siendo ruido de verdad — D-13 y D-14 se aplazaron porque el riesgo de dejar una
+pantalla en blanco supera un beneficio que nadie ha medido.
+
 ## Orden recomendado
 
-1. Desplegar la instancia pública y programar el reinicio periódico del seed.
+1. Programar el reinicio periódico del seed en la instancia pública.
 2. Mantener `Demo__SoloLectura=true` como respaldo si se suspende el reinicio.
-3. Llevar al panel la actividad reciente y las entradas y salidas del período:
+3. Recargar la base de datos pública para que la rotación de contraseñas de las cuentas
+   históricas (S-12) surta efecto ahí.
+4. Llevar al panel la actividad reciente y las entradas y salidas del período:
    `USP_MNT_Movimientos` opción `04` ya devuelve esos totales (`09-mejoras-propuestas.md`, M-11).
-4. Extender las pruebas de integración a los procedimientos de 2021 —Productos, Almacenes y
+5. Extender las pruebas de integración a los procedimientos de 2021 —Productos, Almacenes y
    Usuarios—, que son los que tuvieron los bugs históricos (M-08).

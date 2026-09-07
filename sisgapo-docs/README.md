@@ -4,8 +4,10 @@
 Sistema web de inventario multi-almacén, desarrollado en 2021 (UNMSM, Ingeniería de
 Sistemas) y recuperado en 2026.
 
-Estado: **funciona en local con un comando.** La infraestructura original de Azure ya no
-existe; la base de datos se reconstruye desde los scripts de `sql/`.
+Estado: **funciona en local con un comando, y hay una demo pública en vivo** (enlace en el
+[README de la raíz](../README.md)). La infraestructura original de Azure ya no existe; la
+que corre hoy es nueva, en el tier gratuito, y la base de datos se reconstruye desde los
+scripts de `sql/`.
 
 ---
 
@@ -30,12 +32,12 @@ existe; la base de datos se reconstruye desde los scripts de `sql/`.
 | 03 | [Modelo de datos](03-modelo-de-datos.md) | Tablas, relaciones, procedimientos y cómo recrear la base |
 | 04 | [Referencia de API](04-api-referencia.md) | Endpoints, contratos y catálogo completo de códigos `sOpcion` |
 | 05 | [Frontend](05-frontend.md) | Módulos Angular, rutas, servicios, componentes, sesión |
-| 06 | [Hallazgos](06-hallazgos.md) | **La auditoría: 37 hallazgos de seguridad, correctitud y deuda técnica** |
+| 06 | [Hallazgos](06-hallazgos.md) | **La auditoría: 48 hallazgos de seguridad, correctitud y deuda técnica** |
 | 07 | [Migración a tier free](07-migracion-tier-free.md) | Plan paso a paso para llegar a US$ 0/mes |
 | 08 | [Plan de demo](08-plan-demo.md) | Cómo presentar el proyecto: guion y qué decir |
 | 09 | [Mejoras propuestas](09-mejoras-propuestas.md) | Roadmap más allá del alcance original, con estimaciones |
 | 10 | [Decisiones](10-decisiones.md) | Registro de decisiones tomadas y alternativas descartadas |
-| 11 | [Estado para portafolio](11-estado-portafolio.md) | Qué está hecho, qué queda pendiente y suficiencia de módulos |
+| 11 | [Estado para portafolio](11-estado-portafolio.md) | Qué está hecho, qué queda pendiente, suficiencia de módulos y qué es ruido para una demo |
 
 Los módulos de Lotes y Movimientos se documentan repartidos: modelo en el `03`, contratos en
 el `04`, pantallas en el `05` y las decisiones que los sostienen en el `10` (D-26 a D-30).
@@ -61,14 +63,15 @@ También en esta carpeta:
    realistas. Los scripts son reejecutables.
 5. Backend y frontend compilan hoy. El frontend necesita
    `NODE_OPTIONS=--openssl-legacy-provider`, ya fijado en los scripts de `package.json`.
-6. La auditoría encontró 37 hallazgos. Los bloqueantes de correctitud y los de
-   autenticación están corregidos y verificados contra SQL Server.
+6. La auditoría encontró 48 hallazgos. Los bloqueantes de correctitud y los de
+   autenticación están corregidos y verificados contra SQL Server. La tanda del 6 de
+   septiembre de 2026 se verificó contra el backend público real, no solo en local.
 7. **La autenticación ya es real:** contraseñas con bcrypt, JWT firmado, `[Authorize]` en
    todos los controladores y guards por rol en las rutas de Angular. Ver S-02 a S-04.
 8. No hay secretos en el repositorio. Sí los hubo: la contraseña de SonarQube estuvo en
    claro desde 2021 y se retiró reescribiendo el historial (S-10). La verificación
    original de S-01 buscaba solo cinco cadenas conocidas y no la vio.
 9. La infraestructura original costaba unos US$ 78/mes, y el 94 % era un App Service Plan
-   S1 sobredimensionado. El plan para llegar a US$ 0 está en el documento 07.
+   S1 sobredimensionado. El plan para llegar a US$ 0 —ya ejecutado— está en el documento 07.
 10. Lo que más valor aporta como pieza de portafolio no es el hosting: es la auditoría del
     documento 06 y el registro de decisiones del documento 10.

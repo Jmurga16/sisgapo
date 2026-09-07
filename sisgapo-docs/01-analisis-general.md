@@ -75,16 +75,16 @@ lo cual es una fortaleza para una demo: no hay pantallas a medias.
 
 | Componente | Versión | Notas |
 |---|---|---|
-| .NET | 5.0 | **Fin de soporte: 8 de mayo de 2022** |
-| ASP.NET Core Web API | 5.0 | Patrón `Startup.cs` clásico |
-| `Microsoft.Data.SqlClient` | 5.1.6 | Sustituye a `System.Data.SqlClient` 4.8.2, que tenia 2 CVE |
-| `Swashbuckle.AspNetCore` | 5.6.3 | Swagger, solo habilitado en Development |
-| `NLog` | 4.7.10 | **Sin archivo de configuración** → no escribe nada |
-| `Microsoft.EntityFrameworkCore.SqlServer` | 5.0.1 | **Referenciado pero jamás usado** |
-| `Microsoft.AspNet.WebApi.Cors` | 5.2.7 | Paquete de .NET Framework, inútil aquí |
-| `xUnit` | 2.4.1 | 1 test, que no puede pasar |
+| .NET | 8.0 (LTS) | Migrado desde 5.0, que llevaba fuera de soporte desde mayo de 2022 |
+| ASP.NET Core Web API | 8.0 | Patrón `Startup.cs` clásico, conservado a propósito — ver `10-decisiones.md`, D-05 |
+| `Microsoft.Data.SqlClient` | 5.1.6 | Sustituye a `System.Data.SqlClient` 4.8.2, que tenía 2 CVE |
+| `Swashbuckle.AspNetCore` | 6.6.2 | Swagger, solo habilitado en Development |
+| `NLog` | 5.3.4 | Con `nlog.config` a consola y archivo |
+| `xUnit` | 2.9.2 | 16 pruebas unitarias, más 12 de integración contra SQL Server |
 
-Cuatro proyectos: `SISGAPO_API` (web), `Business`, `Data`, `Entity`, más `Test`.
+Cuatro proyectos: `SISGAPO_API` (web), `Business`, `Data`, `Entity`, más `Test`. Los paquetes
+sin uso de la versión original —`Microsoft.EntityFrameworkCore.SqlServer`,
+`Microsoft.AspNet.WebApi.Cors`— se retiraron; ver `06-hallazgos.md`, D-09.
 
 ### Frontend — `sisgapo-web/`
 
@@ -123,9 +123,11 @@ enorme: F1 (gratis) o B1 bastan de sobra.
 > Verifica el costo real en el portal de Azure. Estos son precios de lista y pueden no
 > reflejar tu suscripción, descuentos ni el consumo real.
 
-## 4. Estado real verificado
+## 4. Estado inicial verificado (agosto de 2026, antes de los arreglos)
 
-Todo lo de esta sección fue comprobado ejecutándolo, no inferido.
+Todo lo de esta sección fue comprobado ejecutándolo, no inferido, en el momento de recuperar
+el proyecto. Es el punto de partida de la auditoría; el estado actual, con lo ya corregido,
+está en `06-hallazgos.md` y `11-estado-portafolio.md`.
 
 ### La infraestructura de Azure ya no existe
 
@@ -146,18 +148,17 @@ trabajo — y también significa que puedes elegir cualquier motor sin costo de 
 **Primera acción recomendada:** entra al portal de Azure y confirma qué recursos siguen
 existiendo y qué se está facturando. Es posible que ya no estés pagando nada.
 
-### El backend compila
+### El backend compilaba, con avisos
 
 ```
 dotnet build SISGAPO_Back.sln
-→ Build succeeded. 2 Warning(s), 0 Error(s). (3.2 s)
+→ Build succeeded. 12 Warning(s), 0 Error(s).
 ```
 
-Warnings relevantes:
-- `NETSDK1138` — `net5.0` fuera de soporte.
-- ~~`NU1903` / `NU1902`~~ — resueltos al migrar a `Microsoft.Data.SqlClient`.
-- `NU1701` ×6 — paquetes de .NET Framework restaurados contra `net5.0`
-  (`Microsoft.ApplicationBlocks.Data`, `Microsoft.AspNet.WebApi.*`).
+Avisos de entonces: `NETSDK1138` (`net5.0` fuera de soporte), `NU1903`/`NU1902`
+(`System.Data.SqlClient` con CVE) y `NU1701` ×6 (paquetes de .NET Framework restaurados
+contra `net5.0`, incluido `Microsoft.ApplicationBlocks.Data`). Tras la migración a .NET 8 y
+la limpieza de dependencias, `dotnet build` compila hoy con **0 warnings**.
 
 ### El frontend compila (con un flag)
 
@@ -177,7 +178,7 @@ Salida en `dist/SISGAPO-Front`.
 `--openssl-legacy-provider` lo reactiva. Es decir: **no necesitas actualizar Angular para
 desplegar la demo.** Verificado en Node 22.23.1.
 
-### Autenticación y autorización actuales
+### Autenticación y autorización, ya corregidas
 
 - `TBL_LOGIN` almacena hashes bcrypt; la contraseña nunca vuelve al frontend.
 - La API emite JWT con expiración, exige `[Authorize]` y vuelve a validar los roles.
@@ -189,7 +190,7 @@ desplegar la demo.** Verificado en Node 22.23.1.
 El estado original era una API pública con contraseñas en texto plano y un rol modificable
 desde `localStorage`. La reproducción y los arreglos están en `06-hallazgos.md`, S-02 a S-04.
 
-### Habia secretos en la copia local, no en el repositorio
+### Había secretos en la copia local, no en el repositorio
 
 - `sisgapo-api/SISGAPO_API/appsettings.json:11` — cadena de conexión completa con servidor,
   usuario (`ink`) y contraseña en claro.
@@ -248,29 +249,34 @@ Nada de esto rompe la aplicación, pero infla el código a ~2 200 líneas donde 
 
 ## 6. Valoración honesta para portafolio
 
-**Lo que juega a favor:**
+**Lo que juega a favor, y seguía a favor desde el principio:**
 - Alcance funcional cerrado: 12 casos de uso, todos con pantalla e implementación.
 - Separación en capas real y disciplinada (API / Business / Data / Entity), con nombres consistentes.
 - Convenciones aplicadas coherentemente en las tres capas (notación húngara, `TBL_*`, `USP_MNT_*`).
 - Documentación de análisis previa al código (casos de uso versionados). Eso no abunda.
 - SQL no trivial: joins multi-tabla, baja lógica, filtros dinámicos con `IIF`, una función de split.
-- Integración continua configurada (GitHub Actions → Azure Static Web Apps) y sonar-scanner presente.
 - **Compila y corre hoy**, cinco años después. Eso no siempre pasa.
 
-**Lo que juega en contra:**
-- Versiones fuera de soporte en las dos puntas (.NET 5, Angular 9).
-- Autenticación decorativa y contraseñas en claro. Es lo primero que un revisor técnico va a notar.
-- Secretos en el repositorio.
-- Sin inyección de dependencias: todo es `new` en campos de instancia, lo que hace el código no testeable.
-- Tests que no son tests: 1 test de backend que no puede pasar, 8 specs de frontend sin adaptar.
-- Duplicación alta y código muerto (módulo `Cliente`, `WeatherForecast`, `Correo.cs` vacío).
-- Los scripts SQL no reconstruyen la base de datos (ver `03-modelo-de-datos.md`).
+**Lo que jugaba en contra en agosto de 2026, y su estado actual:**
+- Versiones fuera de soporte en las dos puntas (.NET 5, Angular 9) — ✅ el backend está en
+  .NET 8 (LTS); Angular sigue en 9 porque compila y no bloquea la demo (D-02, `06-hallazgos.md`).
+- Autenticación decorativa y contraseñas en claro — ✅ corregido: bcrypt, JWT, `[Authorize]`
+  y guards por rol (S-02 a S-04).
+- Secretos en el repositorio — ✅ ninguno vigente; el que sí hubo (S-10) se retiró del historial.
+- Sin inyección de dependencias — ⚠️ parcial: `LoginBusiness` y `UsuarioBusiness` admiten
+  dobles; el resto conserva instanciación directa (D-03).
+- Tests que no son tests — ✅ 16 pruebas unitarias y 12 de integración contra SQL Server,
+  ejecutadas por GitHub Actions en cada push (C-10).
+- Duplicación alta y código muerto (módulo `Cliente`, `WeatherForecast`, `Correo.cs` vacío) —
+  ✅ limpiado; el módulo `Cliente` queda recuperable en el historial (D-19).
+- Los scripts SQL no reconstruían la base de datos — ✅ `sql/` es reejecutable y
+  `docker compose up` la deja lista (C-01).
 
 **Conclusión.** Es un proyecto universitario de 2021 y se nota, pero es un proyecto
 universitario *terminado*, con documentación y con el ciclo completo (análisis → BD → API →
 frontend → despliegue → CI). Eso vale más que la mitad de los portafolios.
 
-La estrategia que rinde más no es reescribirlo: es **presentarlo con fecha, arreglar las
-cuatro cosas que un revisor mira primero** (secretos, contraseñas hasheadas, autenticación
+La estrategia que rinde más no es reescribirlo: es **presentarlo con fecha**, con las cuatro
+cosas que un revisor mira primero ya resueltas (secretos, contraseñas hasheadas, autenticación
 real, que se pueda levantar con un comando) y **documentar lo que harías distinto hoy**.
 Esa última parte —el criterio— es lo que un cliente compra. Ver `08-plan-demo.md`.

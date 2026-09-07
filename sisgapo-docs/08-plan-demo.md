@@ -25,7 +25,7 @@ En orden de impacto:
 
 | # | Elemento | Por qué funciona |
 |---|---|---|
-| 1 | **`06-hallazgos.md`** | 37 hallazgos priorizados de tu propio código, con lo corregido marcado y verificado. Demuestra criterio y honestidad, que es lo difícil de fingir |
+| 1 | **`06-hallazgos.md`** | 48 hallazgos priorizados de tu propio código, con lo corregido marcado y verificado. Demuestra criterio y honestidad, que es lo difícil de fingir |
 | 2 | **`docker compose up`** funcionando | Un comando y el sistema entero arranca. Elimina toda fricción de la demo |
 | 3 | La aplicación en vivo | Siete módulos con datos realistas, y un recorrido que llega hasta el kardex de un lote |
 | 4 | **`07-migracion-tier-free.md`** | Análisis de costos y decisiones de infraestructura. Lenguaje que un cliente entiende |
@@ -84,8 +84,8 @@ punto a favor.
 
 Aquí es donde ganas la reunión. Abre `06-hallazgos.md`:
 
-> "Al recuperarlo hice una revisión completa: 37 hallazgos, clasificados en seguridad,
-> correctitud y deuda técnica, y priorizados. Los ocho bloqueantes son estos."
+> "Al recuperarlo hice una revisión completa: 48 hallazgos, clasificados en seguridad,
+> correctitud y deuda técnica, y priorizados. Los doce bloqueantes son estos."
 
 Elige **dos** y cuéntalos bien:
 
@@ -118,8 +118,8 @@ Esta respuesta es fuerte porque no descalifica la decisión pasada, explica el c
 demuestra que has calculado la alternativa.
 
 **"¿Y las contraseñas en texto plano?"**
-> "Es el hallazgo S-02 de mi propia auditoría, marcado como bloqueante. Está arreglado / está
-> en la fase 4 del plan de migración."
+> "Es el hallazgo S-02 de mi propia auditoría, marcado como bloqueante. Ya está arreglado:
+> bcrypt en todas las cuentas, y la opción que lista usuarios dejó de devolver la contraseña."
 
 Que el hallazgo ya esté en tu lista, escrito por ti, con prioridad asignada, es una respuesta
 mucho mejor que cualquier justificación. **Nunca te pillen un problema que no estuviera ya en
@@ -163,13 +163,13 @@ raíz del monorepo. Tiene lo que hace falta —qué es, el arranque en tres paso
 credenciales de demostración y el índice de la documentación— y explica el modo de solo
 lectura disponible para una demo pública.
 
-Lo que le falta para la demo es **el enlace a la instancia pública**, cuando exista. Las
-capturas del panel, acceso y productos ya están enlazadas desde el README.
+Ya tiene el enlace a la instancia pública, arriba del todo, junto con las dos cuentas de
+demostración. Las capturas del panel, acceso y productos también están enlazadas.
 
 Y un párrafo que conviene no quitar nunca, porque es el que convierte un repositorio
 antiguo en una muestra de trabajo actual:
 
-> Al recuperarlo hice una auditoría completa: 37 hallazgos documentados y priorizados en
+> Al recuperarlo hice una auditoría completa: 48 hallazgos documentados y priorizados en
 > `sisgapo-docs/06-hallazgos.md`, incluidos varios bugs funcionales que reproduje contra
 > SQL Server 2022 antes de corregirlos. El registro de decisiones —qué elegí, qué descarté
 > y por qué— está en `sisgapo-docs/10-decisiones.md`.
@@ -215,7 +215,7 @@ No estás vendiendo un sistema de gestión de almacén. Estás vendiendo:
 - que **terminas** lo que empiezas (12 casos de uso, todos implementados);
 - que **documentas** (análisis previo en 2021, auditoría completa en 2026);
 - que **auditas con honestidad**, incluido tu propio trabajo;
-- que **priorizas** (37 hallazgos ordenados por impacto, no una lista plana);
+- que **priorizas** (48 hallazgos ordenados por impacto, no una lista plana);
 - que **piensas en el costo** (de US$ 78/mes a US$ 0, con el análisis de por qué);
 - que **haces que otro pueda ejecutarlo** (un comando).
 

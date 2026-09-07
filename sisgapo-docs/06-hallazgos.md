@@ -14,10 +14,10 @@ presentable—, no a un despliegue en producción:
 
 | Grupo | 🔴 | 🟠 | 🟡 | Total |
 |---|---|---|---|---|
-| Seguridad | 5 | 4 | 1 | 10 |
-| Correctitud | 6 | 9 | 3 | 18 |
-| Deuda técnica | 0 | 4 | 5 | 9 |
-| **Total** | **11** | **17** | **9** | **37** |
+| Seguridad | 6 | 5 | 1 | 12 |
+| Correctitud | 6 | 12 | 3 | 21 |
+| Deuda técnica | 0 | 4 | 11 | 15 |
+| **Total** | **12** | **21** | **15** | **48** |
 
 Cuatro de los de correctitud (C-12 a C-15) salieron **al aplicar los arreglos**, no en la
 revisión inicial. Es lo normal: el primero de ellos tapaba a los otros tres.
@@ -65,7 +65,139 @@ SQL Server 2022 en Docker y, donde aplica, por HTTP contra la API.
 | D-02 · Angular 9 fuera de soporte | ⏳ Pendiente |
 | D-03 · Sin inyección de dependencias | ⚠️ Parcial — `LoginBusiness` y `UsuarioBusiness` admiten dobles; el resto conserva instanciación directa |
 | D-05 · Consulta de metadatos en cada escritura | ✅ Corregido — una llamada a la base en vez de dos |
-| D-06 / D-07 / D-08 | ⏳ Pendiente |
+| D-06 · Los precios son `INT` | ✅ Corregido — `DECIMAL(10,2)` en la base y `decimal` en C# |
+| D-07 · Los teléfonos son `INT` | ✅ Corregido — la columna pasa a `sTelefono VARCHAR(20)` |
+| D-08 · Duplicación alta y entidades vacías | ⚠️ Parcial — fuera las cinco clases vacías y los DTO duplicados; el `CrudController<T>` genérico sigue descartado |
+| S-11 · Modo solo lectura apagado por defecto | ⏳ Reinterpretado — escrituras abiertas es lo correcto; el control es el reinicio del seed |
+| S-12 · Cuentas de persona con `123456` activas en producción | ✅ Corregido en el seed — las históricas llevan clave fuerte no publicada; solo las `demo.*` inician sesión. Falta recargar la BD pública |
+| C-19 · `CategoriaData` filtra el mensaje interno de una excepción al cliente | ✅ Corregido — `logger.Error(e); throw;` como el resto |
+| C-20 · `UsuarioData`/`ZonaData` no cierran la conexión SQL si hay excepción | ✅ Corregido — cierre en `finally` en las lecturas |
+| C-21 · Los listados no informan errores de carga, salvo Zona | ✅ Corregido — componente `app-estado-carga` con reintento en los seis listados |
+| D-10 · Todo el backend es síncrono | ✅ Corregido — `async`/`await` de punta a punta, de `Conexion` a los controllers |
+| D-11 · DTOs sin validar y controllers sin guard de nulos | ✅ Corregido — anotaciones en los DTO y un 400 con el mismo `{cod, mensaje}` de siempre |
+| D-12 · Regla de rol escondida en una posición del array | ✅ Corregido — `PoliticaMovimiento` con constantes y seis pruebas |
+| D-15 · `movimientos.component.ts` mezcla tabla, filtros y fechas | ✅ Corregido — la cronología sale a `KardexCronologiaService`; 378 → 311 líneas |
+| D-13 · Frontend sin *lazy loading* | ⏳ Pendiente — es el refactor más invasivo que queda |
+| D-14 · Ningún componente usa `OnPush` | ⏳ Pendiente — obliga a un `markForCheck` por carga asíncrona; sin beneficio medido |
+
+---
+
+## Verificación en vivo — 6 de septiembre de 2026
+
+El frontend apunta ya a un backend público real
+(`app-sisgapo-api-egbrd9hygfcsdvgf.eastus-01.azurewebsites.net`, commit `bbab4ee`), así que
+esta vez la revisión no fue solo de código: se probó la API desplegada con peticiones HTTP
+reales, sin credenciales.
+
+| Comprobación | Resultado |
+|---|---|
+| Swagger en producción | `GET /swagger/index.html` y `/swagger/v1/swagger.json` → **404**. No está expuesto. Coincide con `Startup.Configure`, que solo lo registra dentro de `env.IsDevelopment()`. |
+| CORS con un origen no autorizado | `OPTIONS /LoginService` con `Origin: https://evil.example.com` responde `204` **sin** `Access-Control-Allow-Origin`. El navegador bloquea la respuesta: no hay combinación de `AllowAnyOrigin` + `AllowCredentials`, ni un origen reflejado sin validar. |
+| Mensajes de error | Un JSON malformado devuelve el `ProblemDetails` estándar de ASP.NET Core (posición del error, sin ruta de archivo ni traza). El middleware global de `Startup.cs` solo revela el mensaje real fuera de producción o para `ArgumentException`; el resto cae a un texto genérico. |
+| `[Authorize]` por controlador | Los siete controladores llevan `[Authorize]` salvo `LoginController` y `ConfiguracionController`, ambos `[AllowAnonymous]` a propósito: el primero emite el token, el segundo expone un único booleano (`Demo:SoloLectura`) sin dato sensible. Sin huecos. |
+| Autorización por rol en escrituras | Confirmado en código, no solo en el frontend: `InventarioController.cs:54,116,183,250` y `ZonaController.cs:53,74,101` comprueban `User.IsInRole(...)` antes de escribir. Un Asistente que llame directo a la API no puede editar catálogo, lotes ni hacer un ajuste de inventario. |
+| SQL dinámico | Sin `sp_executesql`, `EXEC(...)` ni `CommandType.Text` en ninguna de las tres capas ni en los procedimientos de `sisgapo-docs/sql/`. Todo el acceso a datos pasa por procedimientos con `SqlParameter`. No hay vector de inyección SQL. |
+| Secretos en el historial | Re-verificado de forma independiente sobre todo `git log --all`: sin coincidencias de contraseñas, claves privadas ni tokens de servicios (Azure, Gmail, GitHub, Slack, Google). Las dos únicas coincidencias del barrido son el texto redactado de S-01, no un secreto real. |
+
+Conclusión de esta parte: la superficie de autenticación, autorización y CORS está bien
+cerrada, y **verificada contra el despliegue real, no solo en local.** El único punto
+nuevo y genuinamente pendiente es S-11.
+
+### 🟠 S-11 · El modo solo lectura de la demo está apagado por defecto, y ya hay una instancia pública
+
+`sisgapo-api/SISGAPO_API/appsettings.json:14`
+
+```json
+"Demo": { "SoloLectura": false }
+```
+
+`DemoSoloLecturaFilter` (en `SISGAPO_API/Seguridad/DemoSoloLecturaFilter.cs`) sí funciona
+correctamente cuando está activado — bloquea con 403 las opciones de escritura de cada
+controlador. El problema es el valor por defecto: **el repositorio, tal cual está, sirve
+una demo con escritura habilitada.** Y desde el commit `bbab4ee` el frontend ya apunta a
+una instancia real en Azure App Service, no a `localhost`.
+
+Las tres cuentas públicas —`demo.admin`, `demo.supervisor`, `demo.asistente`— comparten
+`SisgapoDemo2026!` (documentado en S-02). Con `SoloLectura` en `false`, cualquiera con esa
+contraseña puede editar o borrar el catálogo, los lotes y los movimientos que **otros
+visitantes** están viendo en ese mismo momento. No es una brecha de seguridad en el sentido
+clásico —son cuentas de demo, sin datos reales—, pero sí rompe la demo para el siguiente
+visitante, y es exactamente la situación para la que se construyó `DemoSoloLecturaFilter`.
+
+**Qué falta, y no se puede verificar desde este repositorio:** si la variable de entorno
+`Demo__SoloLectura` está puesta en `true` en la configuración del App Service de Azure. Si
+no lo está, la API pública corre con el valor por defecto del `appsettings.json`, que es
+`false`.
+
+**Arreglo:** confirmar en el portal de Azure (o con `az webapp config appsettings list`)
+que `Demo__SoloLectura=true` está definida en la instancia pública. Si el plan es que la
+demo sea de solo consulta para el público general y de escritura solo en sesiones
+acompañadas, dejarlo en `true` por defecto ahí y desactivarlo puntualmente, no al revés.
+
+**Reinterpretado el 6 de septiembre de 2026.** Para una demo de portafolio, el enfoque de
+arriba está equivocado: las escrituras deben quedar **abiertas**, porque poder crear un
+producto o registrar un movimiento es lo que hace interesante la demo. El riesgo real no es
+que la gente escriba —es para lo que está—, sino que sin reinicio los datos se degraden. El
+control correcto es el **reinicio periódico del seed**, no el candado de solo lectura, que
+queda como respaldo puntual. Ver el análisis completo en `11-estado-portafolio.md`.
+
+### 🔴 S-12 · Cuentas de persona con contraseña `123456`, activas en producción
+
+`sisgapo-web/src/scripts/... → sisgapo-docs/sql/03-seed.sql:65-96`
+
+El seed crea seis cuentas históricas con nombres de persona reales —`jose.m`,
+`alex.quispe`, `maria.ramirez`, `carlos.mendoza`, `lucia.fernandez`— activas (`bEstado = 1`)
+y todas con la contraseña `123456`. El propio comentario del seed lo dice: *"Las cuentas
+históricas no públicas conservan 123456"*. El hash es bcrypt de verdad (factor 11); el
+problema es lo que protege.
+
+**Verificado contra la instancia pública** el 6 de septiembre de 2026:
+
+```
+POST /LoginService  {"sNombreUsuario":"jose.m","sContrasenia":"123456"}
+→ 200, token JWT válido, rol Supervisor (nRol = 2)
+```
+
+Un revisor técnico prueba `123456` por reflejo, entra como Supervisor, y la afirmación que
+vende la auditoría —"la autenticación ya es real: bcrypt, JWT" (S-02)— se desmiente sola.
+Es de las peores primeras impresiones posibles justamente porque el resto de la seguridad
+está bien hecha.
+
+**Arreglo:** dejar activas solo las tres cuentas `demo.*` (que usan `SisgapoDemo2026!`) y
+poner las históricas en `bEstado = 0`, o rehashearles una contraseña fuerte que no se
+publique. No aportan nada que las `demo.*` no cubran. La cuenta `admin` de 2021 ya está
+bien: su hash **no** coincide con `123456` (comprobado), tiene una clave de mantenimiento
+separada. Ver `11-estado-portafolio.md`.
+
+**Arreglo aplicado (6 de septiembre de 2026):** en `sql/03-seed.sql`, las seis cuentas
+históricas (`jose.m` … `jorge.salazar`) se rehashearon con bcrypt factor 11 sobre una
+contraseña fuerte que **no se publica en ningún sitio**. Siguen apareciendo en el listado
+de Usuarios como datos de relleno realistas, pero ya no se entra con `123456`. Las tres
+`demo.*` conservan `SisgapoDemo2026!` para el acceso rápido de la demo. **Pendiente:**
+recargar la base de datos de la instancia pública para que el cambio surta efecto ahí
+(`docker compose up db-init`, o el equivalente en Azure).
+
+## Tanda de deuda técnica — 6 de septiembre de 2026
+
+Cerrada la lista de correctitud y seguridad, esta tanda ataca los hallazgos **D**, que son
+los que solo ve quien lee el código. Siete corregidos, dos aplazados con motivo.
+
+| Hallazgo | Qué se hizo | Cómo se comprobó |
+|---|---|---|
+| D-06 · Precios `INT` | `DECIMAL(10,2)` en la base, `decimal` en C#, importes con dos decimales en la vista | Alta de producto con precio `7.25` por HTTP; el panel devuelve `84616.90` |
+| D-07 · Teléfonos `INT` | `sTelefono VARCHAR(20)`, y la validación acepta el prefijo `+51` | Alta de usuario con `+51987000111`; se guarda y se devuelve tal cual |
+| D-08 · Entidades vacías y DTO duplicados | Fuera cuatro clases marcador, `UsuarioEntity` y `EntRequestUsuario` | Compila con 0 avisos; el genérico `CrudController<T>` sigue descartado |
+| D-10 · Backend síncrono | `async`/`await` en `Conexion`, los nueve `*Data`, los nueve `*Business` y los seis controllers | 38 pruebas en verde y recorrido completo por HTTP |
+| D-11 · DTO sin validar | Anotaciones en los DTO más guard de nulos, con el `{cod, mensaje}` de siempre en el 400 | Cuatro peticiones malformadas, cuatro 400 con el mensaje correcto |
+| D-12 · Regla de rol en una posición de array | `PoliticaMovimiento` + `TipoMovimiento`, con pruebas | Seis pruebas nuevas; 403 y 200 confirmados por HTTP con el token del Asistente |
+| D-15 · Componente de movimientos sobrecargado | La cronología sale a `KardexCronologiaService` | El build de producción compila; 378 → 311 líneas |
+| D-13 · Sin *lazy loading* | **Aplazado** | Reparte 15 componentes y los módulos de Material entre cuatro módulos; se rompe en silencio |
+| D-14 · Sin `OnPush` | **Aplazado** | Exige un `markForCheck` por carga asíncrona; sin él los listados se quedan en blanco |
+
+D-02 (Angular 9) sigue fuera de alcance: es una migración mayor, no un arreglo.
+
+La base de datos se recargó con `docker compose up db-init` antes y después de las pruebas,
+así que la demo local queda con el seed limpio.
 
 ---
 
@@ -650,6 +782,103 @@ de modo que el formulario entra sin scroll — el mismo caso que provocaba C-16.
 Los tres muestran ahora un mensaje. Es el mismo patrón que C-05: **rechazar una operación
 en silencio es peor que fallar**.
 
+### 🟠 C-19 · `CategoriaData` filtra el mensaje interno de una excepción al cliente — **corregido**
+
+`sisgapo-api/Data/CategoriaData.cs:100-109`, opciones `03`, `04` y `05`:
+
+```csharp
+try { ... msj = sResultado; }
+catch (Exception ex) { msj = ex.Message; }
+return msj;
+```
+
+Es el único punto de las tres capas que rompe el patrón `logger.Error(e); throw;` que
+siguen todos los demás `*Data.cs` y `*Business.cs` (verificado: los siete módulos restantes
+lo respetan). Dos problemas, no uno:
+
+1. **No queda registro del fallo.** Sin `logger.Error`, un error al crear o editar una
+   categoría no deja rastro en el servidor — el mismo problema que C-04 se ocupó de cerrar
+   en el resto del código, reabierto aquí.
+2. **El texto de la excepción viaja al cliente como si fuera la respuesta normal.**
+   `InventarioController` hace `Convert.ToString(...).Split('|')` sobre lo que devuelve
+   `CategoriaData`; si `ex.Message` no trae un `|`, `cod` termina siendo el mensaje de error
+   completo de SQL Server (nombre de restricción, tipo de dato, lo que sea que haya fallado)
+   en vez del `{cod, mensaje}` consistente que espera el frontend.
+
+**Arreglo:** quitar el catch, o como mínimo `logger.Error(ex)` antes de relanzar, igual que
+en `AlmacenData`, `LoteData`, `MovimientoData`, `ProductoData`, `UsuarioData` y `ZonaData`.
+
+**Arreglo aplicado (6 de septiembre de 2026):** el `catch` de las opciones `03`/`04`/`05`
+ahora hace `logger.Error(e); throw;`, idéntico al resto de las capas. El middleware global
+convierte el fallo en el mismo `{cod, mensaje}` genérico que las demás entidades, sin
+filtrar el texto de la excepción de SQL Server.
+
+### 🟠 C-20 · `UsuarioData` y `ZonaData` no cierran la conexión SQL si hay una excepción — **corregido**
+
+`sisgapo-api/Data/UsuarioData.cs:37-127` y `sisgapo-api/Data/ZonaData.cs:37-69,86-118`.
+
+Ambas clases abren `SqlConnection` a mano (no vía `Conexion.cs`, que sí hace `Dispose()` en
+su propio `catch`) y cierran con `conn.Close()` **solo en el camino feliz**, dentro del
+mismo bloque `try`, antes del `return`:
+
+```csharp
+try
+{
+    ...
+    SqlDataReader reader = _Command.ExecuteReader();
+    while (reader.Read()) { ... }
+    conn.Close();          // no se alcanza si ExecuteReader() lanza
+    return lista;
+}
+catch (Exception ex) { logger.Error(ex); throw; }   // conn queda abierta
+```
+
+Si `ExecuteReader()` o `ExecuteNonQuery()` lanzan — SQL Server caído, timeout, lo que sea —
+la conexión nunca se cierra. Con tráfico mínimo de demo el impacto es bajo, pero es un
+agotamiento del *connection pool* real bajo fallos repetidos, y es la clase de cosa que un
+revisor técnico nota de inmediato al comparar estos dos archivos con `Conexion.cs`, que sí
+lo hace bien.
+
+**Arreglo:** `using (SqlConnection conn = ...)` en vez de `Close()` manual, o mover el
+`Close()` a un `finally`.
+
+**Arreglo aplicado (6 de septiembre de 2026):** en `UsuarioData.LIS_UsuarioData`,
+`ZonaData.LIS_ZonaData` y `ZonaData.LIS_ZonaUnicoData`, la conexión se declara fuera del
+`try` y se libera en un `finally` con `conn?.Dispose()`, de modo que se cierra tanto en el
+camino feliz como ante una excepción. (`ZonaData.fnEjecutarEscritura` ya usaba `using` y no
+se tocó.)
+
+### 🟠 C-21 · Los listados no avisan si falla la carga, salvo en Zona — **corregido**
+
+En todos los módulos salvo Zona, un fallo al listar (`GET`/opción de lectura) solo hace
+`console.error(...)` y ahí queda: `usuarios-list.component.ts:91-93`,
+`movimientos.component.ts:149-190`, `productos.component.ts:85-106`,
+`categoria.component.ts:76-77`, `lotes.component.ts:96-126`,
+`almacenes-list.component.ts:94-95`. El usuario ve una tabla vacía, sin ningún indicio de
+si no hay datos o si la petición falló.
+
+`zona-list.component.ts:79-94` es la excepción: mantiene `bCargando`/`sError` y los pinta
+en `zona-list.component.html:15-23`. Es el módulo más nuevo y el único que usa REST
+convencional en vez del patrón `sOpcion`, y el único con estado de carga y error visible.
+
+Para una demo pensada para enseñarse en vivo contra un backend de nivel gratuito —con
+*cold start* tras inactividad—, esto importa: la primera petición después de que la API
+"duerma" puede tardar o fallar, y salvo en Zona, el visitante no se entera de que fue eso y
+no un sistema roto. Las operaciones de escritura sí muestran `Swal.fire` de forma
+consistente en todos los módulos; el hueco es específico de la carga inicial de listados.
+
+**Arreglo:** llevar el patrón de Zona (`bCargando`/`sError` en el componente, con su aviso
+en la plantilla) al resto de listados. Es un cambio mecánico, no un rediseño.
+
+**Arreglo aplicado (6 de septiembre de 2026):** en vez de copiar el patrón seis veces, se
+extrajo a un componente compartido `app-estado-carga`
+(`shared/components/estado-carga/`) con entradas `[bCargando]`, `[sError]` y `[sTextoCarga]`
+y una salida `(reintentar)` que muestra un botón para reintentar la carga —útil justo ante
+el *cold start*. Los seis listados (almacenes, categorías, productos, lotes,
+movimientos/kardex y usuarios) lo usan y ocultan la tabla mientras cargan o si hay error.
+La tabla se oculta con `[hidden]`/`.hidden` (no `*ngIf`) para no perder los `ViewChild` de
+paginador y ordenación. Verificado en el build de producción.
+
 ---
 
 ## D — Deuda técnica
@@ -698,6 +927,29 @@ cambiar constructores. Ver `09-mejoras-propuestas.md`, M-03.
 priorizadas sin conexión real. Los controllers y las demás áreas todavía requieren una
 adopción completa del contenedor de dependencias.
 
+**Precisión del 6 de septiembre de 2026.** Esas dos interfaces nunca pasan por
+`Startup.ConfigureServices` — no hay un solo `AddScoped`/`AddSingleton`/`AddTransient` para
+Business o Data en todo el proyecto. En producción, `LoginBusiness` y `UsuarioBusiness`
+siguen resolviendo su dependencia con `new LoginData()`/`new UsuarioData()` en el
+constructor; las interfaces solo se usan para inyectar dobles en `Test/`. Esto no cambia el
+hallazgo, pero conviene saberlo antes de "arreglar" D-03 de verdad: `AlmacenData.cs:26-27`
+y `ProductoData.cs:26` guardan sus listas de resultado (`listaAlmacenes`, `listaAlmacenId`,
+`listaProductos`) como **campos de instancia**, no variables locales. Hoy no hay fuga
+porque cada request crea su propia cadena `new Controller → new Business → new Data`
+(transient de facto). Pero si el paso siguiente es registrar esas clases con lifetime
+`Scoped` o `Singleton` en el contenedor —el arreglo natural de D-03—, esos campos
+acumularían resultados de requests anteriores sin que nadie toque esa línea. Vale la pena
+convertirlos en variables locales en el mismo cambio que introduzca DI real.
+
+**Avance colateral (6 de septiembre de 2026).** `Conexion` ya no resuelve la cadena de
+conexión en el constructor, sino al ejecutar. Salió al escribir la prueba de controller de
+D-12: construir un `InventarioController` disparaba
+`new CategoriaBusiness() → new CategoriaData() → new Conexion(1)`, y eso exigía una cadena
+de conexión configurada **para instanciar un objeto que en esa prueba nunca toca la base**.
+Con la cadena resuelta al usarla, el controller se puede construir sin configuración y el
+fallo por configuración ausente aparece donde corresponde: en la primera consulta. No
+sustituye a DI real, pero quita el obstáculo que impedía probar un controller.
+
 ### 🟠 D-04 · La configuración se lee del disco en cada petición
 
 ```csharp
@@ -738,7 +990,7 @@ parámetros explícitamente y funciona igual.
 Eliminarlo quita ~120 de las 253 líneas de `Conexion.cs` y la mitad de las llamadas a la base
 de datos. Ver `09-mejoras-propuestas.md`, M-03.
 
-### 🟡 D-06 · Los precios son `INT`
+### 🟡 D-06 · Los precios son `INT` — **corregido**
 
 `TBL_DET_PRODUCTO.nPrecio INT`, y `EListaProductos.nPrecio` es `int` en C#.
 **No se pueden representar céntimos.** En un sistema de inventario con precios, eso es una
@@ -746,7 +998,23 @@ limitación funcional, no solo estética.
 
 Debería ser `DECIMAL(10,2)` en la base y `decimal` en C#.
 
-### 🟡 D-07 · Los teléfonos son `INT`
+**Arreglo aplicado (6 de septiembre de 2026).** El cambio recorre las cuatro capas:
+
+| Capa | Cambio |
+|---|---|
+| `sql/01-esquema.sql` | `nPrecio DECIMAL(10,2)`, más `CK_DETPROD_PRECIO CHECK (nPrecio >= 0)` junto a la de cantidad |
+| `sql/07-usp-productos.sql`, `sql/11-usp-lotes.sql` | `@nPrecioUnitario` y `@nPrecio` declarados `DECIMAL(10,2)` |
+| `sql/03-seed.sql` | los 33 precios llevan céntimos reales (`38.50`, `2.75`, `950.00`), que es lo que hace visible el arreglo |
+| `Entity` | `EListaLotes.nPrecio`, `EListaLotesById.nPrecio` a `decimal`; `EListaProductos.nValor` y los tres `nValor` de `PanelEntity`, de `long` a `decimal` |
+| `Data` | `Int32.Parse(...)` / `Int64.Parse(...)` sobre esas columnas, a `Convert.ToDecimal(...)` |
+| Frontend | los importes se muestran con `number:'1.2-2'` en Productos, Lotes y el panel; los dos campos de precio son `step="0.01"` y `min="0"` |
+
+El valor del inventario de la demo pasa de `81976` a `84616.90`, y ese es el número que
+documenta ahora `sql/README.md`. El bloque de invariantes del seed imprime el valor en una
+consulta aparte: al ser `DECIMAL`, en el `UNION ALL` arrastraba a los conteos a su tipo y
+los sacaba como `21.00`.
+
+### 🟡 D-07 · Los teléfonos son `INT` — **corregido**
 
 `TBL_USUARIO.nTelefono INT`, con `UsuarioData` haciendo `Convert.ToInt32(reader["nTelefono"])`.
 
@@ -755,6 +1023,17 @@ ni extensiones. Un número peruano de nueve dígitos entra justo, pero `+51 987 
 número no cabe en un `INT` de 32 bits.
 
 Los números de teléfono son identificadores, no cantidades: siempre `VARCHAR`.
+
+**Arreglo aplicado (6 de septiembre de 2026).** La columna pasa a `sTelefono VARCHAR(20)`
+—con el prefijo `s`, que es lo que exige la notación del proyecto para una cadena— y con
+ella el parámetro `@sTelefono` de `USP_MNT_Usuarios`, `EntListaUsuarioId.sTelefono` en C#
+y `UsuarioDetalle.sTelefono` en el frontend. El campo del formulario deja de ser
+`type="number"` y pasa a `type="tel"`.
+
+Cambiar el tipo sin cambiar la validación habría sido cosmético, así que la regla se amplía
+en las dos capas a la vez: `UsuarioBusiness` y `usuarios-modal.component.ts` aceptan ahora
+`^(\+51)?9\d{8}$` sobre el valor sin espacios ni guiones. El frontend normaliza antes de
+enviar. Verificado contra la API: `+51987000111` se guarda y se devuelve tal cual.
 
 ### 🟡 D-08 · Duplicación alta y entidades vacías
 
@@ -768,6 +1047,22 @@ Un genérico `CrudController<T>` y un mapeador por convención dejarían el back
 la mitad de líneas. Para una demo no es prioritario, pero es lo que más llama la atención al
 leer el código.
 
+**Arreglo parcial (6 de septiembre de 2026).** Se cierra la mitad barata, que es la que se
+lee como descuido:
+
+- Fuera las cuatro clases marcador vacías que quedaban —`AlmacenEntity`, `CategoriaEntity`,
+  `ProductoEntity` y `LoteEntity`—. Los archivos siguen ahí porque las clases reales
+  (`ELista*` / `EntLista*`) viven dentro; lo que desaparece es la clase homónima vacía.
+  (`ClienteEntity` y `Test/Entities.cs` ya se habían ido con D-09.)
+- Fuera `UsuarioEntity` y `EntRequestUsuario`: eran copias de `GeneralEntity`. `UsuarioController`,
+  `UsuarioBusiness`, `UsuarioData`, `IUsuarioData` y las pruebas usan ahora `GeneralEntity`,
+  y `DemoSoloLecturaFilter` pierde el `.Concat(...OfType<UsuarioEntity>())` que existía solo
+  para cubrir el duplicado. Tres DTO para lo mismo pasan a ser uno.
+
+**Lo que sigue descartado:** el `CrudController<T>` genérico y el mapeador por convención.
+Reescribirían los seis controllers y los siete `*Business` de golpe, y la regla 2 de
+`CLAUDE.md` —cambios mínimos, esto es una demo— pesa más que la reducción de líneas.
+
 ### 🟡 D-09 · Restos de andamiaje y archivos generados
 
 - `SISGAPO_API/WeatherForecast.cs` — plantilla de `dotnet new webapi`, sin usar.
@@ -780,6 +1075,202 @@ leer el código.
 - `.sonarqube/` y `.vs/` versionados en el repositorio.
 
 Limpiar esto son 20 minutos y quita ruido de la primera impresión.
+
+### 🟡 D-10 · Todo el backend es síncrono — **corregido**
+
+Ni un `async`/`await`/`Task<T>` en `Business/*.cs` ni en `Data/*.cs` (verificado sobre las
+tres capas y los siete controllers; las únicas apariciones de `async`/`Task` en todo el
+proyecto son el callback del *rate limiter* en `Startup.cs` y `DemoSoloLecturaFilter`, que
+implementa `IAsyncActionFilter` porque lo exige la interfaz de MVC, sin I/O real dentro).
+No hay `.Result` ni `.Wait()` porque no hay nada asíncrono que esperar mal. Cada request
+bloquea un hilo del *thread pool* mientras espera a SQL Server. Para el tráfico de una demo
+no se nota; si este backend se reutilizara para algo con más carga concurrente, sí.
+
+**Arreglo aplicado (6 de septiembre de 2026).** Las tres capas son asíncronas de punta a
+punta, sin `.Result` ni `.Wait()` en ninguna:
+
+- `Conexion.ejecutarDataReader` y `Conexion.EjecutarEscalar` pasan a
+  `fnEjecutarDataReaderAsync` y `fnEjecutarEscalarAsync`, con `await conn.OpenAsync()`,
+  `await oCmd.ExecuteReaderAsync(...)` y `await oCmd.ExecuteScalarAsync()`.
+- Los nueve `*Data.cs` devuelven `Task<...>`. Los que leen por `Conexion` cambian
+  `using (IDataReader dr = ...)` por `using (SqlDataReader dr = await ...)` y
+  `while (dr.Read())` por `while (await dr.ReadAsync())`; `UsuarioData` y `ZonaData`, que
+  abren su propia `SqlConnection`, usan `OpenAsync`, `ExecuteReaderAsync`,
+  `ExecuteNonQueryAsync` y `ExecuteScalarAsync`.
+- Los nueve `*Business.cs` y los seis controllers devuelven `Task<T>` /
+  `Task<IActionResult>` y esperan la capa de abajo.
+- Las pruebas que llaman a Business son `async Task`; los dobles de `ILoginData` e
+  `IUsuarioData` devuelven `Task.FromResult(...)`, y las que comprobaban un rechazo pasan
+  de `Assert.Throws` a `await Assert.ThrowsAsync`.
+
+Compila con 0 avisos y las 38 pruebas —26 unitarias y 12 de integración— pasan contra SQL
+Server 2022 en Docker. Comprobado además por HTTP contra la API local: acceso, panel,
+listados, alta de producto y registro de movimiento.
+
+### 🟡 D-11 · Los DTOs no validan nada por sí mismos, y dos controllers no comprueban un body nulo — **corregido**
+
+Ningún archivo de `Entity/` lleva una Data Annotation (`[Required]`, `[MaxLength]`,
+`[Range]`...), y `Nullable` no está activado en ningún `.csproj` del backend. Los
+controllers llevan `[ApiController]` — que en teoría dispara un 400 automático si
+`ModelState` queda inválido—, pero como no hay atributos que validar, esa protección está
+presente en el código y nunca se activa. Es una decisión consistente en todo el backend, no
+un olvido puntual: toda la validación real vive en el stored procedure (unicidad, D-31) o a
+mano en `Business/UsuarioBusiness.cs:78-130` (DNI, teléfono, edad, contraseña, sobre el
+string separado por `|`). `ZonaController.cs:58,84,86` es el único que valida algo —
+`String.IsNullOrWhiteSpace`— antes de llamar a Business.
+
+Consecuencia concreta de no tener ni siquiera un guard de nulos: `AlmacenController.cs:29`,
+`InventarioController.cs:35` y `UsuarioController.cs:26` no comprueban que el body
+deserializado no sea `null` antes de leer `.sOpcion`. Un `null` literal como body produce
+`NullReferenceException`, que el middleware global convierte en un 500 genérico en vez de
+un 400 con mensaje claro. `PanelController` y `ZonaController` sí cubren ese caso. Bajo
+impacto para una demo —nadie manda un body `null` por accidente—, pero es la clase de
+inconsistencia que salta al comparar dos controllers uno al lado del otro.
+
+**Arreglo aplicado (6 de septiembre de 2026).** Dos piezas, porque el guard solo cubría la
+mitad del hallazgo:
+
+1. **El guard de nulos** está ahora en las siete acciones que reciben un cuerpo —Almacén,
+   los cuatro `Crud*` de Inventario, Usuarios y Login—, con el mismo `BadRequest(new { cod,
+   mensaje })` que ya usaban Panel y Zona.
+2. **Las anotaciones existen y sirven.** `GeneralEntity.sOpcion` lleva `[Required]` y
+   `[RegularExpression(@"^\d{2}$")]`; `LoginEntity` exige usuario y contraseña;
+   `ZonaEntity.sNombre` es `[Required]` con `[MaxLength(100)]`. Para que ese 400 automático
+   no rompiera el contrato, `Startup` configura
+   `ApiBehaviorOptions.InvalidModelStateResponseFactory` para que devuelva el mismo
+   `{cod, mensaje}` de siempre en vez del `ValidationProblemDetails` por defecto: el
+   frontend no distingue de dónde viene el error. Las dos comprobaciones manuales de
+   `String.IsNullOrWhiteSpace(sNombre)` de `ZonaController` se retiran porque la anotación
+   emite ese mismo mensaje y quedarían inalcanzables.
+
+Comprobado por HTTP:
+
+```
+{"parametros":["0"]}   → 400 {"cod":"0","mensaje":"Falta sOpcion."}
+{"sOpcion":"abc"}      → 400 {"cod":"0","mensaje":"sOpcion son dos digitos."}
+{"sNombre":"   "}      → 400 {"cod":"0","mensaje":"El nombre de la zona es obligatorio."}
+null                   → 400 {"cod":"0","mensaje":"A non-empty request body is required."}
+```
+
+### 🟡 D-12 · Una regla de autorización vive escondida en una posición del array de parámetros — **corregido**
+
+`sisgapo-api/SISGAPO_API/Controllers/InventarioController.cs:250,285-293`:
+
+```csharp
+if (fnEsAjuste(genEnt) && !User.IsInRole("1") && !User.IsInRole("2"))
+    return Forbid();
+...
+private static bool fnEsAjuste(GeneralEntity genEnt) =>
+    genEnt.parametros?.Length >= 2 && genEnt.parametros[1]?.Trim() == "A";
+```
+
+El control de que solo Administrador o Supervisor puedan hacer un ajuste de inventario
+funciona hoy, y está bien puesto del lado del servidor (no es el hueco de D-29, que es
+sobre *quién firma* un movimiento, no sobre *qué lo autoriza*). Pero decide algo tan
+sensible como un chequeo de rol **leyendo una posición concreta de un array por
+convención**: si el frontend cambiara el orden de `parametros` o el código de tipo de
+movimiento, el check se rompe en silencio y cualquier rol autenticado podría hacer un
+ajuste de existencia sin que ninguna prueba lo detecte — no hay un test que cubra este
+`fnEsAjuste`.
+
+**Arreglo aplicado (6 de septiembre de 2026).** La regla sale del controller y pasa a
+`SISGAPO_API/Seguridad/PoliticaMovimiento.cs`, con los códigos declarados en
+`Entity/MovimientoTipo.cs`:
+
+```csharp
+public static class TipoMovimiento
+{
+    public const string Entrada = "E";
+    public const string Salida  = "S";
+    public const string Ajuste  = "A";
+    public const int    nPosicion = 2;
+}
+```
+
+`InventarioController` queda con una sola línea legible —
+`if (!PoliticaMovimiento.fnPuedeRegistrar(User, genEnt.parametros)) return Forbid();`— y
+la posición mágica vive en una constante que apunta a las otras dos capas donde el mismo
+orden está fijado (`movimientos-modal.component.ts` y `USP_MNT_Movimientos`).
+
+Y ya no es una regla sin prueba: `Test/PoliticaMovimientoTests.cs` cubre los tres tipos de
+movimiento, los tres roles, el array corto o nulo, y un caso a nivel de controller que
+comprueba el `ForbidResult` para el Asistente. Confirmado también por HTTP contra la API:
+un ajuste con el token de `demo.asistente` responde 403 y una salida con el mismo token
+responde 200.
+
+### 🟡 D-13 · El frontend no tiene *lazy loading*: un solo bundle de ~1,17 MB
+
+`sisgapo-web/src/app/app-routing.module.ts` declara todas las rutas con `component:`
+directo — sin un solo `loadChildren` — y los 15 componentes viven en las `declarations` de
+un único `AppModule`. Verificado corriendo el build de producción real
+(`NODE_OPTIONS=--openssl-legacy-provider npx ng build --prod`):
+
+| Archivo | Tamaño |
+|---|---|
+| `main.js` | 1010 kB |
+| `styles.css` | 123 kB |
+| `polyfills.js` | 36,8 kB |
+| `runtime.js` | 1,45 kB |
+
+Es grande para lo que hace la app, pero el motivo es conocido: Angular Material completo +
+Bootstrap 5 + SweetAlert2, todo en un solo *chunk* porque no hay separación por rutas.
+Para una demo de un usuario navegando pocas pantallas el impacto real es bajo, pero es la
+ausencia de *code splitting* más comentada en cualquier revisión de un proyecto Angular.
+Ya estaba anotado como pendiente en la sección de Rendimiento de este documento; queda
+formalizado aquí como hallazgo.
+
+**Arreglo:** partir `app-routing.module.ts` con `loadChildren` por módulo funcional
+(zonas, almacenes, inventario, usuarios) — es la mejora de rendimiento más grande que queda
+y también la más invasiva, así que no es de una tarde.
+
+**No se hizo en la tanda del 6 de septiembre de 2026, a propósito.** Partir el `AppModule`
+obliga a crear un `SharedModule` con los ~15 módulos de Angular Material que hoy están
+declarados una sola vez, y a repartir los 15 componentes y sus diálogos entre cuatro
+módulos funcionales. Es un cambio que se rompe en silencio —un módulo de Material que falta
+en una rama solo se nota abriendo esa pantalla—, y verificarlo pide recorrer la aplicación
+entera a mano. Con la demo ya publicada, el riesgo de dejar una pantalla rota no lo
+compensan 1 MB que el visitante descarga una vez.
+
+### 🟡 D-14 · Ningún componente usa `OnPush`
+
+Los 15 componentes corren en modo de detección de cambios `Default` (verificado por
+búsqueda global de `ChangeDetectionStrategy` en `src/app`). Con `MatTableDataSource` y
+formularios reactivos de por medio, Angular revisa el árbol completo en cada evento. No se
+detectó ningún caso agravante (función o *getter* llamado directo desde una plantilla que
+recalcule algo costoso en cada ciclo) — es deuda técnica de manual, no un problema de
+rendimiento medido.
+
+**Arreglo:** `ChangeDetectionStrategy.OnPush` en los componentes de listado, que son los
+que renderizan tablas grandes; no hace falta tocar los modales.
+
+**No se hizo en la tanda del 6 de septiembre de 2026, a propósito.** El detalle que el
+hallazgo no decía: los seis listados cargan sus datos con `await` y luego asignan campos
+del componente. Bajo `OnPush`, esa asignación ocurre **después** del evento que la disparó,
+así que Angular no vuelve a revisar la vista y la tabla se queda vacía salvo que se llame a
+`ChangeDetectorRef.markForCheck()` en cada punto de carga —unos dieciocho, contando los
+reintentos de `app-estado-carga`—. Cambiar eso a ciegas puede dejar un listado en blanco en
+la demo pública, y el propio hallazgo reconoce que aquí no hay un problema de rendimiento
+medido. Queda pendiente con esa condición apuntada: el arreglo no es la anotación, es la
+anotación **más** los `markForCheck`.
+
+### 🟡 D-15 · `movimientos.component.ts` mezcla tabla, filtros y cálculo de fechas en 371 líneas — **corregido**
+
+`sisgapo-web/src/app/modulos/inventario/movimientos/movimientos.component.ts` es el
+componente más largo del frontend — el resto está entre 95 y 247 líneas, dentro de lo
+razonable. Además del filtrado de tabla habitual, calcula a mano la agrupación por día para
+la vista "cronología" (`fnAgruparPorDia`, `fnEtiquetaFecha`, líneas 301-352) y el
+formateo de fechas (`fnFechaIso`). Es cálculo de presentación puro — candidato real a un
+`pipe` o un service pequeño, no a quedarse en el componente.
+
+**Arreglo aplicado (6 de septiembre de 2026).** `fnAgruparPorDia`, `fnEtiquetaFecha` y las
+tablas `DIAS_SEMANA` / `MESES` salen a
+`modulos/inventario/movimientos/kardex-cronologia.service.ts`, junto con las interfaces
+`DiaKardex` y `MovimientoKardex`, que solo existían para esa vista. El componente conserva
+un método de tres líneas que llama al service y reinicia el contador de tandas.
+
+Se eligió un service sin estado y no un pipe: el resultado depende de la fecha de hoy
+(«Hoy ·», «Ayer ·»), y un pipe puro con esa entrada mentiría sobre su pureza. El componente
+baja de 378 a 311 líneas, dentro del rango del resto del frontend.
 
 ---
 
@@ -867,3 +1358,31 @@ Si solo vas a hacer una parte, este es el orden por retorno:
 
 Los pasos 1–5 son un fin de semana y cubren los ocho bloqueantes.
 El plan completo con calendario está en `07-migracion-tier-free.md`, sección 7.
+
+### Ahora que la demo es pública (6 de septiembre de 2026)
+
+Con el frontend ya apuntando a la API real, el orden cambia: ninguno de los pendientes de
+esta tanda es bloqueante en el sentido de "sistema roto", pero S-11 sí puede arruinar la
+demo para el segundo visitante del día.
+
+| Paso | Hallazgos | Esfuerzo | Por qué primero |
+|---|---|---|---|
+| 1 | S-11 | 10 min | Verificar `Demo__SoloLectura=true` en Azure — sin esto, cualquiera con la contraseña pública de demo puede alterar lo que ve el siguiente visitante |
+| 2 | C-21 | 1–2 h | Sin esto, un *cold start* del tier gratuito se ve como "el sistema no funciona" en vivo |
+| 3 | C-19, C-20 | 1 h | Las nota un revisor que lea `Data/` en diagonal |
+| 4 | D-12 | 30 min | Barato, y quita una regla de seguridad implícita sin test |
+| 5 | D-11, D-13, D-14, D-15, D-10 | Opcional | Deuda técnica real, pero ninguna cambia lo que un visitante ve o hace |
+
+Los pasos 2, 3 y 4 están hechos, y del 5 quedan solo D-13 y D-14. Lo único vivo de esta
+lista es el paso 1, que depende de la configuración de Azure y no de este repositorio.
+
+### Lo que queda, después de la tanda del 6 de septiembre de 2026
+
+| Hallazgo | Estado | Por qué sigue abierto |
+|---|---|---|
+| S-11 | Depende de Azure | Reinterpretado: el control es el reinicio periódico del seed (`11-estado-portafolio.md`) |
+| S-12 | Falta recargar la base pública | El seed ya está corregido en el repositorio |
+| D-02 | Fuera de alcance | Migrar Angular 9 es un proyecto, no un arreglo |
+| D-03 | Parcial | Falta DI real; hacerlo obliga a revisar los campos de instancia de `AlmacenData` y `ProductoData` |
+| D-08 | Parcial | El `CrudController<T>` genérico sigue descartado por la regla de cambios mínimos |
+| D-13, D-14 | Aplazados | Riesgo de romper una pantalla en silencio, sin beneficio medido |

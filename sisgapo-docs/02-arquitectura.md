@@ -1,5 +1,20 @@
 # 02 — Arquitectura
 
+> **Este documento describe el sistema tal como se encontró en 2021.** Los diagramas y los
+> fragmentos de código son la foto de partida, no el estado de hoy: sirven para entender de
+> dónde viene cada decisión. Lo que ha cambiado desde entonces está en `06-hallazgos.md`
+> (qué se arregló) y en `10-decisiones.md` (por qué). Los cambios que más afectan a lo que
+> se lee aquí:
+>
+> | Lo que dice este documento | Estado actual | Referencia |
+> |---|---|---|
+> | ASP.NET Core 5 | .NET 8 | D-01 |
+> | `SqlHelper` / `Microsoft.ApplicationBlocks.Data` | ADO.NET plano con `Microsoft.Data.SqlClient` | S-05, S-06 |
+> | Dos viajes a la base por escritura (`sp_procedure_params_rowset`) | Uno: la firma está declarada en un diccionario | D-05 |
+> | Capas síncronas, `IDataReader` | `async`/`await` de punta a punta, `SqlDataReader` | D-10 |
+> | Sin autenticación | JWT + bcrypt, `[Authorize]` y guards por rol | S-02, S-03, S-04 |
+> | Seis procedimientos | Ocho: se añadieron Lotes y Movimientos | M-09, M-12 |
+
 ## 1. Vista general
 
 ```

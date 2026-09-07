@@ -38,6 +38,19 @@ Content-Type: application/json
 **Si `sOpcion` no está en el rango esperado**, el controller hace `return null`, que ASP.NET
 Core traduce a `204 No Content` con cuerpo vacío. El frontend no lo maneja.
 
+**Errores de forma de la petición** — un `400` con el mismo cuerpo de dos campos que el
+resto de la API. Lo emiten las anotaciones de los DTO y el guard de cuerpo nulo de cada
+controller (`06-hallazgos.md`, D-11; `10-decisiones.md`, D-42):
+
+| Petición | Respuesta |
+|---|---|
+| Cuerpo vacío o `null` | `400 { "cod": "0", "mensaje": "A non-empty request body is required." }` |
+| Sin `sOpcion` | `400 { "cod": "0", "mensaje": "Falta sOpcion." }` |
+| `sOpcion` que no son dos dígitos | `400 { "cod": "0", "mensaje": "sOpcion son dos digitos." }` |
+
+`/LoginService` valida igual `sNombreUsuario` y `sContrasenia`, y `/api/zona` el nombre de
+la zona.
+
 `ZonaController` es la excepción: usa REST convencional con cuerpos tipados (sección 7).
 
 ## 2. `POST /LoginService`
@@ -97,6 +110,17 @@ Procedimiento: `USP_MNT_Usuarios`.
 
 **Respuesta de `03`** — join usuario + login, con `dFechaNac` como texto `YYYY-MM-DD`
 además del `dFechaNacimiento` nativo. No devuelve el hash de contraseña.
+
+```json
+[ { "sNombres": "Jose", "sApellidos": "M", "nTipoDoc": 1, "sNumDoc": "70809586",
+    "sSexo": "M", "nIdRol": 2, "sDireccion": "Calle Salaverry 101, Junín",
+    "sTelefono": "912654789", "sNombreUsuario": "jose.m",
+    "dFechaNacimiento": "1996-06-06T00:00:00", "dFechaNac": "1996-06-06" } ]
+```
+
+`sTelefono` es una cadena, no un número: admite el prefijo `+51` y conserva los ceros a la
+izquierda (`06-hallazgos.md`, D-07). Las opciones `04` y `05` lo aceptan con o sin prefijo,
+y `UsuarioBusiness` rechaza con `400` cualquier otra forma.
 
 **Respuesta de `04`, `05`, `06`** — este endpoint **no sigue** el contrato `cod`/`mensaje`:
 ```json
@@ -247,7 +271,7 @@ kilogramos, paquetes o unidades produciría un total incorrecto (D-31).
     "nIdCategoria": 1, "sNombreCategoria": "Café Orgánico",
     "nIdLote": 1, "sNombreLote": "CAF0001",
     "dFechaFab": "2026-04-02", "dFechaVenc": "2027-04-02", "nDiasRestantes": 212,
-    "nCantidad": 85, "sNombreUM": "Kilogramos", "nPrecio": 38, "sEstado": "Activo" } ]
+    "nCantidad": 85, "sNombreUM": "Kilogramos", "nPrecio": 38.50, "sEstado": "Activo" } ]
 ```
 
 Reglas que aplica el procedimiento y que responden con `cod = "0"`:

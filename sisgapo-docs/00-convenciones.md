@@ -47,7 +47,7 @@ la convención más visible del proyecto:
 
 | Prefijo | Tipo | Ejemplo |
 |---|---|---|
-| `n` | numérico entero | `nIdUsuario`, `nCantidad` |
+| `n` | numérico (entero o decimal) | `nIdUsuario`, `nCantidad`, `nPrecio` |
 | `s` | cadena | `sNombre`, `sDescripcion` |
 | `b` | booleano | `bEstado` |
 | `d` | fecha | `dFechaVencimiento` |
@@ -113,8 +113,17 @@ Controller  →  Business  →  Data  →  Stored procedure
 
 - **Controller** valida `sOpcion`, llama a negocio y da forma a la respuesta.
 - **Business** es hoy un pasamanos con `try/catch`. No contiene reglas de negocio.
-- **Data** abre la conexión y mapea `IDataReader` a DTOs.
+- **Data** abre la conexión y mapea `SqlDataReader` a DTOs.
 - **El procedimiento tiene toda la lógica real.**
+
+**Las tres capas son asíncronas.** Un método nuevo devuelve `Task<T>` y usa
+`await ...Async()` para tocar la base; no hay `.Result` ni `.Wait()` en el backend y no
+deben aparecer (`10-decisiones.md`, D-41).
+
+**La validación de forma va en el DTO, la de negocio en el procedimiento.** Un campo
+obligatorio o con formato fijo se declara con Data Annotations en `Entity/`; el 400 sale con
+el mismo `{cod, mensaje}` que el resto de la API. Las reglas que dependen de los datos
+—unicidad, existencias, permisos— siguen en el procedimiento (`10-decisiones.md`, D-42).
 
 Es una decisión de 2021 que se mantiene (`10-decisiones.md`, D-04). Tiene una ventaja
 —se puede parchear sin desplegar— y una desventaja grande: la lógica no se puede probar
@@ -145,8 +154,8 @@ pase por `Business` funciona, pero rompe la simetría que hace el código predec
 - **Ningún valor de entorno va escrito en el código.** Los orígenes CORS salen de
   `Cors:OrigenesPermitidos`; la URL de la API, de `src/environments/`.
 - **Los datos de demostración son públicos a propósito** y están documentados en
-  `sql/README.md`. Las contraseñas siguen en texto plano —S-02, pendiente—, así que
-  **esta aplicación no se despliega en internet** hasta que eso se resuelva.
+  `sql/README.md`. Las contraseñas se guardan con bcrypt (S-02, corregido); las cuentas
+  `demo.*` comparten una clave pública por diseño, no por descuido.
 
 ## 8. Estilo
 

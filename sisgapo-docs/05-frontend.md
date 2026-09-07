@@ -60,7 +60,7 @@ src/app/
         ├── categoria/         componente + modal
         ├── productos/         componente + modal
         ├── lotes/             componente + modal
-        ├── movimientos/       componente + modal (kardex)
+        ├── movimientos/       componente + modal (kardex) + kardex-cronologia.service
         └── inventario.service.ts   (compartido por las cuatro pantallas)
 ```
 
@@ -133,6 +133,7 @@ Los servicios de negocio usan `HttpClient`; `ZonaService` conserva observables p
 | `InventarioService` | `POST /InventarioService/{Categoria,Producto,Lote,Movimiento}` | `sOpcion` + `parametros[]` |
 | `ZonaService` | `GET/POST /api/zona` | REST, objeto tipado |
 | `ConfiguracionService` | `GET /ConfiguracionService` | estado público del modo demo |
+| `KardexCronologiaService` | — | cálculo de presentación, sin HTTP |
 
 Los cuatro servicios del patrón `sOpcion` envían los valores separados:
 
@@ -187,6 +188,13 @@ La cronología no pagina como la tabla: muestra los diez días más recientes y 
 diez con «Mostrar más días», con un pie que dice cuántos movimientos y cuántos días quedan
 por ver. El corte va por días completos porque partir una jornada rompe la agrupación, que es
 lo único que aporta la vista. Ver `10-decisiones.md`, D-36.
+
+El cálculo de esa agrupación no vive en el componente: está en
+`movimientos/kardex-cronologia.service.ts`, junto con las etiquetas de día («Hoy ·»,
+«Ayer ·», y el nombre del día en castellano) y las interfaces `DiaKardex` y
+`MovimientoKardex`. El componente solo pide la lista agrupada y reinicia el contador de
+tandas. Es un service y no un pipe porque el resultado depende de la fecha de hoy, y un pipe
+puro con esa entrada mentiría sobre su pureza (`06-hallazgos.md`, D-15).
 
 Los dos selectores que elegían entre listas largas son ahora **autocompletados**: el producto
 en el alta de un lote —se busca por nombre de producto o de almacén— y el lote en el alta de
@@ -254,12 +262,11 @@ al formato que espera el backend.
 { production: false, API_URL_INV: "https://localhost:44360/" }
 
 // environment.prod.ts
-{ production: true,  API_URL_INV: "https://localhost:44360/" }
+{ production: true,  API_URL_INV: "https://app-sisgapo-api-egbrd9hygfcsdvgf.eastus-01.azurewebsites.net/" }
 ```
 
-El host de producción sigue pendiente hasta que exista el despliegue definitivo. Mientras
-tanto usa HTTPS local para no llamar al App Service eliminado ni romper CORS con una
-redirección desde HTTP. Ver `06-hallazgos.md`, S-08.
+El host de producción ya apunta al App Service real, por HTTPS, y no al eliminado en 2021 ni
+a `localhost`. Ver `06-hallazgos.md`, S-08.
 
 ## 9. Despliegue
 
@@ -267,8 +274,9 @@ El repositorio conserva un único workflow, `.github/workflows/ci.yml`, con tres
 compilación y pruebas del backend, pruebas de integración contra un SQL Server levantado con
 `docker compose`, y build de producción del frontend con Node 22 y el lockfile, en cada push
 y pull request. Los workflows antiguos de Azure Static Web Apps se retiraron porque los
-recursos ya no existen. El despliegue público nuevo sigue pendiente; ver
-`07-migracion-tier-free.md` y `11-estado-portafolio.md`.
+recursos de 2021 ya no existen. El despliegue público ya existe, pero es manual: se hace a
+mano después de comprobar que ambos trabajos de CI están en verde, no desde este workflow.
+Ver `07-migracion-tier-free.md` y `11-estado-portafolio.md`.
 
 ## 10. Resumen de problemas del frontend
 
