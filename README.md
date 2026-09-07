@@ -6,8 +6,23 @@ Sistema de gestión de almacén de productos orgánicos. Multi-almacén, con cat
 lotes y control de vencimientos.
 
 Desarrollado en 2021 como proyecto universitario (UNMSM, Ing. de Sistemas) y recuperado
-en 2026: documentado, auditado y reparado. La auditoría completa —37 hallazgos
+en 2026: documentado, auditado y reparado. La auditoría completa —48 hallazgos
 priorizados— está en [`sisgapo-docs/06-hallazgos.md`](sisgapo-docs/06-hallazgos.md).
+
+## Pruébala
+
+**Demo en vivo:** https://agreeable-smoke-0091c080f.3.azurestaticapps.net/
+
+Entra con un clic desde la pantalla de acceso, o usa una de estas cuentas:
+
+| Usuario | Contraseña | Rol |
+|---|---|---|
+| `demo.admin` | `SisgapoDemo2026!` | Administrador — usuarios y mantenimiento de zonas |
+| `demo.supervisor` | `SisgapoDemo2026!` | Supervisor — almacenes, productos, lotes y ajustes |
+| `demo.asistente` | `SisgapoDemo2026!` | Asistente — consulta y registra entradas y salidas |
+
+> Es una demo con datos de prueba: puedes crear, editar y mover inventario libremente.
+> El primer acceso puede tardar unos segundos si el servidor estaba inactivo.
 
 | Capa | Stack |
 |---|---|
@@ -159,12 +174,14 @@ manualmente después de comprobar que ambos jobs están en verde.
 
 | Usuario | Contraseña | Rol | Para probar |
 |---|---|---|---|
+| `demo.admin` | `SisgapoDemo2026!` | Administrador | Usuarios y mantenimiento de zonas |
 | `demo.supervisor` | `SisgapoDemo2026!` | Supervisor | Altas, ediciones, cambios de estado y ajustes de inventario |
 | `demo.asistente` | `SisgapoDemo2026!` | Asistente | Panel, consultas y registro de entradas y salidas |
 
-El Supervisor gestiona almacenes, zonas, categorías, productos y lotes, pero no Usuarios. El
-Asistente registra movimientos de inventario pero no puede ajustar existencias ni mantener
-lotes, así que sirve para comprobar que menús y escrituras cambian según el rol.
+El Administrador es el único que mantiene Usuarios y Zonas. El Supervisor gestiona almacenes,
+categorías, productos y lotes (Zonas las ve, pero no las edita). El Asistente registra
+movimientos de inventario pero no puede ajustar existencias ni mantener lotes, así que sirve
+para comprobar que menús y escrituras cambian según el rol.
 
 > Las contraseñas se guardan con bcrypt. La contraseña compartida y documentada es una
 > licencia de la demo, no del diseño: en el original de 2021 estaban en texto plano
