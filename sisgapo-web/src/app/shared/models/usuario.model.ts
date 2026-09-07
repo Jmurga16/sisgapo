@@ -16,7 +16,7 @@ export interface UsuarioDetalle {
   sSexo: 'M' | 'F' | '';
   nIdRol: number;
   sDireccion: string;
-  nTelefono: number;
+  sTelefono: string;
   sContrasenia: string;
   dFechaNacimiento: string;
   dFechaNac: string;

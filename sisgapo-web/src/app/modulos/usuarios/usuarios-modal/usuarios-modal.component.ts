@@ -76,7 +76,7 @@ export class UsuariosModalComponent implements OnInit {
       sSexo: ['', Validators.required],
       nIdRol: ['', Validators.required],
       sDireccion: ['', Validators.required],
-      nTelefono: ['', Validators.required],
+      sTelefono: ['', Validators.required],
       dFechaNacimiento: ['', Validators.required],
       sContrasenia: ['', this.bEsAlta
         ? [Validators.required, Validators.minLength(8)]
@@ -129,7 +129,7 @@ export class UsuariosModalComponent implements OnInit {
       this.formUsuario.get('sSexo').value,
       this.formUsuario.get('nIdRol').value,
       this.formUsuario.get('sDireccion').value,
-      this.formUsuario.get('nTelefono').value,
+      this.fnTelefonoNormalizado(),
       this.dFechaNacimiento,
       this.formUsuario.get('sContrasenia').value
     ];
@@ -197,18 +197,21 @@ export class UsuariosModalComponent implements OnInit {
   }
 
   fnValidarTelefono(): boolean {
-    const telefono = Number(this.formUsuario.controls.nTelefono.value);
-    const valido = telefono >= 900000000 && telefono <= 999999999;
+    const valido = /^(\+51)?9\d{8}$/.test(this.fnTelefonoNormalizado());
 
     if (!valido) {
       Swal.fire({
-        title: 'El campo Teléfono debe tener 9 dígitos y empezar con 9.',
+        title: 'El campo Teléfono debe tener 9 dígitos y empezar con 9, con o sin prefijo +51.',
         icon: 'warning',
         timer: 1500
       });
     }
 
     return valido;
+  }
+
+  private fnTelefonoNormalizado(): string {
+    return String(this.formUsuario.get('sTelefono').value || '').replace(/[\s-]/g, '');
   }
 
   private fnFechaIso(fecha: Date): string {

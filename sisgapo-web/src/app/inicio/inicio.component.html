@@ -35,7 +35,7 @@
             <mat-card class="tarjeta">
                 <div class="tarjeta-icono"><mat-icon>payments</mat-icon></div>
                 <div class="tarjeta-texto">
-                    <span class="tarjeta-valor">S/ {{oResumen.nValorInventario | number}}</span>
+                    <span class="tarjeta-valor">S/ {{oResumen.nValorInventario | number:'1.2-2'}}</span>
                     <span class="tarjeta-etiqueta">Valor del inventario</span>
                 </div>
             </mat-card>
@@ -60,7 +60,7 @@
                     <div *ngFor="let item of lPorAlmacen" class="barra-fila">
                         <div class="barra-cabecera">
                             <span class="barra-nombre">{{item.sNombreAlmacen}}</span>
-                            <span class="barra-valor">S/ {{item.nValor | number}}</span>
+                            <span class="barra-valor">S/ {{item.nValor | number:'1.2-2'}}</span>
                         </div>
                         <div class="barra-pista">
                             <div class="barra-relleno" [style.width]="fnAncho(item.nValor, nMaxAlmacen)"></div>
@@ -81,7 +81,7 @@
                     <div *ngFor="let item of lPorCategoria" class="barra-fila">
                         <div class="barra-cabecera">
                             <span class="barra-nombre">{{item.sNombreCategoria}}</span>
-                            <span class="barra-valor">S/ {{item.nValor | number}}</span>
+                            <span class="barra-valor">S/ {{item.nValor | number:'1.2-2'}}</span>
                         </div>
                         <div class="barra-pista">
                             <div class="barra-relleno barra-alt" [style.width]="fnAncho(item.nValor, nMaxCategoria)"></div>

@@ -78,7 +78,7 @@
             </ng-container>
             <ng-container matColumnDef="nValor">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Valor</th>
-                <td mat-cell *matCellDef="let element" data-label="Valor">S/ {{element.nValor | number}}</td>
+                <td mat-cell *matCellDef="let element" data-label="Valor">S/ {{element.nValor | number:'1.2-2'}}</td>
             </ng-container>
             <ng-container matColumnDef="dFechaVenc">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Próx. venc.</th>

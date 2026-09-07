@@ -83,7 +83,7 @@
             </ng-container>
             <ng-container matColumnDef="nPrecio">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio</th>
-                <td mat-cell *matCellDef="let element" data-label="Precio">S/ {{element.nPrecio | number}}</td>
+                <td mat-cell *matCellDef="let element" data-label="Precio">S/ {{element.nPrecio | number:'1.2-2'}}</td>
             </ng-container>
             <ng-container matColumnDef="dFechaVenc">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Vencimiento</th>
