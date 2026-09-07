@@ -11,7 +11,12 @@
     Ejemplos
 
       # Azure SQL (la base hay que crearla antes en el portal)
-      .\cargar-base.ps1 -Servidor sisgapo.database.windows.net -Usuario sisgapoadmin
+      .\cargar-base.ps1 -Servidor "tcp:<servidor>.database.windows.net,1433" -Base <base> -Usuario <admin>
+
+      El servidor, la base y el administrador salen del portal; -Base es
+      obligatorio salvo que la base se llame DB_SISGAPO. Las comillas no
+      sobran: sin ellas PowerShell parte el argumento por la coma y sqlcmd
+      recibe un nombre de servidor incompleto.
 
       # SQL Server local con autenticacion de Windows
       .\cargar-base.ps1 -Servidor . -Integrado
@@ -19,7 +24,7 @@
       # Contenedor de docker compose (puerto 14330, ver docker-compose.yml)
       .\cargar-base.ps1 -Servidor "localhost,14330" -Usuario sa
 
-    Ver ../07-migracion-tier-free.md, fase 5, y README.md de esta carpeta.
+    Ver ../07-migracion-tier-free.md, seccion 7, y README.md de esta carpeta.
 #>
 param(
     [Parameter(Mandatory = $true)][string]$Servidor,

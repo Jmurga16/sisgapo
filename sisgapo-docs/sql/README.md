@@ -88,7 +88,7 @@ Azure SQL y para un SQL Server instalado en la máquina:
 
 ```powershell
 # Azure SQL — la base se crea antes en el portal
-.\cargar-base.ps1 -Servidor sisgapo.database.windows.net -Usuario sisgapoadmin
+.\cargar-base.ps1 -Servidor "tcp:<servidor>.database.windows.net,1433" -Base <base> -Usuario <admin>
 
 # SQL Server local con autenticación de Windows
 .\cargar-base.ps1 -Servidor . -Integrado
@@ -96,6 +96,11 @@ Azure SQL y para un SQL Server instalado en la máquina:
 # El contenedor de docker compose
 .\cargar-base.ps1 -Servidor "localhost,14330" -Usuario sa
 ```
+
+Contra Azure SQL, el nombre del servidor y el de la base salen del portal, y las
+comillas del primer ejemplo son necesarias: sin ellas PowerShell parte el
+argumento por la coma. Si la base es *serverless* y estaba pausada, el primer
+intento puede agotar el tiempo de espera mientras despierta; se reintenta y ya.
 
 Pide la contraseña por consola en vez de recibirla por parámetro, para que no
 quede en el historial. Se detiene en el primer error (`sqlcmd -b`), así que si
