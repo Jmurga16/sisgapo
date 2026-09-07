@@ -53,9 +53,6 @@ namespace SISGAPO_API.Seguridad
             string sOpcion = context.ActionArguments.Values
                 .OfType<GeneralEntity>()
                 .Select(entidad => entidad.sOpcion)
-                .Concat(context.ActionArguments.Values
-                    .OfType<UsuarioEntity>()
-                    .Select(entidad => entidad.sOpcion))
                 .FirstOrDefault();
 
             if (sControlador == "Zona")

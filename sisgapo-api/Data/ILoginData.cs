@@ -1,9 +1,10 @@
 using Entity;
+using System.Threading.Tasks;
 
 namespace Data
 {
     public interface ILoginData
     {
-        CredencialEntity ObtenerPorUsuario(string sNombreUsuario);
+        Task<CredencialEntity> ObtenerPorUsuario(string sNombreUsuario);
     }
 }

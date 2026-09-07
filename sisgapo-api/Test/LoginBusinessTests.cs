@@ -2,13 +2,14 @@ using Business;
 using Data;
 using Entity;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace Test
 {
     public class LoginBusinessTests
     {
         [Fact]
-        public void CredencialesCorrectasDevuelvenUsuarioSinHash()
+        public async Task CredencialesCorrectasDevuelvenUsuarioSinHash()
         {
             CredencialEntity credencial = new CredencialEntity
             {
@@ -20,7 +21,7 @@ namespace Test
             };
             LoginBusiness negocio = new LoginBusiness(new LoginDataFalso(credencial));
 
-            CredencialEntity resultado = negocio.fnVerificarCredenciales(new LoginEntity
+            CredencialEntity resultado = await negocio.fnVerificarCredenciales(new LoginEntity
             {
                 sNombreUsuario = " admin ",
                 sContrasenia = "123456"
@@ -32,11 +33,11 @@ namespace Test
         }
 
         [Fact]
-        public void UsuarioDadoDeBajaNoPuedeIngresar()
+        public async Task UsuarioDadoDeBajaNoPuedeIngresar()
         {
             LoginBusiness negocio = new LoginBusiness(new LoginDataFalso(null));
 
-            CredencialEntity resultado = negocio.fnVerificarCredenciales(new LoginEntity
+            CredencialEntity resultado = await negocio.fnVerificarCredenciales(new LoginEntity
             {
                 sNombreUsuario = "jorge.salazar",
                 sContrasenia = "123456"
@@ -46,7 +47,7 @@ namespace Test
         }
 
         [Fact]
-        public void HashCorruptoRechazaElAcceso()
+        public async Task HashCorruptoRechazaElAcceso()
         {
             CredencialEntity credencial = new CredencialEntity
             {
@@ -55,7 +56,7 @@ namespace Test
             };
             LoginBusiness negocio = new LoginBusiness(new LoginDataFalso(credencial));
 
-            CredencialEntity resultado = negocio.fnVerificarCredenciales(new LoginEntity
+            CredencialEntity resultado = await negocio.fnVerificarCredenciales(new LoginEntity
             {
                 sNombreUsuario = "admin",
                 sContrasenia = "123456"
@@ -73,9 +74,9 @@ namespace Test
                 this.credencial = credencial;
             }
 
-            public CredencialEntity ObtenerPorUsuario(string sNombreUsuario)
+            public Task<CredencialEntity> ObtenerPorUsuario(string sNombreUsuario)
             {
-                return credencial;
+                return Task.FromResult(credencial);
             }
         }
     }

@@ -1,10 +1,15 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Entity
 {
     public class LoginEntity
     {
+        [Required]
+        [MaxLength(100)]
         public string sNombreUsuario { get; set; }
+
+        [Required]
         public string sContrasenia { get; set; }
     }
 

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace Data
 {
@@ -11,7 +12,8 @@ namespace Data
     {
 
         #region Variables
-        private readonly String oSqlConnIN;
+        
+        private static String oSqlConnIN => ConfiguracionBD.sCadenaConexion;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
         #endregion
 
@@ -63,30 +65,18 @@ namespace Data
         #region Conexion
         public Conexion(Int32 idDatabase)
         {
-            try
+            if (idDatabase != 1)
             {
-
-                if (idDatabase != 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(idDatabase),
-                        "SISGAPO solo tiene una base de datos configurada (idDatabase = 1).");
-                }
-
-                oSqlConnIN = ConfiguracionBD.sCadenaConexion;
+                throw new ArgumentOutOfRangeException(nameof(idDatabase),
+                    "SISGAPO solo tiene una base de datos configurada (idDatabase = 1).");
             }
-            catch (Exception e)
-            {
-                logger.Error(e);
-                throw;
-            }
-
         }
         #endregion
 
 
-        #region EjecutarDataReader
+        #region EjecutarDataReaderAsync
 
-        public SqlDataReader ejecutarDataReader(String sProcedure, params object[] valores)
+        public async Task<SqlDataReader> fnEjecutarDataReaderAsync(String sProcedure, params object[] valores)
         {
             SqlConnection conn = null;
 
@@ -98,9 +88,9 @@ namespace Data
                 oCmd.CommandType = CommandType.StoredProcedure;
                 fnAgregarParametros(oCmd, sProcedure, valores);
 
-                conn.Open();
+                await conn.OpenAsync();
 
-                return oCmd.ExecuteReader(CommandBehavior.CloseConnection);
+                return await oCmd.ExecuteReaderAsync(CommandBehavior.CloseConnection);
             }
             catch (Exception ex)
             {
@@ -116,8 +106,8 @@ namespace Data
         #endregion
 
 
-        #region EjecutarEscalar
-        public String EjecutarEscalar(String sProcedure, params object[] valores)
+        #region EjecutarEscalarAsync
+        public async Task<String> fnEjecutarEscalarAsync(String sProcedure, params object[] valores)
         {
             try
             {
@@ -127,9 +117,9 @@ namespace Data
                     oCmd.CommandType = CommandType.StoredProcedure;
                     fnAgregarParametros(oCmd, sProcedure, valores);
 
-                    conn.Open();
+                    await conn.OpenAsync();
 
-                    object oResultado = oCmd.ExecuteScalar();
+                    object oResultado = await oCmd.ExecuteScalarAsync();
 
                     return oResultado == null || oResultado == DBNull.Value
                         ? null

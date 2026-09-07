@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ using Microsoft.OpenApi.Models;
 using NLog;
 using SISGAPO_API.Seguridad;
 using System;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -96,6 +98,20 @@ namespace SISGAPO_API
             services.AddControllers(opciones =>
             {
                 opciones.Filters.Add<DemoSoloLecturaFilter>();
+            });
+
+            services.Configure<ApiBehaviorOptions>(opciones =>
+            {
+                opciones.InvalidModelStateResponseFactory = contexto =>
+                {
+                    string sMensaje = contexto.ModelState.Values
+                        .SelectMany(oEstado => oEstado.Errors)
+                        .Select(oError => oError.ErrorMessage)
+                        .FirstOrDefault(sTexto => !String.IsNullOrWhiteSpace(sTexto))
+                        ?? "La peticion no es valida.";
+
+                    return new BadRequestObjectResult(new { cod = "0", mensaje = sMensaje });
+                };
             });
             services.AddSwaggerGen(c =>
             {

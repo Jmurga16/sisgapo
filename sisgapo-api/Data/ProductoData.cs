@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 
 namespace Data
 {
@@ -26,7 +27,7 @@ namespace Data
         private readonly List<EListaProductos> listaProductos = new List<EListaProductos>();
 
         #region Producto
-        public object DataProducto(GeneralEntity genEnt)
+        public async Task<object> DataProducto(GeneralEntity genEnt)
         {
 
             string msj = string.Empty;
@@ -41,10 +42,10 @@ namespace Data
 
                         List<EListaAlmacenProd> listaAlmacenes = new List<EListaAlmacenProd>();
 
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro))
                         {
 
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EListaAlmacenProd almEnt = new EListaAlmacenProd();
 
@@ -66,10 +67,10 @@ namespace Data
                     case "02":
 
                         List<EListaCategoriaProd> listaCategorias = new List<EListaCategoriaProd>();
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro))
                         {
 
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EListaCategoriaProd catEnt = new EListaCategoriaProd();
 
@@ -90,10 +91,10 @@ namespace Data
                     case "03":
 
                         
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro))
                         {
 
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EListaProductos prodEnt = new EListaProductos();
 
@@ -107,7 +108,7 @@ namespace Data
                                 prodEnt.nLotes = Int32.Parse(Convert.ToString(dr["nLotes"]));
                                 prodEnt.nCantidad = Int32.Parse(Convert.ToString(dr["nCantidad"]));
                                 prodEnt.sNombreUM = Convert.ToString(dr["sNombreUM"]);
-                                prodEnt.nValor = Int64.Parse(Convert.ToString(dr["nValor"]));
+                                prodEnt.nValor = Convert.ToDecimal(dr["nValor"]);
                                 prodEnt.dFechaVenc = Convert.ToString(dr["dFechaVenc"]);
                                 prodEnt.sEstado = Convert.ToString(dr["sEstado"]);
 
@@ -125,9 +126,9 @@ namespace Data
                     case "04":
 
                         List<EListaUnidadMedidaProd> listaUnidadMedida = new List<EListaUnidadMedidaProd>();
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro))
                         {
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EListaUnidadMedidaProd umEnt = new EListaUnidadMedidaProd();
 
@@ -147,10 +148,10 @@ namespace Data
                     case "05":
 
                         List<EListaProductosById> listaProductosId = new List<EListaProductosById>();
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro))
                         {
 
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EListaProductosById prodEnt = new EListaProductosById();
 
@@ -177,7 +178,7 @@ namespace Data
                     case "08":
 
 
-                        string sResultado = Convert.ToString(oCon.EjecutarEscalar("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro));
+                        string sResultado = Convert.ToString(await oCon.fnEjecutarEscalarAsync("USP_MNT_Productos", genEnt.sOpcion, genEnt.pParametro));
                         msj = sResultado;
 
                         return msj;

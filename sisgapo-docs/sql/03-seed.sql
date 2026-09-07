@@ -63,18 +63,18 @@ GO
 -- Los supervisores (nRol = 2) son los únicos elegibles como responsables de almacén.
 
 INSERT INTO TBL_USUARIO
-    (sNombres, sApellidos, nTipoDoc, sNumDoc, sSexo, nRol, sDireccion, nTelefono, dFechaNacimiento, bEstado)
+    (sNombres, sApellidos, nTipoDoc, sNumDoc, sSexo, nRol, sDireccion, sTelefono, dFechaNacimiento, bEstado)
 VALUES
-    ('Administrador', 'del Sistema', 1, '80808080', 'M', 1, 'Av. Principal 100, Lima',  989898989, '1990-01-01', 1),
-    ('Jose',    'M',     1, '70809586', 'M', 2, 'Calle Salaverry 101, Junín', 912654789, '1996-06-06', 1),
-    ('Alex',    'Quispe Cruz',       1, '70807080', 'M', 2, 'Calle Salaverry 1, Junín', 987654321, '1997-05-07', 1),
-    ('María',   'Ramírez Soto',      1, '45129876', 'F', 2, 'Jr. Huaylas 220, Áncash',  912345678, '1992-11-23', 1),
-    ('Carlos',  'Mendoza Ríos',      1, '41235678', 'M', 2, 'Av. Cusco 450, Cusco',     998877665, '1988-03-15', 1),
-    ('Lucía',   'Fernández Paz',     1, '46781234', 'F', 3, 'Jr. Amazonas 78, Lima',    955443322, '1999-07-30', 1),
-    ('Jorge',   'Salazar Vega',      2, 'CE998877', 'M', 3, 'Av. Tarapoto 12, Moyobamba', 944556677, '1995-02-18', 0),
-    ('Usuario', 'Demo Supervisor',   1, '90000001', 'M', 2, 'Cuenta pública de demostración', 900000001, '1990-01-01', 1),
-    ('Usuario', 'Demo Asistente',    1, '90000002', 'F', 3, 'Cuenta pública de demostración', 900000002, '1990-01-01', 1),
-    ('Usuario', 'Demo Administrador',1, '90000003', 'M', 1, 'Cuenta pública de demostración', 900000003, '1990-01-01', 1);
+    ('Administrador', 'del Sistema', 1, '80808080', 'M', 1, 'Av. Principal 100, Lima',  '989898989', '1990-01-01', 1),
+    ('Jose',    'M',     1, '70809586', 'M', 2, 'Calle Salaverry 101, Junín', '912654789', '1996-06-06', 1),
+    ('Alex',    'Quispe Cruz',       1, '70807080', 'M', 2, 'Calle Salaverry 1, Junín', '987654321', '1997-05-07', 1),
+    ('María',   'Ramírez Soto',      1, '45129876', 'F', 2, 'Jr. Huaylas 220, Áncash',  '912345678', '1992-11-23', 1),
+    ('Carlos',  'Mendoza Ríos',      1, '41235678', 'M', 2, 'Av. Cusco 450, Cusco',     '998877665', '1988-03-15', 1),
+    ('Lucía',   'Fernández Paz',     1, '46781234', 'F', 3, 'Jr. Amazonas 78, Lima',    '955443322', '1999-07-30', 1),
+    ('Jorge',   'Salazar Vega',      2, 'CE998877', 'M', 3, 'Av. Tarapoto 12, Moyobamba', '944556677', '1995-02-18', 0),
+    ('Usuario', 'Demo Supervisor',   1, '90000001', 'M', 2, 'Cuenta pública de demostración', '900000001', '1990-01-01', 1),
+    ('Usuario', 'Demo Asistente',    1, '90000002', 'F', 3, 'Cuenta pública de demostración', '900000002', '1990-01-01', 1),
+    ('Usuario', 'Demo Administrador',1, '90000003', 'M', 1, 'Cuenta pública de demostración', '900000003', '1990-01-01', 1);
 GO
 
 -- Solo las tres cuentas demo.* sirven para iniciar sesión en la demo: usan
@@ -203,41 +203,41 @@ GO
 INSERT INTO TBL_DET_PRODUCTO
     (nIdProducto, sDescripcion, nIdUnidadMedida, nCantidad, nPrecio, nIdLote)
 VALUES
-    ( 1, 'Tueste medio de acidez equilibrada y notas florales, a granel',        1,  120,  38,  1),
-    ( 2, 'Tostado a mano en lotes pequeños, cuerpo intenso y final achocolatado',1,   95,  42,  2),
-    ( 3, 'Café verde de altura listo para exportación, saco de 50 kg',           5,    5, 950,  3),
-    ( 4, 'Paquete de 500 g con molienda fina para prensa francesa',              4,  160,  25,  4),
-    ( 5, 'Remojadas y deshidratadas a baja temperatura para activar la semilla', 1,   55,  55,  5),
-    ( 6, 'Tostadas sin sal añadida ni aceites agregados',                        1,   70,  48,  6),
-    ( 7, 'Paquete de 500 g con nueces, almendras, pasas y arándanos orgánicos',  4,  130,  32,  7),
-    ( 8, 'Castaña pelada de recolección silvestre certificada',                  1,   40,  62,  8),
-    ( 9, 'Grano fermentado y secado al sol, origen San Martín, saco de 50 kg',   5,    6, 780,  9),
-    (10, 'Paquete de 200 g de trozos de cacao tostado sin azúcar añadida',       4,  150,  16, 10),
-    (11, 'Prensado en frío y molido fino, sin alcalinizar',                      1,   60,  34, 11),
-    (12, 'Tableta artesanal de 90 g elaborada con cacao criollo',                3,  380,  12, 12),
-    (13, 'Lavada y perlada, lista para consumo, origen Puno',                    1,  200,  14, 13),
-    (14, 'Mezcla de quinua blanca, roja y negra en saco de 50 kg',               5,    5, 800, 14),
-    (15, 'Grano seleccionado de siembra orgánica en Áncash',                     1,  120,  11, 15),
-    (16, 'Frasco de 1 kg de miel cruda sin pasteurizar',                         3,  220,  22, 16),
-    (17, 'Jugo de caña deshidratado, sin refinar ni blanquear',                  1,  300,   9, 17),
-    (18, 'Frasco de 250 ml de endulzante natural de bajo índice glucémico',      3,  180,  24, 18),
-    (19, 'Caja de 25 filtrantes de manzanilla de cultivo orgánico',              4,  240,   8, 19),
-    (20, 'Hoja entera secada a la sombra, aroma mentolado, origen Cusco',        1,   45,  26, 20),
-    (21, 'Vaina curada de vainilla amazónica, precio por gramo',                 2, 1200,   2, 21),
-    (22, 'Maca negra gelatinizada y pulverizada, origen Junín',                  1,   60,  30, 22),
-    (23, 'Pulpa atomizada de alto contenido de vitamina C',                      1,   45,  44, 23),
-    (24, 'Paquete de 100 g deshidratado a baja temperatura',                     4,   90,  18, 24),
-    (25, 'Hoja secada a la sombra para infusión, origen San Martín',             1,   30,  20, 25),
+    ( 1, 'Tueste medio de acidez equilibrada y notas florales, a granel',        1,  120,  38.50,  1),
+    ( 2, 'Tostado a mano en lotes pequeños, cuerpo intenso y final achocolatado',1,   95,  42.90,  2),
+    ( 3, 'Café verde de altura listo para exportación, saco de 50 kg',           5,    5, 950.00,  3),
+    ( 4, 'Paquete de 500 g con molienda fina para prensa francesa',              4,  160,  25.50,  4),
+    ( 5, 'Remojadas y deshidratadas a baja temperatura para activar la semilla', 1,   55,  55.80,  5),
+    ( 6, 'Tostadas sin sal añadida ni aceites agregados',                        1,   70,  48.20,  6),
+    ( 7, 'Paquete de 500 g con nueces, almendras, pasas y arándanos orgánicos',  4,  130,  32.90,  7),
+    ( 8, 'Castaña pelada de recolección silvestre certificada',                  1,   40,  62.40,  8),
+    ( 9, 'Grano fermentado y secado al sol, origen San Martín, saco de 50 kg',   5,    6, 780.00,  9),
+    (10, 'Paquete de 200 g de trozos de cacao tostado sin azúcar añadida',       4,  150,  16.50, 10),
+    (11, 'Prensado en frío y molido fino, sin alcalinizar',                      1,   60,  34.70, 11),
+    (12, 'Tableta artesanal de 90 g elaborada con cacao criollo',                3,  380,  12.90, 12),
+    (13, 'Lavada y perlada, lista para consumo, origen Puno',                    1,  200,  14.60, 13),
+    (14, 'Mezcla de quinua blanca, roja y negra en saco de 50 kg',               5,    5, 800.00, 14),
+    (15, 'Grano seleccionado de siembra orgánica en Áncash',                     1,  120,  11.80, 15),
+    (16, 'Frasco de 1 kg de miel cruda sin pasteurizar',                         3,  220,  22.50, 16),
+    (17, 'Jugo de caña deshidratado, sin refinar ni blanquear',                  1,  300,   9.40, 17),
+    (18, 'Frasco de 250 ml de endulzante natural de bajo índice glucémico',      3,  180,  24.90, 18),
+    (19, 'Caja de 25 filtrantes de manzanilla de cultivo orgánico',              4,  240,   8.60, 19),
+    (20, 'Hoja entera secada a la sombra, aroma mentolado, origen Cusco',        1,   45,  26.30, 20),
+    (21, 'Vaina curada de vainilla amazónica, precio por gramo',                 2, 1200,   2.75, 21),
+    (22, 'Maca negra gelatinizada y pulverizada, origen Junín',                  1,   60,  30.90, 22),
+    (23, 'Pulpa atomizada de alto contenido de vitamina C',                      1,   45,  44.20, 23),
+    (24, 'Paquete de 100 g deshidratado a baja temperatura',                     4,   90,  18.50, 24),
+    (25, 'Hoja secada a la sombra para infusión, origen San Martín',             1,   30,  20.40, 25),
     -- Segunda partida de ocho productos: mismo producto, otro vencimiento y otra
     -- existencia. Es lo que el modelo de 2021 no permitía representar.
-    ( 1, 'Tueste medio de la cosecha siguiente, a granel',                       1,   80,  39, 26),
-    ( 5, 'Segunda partida de pecanas activadas, misma finca',                    1,   35,  57, 27),
-    ( 7, 'Paquete de 500 g de la mezcla de temporada',                           4,   60,  33, 28),
-    ( 9, 'Grano fermentado de la campaña siguiente, saco de 50 kg',              5,    4, 790, 29),
-    (12, 'Tableta artesanal de 90 g del segundo lote de producción',             3,  200,  12, 30),
-    (13, 'Quinua perlada de la campaña siguiente, origen Puno',                  1,  150,  15, 31),
-    (16, 'Frasco de 1 kg de miel de la cosecha de verano',                       3,   90,  23, 32),
-    (19, 'Caja de 25 filtrantes del segundo acopio',                             4,  120,   8, 33);
+    ( 1, 'Tueste medio de la cosecha siguiente, a granel',                       1,   80,  39.20, 26),
+    ( 5, 'Segunda partida de pecanas activadas, misma finca',                    1,   35,  57.10, 27),
+    ( 7, 'Paquete de 500 g de la mezcla de temporada',                           4,   60,  33.50, 28),
+    ( 9, 'Grano fermentado de la campaña siguiente, saco de 50 kg',              5,    4, 790.00, 29),
+    (12, 'Tableta artesanal de 90 g del segundo lote de producción',             3,  200,  12.90, 30),
+    (13, 'Quinua perlada de la campaña siguiente, origen Puno',                  1,  150,  15.30, 31),
+    (16, 'Frasco de 1 kg de miel de la cosecha de verano',                       3,   90,  23.10, 32),
+    (19, 'Caja de 25 filtrantes del segundo acopio',                             4,  120,   8.90, 33);
 GO
 
 -- Ningún producto activo apunta al almacén 5 ni a la categoría 4, ambos inactivos.
@@ -368,12 +368,15 @@ UNION ALL SELECT 'TBL_MOVIMIENTO',     COUNT(*) FROM TBL_MOVIMIENTO;
 GO
 
 -- Valores esperados documentados en README.md.
+-- El valor va aparte: al ser DECIMAL arrastraria a su tipo el resto de los conteos.
 SELECT 'Valor del inventario activo' AS invariante,
        SUM(d.nCantidad * d.nPrecio) AS valor
   FROM TBL_DET_PRODUCTO d
   JOIN TBL_PRODUCTO p ON p.nIdProducto = d.nIdProducto
- WHERE p.bEstado = 1
-UNION ALL SELECT 'Productos activos', COUNT(*) FROM TBL_PRODUCTO WHERE bEstado = 1
+ WHERE p.bEstado = 1;
+GO
+
+SELECT 'Productos activos' AS invariante, COUNT(*) AS valor FROM TBL_PRODUCTO WHERE bEstado = 1
 UNION ALL SELECT 'Productos dados de baja', COUNT(*) FROM TBL_PRODUCTO WHERE bEstado = 0
 UNION ALL SELECT 'Lotes activos que vencen en 30 días', COUNT(*)
   FROM TBL_DET_PRODUCTO d

@@ -2,6 +2,8 @@ using Entity;
 using NLog;
 using System;
 using System.Data;
+using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 
 namespace Data
 {
@@ -20,13 +22,13 @@ namespace Data
 
 
         #region Obtener credencial
-        public CredencialEntity ObtenerPorUsuario(string sNombreUsuario)
+        public async Task<CredencialEntity> ObtenerPorUsuario(string sNombreUsuario)
         {
             try
             {
-                using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Login", sNombreUsuario))
+                using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Login", sNombreUsuario))
                 {
-                    if (!dr.Read())
+                    if (!await dr.ReadAsync())
                     {
                         return null;
                     }

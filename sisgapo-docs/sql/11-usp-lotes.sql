@@ -45,7 +45,7 @@ BEGIN
         DECLARE @nIdUnidadMedida INT;
         DECLARE @nIdUsuario      INT;
         DECLARE @nCantidad       INT;
-        DECLARE @nPrecio         INT;
+        DECLARE @nPrecio         DECIMAL(10,2);
         DECLARE @nContador       INT;
         DECLARE @bEstado         BIT;
         DECLARE @sNombreLote     VARCHAR(100);

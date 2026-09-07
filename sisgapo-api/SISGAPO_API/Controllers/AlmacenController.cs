@@ -23,14 +23,19 @@ namespace SISGAPO_API.Controllers
         #region Almacen
 
         [HttpPost]
-        public IActionResult CrudAlmacen(GeneralEntity genEnt) // fnServAlmacenes
+        public async Task<IActionResult> CrudAlmacen(GeneralEntity genEnt) // fnServAlmacenes
         {
+
+            if (genEnt == null)
+            {
+                return BadRequest(new { cod = "0", mensaje = "Falta el cuerpo de la peticion." });
+            }
 
             if (genEnt.sOpcion == "01" || genEnt.sOpcion == "02" || genEnt.sOpcion == "03" || genEnt.sOpcion == "04")
             {
                 try
                 {
-                    var vRes = objInventario.BusinessAlmacen(genEnt);
+                    var vRes = await objInventario.BusinessAlmacen(genEnt);
 
                     return Ok(vRes);
                 }
@@ -52,7 +57,7 @@ namespace SISGAPO_API.Controllers
 
                 try
                 {
-                    string sResultado = Convert.ToString(objInventario.BusinessAlmacen(genEnt));
+                    string sResultado = Convert.ToString(await objInventario.BusinessAlmacen(genEnt));
                     string[] listaRes = (sResultado ?? "").Split('|');
 
                     return Ok(new

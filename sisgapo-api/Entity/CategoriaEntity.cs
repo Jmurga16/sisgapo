@@ -6,10 +6,6 @@ using System.Threading.Tasks;
 
 namespace Entity
 {
-    public class CategoriaEntity
-    {
-    }
-
     public class EntListaCategorias
     {
         public int nIdCategoria { get; set; }

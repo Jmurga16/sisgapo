@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 
 namespace Data
 {
@@ -22,7 +23,7 @@ namespace Data
         #endregion
 
         #region Movimiento
-        public object DataMovimiento(GeneralEntity genEnt)
+        public async Task<object> DataMovimiento(GeneralEntity genEnt)
         {
 
             string msj = string.Empty;
@@ -37,10 +38,10 @@ namespace Data
 
                         List<EListaMovimientos> listaMovimientos = new List<EListaMovimientos>();
 
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Movimientos", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Movimientos", genEnt.sOpcion, genEnt.pParametro))
                         {
 
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EListaMovimientos movEnt = new EListaMovimientos();
 
@@ -71,7 +72,7 @@ namespace Data
                     #region 02. Registrar movimiento
                     case "02":
 
-                        string sResultado = Convert.ToString(oCon.EjecutarEscalar("USP_MNT_Movimientos", genEnt.sOpcion, genEnt.pParametro));
+                        string sResultado = Convert.ToString(await oCon.fnEjecutarEscalarAsync("USP_MNT_Movimientos", genEnt.sOpcion, genEnt.pParametro));
                         msj = sResultado;
 
                         return msj;
@@ -82,10 +83,10 @@ namespace Data
 
                         List<EListaLoteMovimiento> listaLotes = new List<EListaLoteMovimiento>();
 
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Movimientos", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Movimientos", genEnt.sOpcion, genEnt.pParametro))
                         {
 
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EListaLoteMovimiento lotEnt = new EListaLoteMovimiento();
 
@@ -113,10 +114,10 @@ namespace Data
 
                         List<EResumenMovimientos> listaResumen = new List<EResumenMovimientos>();
 
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Movimientos", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Movimientos", genEnt.sOpcion, genEnt.pParametro))
                         {
 
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EResumenMovimientos resEnt = new EResumenMovimientos();
 

@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 
 namespace Data
 {
@@ -23,7 +24,7 @@ namespace Data
        
 
         #region Categoria
-        public object DataCategoria(GeneralEntity genEnt)
+        public async Task<object> DataCategoria(GeneralEntity genEnt)
         {
 
             string msj = string.Empty;
@@ -35,9 +36,9 @@ namespace Data
                     try
                     {
                         List<EntListaCategorias> listaCategorias = new List<EntListaCategorias>();
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro))
                         {
-                                while (dr.Read())
+                                while (await dr.ReadAsync())
                                 {
                                     EntListaCategorias catEnt = new EntListaCategorias();
 
@@ -67,10 +68,10 @@ namespace Data
                     try
                     {
                         List<EntListaCategorias> listaCategoriaId = new List<EntListaCategorias>();
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro))
                         {
                             
-                            while(dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EntListaCategorias catEnt = new EntListaCategorias();
 
@@ -99,7 +100,7 @@ namespace Data
                 case "05":
                     try
                     {
-                        string sResultado = Convert.ToString(oCon.EjecutarEscalar("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro));
+                        string sResultado = Convert.ToString(await oCon.fnEjecutarEscalarAsync("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro));
                         msj = sResultado;
                     }
                     catch (Exception e)

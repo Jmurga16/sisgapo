@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 using System;
+using System.Threading.Tasks;
 
 namespace SISGAPO_API.Controllers
 {
@@ -17,7 +18,7 @@ namespace SISGAPO_API.Controllers
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         [HttpPost]
-        public IActionResult CrudPanel(GeneralEntity genEnt)
+        public async Task<IActionResult> CrudPanel(GeneralEntity genEnt)
         {
             if (genEnt == null)
             {
@@ -29,7 +30,7 @@ namespace SISGAPO_API.Controllers
             {
                 try
                 {
-                    return Ok(objPanel.BusinessPanel(genEnt));
+                    return Ok(await objPanel.BusinessPanel(genEnt));
                 }
                 catch (Exception e)
                 {

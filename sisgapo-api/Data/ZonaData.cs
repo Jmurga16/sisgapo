@@ -24,7 +24,7 @@ namespace Data
         }
 
         //Obtener Todos los zonas
-        public List<ZonaEntity> LIS_ZonaData()
+        public async Task<List<ZonaEntity>> LIS_ZonaData()
         {
 
             List<ZonaEntity> lstZonas = new List<ZonaEntity>();
@@ -37,7 +37,7 @@ namespace Data
                 ConfConexion();
 
                 conn = new SqlConnection(conf);
-                conn.Open();
+                await conn.OpenAsync();
 
                 SqlCommand _Command = new("USP_MNT_Zonas", conn);
                 _Command.CommandType = CommandType.StoredProcedure;
@@ -47,9 +47,9 @@ namespace Data
                 _Command.Parameters.Add(new SqlParameter("@sRutaImagen", ""));
 
 
-                SqlDataReader reader = _Command.ExecuteReader();
+                SqlDataReader reader = await _Command.ExecuteReaderAsync();
 
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     ZonaEntity zonaEnt = new ZonaEntity();
 
@@ -76,7 +76,7 @@ namespace Data
         }
 
         //Obtener un zona por id
-        public List<ZonaEntity> LIS_ZonaUnicoData(int nIdZona)
+        public async Task<List<ZonaEntity>> LIS_ZonaUnicoData(int nIdZona)
         {
 
             List<ZonaEntity> lstZonas = new List<ZonaEntity>();
@@ -90,7 +90,7 @@ namespace Data
                 string sOpcion = "02";
 
                 conn = new SqlConnection(conf);
-                conn.Open();
+                await conn.OpenAsync();
 
                 SqlCommand _Command = new SqlCommand("USP_MNT_Zonas", conn);
                 _Command.CommandType = CommandType.StoredProcedure;
@@ -100,9 +100,9 @@ namespace Data
                 _Command.Parameters.Add(new SqlParameter("@sRutaImagen", ""));
 
 
-                SqlDataReader dreader = _Command.ExecuteReader();
+                SqlDataReader dreader = await _Command.ExecuteReaderAsync();
 
-                while (dreader.Read())
+                while (await dreader.ReadAsync())
                 {
                     ZonaEntity zonaEnt = new ZonaEntity();
 
@@ -130,27 +130,27 @@ namespace Data
 
 
         //Crear zona
-        public String CREATE_ZonaData(ZonaEntity objZonaEnt)
+        public async Task<String> CREATE_ZonaData(ZonaEntity objZonaEnt)
         {
-            return fnEjecutarEscritura("03", objZonaEnt.nIdZona, objZonaEnt.sNombre, objZonaEnt.sRutaImagen, true);
+            return await fnEjecutarEscritura("03", objZonaEnt.nIdZona, objZonaEnt.sNombre, objZonaEnt.sRutaImagen, true);
         }
 
 
         //Actualizar zona
-        public String UPDATE_ZonaData(ZonaEntity objZonaEnt)
+        public async Task<String> UPDATE_ZonaData(ZonaEntity objZonaEnt)
         {
-            return fnEjecutarEscritura("04", objZonaEnt.nIdZona, objZonaEnt.sNombre, objZonaEnt.sRutaImagen, true);
+            return await fnEjecutarEscritura("04", objZonaEnt.nIdZona, objZonaEnt.sNombre, objZonaEnt.sRutaImagen, true);
         }
 
 
         //Activar / dar de baja (baja logica)
-        public String ESTADO_ZonaData(int nIdZona, bool bEstado)
+        public async Task<String> ESTADO_ZonaData(int nIdZona, bool bEstado)
         {
-            return fnEjecutarEscritura("05", nIdZona, "", "", bEstado);
+            return await fnEjecutarEscritura("05", nIdZona, "", "", bEstado);
         }
 
 
-        private String fnEjecutarEscritura(string sOpcion, int nIdZona, string sNombre, string sRutaImagen, bool bEstado)
+        private async Task<String> fnEjecutarEscritura(string sOpcion, int nIdZona, string sNombre, string sRutaImagen, bool bEstado)
         {
             String strResultado = "";
 
@@ -160,7 +160,7 @@ namespace Data
 
                 using (var conn = new SqlConnection(conf))
                 {
-                    conn.Open();
+                    await conn.OpenAsync();
 
                     SqlCommand _Command = new SqlCommand("USP_MNT_Zonas", conn);
                     _Command.CommandType = CommandType.StoredProcedure;
@@ -170,7 +170,7 @@ namespace Data
                     _Command.Parameters.Add(new SqlParameter("@sRutaImagen", sRutaImagen ?? ""));
                     _Command.Parameters.Add(new SqlParameter("@bEstado", bEstado));
 
-                    object oResultado = _Command.ExecuteScalar();
+                    object oResultado = await _Command.ExecuteScalarAsync();
                     strResultado = Convert.ToString(oResultado);
                 }
             }

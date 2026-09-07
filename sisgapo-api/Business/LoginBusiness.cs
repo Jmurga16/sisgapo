@@ -2,6 +2,7 @@ using Data;
 using Entity;
 using NLog;
 using System;
+using System.Threading.Tasks;
 
 namespace Business
 {
@@ -19,7 +20,7 @@ namespace Business
             this.loginData = loginData ?? throw new ArgumentNullException(nameof(loginData));
         }
         
-        public CredencialEntity fnVerificarCredenciales(LoginEntity logEnt)
+        public async Task<CredencialEntity> fnVerificarCredenciales(LoginEntity logEnt)
         {
             try
             {
@@ -30,7 +31,7 @@ namespace Business
                     return null;
                 }
 
-                CredencialEntity oCredencial = loginData.ObtenerPorUsuario(logEnt.sNombreUsuario.Trim());
+                CredencialEntity oCredencial = await loginData.ObtenerPorUsuario(logEnt.sNombreUsuario.Trim());
 
                 if (oCredencial == null || String.IsNullOrWhiteSpace(oCredencial.sContrasenia))
                 {

@@ -13,29 +13,29 @@ namespace Business
     {
         private readonly ZonaData zonaData = new ZonaData();
         
-        public List<ZonaEntity> LIS_ZonaBusiness()
+        public async Task<List<ZonaEntity>> LIS_ZonaBusiness()
         {
-            return zonaData.LIS_ZonaData();
+            return await zonaData.LIS_ZonaData();
         }
 
-        public List<ZonaEntity> LIS_ZonaUnicoBusiness(int id_zona)
+        public async Task<List<ZonaEntity>> LIS_ZonaUnicoBusiness(int id_zona)
         {
-            return zonaData.LIS_ZonaUnicoData(id_zona);
+            return await zonaData.LIS_ZonaUnicoData(id_zona);
         }
 
-        public String CREATE_ZonaBusiness(ZonaEntity objZonasEnt)
+        public async Task<String> CREATE_ZonaBusiness(ZonaEntity objZonasEnt)
         {
-            return zonaData.CREATE_ZonaData(objZonasEnt);
+            return await zonaData.CREATE_ZonaData(objZonasEnt);
         }
 
-        public String UPDATE_ZonaBusiness(ZonaEntity objZonasEnt)
+        public async Task<String> UPDATE_ZonaBusiness(ZonaEntity objZonasEnt)
         {
-            return zonaData.UPDATE_ZonaData(objZonasEnt);
+            return await zonaData.UPDATE_ZonaData(objZonasEnt);
         }
 
-        public String ESTADO_ZonaBusiness(int nIdZona, bool bEstado)
+        public async Task<String> ESTADO_ZonaBusiness(int nIdZona, bool bEstado)
         {
-            return zonaData.ESTADO_ZonaData(nIdZona, bEstado);
+            return await zonaData.ESTADO_ZonaData(nIdZona, bEstado);
         }
 
     

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 
 namespace Data
 {
@@ -27,7 +28,7 @@ namespace Data
         private readonly List<EListaAlmacenId> listaAlmacenId = new List<EListaAlmacenId>();
 
         #region Almacen
-        public object DataAlmacen(GeneralEntity genEnt)
+        public async Task<object> DataAlmacen(GeneralEntity genEnt)
         {
 
             string msj = string.Empty;
@@ -40,10 +41,10 @@ namespace Data
                     #region 01. Lista de Almacenes
                     case "01":
                                                     
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
                         {
                         
-                                while (dr.Read())
+                                while (await dr.ReadAsync())
                                 {
                                     EListaAlmacenes almEnt = new EListaAlmacenes();
 
@@ -66,10 +67,10 @@ namespace Data
                     #region 02. Almacen por Id
                     case "02":
                       
-                       using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
+                       using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
                        {
                        
-                               while (dr.Read())
+                               while (await dr.ReadAsync())
                                {
                                    EListaAlmacenId almEnt = new EListaAlmacenId();
 
@@ -93,10 +94,10 @@ namespace Data
                     case "03":
                        
                        List<EListaZonas> listaZonas = new List<EListaZonas>();
-                       using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
+                       using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
                        {
                        
-                               while (dr.Read())
+                               while (await dr.ReadAsync())
                                {
                                    EListaZonas zonEnt = new EListaZonas();
 
@@ -117,9 +118,9 @@ namespace Data
                     case "04":
                        
                        List<EListaSupervisores> listaSupervisores = new List<EListaSupervisores>();
-                       using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
+                       using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro))
                        {                         
-                               while (dr.Read())
+                               while (await dr.ReadAsync())
                                {
                                    EListaSupervisores almEnt = new EListaSupervisores();
 
@@ -138,7 +139,7 @@ namespace Data
                     #region 05. Insertar | 06. Actualizar | 07. Eliminar(Logica) -- Almacenes
                     case "05": case "06": case "07":
                         
-                        string sResultado = Convert.ToString(oCon.EjecutarEscalar("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro));
+                        string sResultado = Convert.ToString(await oCon.fnEjecutarEscalarAsync("USP_MNT_Almacenes", genEnt.sOpcion, genEnt.pParametro));
                         msj = sResultado;
                                              
                         return msj;

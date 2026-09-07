@@ -4,6 +4,7 @@ using NLog;
 using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Business
 {
@@ -25,7 +26,7 @@ namespace Business
             this.usuarioData = usuarioData ?? throw new ArgumentNullException(nameof(usuarioData));
         }
 
-        public object LIS_UsuarioBusiness(UsuarioEntity erp)
+        public async Task<object> LIS_UsuarioBusiness(GeneralEntity erp)
         {
             try
             {
@@ -38,7 +39,7 @@ namespace Business
                     erp.pParametro = fnHashearContrasenia(erp.pParametro);
                 }
 
-                return usuarioData.LIS_UsuarioData(erp);
+                return await usuarioData.LIS_UsuarioData(erp);
             }
             catch (Exception e)
             {
@@ -105,9 +106,9 @@ namespace Business
                 throw new ArgumentException(sMensaje);
             }
 
-            if (!Regex.IsMatch(arValores[7] ?? String.Empty, @"^9\d{8}$"))
+            if (!Regex.IsMatch(arValores[7] ?? String.Empty, @"^(\+51)?9\d{8}$"))
             {
-                throw new ArgumentException("El teléfono debe tener 9 dígitos y empezar con 9.");
+                throw new ArgumentException("El teléfono debe tener 9 dígitos y empezar con 9, con o sin prefijo +51.");
             }
 
             if (!DateTime.TryParseExact(

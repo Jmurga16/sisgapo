@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace Entity
 {
-    public class ProductoEntity
-    {
-
-    }
-
     public class EListaAlmacenProd
     {
         public int nIdAlmacen { get; set; }
@@ -41,7 +36,7 @@ namespace Entity
         public int nLotes { get; set; }
         public int nCantidad { get; set; }
         public string sNombreUM { get; set; }
-        public long nValor { get; set; }
+        public decimal nValor { get; set; }
         public string dFechaVenc { get; set; }
         public string sEstado { get; set; }
     }

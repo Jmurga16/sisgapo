@@ -84,7 +84,7 @@ CREATE TABLE TBL_USUARIO (
     sSexo            VARCHAR(1)   NULL,     -- 'M' | 'F'
     nRol             INT          NOT NULL, -- [1] CORRECCIÓN: columna que faltaba
     sDireccion       VARCHAR(300) NULL,
-    nTelefono        INT          NULL,     -- ver 06-hallazgos.md, D-07: debería ser VARCHAR
+    sTelefono        VARCHAR(20)  NULL,
     dFechaNacimiento DATE         NULL,
     bEstado          BIT          NOT NULL DEFAULT 1,   -- baja lógica
 
@@ -178,7 +178,7 @@ CREATE TABLE TBL_DET_PRODUCTO (
     sDescripcion    VARCHAR(500) NULL,
     nIdUnidadMedida INT          NOT NULL,
     nCantidad       INT          NOT NULL DEFAULT 0,
-    nPrecio         INT          NULL,     -- ver 06-hallazgos.md, D-06: debería ser DECIMAL
+    nPrecio         DECIMAL(10,2) NULL,
     nIdLote         INT          NOT NULL,
     bEstado         BIT          NOT NULL DEFAULT 1,   -- baja lógica del lote
 
@@ -188,7 +188,8 @@ CREATE TABLE TBL_DET_PRODUCTO (
     CONSTRAINT FK_DETPROD_LOTE     FOREIGN KEY (nIdLote)         REFERENCES TBL_LOTE(nIdLote),
     -- [7] Un lote pertenece a un solo producto y no se repite dentro de él.
     CONSTRAINT UQ_DETPROD_PROD_LOTE UNIQUE (nIdProducto, nIdLote),
-    CONSTRAINT CK_DETPROD_CANTIDAD  CHECK (nCantidad >= 0)
+    CONSTRAINT CK_DETPROD_CANTIDAD  CHECK (nCantidad >= 0),
+    CONSTRAINT CK_DETPROD_PRECIO    CHECK (nPrecio >= 0)
 );
 GO
 

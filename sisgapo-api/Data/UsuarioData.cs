@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Data
 {
@@ -22,7 +23,7 @@ namespace Data
 
 
         #region Obtener Todos los usuarios
-        public object LIS_UsuarioData(UsuarioEntity erp)
+        public async Task<object> LIS_UsuarioData(GeneralEntity erp)
         {
 
             SqlConnection conn = null;
@@ -37,7 +38,7 @@ namespace Data
                 ConfConexion();
 
                 conn = new SqlConnection(conf);
-                conn.Open();
+                await conn.OpenAsync();
 
                 SqlCommand _Command = new SqlCommand("USP_MNT_Usuarios", conn);
                 _Command.CommandType = CommandType.StoredProcedure;
@@ -48,9 +49,9 @@ namespace Data
                 #region Listar Todo || Listar con Filtro
                 if (erp.sOpcion == "01" || erp.sOpcion == "02")
                 {
-                    SqlDataReader reader = _Command.ExecuteReader();
+                    SqlDataReader reader = await _Command.ExecuteReaderAsync();
 
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         EntListaUsuarios usrEnt = new EntListaUsuarios();
 
@@ -72,9 +73,9 @@ namespace Data
                 #region Listar por Id
                 if (erp.sOpcion == "03")
                 {
-                    SqlDataReader reader = _Command.ExecuteReader();
+                    SqlDataReader reader = await _Command.ExecuteReaderAsync();
 
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         EntListaUsuarioId usrEntId = new EntListaUsuarioId();
                                                
@@ -85,7 +86,7 @@ namespace Data
                         usrEntId.sSexo        = reader["sSexo"].ToString();
                         usrEntId.nIdRol       = Convert.ToInt32(reader["nRol"]);
                         usrEntId.sDireccion   = reader["sDireccion"].ToString();
-                        usrEntId.nTelefono    = Convert.ToInt32(reader["nTelefono"]);
+                        usrEntId.sTelefono    = reader["sTelefono"].ToString();
                         usrEntId.sNombreUsuario = reader["sNombreUsuario"].ToString();
                         usrEntId.dFechaNac    = reader["dFechaNac"].ToString();
                         usrEntId.dFechaNacimiento = Convert.ToDateTime(reader["dFechaNacimiento"]);
@@ -101,7 +102,7 @@ namespace Data
                 else if (erp.sOpcion == "04" || erp.sOpcion == "05" || erp.sOpcion == "06")
                 {
 
-                    if (_Command.ExecuteNonQuery() != 0)
+                    if (await _Command.ExecuteNonQueryAsync() != 0)
                     {
                         strResultado = "OK";
 

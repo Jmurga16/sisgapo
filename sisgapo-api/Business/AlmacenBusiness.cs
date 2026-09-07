@@ -16,14 +16,14 @@ namespace Business
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
 
-        public object BusinessAlmacen(GeneralEntity genEnt)
+        public async Task<object> BusinessAlmacen(GeneralEntity genEnt)
         {
             try
             {
                 bool bEscritura = genEnt != null && (genEnt.sOpcion == "05" || genEnt.sOpcion == "06" || genEnt.sOpcion == "07");
                 genEnt.pParametro = ParametroDelimitado.Preparar(genEnt.parametros, genEnt.pParametro, bEscritura);
 
-                return almacenData.DataAlmacen(genEnt);
+                return await almacenData.DataAlmacen(genEnt);
 
             }
             catch (Exception e)

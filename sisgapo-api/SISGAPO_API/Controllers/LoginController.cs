@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using NLog;
 using SISGAPO_API.Seguridad;
 using System;
+using System.Threading.Tasks;
 
 namespace SISGAPO_API.Controllers
 {
@@ -19,11 +20,16 @@ namespace SISGAPO_API.Controllers
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         [HttpPost]
-        public IActionResult CrudLogin(LoginEntity logEnt)
+        public async Task<IActionResult> CrudLogin(LoginEntity logEnt)
         {
+            if (logEnt == null)
+            {
+                return BadRequest(new { cod = "0", mensaje = "Falta el cuerpo de la peticion." });
+            }
+
             try
             {
-                CredencialEntity oCredencial = objLogin.fnVerificarCredenciales(logEnt);
+                CredencialEntity oCredencial = await objLogin.fnVerificarCredenciales(logEnt);
 
                 if (oCredencial == null)
                 {

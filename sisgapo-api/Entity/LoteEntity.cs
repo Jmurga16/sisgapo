@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace Entity
 {
-    public class LoteEntity
-    {
-
-    }
-
     public class EListaLotes
     {
         public int nIdDetProd { get; set; }
@@ -27,7 +22,7 @@ namespace Entity
         public int nDiasRestantes { get; set; }
         public int nCantidad { get; set; }
         public string sNombreUM { get; set; }
-        public int nPrecio { get; set; }
+        public decimal nPrecio { get; set; }
         public string sEstado { get; set; }
     }
 
@@ -42,7 +37,7 @@ namespace Entity
         public string dFechaVenc { get; set; }
         public int nIdUnidadMedida { get; set; }
         public int nCantidad { get; set; }
-        public int nPrecio { get; set; }
+        public decimal nPrecio { get; set; }
         public string sDescripcion { get; set; }
         public bool bEstado { get; set; }
     }

@@ -20,14 +20,19 @@ namespace SISGAPO_API.Controllers
         //Obtener Todos los usuarios
         [Route("UsuariosService")]
         [HttpPost]
-        public IActionResult LIS_Usuarios(UsuarioEntity erp)
+        public async Task<IActionResult> LIS_Usuarios(GeneralEntity erp)
         {
            
+            if (erp == null)
+            {
+                return BadRequest(new { cod = "0", mensaje = "Falta el cuerpo de la peticion." });
+            }
+
             if (erp.sOpcion == "01" || erp.sOpcion == "02" || erp.sOpcion == "03")
             { 
                 try
                 {
-                    var result = objUsuarios.LIS_UsuarioBusiness(erp);
+                    var result = await objUsuarios.LIS_UsuarioBusiness(erp);
 
                     return Ok(result);
 
@@ -44,7 +49,7 @@ namespace SISGAPO_API.Controllers
                 try
                 {
                     
-                    string result = Convert.ToString(objUsuarios.LIS_UsuarioBusiness(erp));
+                    string result = Convert.ToString(await objUsuarios.LIS_UsuarioBusiness(erp));
                     
                     return Ok(new { mensaje = result});
                 }

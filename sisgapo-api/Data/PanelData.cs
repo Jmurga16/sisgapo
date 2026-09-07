@@ -3,6 +3,8 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 
 namespace Data
 {
@@ -20,7 +22,7 @@ namespace Data
 
 
         #region Panel
-        public object DataPanel(GeneralEntity genEnt)
+        public async Task<object> DataPanel(GeneralEntity genEnt)
         {
             try
             {
@@ -31,9 +33,9 @@ namespace Data
                     {
                         List<EPanelResumen> listaResumen = new List<EPanelResumen>();
 
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Panel", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Panel", genEnt.sOpcion, genEnt.pParametro))
                         {
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EPanelResumen oEnt = new EPanelResumen();
 
@@ -41,7 +43,7 @@ namespace Data
                                 oEnt.nProductos = Int32.Parse(Convert.ToString(dr["nProductos"]));
                                 oEnt.nCategorias = Int32.Parse(Convert.ToString(dr["nCategorias"]));
                                 oEnt.nZonas = Int32.Parse(Convert.ToString(dr["nZonas"]));
-                                oEnt.nValorInventario = Int64.Parse(Convert.ToString(dr["nValorInventario"]));
+                                oEnt.nValorInventario = Convert.ToDecimal(dr["nValorInventario"]);
                                 oEnt.nUnidades = Int64.Parse(Convert.ToString(dr["nUnidades"]));
                                 oEnt.nPorVencer30 = Int32.Parse(Convert.ToString(dr["nPorVencer30"]));
                                 oEnt.nVencidos = Int32.Parse(Convert.ToString(dr["nVencidos"]));
@@ -59,9 +61,9 @@ namespace Data
                     {
                         List<EPanelPorAlmacen> listaAlmacenes = new List<EPanelPorAlmacen>();
 
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Panel", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Panel", genEnt.sOpcion, genEnt.pParametro))
                         {
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EPanelPorAlmacen oEnt = new EPanelPorAlmacen();
 
@@ -70,7 +72,7 @@ namespace Data
                                 oEnt.sNombreZona = Convert.ToString(dr["sNombreZona"]);
                                 oEnt.nProductos = Int32.Parse(Convert.ToString(dr["nProductos"]));
                                 oEnt.nUnidades = Int64.Parse(Convert.ToString(dr["nUnidades"]));
-                                oEnt.nValor = Int64.Parse(Convert.ToString(dr["nValor"]));
+                                oEnt.nValor = Convert.ToDecimal(dr["nValor"]);
 
                                 listaAlmacenes.Add(oEnt);
                             }
@@ -85,9 +87,9 @@ namespace Data
                     {
                         List<EPanelPorCategoria> listaCategorias = new List<EPanelPorCategoria>();
 
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Panel", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Panel", genEnt.sOpcion, genEnt.pParametro))
                         {
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EPanelPorCategoria oEnt = new EPanelPorCategoria();
 
@@ -95,7 +97,7 @@ namespace Data
                                 oEnt.sNombreCategoria = Convert.ToString(dr["sNombreCategoria"]);
                                 oEnt.nProductos = Int32.Parse(Convert.ToString(dr["nProductos"]));
                                 oEnt.nUnidades = Int64.Parse(Convert.ToString(dr["nUnidades"]));
-                                oEnt.nValor = Int64.Parse(Convert.ToString(dr["nValor"]));
+                                oEnt.nValor = Convert.ToDecimal(dr["nValor"]);
 
                                 listaCategorias.Add(oEnt);
                             }
@@ -110,9 +112,9 @@ namespace Data
                     {
                         List<EPanelPorVencer> listaPorVencer = new List<EPanelPorVencer>();
 
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Panel", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Panel", genEnt.sOpcion, genEnt.pParametro))
                         {
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EPanelPorVencer oEnt = new EPanelPorVencer();
 

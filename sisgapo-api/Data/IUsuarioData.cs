@@ -1,9 +1,10 @@
 using Entity;
+using System.Threading.Tasks;
 
 namespace Data
 {
     public interface IUsuarioData
     {
-        object LIS_UsuarioData(UsuarioEntity erp);
+        Task<object> LIS_UsuarioData(GeneralEntity erp);
     }
 }

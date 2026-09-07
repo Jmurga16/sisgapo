@@ -28,7 +28,7 @@ BEGIN
 		DECLARE @sNumDoc		  VARCHAR(MAX);
 		DECLARE @sSexo			  VARCHAR(MAX);		
 		DECLARE @sDireccion		  VARCHAR(MAX);
-		DECLARE @nTelefono		  INT;
+		DECLARE @sTelefono		  VARCHAR(20);
 		DECLARE @dFechaNacimiento DATE;
 		DECLARE @nContador INT
 
@@ -126,7 +126,7 @@ BEGIN
 				usr.sSexo,
 				usr.nRol,
 				usr.sDireccion,
-				usr.nTelefono,
+				usr.sTelefono,
 				usr.dFechaNacimiento,
 				usr.bEstado,
 				lgn.sNombreUsuario,
@@ -148,7 +148,7 @@ BEGIN
 			SET @sSexo				= (SELECT valor FROM @tParametro WHERE id = 5);			
 			SET @nIdRol				= cast((SELECT valor FROM @tParametro WHERE id = 6) AS INT);
 			SET @sDireccion			= (SELECT valor FROM @tParametro WHERE id = 7);
-			SET @nTelefono			= (SELECT valor FROM @tParametro WHERE id = 8);
+			SET @sTelefono			= (SELECT valor FROM @tParametro WHERE id = 8);
 			SET @dFechaNacimiento	= (SELECT valor FROM @tParametro WHERE id = 9);
 			SET @sContrasenia		= (SELECT valor FROM @tParametro WHERE id = 10);
 		END	
@@ -157,8 +157,8 @@ BEGIN
 			BEGIN TRANSACTION;
 
 			INSERT INTO [TBL_USUARIO]
-					(sNombres,sApellidos,nTipoDoc,sNumDoc,sSexo,nRol,sDireccion,nTelefono,dFechaNacimiento,bEstado)
-			VALUES(@sNombres,@sApellidos,@nTipoDoc,@sNumDoc,@sSexo,@nIdRol,@sDireccion,@nTelefono,@dFechaNacimiento,1);
+					(sNombres,sApellidos,nTipoDoc,sNumDoc,sSexo,nRol,sDireccion,sTelefono,dFechaNacimiento,bEstado)
+			VALUES(@sNombres,@sApellidos,@nTipoDoc,@sNumDoc,@sSexo,@nIdRol,@sDireccion,@sTelefono,@dFechaNacimiento,1);
 
 			SET @nIdUsuario = SCOPE_IDENTITY();
 			SET @sNombreUsuario = LOWER(CONCAT(
@@ -209,7 +209,7 @@ BEGIN
 			SET @sSexo				= (SELECT valor FROM @tParametro WHERE id = 5);			
 			SET @nIdRol				= cast((SELECT valor FROM @tParametro WHERE id = 6) AS INT);
 			SET @sDireccion			= (SELECT valor FROM @tParametro WHERE id = 7);
-			SET @nTelefono			= cast((SELECT valor FROM @tParametro WHERE id = 8) AS INT);
+			SET @sTelefono			= (SELECT valor FROM @tParametro WHERE id = 8);
 			SET @dFechaNacimiento	= (SELECT valor FROM @tParametro WHERE id = 9);
 			SET @sContrasenia		= (SELECT valor FROM @tParametro WHERE id = 10);
 			SET @nIdUsuario			= (SELECT valor FROM @tParametro WHERE id = 11);
@@ -224,7 +224,7 @@ BEGIN
 			sSexo				= @sSexo,
 			nRol				= @nIdRol,
 			sDireccion			= @sDireccion,
-			nTelefono			= @nTelefono,
+			sTelefono			= @sTelefono,
 			dFechaNacimiento	= @dFechaNacimiento
 		 WHERE 
 			nIdUsuario = @nIdUsuario                          

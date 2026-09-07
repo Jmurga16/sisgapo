@@ -10,7 +10,7 @@ namespace Entity
         public int nProductos { get; set; }
         public int nCategorias { get; set; }
         public int nZonas { get; set; }
-        public long nValorInventario { get; set; }
+        public decimal nValorInventario { get; set; }
         public long nUnidades { get; set; }
         public int nPorVencer30 { get; set; }
         public int nVencidos { get; set; }
@@ -24,7 +24,7 @@ namespace Entity
         public string sNombreZona { get; set; }
         public int nProductos { get; set; }
         public long nUnidades { get; set; }
-        public long nValor { get; set; }
+        public decimal nValor { get; set; }
     }
 
     //Opción 03 — existencias por categoría
@@ -34,7 +34,7 @@ namespace Entity
         public string sNombreCategoria { get; set; }
         public int nProductos { get; set; }
         public long nUnidades { get; set; }
-        public long nValor { get; set; }
+        public decimal nValor { get; set; }
     }
 
     //Opción 04 — productos próximos a vencer

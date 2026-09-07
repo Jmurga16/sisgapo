@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SISGAPO_API.Controllers
 {
@@ -19,11 +20,11 @@ namespace SISGAPO_API.Controllers
 
         //Obtener todas las zonas
         [HttpGet]
-        public List<ZonaEntity> LIS_Zonas()
+        public async Task<List<ZonaEntity>> LIS_Zonas()
         {
             try
             {
-                return objZonas.LIS_ZonaBusiness();
+                return await objZonas.LIS_ZonaBusiness();
             }
             catch (Exception e)
             {
@@ -35,11 +36,11 @@ namespace SISGAPO_API.Controllers
         //Obtener una para editar
         [Route("editar/{id}")]
         [HttpGet]
-        public List<ZonaEntity> LIS_ZonaUnico(int id)
+        public async Task<List<ZonaEntity>> LIS_ZonaUnico(int id)
         {
             try
             {
-                return objZonas.LIS_ZonaUnicoBusiness(id);
+                return await objZonas.LIS_ZonaUnicoBusiness(id);
             }
             catch (Exception e)
             {
@@ -51,16 +52,16 @@ namespace SISGAPO_API.Controllers
         //Crear zona
         [HttpPost]
         [Authorize(Roles = "1")]
-        public IActionResult CREATE_Zona(ZonaEntity objZonaEnt)
+        public async Task<IActionResult> CREATE_Zona(ZonaEntity objZonaEnt)
         {
             try
             {
-                if (String.IsNullOrWhiteSpace(objZonaEnt?.sNombre))
+                if (objZonaEnt == null)
                 {
-                    return BadRequest(new { cod = "0", mensaje = "El nombre de la zona es obligatorio." });
+                    return BadRequest(new { cod = "0", mensaje = "Falta el cuerpo de la peticion." });
                 }
 
-                return Ok(fnRespuesta(objZonas.CREATE_ZonaBusiness(objZonaEnt)));
+                return Ok(fnRespuesta(await objZonas.CREATE_ZonaBusiness(objZonaEnt)));
             }
             catch (Exception e)
             {
@@ -72,7 +73,7 @@ namespace SISGAPO_API.Controllers
         //Actualizar zona
         [HttpPut]
         [Authorize(Roles = "1")]
-        public IActionResult UPDATE_Zona(ZonaEntity objZonaEnt)
+        public async Task<IActionResult> UPDATE_Zona(ZonaEntity objZonaEnt)
         {
             try
             {
@@ -81,12 +82,7 @@ namespace SISGAPO_API.Controllers
                     return BadRequest(new { cod = "0", mensaje = "Falta el identificador de la zona." });
                 }
 
-                if (String.IsNullOrWhiteSpace(objZonaEnt.sNombre))
-                {
-                    return BadRequest(new { cod = "0", mensaje = "El nombre de la zona es obligatorio." });
-                }
-
-                return Ok(fnRespuesta(objZonas.UPDATE_ZonaBusiness(objZonaEnt)));
+                return Ok(fnRespuesta(await objZonas.UPDATE_ZonaBusiness(objZonaEnt)));
             }
             catch (Exception e)
             {
@@ -99,7 +95,7 @@ namespace SISGAPO_API.Controllers
         [Route("estado/{id}/{estado}")]
         [HttpPut]
         [Authorize(Roles = "1")]
-        public IActionResult ESTADO_Zona(int id, bool estado)
+        public async Task<IActionResult> ESTADO_Zona(int id, bool estado)
         {
             try
             {
@@ -108,7 +104,7 @@ namespace SISGAPO_API.Controllers
                     return BadRequest(new { cod = "0", mensaje = "Falta el identificador de la zona." });
                 }
 
-                return Ok(fnRespuesta(objZonas.ESTADO_ZonaBusiness(id, estado)));
+                return Ok(fnRespuesta(await objZonas.ESTADO_ZonaBusiness(id, estado)));
             }
             catch (Exception e)
             {

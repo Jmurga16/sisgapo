@@ -14,14 +14,14 @@ namespace Business
         private readonly MovimientoData movimientoData = new MovimientoData();
 
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
-        public object BusinessMovimiento(GeneralEntity genEnt)
+        public async Task<object> BusinessMovimiento(GeneralEntity genEnt)
         {
             try
             {
                 bool bEscritura = genEnt != null && genEnt.sOpcion == "02";
                 genEnt.pParametro = ParametroDelimitado.Preparar(genEnt.parametros, genEnt.pParametro, bEscritura);
 
-                return movimientoData.DataMovimiento(genEnt);
+                return await movimientoData.DataMovimiento(genEnt);
 
             }
             catch (Exception e)

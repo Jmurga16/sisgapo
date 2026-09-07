@@ -15,14 +15,14 @@ namespace Business
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
 
-        public object BusinessCategoria(GeneralEntity genEnt)
+        public async Task<object> BusinessCategoria(GeneralEntity genEnt)
         {
             try
             {
                 bool bEscritura = genEnt != null && (genEnt.sOpcion == "03" || genEnt.sOpcion == "04" || genEnt.sOpcion == "05");
                 genEnt.pParametro = ParametroDelimitado.Preparar(genEnt.parametros, genEnt.pParametro, bEscritura);
 
-                return categoriaData.DataCategoria(genEnt);
+                return await categoriaData.DataCategoria(genEnt);
 
             }
             catch (Exception e)

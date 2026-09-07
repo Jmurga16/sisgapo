@@ -118,7 +118,7 @@ carga una vez.
 
 ## Verificación
 
-`03-seed.sql` termina con dos `SELECT` de control. El primero cuenta las filas de
+`03-seed.sql` termina con tres `SELECT` de control. El primero cuenta las filas de
 cada tabla y debe devolver:
 
 ```
@@ -141,11 +141,15 @@ TBL_MOVIMIENTO    61
 llevan dos partidas. `TBL_MOVIMIENTO` son las 33 entradas iniciales más 28
 operaciones de las últimas ocho semanas.
 
-El segundo comprueba los invariantes del inventario, que son los que hacen que el
-panel de inicio se vea coherente. Debe devolver:
+El segundo y el tercero comprueban los invariantes del inventario, que son los que hacen
+que el panel de inicio se vea coherente. El valor va en una consulta aparte porque, al ser
+`DECIMAL`, en un `UNION ALL` con los conteos los arrastraría a su tipo:
 
 ```
-Valor del inventario activo                       81976
+Valor del inventario activo                    84616.90
+```
+
+```
 Productos activos                                    21
 Productos dados de baja                               4
 Lotes activos que vencen en 30 días                   2

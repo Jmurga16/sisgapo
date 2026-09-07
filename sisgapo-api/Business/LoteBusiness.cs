@@ -14,14 +14,14 @@ namespace Business
         private readonly LoteData loteData = new LoteData();
 
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
-        public object BusinessLote(GeneralEntity genEnt)
+        public async Task<object> BusinessLote(GeneralEntity genEnt)
         {
             try
             {
                 bool bEscritura = genEnt != null && (genEnt.sOpcion == "03" || genEnt.sOpcion == "04" || genEnt.sOpcion == "05");
                 genEnt.pParametro = ParametroDelimitado.Preparar(genEnt.parametros, genEnt.pParametro, bEscritura);
 
-                return loteData.DataLote(genEnt);
+                return await loteData.DataLote(genEnt);
 
             }
             catch (Exception e)

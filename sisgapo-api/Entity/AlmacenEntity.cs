@@ -6,12 +6,6 @@ using System.Threading.Tasks;
 
 namespace Entity
 {
-    public class AlmacenEntity
-    {
-
-
-    }
-    
     public class EListaAlmacenes
     {
         public int nIdAlmacen { get; set; }

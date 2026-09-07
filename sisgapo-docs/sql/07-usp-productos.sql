@@ -25,7 +25,7 @@ BEGIN
     DECLARE @nIdCatProd       INT;
     DECLARE @nIdDetProd       INT;
     DECLARE @nCantidad	      INT;
-    DECLARE @nPrecioUnitario	INT;
+    DECLARE @nPrecioUnitario	DECIMAL(10,2);
     DECLARE @sNombreLote      VARCHAR(MAX);;
     DECLARE @dFechaFab        DATE;
     DECLARE @dFechaVenc       DATE;

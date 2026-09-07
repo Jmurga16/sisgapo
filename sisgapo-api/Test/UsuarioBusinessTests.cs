@@ -3,17 +3,18 @@ using Business;
 using Data;
 using Entity;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace Test
 {
     public class UsuarioBusinessTests
     {
         [Fact]
-        public void NuevoUsuarioGuardaLaContraseniaConBcrypt()
+        public async Task NuevoUsuarioGuardaLaContraseniaConBcrypt()
         {
             UsuarioDataFalso datos = new UsuarioDataFalso();
             UsuarioBusiness negocio = new UsuarioBusiness(datos);
-            UsuarioEntity usuario = new UsuarioEntity
+            GeneralEntity usuario = new GeneralEntity
             {
                 sOpcion = "04",
                 parametros = new[]
@@ -23,7 +24,7 @@ namespace Test
                 }
             };
 
-            negocio.LIS_UsuarioBusiness(usuario);
+            await negocio.LIS_UsuarioBusiness(usuario);
 
             string hash = datos.UltimoParametro.Split('|')[9];
             Assert.NotEqual("secreto8", hash);
@@ -31,11 +32,11 @@ namespace Test
         }
 
         [Fact]
-        public void EdicionSinContraseniaConservaElCampoVacio()
+        public async Task EdicionSinContraseniaConservaElCampoVacio()
         {
             UsuarioDataFalso datos = new UsuarioDataFalso();
             UsuarioBusiness negocio = new UsuarioBusiness(datos);
-            UsuarioEntity usuario = new UsuarioEntity
+            GeneralEntity usuario = new GeneralEntity
             {
                 sOpcion = "05",
                 parametros = new[]
@@ -45,16 +46,16 @@ namespace Test
                 }
             };
 
-            negocio.LIS_UsuarioBusiness(usuario);
+            await negocio.LIS_UsuarioBusiness(usuario);
 
             Assert.Equal(String.Empty, datos.UltimoParametro.Split('|')[9]);
         }
 
         [Fact]
-        public void DelimitadorEnUnDatoEsRechazado()
+        public async Task DelimitadorEnUnDatoEsRechazado()
         {
             UsuarioBusiness negocio = new UsuarioBusiness(new UsuarioDataFalso());
-            UsuarioEntity usuario = new UsuarioEntity
+            GeneralEntity usuario = new GeneralEntity
             {
                 sOpcion = "04",
                 parametros = new[]
@@ -64,15 +65,15 @@ namespace Test
                 }
             };
 
-            ArgumentException error = Assert.Throws<ArgumentException>(() => negocio.LIS_UsuarioBusiness(usuario));
+            ArgumentException error = await Assert.ThrowsAsync<ArgumentException>(() => negocio.LIS_UsuarioBusiness(usuario));
             Assert.Contains("no pueden contener", error.Message);
         }
 
         [Fact]
-        public void ContraseniaCortaEsRechazada()
+        public async Task ContraseniaCortaEsRechazada()
         {
             UsuarioBusiness negocio = new UsuarioBusiness(new UsuarioDataFalso());
-            UsuarioEntity usuario = new UsuarioEntity
+            GeneralEntity usuario = new GeneralEntity
             {
                 sOpcion = "04",
                 parametros = new[]
@@ -82,15 +83,15 @@ namespace Test
                 }
             };
 
-            ArgumentException error = Assert.Throws<ArgumentException>(() => negocio.LIS_UsuarioBusiness(usuario));
+            ArgumentException error = await Assert.ThrowsAsync<ArgumentException>(() => negocio.LIS_UsuarioBusiness(usuario));
             Assert.Contains("al menos 8", error.Message);
         }
 
         [Fact]
-        public void UsuarioMenorDeEdadEsRechazado()
+        public async Task UsuarioMenorDeEdadEsRechazado()
         {
             UsuarioBusiness negocio = new UsuarioBusiness(new UsuarioDataFalso());
-            UsuarioEntity usuario = new UsuarioEntity
+            GeneralEntity usuario = new GeneralEntity
             {
                 sOpcion = "04",
                 parametros = new[]
@@ -100,15 +101,15 @@ namespace Test
                 }
             };
 
-            ArgumentException error = Assert.Throws<ArgumentException>(() => negocio.LIS_UsuarioBusiness(usuario));
+            ArgumentException error = await Assert.ThrowsAsync<ArgumentException>(() => negocio.LIS_UsuarioBusiness(usuario));
             Assert.Contains("mayor de edad", error.Message);
         }
 
         [Fact]
-        public void DniConLetrasEsRechazado()
+        public async Task DniConLetrasEsRechazado()
         {
             UsuarioBusiness negocio = new UsuarioBusiness(new UsuarioDataFalso());
-            UsuarioEntity usuario = new UsuarioEntity
+            GeneralEntity usuario = new GeneralEntity
             {
                 sOpcion = "04",
                 parametros = new[]
@@ -118,16 +119,16 @@ namespace Test
                 }
             };
 
-            ArgumentException error = Assert.Throws<ArgumentException>(() => negocio.LIS_UsuarioBusiness(usuario));
+            ArgumentException error = await Assert.ThrowsAsync<ArgumentException>(() => negocio.LIS_UsuarioBusiness(usuario));
             Assert.Contains("DNI", error.Message);
         }
 
         [Fact]
-        public void CarnetAlfanumericoEsAceptado()
+        public async Task CarnetAlfanumericoEsAceptado()
         {
             UsuarioDataFalso datos = new UsuarioDataFalso();
             UsuarioBusiness negocio = new UsuarioBusiness(datos);
-            UsuarioEntity usuario = new UsuarioEntity
+            GeneralEntity usuario = new GeneralEntity
             {
                 sOpcion = "04",
                 parametros = new[]
@@ -137,7 +138,7 @@ namespace Test
                 }
             };
 
-            negocio.LIS_UsuarioBusiness(usuario);
+            await negocio.LIS_UsuarioBusiness(usuario);
 
             Assert.Equal("CE998877", datos.UltimoParametro.Split('|')[3]);
         }
@@ -146,10 +147,10 @@ namespace Test
         {
             public string UltimoParametro { get; private set; }
 
-            public object LIS_UsuarioData(UsuarioEntity erp)
+            public Task<object> LIS_UsuarioData(GeneralEntity erp)
             {
                 UltimoParametro = erp.pParametro;
-                return "OK";
+                return Task.FromResult<object>("OK");
             }
         }
     }

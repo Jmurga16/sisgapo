@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
+using SISGAPO_API.Seguridad;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,14 +30,19 @@ namespace SISGAPO_API.Controllers
         #region Categoria
 
         [HttpPost, Route("Categoria")]
-        public IActionResult CrudCategoria(GeneralEntity genEnt) // fnServCategoria
+        public async Task<IActionResult> CrudCategoria(GeneralEntity genEnt) // fnServCategoria
         {
+
+            if (genEnt == null)
+            {
+                return BadRequest(new { cod = "0", mensaje = "Falta el cuerpo de la peticion." });
+            }
 
             if (genEnt.sOpcion == "01" || genEnt.sOpcion == "02" )
             {
                 try
                 {
-                    var vRes = objCategoria.BusinessCategoria(genEnt);
+                    var vRes = await objCategoria.BusinessCategoria(genEnt);
 
                     return Ok(vRes);
                 }
@@ -58,7 +64,7 @@ namespace SISGAPO_API.Controllers
 
                 try
                 {
-                    string sResultado = Convert.ToString(objCategoria.BusinessCategoria(genEnt));
+                    string sResultado = Convert.ToString(await objCategoria.BusinessCategoria(genEnt));
                     string[] listaRes = (sResultado ?? "").Split('|');
 
                     return Ok(new
@@ -89,8 +95,13 @@ namespace SISGAPO_API.Controllers
         #region Almacen
 
         [HttpPost, Route("Producto")]
-        public IActionResult CrudProductos(GeneralEntity genEnt) // fnServProductos
+        public async Task<IActionResult> CrudProductos(GeneralEntity genEnt) // fnServProductos
         {
+
+            if (genEnt == null)
+            {
+                return BadRequest(new { cod = "0", mensaje = "Falta el cuerpo de la peticion." });
+            }
 
 
             if (genEnt.sOpcion == "01" || genEnt.sOpcion == "02" || genEnt.sOpcion == "03" ||
@@ -98,7 +109,7 @@ namespace SISGAPO_API.Controllers
             {
                 try
                 {
-                    var vRes = objProducto.BusinessProducto(genEnt);
+                    var vRes = await objProducto.BusinessProducto(genEnt);
 
                     return Ok(vRes);
                 }
@@ -125,7 +136,7 @@ namespace SISGAPO_API.Controllers
 
                 try
                 {
-                    string sResultado = Convert.ToString(objProducto.BusinessProducto(genEnt));
+                    string sResultado = Convert.ToString(await objProducto.BusinessProducto(genEnt));
                     string[] listaRes = (sResultado ?? "").Split('|');
 
                     return Ok(new
@@ -156,14 +167,19 @@ namespace SISGAPO_API.Controllers
         #region Lote
 
         [HttpPost, Route("Lote")]
-        public IActionResult CrudLotes(GeneralEntity genEnt) // fnServLote
+        public async Task<IActionResult> CrudLotes(GeneralEntity genEnt) // fnServLote
         {
+
+            if (genEnt == null)
+            {
+                return BadRequest(new { cod = "0", mensaje = "Falta el cuerpo de la peticion." });
+            }
 
             if (genEnt.sOpcion == "01" || genEnt.sOpcion == "02" || genEnt.sOpcion == "06")
             {
                 try
                 {
-                    var vRes = objLote.BusinessLote(genEnt);
+                    var vRes = await objLote.BusinessLote(genEnt);
 
                     return Ok(vRes);
                 }
@@ -192,7 +208,7 @@ namespace SISGAPO_API.Controllers
 
                 try
                 {
-                    string sResultado = Convert.ToString(objLote.BusinessLote(genEnt));
+                    string sResultado = Convert.ToString(await objLote.BusinessLote(genEnt));
                     string[] listaRes = (sResultado ?? "").Split('|');
 
                     return Ok(new
@@ -223,14 +239,19 @@ namespace SISGAPO_API.Controllers
         #region Movimiento
 
         [HttpPost, Route("Movimiento")]
-        public IActionResult CrudMovimientos(GeneralEntity genEnt) // fnServMovimiento
+        public async Task<IActionResult> CrudMovimientos(GeneralEntity genEnt) // fnServMovimiento
         {
+
+            if (genEnt == null)
+            {
+                return BadRequest(new { cod = "0", mensaje = "Falta el cuerpo de la peticion." });
+            }
 
             if (genEnt.sOpcion == "01" || genEnt.sOpcion == "03" || genEnt.sOpcion == "04")
             {
                 try
                 {
-                    var vRes = objMovimiento.BusinessMovimiento(genEnt);
+                    var vRes = await objMovimiento.BusinessMovimiento(genEnt);
 
                     return Ok(vRes);
                 }
@@ -245,9 +266,7 @@ namespace SISGAPO_API.Controllers
 
             else if (genEnt.sOpcion == "02")
             {
-                //Entradas y salidas las registra cualquier rol; el ajuste, que corrige
-                //la existencia sin documento que lo respalde, solo el Supervisor.
-                if (fnEsAjuste(genEnt) && !User.IsInRole("1") && !User.IsInRole("2"))
+                if (!PoliticaMovimiento.fnPuedeRegistrar(User, genEnt.parametros))
                 {
                     return Forbid();
                 }
@@ -256,7 +275,7 @@ namespace SISGAPO_API.Controllers
 
                 try
                 {
-                    string sResultado = Convert.ToString(objMovimiento.BusinessMovimiento(genEnt));
+                    string sResultado = Convert.ToString(await objMovimiento.BusinessMovimiento(genEnt));
                     string[] listaRes = (sResultado ?? "").Split('|');
 
                     return Ok(new
@@ -280,16 +299,6 @@ namespace SISGAPO_API.Controllers
                 return BadRequest(new { cod = "0", mensaje = $"Opcion no soportada: {genEnt.sOpcion}" });
             }
 
-        }
-
-        private static bool fnEsAjuste(GeneralEntity genEnt)
-        {
-            if (genEnt.parametros == null || genEnt.parametros.Length < 2)
-            {
-                return false;
-            }
-
-            return String.Equals((genEnt.parametros[1] ?? "").Trim(), "A", StringComparison.OrdinalIgnoreCase);
         }
 
         //Quien firma un movimiento es quien inició sesión, no lo que mande el

@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 
 namespace Data
 {
@@ -22,7 +23,7 @@ namespace Data
         #endregion
 
         #region Lote
-        public object DataLote(GeneralEntity genEnt)
+        public async Task<object> DataLote(GeneralEntity genEnt)
         {
 
             string msj = string.Empty;
@@ -37,10 +38,10 @@ namespace Data
 
                         List<EListaLotes> listaLotes = new List<EListaLotes>();
 
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Lotes", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Lotes", genEnt.sOpcion, genEnt.pParametro))
                         {
 
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EListaLotes lotEnt = new EListaLotes();
 
@@ -58,7 +59,7 @@ namespace Data
                                 lotEnt.nDiasRestantes = Int32.Parse(Convert.ToString(dr["nDiasRestantes"]));
                                 lotEnt.nCantidad = Int32.Parse(Convert.ToString(dr["nCantidad"]));
                                 lotEnt.sNombreUM = Convert.ToString(dr["sNombreUM"]);
-                                lotEnt.nPrecio = Int32.Parse(Convert.ToString(dr["nPrecio"]));
+                                lotEnt.nPrecio = Convert.ToDecimal(dr["nPrecio"]);
                                 lotEnt.sEstado = Convert.ToString(dr["sEstado"]);
 
                                 listaLotes.Add(lotEnt);
@@ -75,10 +76,10 @@ namespace Data
 
                         List<EListaLotesById> listaLotesId = new List<EListaLotesById>();
 
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Lotes", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Lotes", genEnt.sOpcion, genEnt.pParametro))
                         {
 
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EListaLotesById lotEnt = new EListaLotesById();
 
@@ -91,7 +92,7 @@ namespace Data
                                 lotEnt.dFechaVenc = Convert.ToString(dr["dFechaVenc"]);
                                 lotEnt.nIdUnidadMedida = Int32.Parse(Convert.ToString(dr["nIdUnidadMedida"]));
                                 lotEnt.nCantidad = Int32.Parse(Convert.ToString(dr["nCantidad"]));
-                                lotEnt.nPrecio = Int32.Parse(Convert.ToString(dr["nPrecio"]));
+                                lotEnt.nPrecio = Convert.ToDecimal(dr["nPrecio"]);
                                 lotEnt.sDescripcion = Convert.ToString(dr["sDescripcion"]);
                                 lotEnt.bEstado = Convert.ToBoolean(dr["bEstado"]);
 
@@ -109,7 +110,7 @@ namespace Data
                     case "04":
                     case "05":
 
-                        string sResultado = Convert.ToString(oCon.EjecutarEscalar("USP_MNT_Lotes", genEnt.sOpcion, genEnt.pParametro));
+                        string sResultado = Convert.ToString(await oCon.fnEjecutarEscalarAsync("USP_MNT_Lotes", genEnt.sOpcion, genEnt.pParametro));
                         msj = sResultado;
 
                         return msj;
@@ -120,10 +121,10 @@ namespace Data
 
                         List<EListaProductoLote> listaProductos = new List<EListaProductoLote>();
 
-                        using (IDataReader dr = oCon.ejecutarDataReader("USP_MNT_Lotes", genEnt.sOpcion, genEnt.pParametro))
+                        using (SqlDataReader dr = await oCon.fnEjecutarDataReaderAsync("USP_MNT_Lotes", genEnt.sOpcion, genEnt.pParametro))
                         {
 
-                            while (dr.Read())
+                            while (await dr.ReadAsync())
                             {
                                 EListaProductoLote prodEnt = new EListaProductoLote();
 

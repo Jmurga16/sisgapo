@@ -2,22 +2,6 @@ using System;
 
 namespace Entity
 {
-    public class UsuarioEntity
-    {
-
-        public string sOpcion { get; set; }
-
-        public string pParametro { get; set; }
-
-        public string[] parametros { get; set; }
-
-    }
-
-    public class EntRequestUsuario
-    {
-        public string sOpcion { get; set; }
-    }
-
     public class EntListaUsuarios
     {
         public int nIdUsuario { get; set; }
@@ -36,7 +20,7 @@ namespace Entity
         public string sSexo { get; set; }
         public int nIdRol { get; set; }
         public string sDireccion { get; set; }
-        public int nTelefono { get; set; }
+        public string sTelefono { get; set; }
         public string sNombreUsuario { get; set; }
         public DateTime dFechaNacimiento { get; set; }
         public string dFechaNac { get; set; }
