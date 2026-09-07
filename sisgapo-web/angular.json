@@ -23,6 +23,7 @@
               "src/favicon.ico",
               "src/favicon.svg",
               "src/staticwebapp.config.json",
+              "src/.htaccess",
               "src/assets"
             ],
             "styles": [
