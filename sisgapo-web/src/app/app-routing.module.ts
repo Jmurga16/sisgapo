@@ -19,41 +19,41 @@ const rolesGestion = [Rol.Administrador, Rol.Supervisor];
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: NavMenuComponent },
-  { path: 'inicio', component: InicioComponent, canActivate: [AuthGuard] },
+  { path: 'inicio', component: InicioComponent, canActivate: [AuthGuard], data: { titulo: 'Panel' } },
   {
     path: 'usuarios',
     component: UsuariosListComponent,
     canActivate: [AuthGuard],
-    data: { roles: [Rol.Administrador] }
+    data: { roles: [Rol.Administrador], titulo: 'Usuarios' }
   },
   {
     path: 'almacenes',
     component: AlmacenesListComponent,
     canActivate: [AuthGuard],
-    data: { roles: rolesGestion }
+    data: { roles: rolesGestion, titulo: 'Almacenes' }
   },
   {
     path: 'zonas',
     component: ZonaListComponent,
     canActivate: [AuthGuard],
-    data: { roles: rolesGestion }
+    data: { roles: rolesGestion, titulo: 'Zonas' }
   },
   {
     path: 'zonas/agregar',
     component: ZonaFormComponent,
     canActivate: [AuthGuard],
-    data: { roles: [Rol.Administrador] }
+    data: { roles: [Rol.Administrador], titulo: 'Nueva zona' }
   },
   {
     path: 'zonas/editar/:id',
     component: ZonaFormComponent,
     canActivate: [AuthGuard],
-    data: { roles: [Rol.Administrador] }
+    data: { roles: [Rol.Administrador], titulo: 'Editar zona' }
   },
-  { path: 'categoria', component: CategoriaComponent, canActivate: [AuthGuard] },
-  { path: 'productos', component: ProductosComponent, canActivate: [AuthGuard] },
-  { path: 'lotes', component: LotesComponent, canActivate: [AuthGuard] },
-  { path: 'movimientos', component: MovimientosComponent, canActivate: [AuthGuard] },
+  { path: 'categoria', component: CategoriaComponent, canActivate: [AuthGuard], data: { titulo: 'Categorías' } },
+  { path: 'productos', component: ProductosComponent, canActivate: [AuthGuard], data: { titulo: 'Productos' } },
+  { path: 'lotes', component: LotesComponent, canActivate: [AuthGuard], data: { titulo: 'Lotes' } },
+  { path: 'movimientos', component: MovimientosComponent, canActivate: [AuthGuard], data: { titulo: 'Movimientos' } },
   { path: '**', redirectTo: 'login' },
 ];
 
