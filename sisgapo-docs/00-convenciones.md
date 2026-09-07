@@ -96,9 +96,11 @@ Dos advertencias sobre el patrón:
 
 - **No hay tipado.** Todo viaja como texto y el orden posicional es la única
   documentación. Un parámetro de más o de menos no da error de compilación.
-- **El delimitador no se escapa.** Un almacén llamado `Norte|Sur` desplaza todos los
-  parámetros siguientes. Está registrado como S-07 y sigue abierto: valida en el
-  formulario que el texto no contenga `|`.
+- **El delimitador no se escapa por sí solo.** Un almacén llamado `Norte|Sur` desplazaría
+  todos los parámetros siguientes. Está registrado como S-07 y **ya está cerrado**: el
+  frontend envía cada valor por separado en `parametros` y la capa de negocio rechaza los
+  que contengan `|` antes de construir el `pParametro`. Si añades un campo nuevo, respeta
+  esa vía; no vuelvas a concatenar en el cliente.
 
 **Excepción:** `ZonaController` usa REST convencional —`GET /api/zona`,
 `POST /api/zona`, `PUT /api/zona`— con cuerpos tipados. Es el único módulo así, y la

@@ -3,32 +3,51 @@
 Inventario completo de problemas encontrados en el análisis. Clasificados en tres grupos:
 **S** seguridad, **C** correctitud, **D** deuda técnica.
 
-Cada hallazgo lleva una prioridad orientada al objetivo real —convertir esto en una demo
-presentable—, no a un despliegue en producción:
+El icono de cada hallazgo es la prioridad que tenía **cuando se encontró**, orientada al
+objetivo real —convertir esto en una demo presentable—, no a un despliegue en producción:
 
-- 🔴 **Bloqueante** — hay que arreglarlo antes de enseñar el proyecto a nadie.
-- 🟠 **Importante** — un revisor técnico lo va a notar y va a preguntar.
-- 🟡 **Menor** — conviene, pero no cambia la percepción del proyecto.
+- 🔴 **Bloqueante** — había que arreglarlo antes de enseñar el proyecto a nadie.
+- 🟠 **Importante** — un revisor técnico lo iba a notar y a preguntar.
+- 🟡 **Menor** — convenía, pero no cambiaba la percepción del proyecto.
 
-## Resumen
+El estado de cada uno va en su título: *corregido*, *cerrado* o *descartado*.
 
-**48 hallazgos en total, 41 cerrados y verificados.** Esto es lo que sigue abierto:
+## Estado actual — 7 de septiembre de 2026
 
-| Hallazgo | Estado | Por qué sigue abierto |
+**48 hallazgos. Cero abiertos.**
+
+| Grupo | Total | Arreglados | Cerrados con motivo | Abiertos |
+|---|---|---|---|---|
+| Seguridad | 12 | 12 | — | **0** |
+| Correctitud | 21 | 21 | — | **0** |
+| Deuda técnica | 15 | 12 | 3 | **0** |
+| **Total** | **48** | **45** | **3** | **0** |
+
+**«Cerrado con motivo» no es un pendiente disfrazado.** Son hallazgos reales que se decidió
+*no* arreglar, con el porqué escrito en `10-decisiones.md`. Son exactamente tres:
+
+| Hallazgo | Por qué no se arregla | Decisión |
 |---|---|---|
-| S-11 · Modo solo lectura apagado por defecto | Reinterpretado | Las escrituras deben quedar abiertas; el control correcto es el reinicio periódico del seed, que es infraestructura |
-| S-12 · Cuentas históricas con `123456` | Corregido en el repositorio | Falta recargar la base de datos de la instancia pública |
-| D-02 · Angular 9 fuera de soporte | Fuera de alcance | Migrar Angular 9 es un proyecto, no un arreglo |
-| D-03 · Sin inyección de dependencias | Parcial | Falta DI real, y hacerla obliga a revisar los campos de instancia de `AlmacenData` y `ProductoData` |
-| D-08 · Duplicación alta y entidades vacías | Parcial | El `CrudController<T>` genérico sigue descartado por la regla de cambios mínimos |
-| D-13 · Frontend sin *lazy loading* | Aplazado | Riesgo de dejar una pantalla en blanco, sin beneficio medido |
-| D-14 · Ningún componente usa `OnPush` | Aplazado | Obliga a un `markForCheck` por cada carga asíncrona, con el mismo riesgo |
+| D-02 · Angular 9 fuera de soporte | Saltar a la versión actual delataría que el proyecto no es de 2021, y arrastraría a Angular Material 3 —un rediseño completo— cuando el diseño actual es el que se quiere enseñar. Subir un par de versiones queda como opción futura, no como deuda abierta | D-47 |
+| D-13 · Frontend sin *lazy loading* | Se probó con el módulo de Usuarios y **se midió**: el bundle principal creció de 1.01 a 1.06 MB en vez de bajar | D-45 |
+| D-14 · Ningún componente usa `OnPush` | Exige un `markForCheck` por cada carga asíncrona; el fallo típico es una pantalla en blanco tras una operación que sí funcionó, y aquí no hay un problema de rendimiento medido | D-46 |
 
-Ninguno impide enseñar la demo, y dos —S-11 y S-12— dependen de la instancia pública, no de
-este repositorio.
+Lo último que se cerró, el 7 de septiembre de 2026:
 
-El inventario completo, con la gravedad que cada hallazgo tenía **cuando se encontró** —no la
-que tiene hoy, porque casi todos están cerrados—:
+| Hallazgo | Cómo se cerró |
+|---|---|
+| S-11 · Modo solo lectura | `Demo__SoloLectura=FALSE` explícito en el App Service. Las escrituras quedan abiertas **a propósito**: poder crear un producto o registrar un movimiento es lo que hace útil la demo. El control es el reinicio periódico del seed, no el candado |
+| S-12 · Cuentas históricas con `123456` | Base pública recargada. Verificado por HTTP contra la instancia real: las siete cuentas (`jose.m`, `alex.quispe`, `maria.ramirez`, `carlos.mendoza`, `lucia.fernandez`, `jorge.salazar` y `admin`) responden **401** con `123456`, y `demo.admin` sigue entrando |
+| D-03 · Sin inyección de dependencias | Contenedor de ASP.NET Core en las tres capas, verificado con los siete endpoints en caliente (D-43) |
+| D-08 · Duplicación y entidades vacías | DTO duplicados fuera; el `CrudController<T>` genérico, descartado (D-44) |
+
+El detalle de cada hallazgo está más abajo, en su grupo. Lo que ya **no** está en este
+documento es el registro de qué tanda cerró qué y en qué orden: eso vive en el historial de
+Git y en `10-decisiones.md`, y aquí solo era ruido.
+
+### De dónde se partió
+
+La gravedad de abajo es la que cada hallazgo tenía **el día que se encontró**, no la de hoy:
 
 | Grupo | 🔴 | 🟠 | 🟡 | Total |
 |---|---|---|---|---|
@@ -39,64 +58,6 @@ que tiene hoy, porque casi todos están cerrados—:
 
 Cuatro de los de correctitud (C-12 a C-15) salieron **al aplicar los arreglos**, no en la
 revisión inicial. Es lo normal: el primero de ellos tapaba a los otros tres.
-
----
-
-## Estado — 2 de septiembre de 2026
-
-Dos tandas de arreglos aplicadas: la de agosto y la de la migración a .NET 8 con
-autenticación. Todo lo marcado como corregido está **verificado ejecutándolo** contra
-SQL Server 2022 en Docker y, donde aplica, por HTTP contra la API.
-
-| Hallazgo | Estado |
-|---|---|
-| C-01 · Los scripts SQL no recrean la base | ✅ Corregido — `docker compose up -d` la deja lista, y los scripts son reejecutables |
-| C-02 · Editar producto descarta la mitad de los cambios | ✅ Corregido — en las tres capas; ver también C-12 |
-| C-03 · Editar una zona crea un duplicado | ✅ Corregido — existen actualización y baja lógica |
-| C-04 · NLog no escribe en ningún sitio | ✅ Corregido — `nlog.config` a consola y archivo |
-| C-05 · La comprobación de zonas duplicadas no funciona | ✅ Corregido — con rama `ELSE` y mensaje al usuario |
-| C-07 · Escrituras multi-tabla sin transacción | ✅ Corregido en Productos 06/07 y Usuarios 04 |
-| C-08 · Los controllers devuelven `null` | ✅ Corregido — `BadRequest` con el motivo |
-| C-09 · Sin middleware de excepciones | ✅ Corregido — `UseExceptionHandler` con cuerpo consistente |
-| C-11 · El módulo Cliente es código muerto | ⚠️ **Hallazgo rectificado** — no era código muerto; ver el detalle |
-| C-12 · Rangos de `sOpcion` mal copiados en Productos | ✅ Corregido (hallazgo nuevo) |
-| C-13 · El modal de edición de producto no precarga nada | ✅ Corregido (hallazgo nuevo) |
-| C-14 · Los filtros de Productos no filtran | ✅ Corregido (hallazgo nuevo) |
-| C-15 · Eliminar un producto usa el identificador equivocado | ✅ Corregido (hallazgo nuevo) |
-| C-16 · El formulario de acceso no se puede pulsar si la ventana es baja | ✅ Corregido (hallazgo nuevo) |
-| C-17 · La pantalla de acceso no tiene diseño para móvil | ✅ Corregido (hallazgo nuevo) |
-| C-18 · Errores silenciosos al iniciar sesión | ✅ Corregido (hallazgo nuevo) |
-| S-01 · Credenciales en el repositorio | ✅ Corregido — las de Azure SQL y Gmail nunca estuvieron en el historial; para la que sí estaba, ver S-10 |
-| S-10 · Contraseña de SonarQube en claro desde 2021 | ✅ Cerrado — fuera del historial y de los refs de respaldo; no procede rotar (instancia local, en desuso) |
-| S-08 · Mezcla de HTTP/HTTPS y CORS que no cuadra | ✅ Corregido — orígenes por configuración |
-| D-04 · Configuración leída del disco en cada petición | ✅ Corregido — `ConfiguracionBD`, una vez por proceso |
-| D-09 · Restos de andamiaje y archivos generados | ✅ Limpiado |
-| S-02 · Contraseñas en texto plano | ✅ Corregido — bcrypt (factor 11); la opción 03 ya no devuelve la contraseña |
-| S-03 / S-04 · Sin autenticación ni rutas protegidas | ✅ Corregido — JWT, `[Authorize]`, guards por rol |
-| S-09 · Sin límite de intentos de autenticación | ✅ Corregido — cinco solicitudes por IP y minuto; las siguientes reciben HTTP 429 |
-| S-05 · `System.Data.SqlClient` con CVE | ✅ Corregido — migrado a `Microsoft.Data.SqlClient` 5.1.6 |
-| S-06 · `Microsoft.ApplicationBlocks.Data` sin mantenimiento | ✅ Eliminado del proyecto |
-| S-07 · El delimitador `\|` no se escapa | ✅ Corregido — el frontend envía valores separados y el backend los valida antes de reconstruir `pParametro` |
-| C-06 · El nombre de usuario siempre lleva sufijo | ✅ Corregido — sufijos solo ante colisiones reales |
-| C-10 · El único test no puede pasar | ✅ Corregido — 16 pruebas unitarias y 12 de integración contra SQL Server, ejecutadas por GitHub Actions |
-| D-01 · .NET 5 fuera de soporte | ✅ Corregido — migrado a .NET 8, 0 warnings |
-| D-02 · Angular 9 fuera de soporte | ⏳ Pendiente |
-| D-03 · Sin inyección de dependencias | ⚠️ Parcial — `LoginBusiness` y `UsuarioBusiness` admiten dobles; el resto conserva instanciación directa |
-| D-05 · Consulta de metadatos en cada escritura | ✅ Corregido — una llamada a la base en vez de dos |
-| D-06 · Los precios son `INT` | ✅ Corregido — `DECIMAL(10,2)` en la base y `decimal` en C# |
-| D-07 · Los teléfonos son `INT` | ✅ Corregido — la columna pasa a `sTelefono VARCHAR(20)` |
-| D-08 · Duplicación alta y entidades vacías | ⚠️ Parcial — fuera las cinco clases vacías y los DTO duplicados; el `CrudController<T>` genérico sigue descartado |
-| S-11 · Modo solo lectura apagado por defecto | ⏳ Reinterpretado — escrituras abiertas es lo correcto; el control es el reinicio del seed |
-| S-12 · Cuentas de persona con `123456` activas en producción | ✅ Corregido en el seed — las históricas llevan clave fuerte no publicada; solo las `demo.*` inician sesión. Falta recargar la BD pública |
-| C-19 · `CategoriaData` filtra el mensaje interno de una excepción al cliente | ✅ Corregido — `logger.Error(e); throw;` como el resto |
-| C-20 · `UsuarioData`/`ZonaData` no cierran la conexión SQL si hay excepción | ✅ Corregido — cierre en `finally` en las lecturas |
-| C-21 · Los listados no informan errores de carga, salvo Zona | ✅ Corregido — componente `app-estado-carga` con reintento en los seis listados |
-| D-10 · Todo el backend es síncrono | ✅ Corregido — `async`/`await` de punta a punta, de `Conexion` a los controllers |
-| D-11 · DTOs sin validar y controllers sin guard de nulos | ✅ Corregido — anotaciones en los DTO y un 400 con el mismo `{cod, mensaje}` de siempre |
-| D-12 · Regla de rol escondida en una posición del array | ✅ Corregido — `PoliticaMovimiento` con constantes y seis pruebas |
-| D-15 · `movimientos.component.ts` mezcla tabla, filtros y fechas | ✅ Corregido — la cronología sale a `KardexCronologiaService`; 378 → 311 líneas |
-| D-13 · Frontend sin *lazy loading* | ⏳ Pendiente — es el refactor más invasivo que queda |
-| D-14 · Ningún componente usa `OnPush` | ⏳ Pendiente — obliga a un `markForCheck` por carga asíncrona; sin beneficio medido |
 
 ---
 
@@ -118,104 +79,7 @@ reales, sin credenciales.
 | Secretos en el historial | Re-verificado de forma independiente sobre todo `git log --all`: sin coincidencias de contraseñas, claves privadas ni tokens de servicios (Azure, Gmail, GitHub, Slack, Google). Las dos únicas coincidencias del barrido son el texto redactado de S-01, no un secreto real. |
 
 Conclusión de esta parte: la superficie de autenticación, autorización y CORS está bien
-cerrada, y **verificada contra el despliegue real, no solo en local.** El único punto
-nuevo y genuinamente pendiente es S-11.
-
-### 🟠 S-11 · El modo solo lectura de la demo está apagado por defecto, y ya hay una instancia pública
-
-`sisgapo-api/SISGAPO_API/appsettings.json:14`
-
-```json
-"Demo": { "SoloLectura": false }
-```
-
-`DemoSoloLecturaFilter` (en `SISGAPO_API/Seguridad/DemoSoloLecturaFilter.cs`) sí funciona
-correctamente cuando está activado — bloquea con 403 las opciones de escritura de cada
-controlador. El problema es el valor por defecto: **el repositorio, tal cual está, sirve
-una demo con escritura habilitada.** Y desde el commit `bbab4ee` el frontend ya apunta a
-una instancia real en Azure App Service, no a `localhost`.
-
-Las tres cuentas públicas —`demo.admin`, `demo.supervisor`, `demo.asistente`— comparten
-`SisgapoDemo2026!` (documentado en S-02). Con `SoloLectura` en `false`, cualquiera con esa
-contraseña puede editar o borrar el catálogo, los lotes y los movimientos que **otros
-visitantes** están viendo en ese mismo momento. No es una brecha de seguridad en el sentido
-clásico —son cuentas de demo, sin datos reales—, pero sí rompe la demo para el siguiente
-visitante, y es exactamente la situación para la que se construyó `DemoSoloLecturaFilter`.
-
-**Qué falta, y no se puede verificar desde este repositorio:** si la variable de entorno
-`Demo__SoloLectura` está puesta en `true` en la configuración del App Service de Azure. Si
-no lo está, la API pública corre con el valor por defecto del `appsettings.json`, que es
-`false`.
-
-**Arreglo:** confirmar en el portal de Azure (o con `az webapp config appsettings list`)
-que `Demo__SoloLectura=true` está definida en la instancia pública. Si el plan es que la
-demo sea de solo consulta para el público general y de escritura solo en sesiones
-acompañadas, dejarlo en `true` por defecto ahí y desactivarlo puntualmente, no al revés.
-
-**Reinterpretado el 6 de septiembre de 2026.** Para una demo de portafolio, el enfoque de
-arriba está equivocado: las escrituras deben quedar **abiertas**, porque poder crear un
-producto o registrar un movimiento es lo que hace interesante la demo. El riesgo real no es
-que la gente escriba —es para lo que está—, sino que sin reinicio los datos se degraden. El
-control correcto es el **reinicio periódico del seed**, no el candado de solo lectura, que
-queda como respaldo puntual. Ver el análisis completo en `11-estado-portafolio.md`.
-
-### 🔴 S-12 · Cuentas de persona con contraseña `123456`, activas en producción
-
-`sisgapo-web/src/scripts/... → sisgapo-docs/sql/03-seed.sql:65-96`
-
-El seed crea seis cuentas históricas con nombres de persona reales —`jose.m`,
-`alex.quispe`, `maria.ramirez`, `carlos.mendoza`, `lucia.fernandez`— activas (`bEstado = 1`)
-y todas con la contraseña `123456`. El propio comentario del seed lo dice: *"Las cuentas
-históricas no públicas conservan 123456"*. El hash es bcrypt de verdad (factor 11); el
-problema es lo que protege.
-
-**Verificado contra la instancia pública** el 6 de septiembre de 2026:
-
-```
-POST /LoginService  {"sNombreUsuario":"jose.m","sContrasenia":"123456"}
-→ 200, token JWT válido, rol Supervisor (nRol = 2)
-```
-
-Un revisor técnico prueba `123456` por reflejo, entra como Supervisor, y la afirmación que
-vende la auditoría —"la autenticación ya es real: bcrypt, JWT" (S-02)— se desmiente sola.
-Es de las peores primeras impresiones posibles justamente porque el resto de la seguridad
-está bien hecha.
-
-**Arreglo:** dejar activas solo las tres cuentas `demo.*` (que usan `SisgapoDemo2026!`) y
-poner las históricas en `bEstado = 0`, o rehashearles una contraseña fuerte que no se
-publique. No aportan nada que las `demo.*` no cubran. La cuenta `admin` de 2021 ya está
-bien: su hash **no** coincide con `123456` (comprobado), tiene una clave de mantenimiento
-separada. Ver `11-estado-portafolio.md`.
-
-**Arreglo aplicado (6 de septiembre de 2026):** en `sql/03-seed.sql`, las seis cuentas
-históricas (`jose.m` … `jorge.salazar`) se rehashearon con bcrypt factor 11 sobre una
-contraseña fuerte que **no se publica en ningún sitio**. Siguen apareciendo en el listado
-de Usuarios como datos de relleno realistas, pero ya no se entra con `123456`. Las tres
-`demo.*` conservan `SisgapoDemo2026!` para el acceso rápido de la demo. **Pendiente:**
-recargar la base de datos de la instancia pública para que el cambio surta efecto ahí
-(`docker compose up db-init`, o el equivalente en Azure).
-
-## Tanda de deuda técnica — 6 de septiembre de 2026
-
-Cerrada la lista de correctitud y seguridad, esta tanda ataca los hallazgos **D**, que son
-los que solo ve quien lee el código. Siete corregidos, dos aplazados con motivo.
-
-| Hallazgo | Qué se hizo | Cómo se comprobó |
-|---|---|---|
-| D-06 · Precios `INT` | `DECIMAL(10,2)` en la base, `decimal` en C#, importes con dos decimales en la vista | Alta de producto con precio `7.25` por HTTP; el panel devuelve `84616.90` |
-| D-07 · Teléfonos `INT` | `sTelefono VARCHAR(20)`, y la validación acepta el prefijo `+51` | Alta de usuario con `+51987000111`; se guarda y se devuelve tal cual |
-| D-08 · Entidades vacías y DTO duplicados | Fuera cuatro clases marcador, `UsuarioEntity` y `EntRequestUsuario` | Compila con 0 avisos; el genérico `CrudController<T>` sigue descartado |
-| D-10 · Backend síncrono | `async`/`await` en `Conexion`, los nueve `*Data`, los nueve `*Business` y los seis controllers | 38 pruebas en verde y recorrido completo por HTTP |
-| D-11 · DTO sin validar | Anotaciones en los DTO más guard de nulos, con el `{cod, mensaje}` de siempre en el 400 | Cuatro peticiones malformadas, cuatro 400 con el mensaje correcto |
-| D-12 · Regla de rol en una posición de array | `PoliticaMovimiento` + `TipoMovimiento`, con pruebas | Seis pruebas nuevas; 403 y 200 confirmados por HTTP con el token del Asistente |
-| D-15 · Componente de movimientos sobrecargado | La cronología sale a `KardexCronologiaService` | El build de producción compila; 378 → 311 líneas |
-| D-13 · Sin *lazy loading* | **Aplazado** | Reparte 15 componentes y los módulos de Material entre cuatro módulos; se rompe en silencio |
-| D-14 · Sin `OnPush` | **Aplazado** | Exige un `markForCheck` por carga asíncrona; sin él los listados se quedan en blanco |
-
-D-02 (Angular 9) sigue fuera de alcance: es una migración mayor, no un arreglo.
-
-La base de datos se recargó con `docker compose up db-init` antes y después de las pruebas,
-así que la demo local queda con el seed limpio.
+cerrada, y **verificada contra el despliegue real, no solo en local.**
 
 ---
 
@@ -442,6 +306,42 @@ trivial. Relevante solo si la demo queda expuesta públicamente con datos que im
 IP. Permite cinco solicitudes a `LoginService` por minuto, no mantiene cola y devuelve 429
 con un mensaje explícito a partir de la sexta. El frontend distingue esa respuesta de unas
 credenciales incorrectas. Verificado por HTTP con la secuencia 401, 401, 429.
+
+### 🟠 S-11 · El modo solo lectura de la demo — **cerrado: abierto a propósito**
+
+El hallazgo original decía que `Demo:SoloLectura` en `false` dejaba la demo pública
+escribible, y pedía ponerlo en `true` en el App Service. `DemoSoloLecturaFilter` funciona
+—bloquea con 403 las opciones de escritura de cada controlador—, así que el candado existe
+y sirve.
+
+**Pero el enfoque estaba equivocado, y así se cerró:** en una demo de portafolio las
+escrituras tienen que quedar **abiertas**, porque crear un producto o registrar un
+movimiento es justo lo que se viene a probar. El riesgo real no es que la gente escriba, es
+que los datos se degraden sin reinicio — y para eso el control correcto es el **reinicio
+periódico del seed**, no el candado. El filtro queda como respaldo para momentos puntuales.
+
+**Estado verificado el 7 de septiembre de 2026:** `Demo__SoloLectura=FALSE` está **definida
+de forma explícita** en la configuración de `app-sisgapo-api`, que es lo que cierra el
+hallazgo: el valor ya no es el implícito del `appsettings.json`, es una decisión escrita en
+la instancia. Ver `11-estado-portafolio.md`.
+
+### 🔴 S-12 · Cuentas de persona con contraseña `123456` — **corregido**
+
+El seed creaba seis cuentas históricas con nombres de persona (`jose.m`, `alex.quispe`,
+`maria.ramirez`, `carlos.mendoza`, `lucia.fernandez`, `jorge.salazar`), activas y todas con
+`123456`. El hash era bcrypt de verdad; el problema era lo que protegía. Un revisor prueba
+`123456` por reflejo, entra como Supervisor, y la afirmación de que «la autenticación ya es
+real» (S-02) se desmiente sola. Llegó a estar así en la instancia pública: el 6 de
+septiembre de 2026, `jose.m` / `123456` devolvía un JWT válido.
+
+**Corregido en el seed** (`sql/03-seed.sql`): las seis cuentas se rehashearon con bcrypt
+factor 11 sobre una contraseña fuerte que no se publica en ningún sitio. Siguen apareciendo
+en el listado de Usuarios como datos de relleno realistas, pero ya no se entra con ellas.
+Las tres `demo.*` conservan `SisgapoDemo2026!`, que es pública a propósito.
+
+**Cerrado el 7 de septiembre de 2026, verificado contra la instancia pública** tras recargar
+la base: las siete cuentas —las seis históricas más `admin`— responden **401** con `123456`,
+y `demo.admin` sigue entrando con normalidad.
 
 ---
 
@@ -910,63 +810,35 @@ App Service nuevo no es posible sin publicar como *self-contained***.
 La migración a .NET 8 (LTS) es el requisito técnico central del plan de migración.
 Ver `07-migracion-tier-free.md`, sección 5.
 
-### 🟠 D-02 · Angular 9 está fuera de soporte
+### 🟠 D-02 · Angular 9 está fuera de soporte — **cerrado: no se migra, y es deliberado**
 
-Angular 9 salió en febrero de 2020. Fuera de soporte desde agosto de 2021.
-
-Con una salvedad importante y verificada: **el proyecto compila hoy en Node 22** usando
-`NODE_OPTIONS=--openssl-legacy-provider`. No es un bloqueante para desplegar la demo, solo
-para presumir de stack moderno.
+Angular 9 salió en febrero de 2020 y está fuera de soporte desde agosto de 2021. Con una
+salvedad verificada: **el proyecto compila hoy en Node 22** usando
+`NODE_OPTIONS=--openssl-legacy-provider`. No bloquea desplegar la demo.
 
 También hay un desajuste de versiones: `@ng-bootstrap/ng-bootstrap` 6.2.0 está diseñado para
 Bootstrap 4, pero el proyecto trae Bootstrap 5.0.2. Y conviven tres sistemas de estilos
 —Angular Material, Bootstrap y CSS propio— lo que explica varias inconsistencias visuales.
 
-### 🟠 D-03 · Sin inyección de dependencias — **parcialmente corregido**
+**Decidido el 7 de septiembre de 2026: se queda en Angular 9.** No por coste, sino porque
+este repositorio es el trabajo universitario de 2021 puesto a punto, y un frontend en la
+última versión de Angular contradiría esa fecha. Además, saltar hasta Material 3 obligaría a
+rehacer el diseño, que es precisamente lo que se quiere enseñar. Subir un par de versiones
+menores queda como opción abierta para más adelante; hasta entonces esto no es una deuda
+pendiente sino una decisión. Ver `10-decisiones.md`, D-47.
 
-`Startup.ConfigureServices` registra solo CORS, controllers y Swagger. Todo lo propio se
-instancia con `new` en campos de instancia:
+### 🟠 D-03 · Sin inyección de dependencias — **corregido**
 
-```csharp
-private readonly AlmacenBusiness objInventario = new AlmacenBusiness();   // Controller
-private readonly AlmacenData     almacenData   = new AlmacenData();       // Business
-public AlmacenData() { oCon = new Conexion(1); }                          // Data
-```
+`Startup.ConfigureServices` registraba solo CORS, controllers y Swagger; el resto se
+instanciaba con `new` en cadena (`Controller → Business → Data → Conexion`). Quedó parcial
+durante semanas porque solo `LoginData` y `UsuarioData` tenían interfaz, y porque
+`AlmacenData`/`ProductoData` guardaban sus listas de resultado como campos de instancia —
+una trampa para cuando se registraran como `Scoped`.
 
-Consecuencias en cadena:
-- La mayor parte de la capa de negocio todavía no se puede probar con dobles.
-- **La configuración se relee del disco en cada request**: `Conexion` construye un `ConfigurationBuilder` y parsea `appsettings.json` en cada instanciación (D-04).
-- No se puede sustituir una implementación sin recompilar.
-
-Es la mejora con mejor relación esfuerzo/beneficio del backend: ~15 líneas en `Startup` más
-cambiar constructores. Ver `09-mejoras-propuestas.md`, M-03.
-
-**Avance aplicado:** `ILoginData` e `IUsuarioData` permiten probar las dos clases de negocio
-priorizadas sin conexión real. Los controllers y las demás áreas todavía requieren una
-adopción completa del contenedor de dependencias.
-
-**Precisión del 6 de septiembre de 2026.** Esas dos interfaces nunca pasan por
-`Startup.ConfigureServices` — no hay un solo `AddScoped`/`AddSingleton`/`AddTransient` para
-Business o Data en todo el proyecto. En producción, `LoginBusiness` y `UsuarioBusiness`
-siguen resolviendo su dependencia con `new LoginData()`/`new UsuarioData()` en el
-constructor; las interfaces solo se usan para inyectar dobles en `Test/`. Esto no cambia el
-hallazgo, pero conviene saberlo antes de "arreglar" D-03 de verdad: `AlmacenData.cs:26-27`
-y `ProductoData.cs:26` guardan sus listas de resultado (`listaAlmacenes`, `listaAlmacenId`,
-`listaProductos`) como **campos de instancia**, no variables locales. Hoy no hay fuga
-porque cada request crea su propia cadena `new Controller → new Business → new Data`
-(transient de facto). Pero si el paso siguiente es registrar esas clases con lifetime
-`Scoped` o `Singleton` en el contenedor —el arreglo natural de D-03—, esos campos
-acumularían resultados de requests anteriores sin que nadie toque esa línea. Vale la pena
-convertirlos en variables locales en el mismo cambio que introduzca DI real.
-
-**Avance colateral (6 de septiembre de 2026).** `Conexion` ya no resuelve la cadena de
-conexión en el constructor, sino al ejecutar. Salió al escribir la prueba de controller de
-D-12: construir un `InventarioController` disparaba
-`new CategoriaBusiness() → new CategoriaData() → new Conexion(1)`, y eso exigía una cadena
-de conexión configurada **para instanciar un objeto que en esa prueba nunca toca la base**.
-Con la cadena resuelta al usarla, el controller se puede construir sin configuración y el
-fallo por configuración ausente aparece donde corresponde: en la primera consulta. No
-sustituye a DI real, pero quita el obstáculo que impedía probar un controller.
+**Corregido el 7 de septiembre de 2026.** Las siete interfaces que faltaban se crearon, las
+nueve `*Business`/`*Data` se registraron como `Scoped` en `Startup`, los controllers reciben
+su Business por constructor, y las dos listas problemáticas pasaron a variables locales en
+el mismo cambio. Detalle completo y verificación en `10-decisiones.md`, D-43.
 
 ### 🟠 D-04 · La configuración se lee del disco en cada petición
 
@@ -1053,33 +925,19 @@ en las dos capas a la vez: `UsuarioBusiness` y `usuarios-modal.component.ts` ace
 `^(\+51)?9\d{8}$` sobre el valor sin espacios ni guiones. El frontend normaliza antes de
 enviar. Verificado contra la API: `+51987000111` se guarda y se devuelve tal cual.
 
-### 🟡 D-08 · Duplicación alta y entidades vacías
+### 🟡 D-08 · Duplicación alta y entidades vacías — **cerrado**
 
-- Los seis controllers repiten el mismo esqueleto `if/else if/try/catch`, cambiando solo el rango de códigos.
-- Los siete `*Business.cs` son idénticos salvo el nombre del tipo.
-- Cada `*Data.cs` repite el bloque `while (dr.Read()) { new Entidad(); …; lista.Add(); }` una vez por opción.
-- Cinco clases de `Entity` están completamente vacías: `AlmacenEntity`, `CategoriaEntity`, `ClienteEntity`, `ProductoEntity` y `Test/Entities.cs`. Existen solo porque el archivo lleva su nombre; las clases reales son las `ELista*` / `EntLista*` declaradas debajo.
-- `UsuarioEntity` y `GeneralEntity` son idénticas (ambas: `sOpcion` + `pParametro`), y conviven con `EntRequestUsuario`, que tiene solo `sOpcion`. Tres DTOs para lo mismo.
+Los seis controllers repiten el mismo esqueleto `if/else if/try/catch`, los siete
+`*Business.cs` son casi idénticos, y había cinco clases de `Entity` completamente vacías más
+tres DTO (`GeneralEntity`, `UsuarioEntity`, `EntRequestUsuario`) para lo mismo.
 
-Un genérico `CrudController<T>` y un mapeador por convención dejarían el backend en menos de
-la mitad de líneas. Para una demo no es prioritario, pero es lo que más llama la atención al
-leer el código.
+**Lo que se corrigió:** las clases marcador vacías y los DTO duplicados salieron del árbol;
+`UsuarioEntity`/`EntRequestUsuario` se unificaron en `GeneralEntity`.
 
-**Arreglo parcial (6 de septiembre de 2026).** Se cierra la mitad barata, que es la que se
-lee como descuido:
-
-- Fuera las cuatro clases marcador vacías que quedaban —`AlmacenEntity`, `CategoriaEntity`,
-  `ProductoEntity` y `LoteEntity`—. Los archivos siguen ahí porque las clases reales
-  (`ELista*` / `EntLista*`) viven dentro; lo que desaparece es la clase homónima vacía.
-  (`ClienteEntity` y `Test/Entities.cs` ya se habían ido con D-09.)
-- Fuera `UsuarioEntity` y `EntRequestUsuario`: eran copias de `GeneralEntity`. `UsuarioController`,
-  `UsuarioBusiness`, `UsuarioData`, `IUsuarioData` y las pruebas usan ahora `GeneralEntity`,
-  y `DemoSoloLecturaFilter` pierde el `.Concat(...OfType<UsuarioEntity>())` que existía solo
-  para cubrir el duplicado. Tres DTO para lo mismo pasan a ser uno.
-
-**Lo que sigue descartado:** el `CrudController<T>` genérico y el mapeador por convención.
-Reescribirían los seis controllers y los siete `*Business` de golpe, y la regla 2 de
-`CLAUDE.md` —cambios mínimos, esto es una demo— pesa más que la reducción de líneas.
+**Lo que queda igual, a propósito:** un `CrudController<T>` genérico que unificara los seis
+controllers y las siete `*Business` se evaluó y se descartó — no por esfuerzo, sino porque
+esconde el patrón `sOpcion`, que es lo que hace predecible este código en las nueve
+entidades. Cerrado como decisión, no como pendiente: ver `10-decisiones.md`, D-44.
 
 ### 🟡 D-09 · Restos de andamiaje y archivos generados
 
@@ -1216,60 +1074,24 @@ comprueba el `ForbidResult` para el Asistente. Confirmado también por HTTP cont
 un ajuste con el token de `demo.asistente` responde 403 y una salida con el mismo token
 responde 200.
 
-### 🟡 D-13 · El frontend no tiene *lazy loading*: un solo bundle de ~1,17 MB
+### 🟡 D-13 · El frontend no tiene *lazy loading* — **descartado, medido**
 
-`sisgapo-web/src/app/app-routing.module.ts` declara todas las rutas con `component:`
-directo — sin un solo `loadChildren` — y los 15 componentes viven en las `declarations` de
-un único `AppModule`. Verificado corriendo el build de producción real
-(`NODE_OPTIONS=--openssl-legacy-provider npx ng build --prod`):
+Un solo `AppModule` con 15 componentes y el bundle inicial en ~1 MB, sin un `loadChildren`
+en `app-routing.module.ts`.
 
-| Archivo | Tamaño |
-|---|---|
-| `main.js` | 1010 kB |
-| `styles.css` | 123 kB |
-| `polyfills.js` | 36,8 kB |
-| `runtime.js` | 1,45 kB |
+**Se probó, en vez de suponer.** El 7 de septiembre de 2026 se extrajo Usuarios —el módulo
+más chico y aislado— a uno lazy. Resultado, medido con el mismo `ng build --prod`: el bundle
+principal **subió** de 1.01 MB a 1.06 MB; solo se separaron 19.4 KB. El costo fijo de un
+módulo adicional no lo compensa un módulo tan pequeño. Se revirtió el experimento entero.
+Detalle en `10-decisiones.md`, D-45.
 
-Es grande para lo que hace la app, pero el motivo es conocido: Angular Material completo +
-Bootstrap 5 + SweetAlert2, todo en un solo *chunk* porque no hay separación por rutas.
-Para una demo de un usuario navegando pocas pantallas el impacto real es bajo, pero es la
-ausencia de *code splitting* más comentada en cualquier revisión de un proyecto Angular.
-Ya estaba anotado como pendiente en la sección de Rendimiento de este documento; queda
-formalizado aquí como hallazgo.
+### 🟡 D-14 · Ningún componente usa `OnPush` — **descartado**
 
-**Arreglo:** partir `app-routing.module.ts` con `loadChildren` por módulo funcional
-(zonas, almacenes, inventario, usuarios) — es la mejora de rendimiento más grande que queda
-y también la más invasiva, así que no es de una tarde.
-
-**No se hizo en la tanda del 6 de septiembre de 2026, a propósito.** Partir el `AppModule`
-obliga a crear un `SharedModule` con los ~15 módulos de Angular Material que hoy están
-declarados una sola vez, y a repartir los 15 componentes y sus diálogos entre cuatro
-módulos funcionales. Es un cambio que se rompe en silencio —un módulo de Material que falta
-en una rama solo se nota abriendo esa pantalla—, y verificarlo pide recorrer la aplicación
-entera a mano. Con la demo ya publicada, el riesgo de dejar una pantalla rota no lo
-compensan 1 MB que el visitante descarga una vez.
-
-### 🟡 D-14 · Ningún componente usa `OnPush`
-
-Los 15 componentes corren en modo de detección de cambios `Default` (verificado por
-búsqueda global de `ChangeDetectionStrategy` en `src/app`). Con `MatTableDataSource` y
-formularios reactivos de por medio, Angular revisa el árbol completo en cada evento. No se
-detectó ningún caso agravante (función o *getter* llamado directo desde una plantilla que
-recalcule algo costoso en cada ciclo) — es deuda técnica de manual, no un problema de
-rendimiento medido.
-
-**Arreglo:** `ChangeDetectionStrategy.OnPush` en los componentes de listado, que son los
-que renderizan tablas grandes; no hace falta tocar los modales.
-
-**No se hizo en la tanda del 6 de septiembre de 2026, a propósito.** El detalle que el
-hallazgo no decía: los seis listados cargan sus datos con `await` y luego asignan campos
-del componente. Bajo `OnPush`, esa asignación ocurre **después** del evento que la disparó,
-así que Angular no vuelve a revisar la vista y la tabla se queda vacía salvo que se llame a
-`ChangeDetectorRef.markForCheck()` en cada punto de carga —unos dieciocho, contando los
-reintentos de `app-estado-carga`—. Cambiar eso a ciegas puede dejar un listado en blanco en
-la demo pública, y el propio hallazgo reconoce que aquí no hay un problema de rendimiento
-medido. Queda pendiente con esa condición apuntada: el arreglo no es la anotación, es la
-anotación **más** los `markForCheck`.
+Los 15 componentes corren en detección de cambios `Default`. `OnPush` exigiría un
+`ChangeDetectorRef.markForCheck()` manual en cada uno de los puntos donde un listado carga
+datos por `await` — sin él, la vista no se repinta y la tabla se queda en blanco después de
+una carga que sí funcionó. El riesgo de ese defecto silencioso pesa más que un ahorro de
+rendimiento que esta demo no llega a necesitar. Ver `10-decisiones.md`, D-46.
 
 ### 🟡 D-15 · `movimientos.component.ts` mezcla tabla, filtros y cálculo de fechas en 371 líneas — **corregido**
 
@@ -1346,61 +1168,23 @@ Lo de esta seccion se midio ejecutandolo, no se estimo.
 la pantalla de Lotes ordena por él. Se añadió con el módulo de Lotes, junto a los de
 `TBL_DET_PRODUCTO.nIdLote` y los dos de `TBL_MOVIMIENTO`.
 
-**Lo que queda sobre la mesa, por orden de retorno:**
+**Lo que queda sobre la mesa:**
 
-- **Carga diferida por modulo.** El bundle inicial son 898 KB de JavaScript porque los 15
-  componentes se declaran en un unico `NgModule`. Partirlo con `loadChildren` dejaria la
-  pantalla de acceso en una fraccion de eso. Es la mejora de rendimiento mas grande que
-  queda, y tambien la mas invasiva.
-- **`OnPush` en los componentes de lista**, que hoy usan deteccion de cambios por defecto
-  con `MatTableDataSource`.
 - **`caniuse-lite` esta desactualizado** y el build lo avisa. Actualizarlo toca el archivo
   de bloqueo de dependencias, asi que conviene hacerlo en un cambio aparte.
 
+La carga diferida por módulo y `OnPush` ya no están en esta lista: se probaron y se
+descartaron (D-13, D-14 — ver `10-decisiones.md`, D-45 y D-46).
+
 ---
 
-## Orden de ataque sugerido
+## Y ahora qué
 
-Si solo vas a hacer una parte, este es el orden por retorno:
+**Nada de esta lista.** Los 48 hallazgos están cerrados —45 arreglados y tres cerrados con
+motivo escrito (D-02, D-13, D-14)—, así que ya no hay un «orden de ataque» que seguir. El
+estado, con sus cifras, está al principio del documento.
 
-| Paso | Hallazgos | Esfuerzo | Por qué primero |
-|---|---|---|---|
-| 1 | C-01 | Hecho — `sql/` | Sin base de datos no hay nada |
-| 2 | S-01 | 30 min | Bloquea publicar en GitHub |
-| 3 | D-01 | 3–4 h | Bloquea desplegar en tier gratuito |
-| 4 | C-02, C-03 | 2 h | Son los bugs que el cliente va a encontrar probando |
-| 5 | S-02 | 2 h | Es lo primero que mira un revisor técnico |
-| 6 | S-03, S-04 | 4–6 h | Convierte "sistema roto" en "sistema real" |
-| 7 | C-04, C-09 | 1 h | Sin esto no puedes diagnosticar nada de lo anterior |
-| 8 | D-09 | 20 min | Quita ruido de la primera impresión |
-
-Los pasos 1–5 son un fin de semana y cubren los ocho bloqueantes.
-El plan que se siguió está resumido en `07-migracion-tier-free.md`, sección 6.
-
-### Ahora que la demo es pública (6 de septiembre de 2026)
-
-Con el frontend ya apuntando a la API real, el orden cambia: ninguno de los pendientes de
-esta tanda es bloqueante en el sentido de "sistema roto", pero S-11 sí puede arruinar la
-demo para el segundo visitante del día.
-
-| Paso | Hallazgos | Esfuerzo | Por qué primero |
-|---|---|---|---|
-| 1 | S-11 | 10 min | Verificar `Demo__SoloLectura=true` en Azure — sin esto, cualquiera con la contraseña pública de demo puede alterar lo que ve el siguiente visitante |
-| 2 | C-21 | 1–2 h | Sin esto, un *cold start* del tier gratuito se ve como "el sistema no funciona" en vivo |
-| 3 | C-19, C-20 | 1 h | Las nota un revisor que lea `Data/` en diagonal |
-| 4 | D-12 | 30 min | Barato, y quita una regla de seguridad implícita sin test |
-| 5 | D-11, D-13, D-14, D-15, D-10 | Opcional | Deuda técnica real, pero ninguna cambia lo que un visitante ve o hace |
-
-Los pasos 2, 3 y 4 están hechos, y del 5 quedan solo D-13 y D-14. Lo único vivo de esta
-lista es el paso 1, que depende de la configuración de Azure y no de este repositorio.
-
-### Lo que queda, después de la tanda del 6 de septiembre de 2026
-
-| Hallazgo | Estado | Por qué sigue abierto |
-|---|---|---|
-| S-11 | Depende de Azure | Reinterpretado: el control es el reinicio periódico del seed (`11-estado-portafolio.md`) |
-| S-12 | Falta recargar la base pública | El seed ya está corregido en el repositorio |
-| D-02 | Fuera de alcance | Migrar Angular 9 es un proyecto, no un arreglo |
-| D-03 | Parcial | Falta DI real; hacerlo obliga a revisar los campos de instancia de `AlmacenData` y `ProductoData` |
-| D-08 | Parcial | El `CrudController<T>` genérico sigue descartado por la regla de cambios mínimos |
-| D-13, D-14 | Aplazados | Riesgo de romper una pantalla en silencio, sin beneficio medido |
+Lo que queda vivo no son hallazgos sino mantenimiento de la instancia pública, y está en
+`11-estado-portafolio.md`: **el reinicio periódico del seed**, que es el control que sustituye
+al modo solo lectura (S-11). Las mejoras opcionales que nunca fueron hallazgos —incluida la
+subida de un par de versiones de Angular— están en `09-mejoras-propuestas.md`.

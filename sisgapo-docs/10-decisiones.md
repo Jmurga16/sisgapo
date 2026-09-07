@@ -987,6 +987,128 @@ delimitada cuya forma depende de la opción: validarla con atributos exigiría u
 
 ---
 
+## D-43 · Inyección de dependencias real, con el contenedor de ASP.NET Core
+
+**La duda.** D-03 llevaba desde agosto marcado como parcial: `ILoginData` e `IUsuarioData`
+existían, pero solo para inyectar dobles en `Test/`; en producción `LoginBusiness` y
+`UsuarioBusiness` seguían resolviendo con `new` en el constructor, y el resto de la capa
+Business ni siquiera tenía interfaz. Registrar las siete clases que faltaban con lifetime
+`Scoped` tenía una trampa documentada: `AlmacenData` y `ProductoData` guardaban sus listas de
+resultado (`listaAlmacenes`, `listaAlmacenId`, `listaProductos`) como **campos de instancia**.
+Sin arreglarlo antes, un `Scoped` acumularía resultados de peticiones anteriores.
+
+**Decisión.** Se hace completo, no otra mitad parcial. Interfaces nuevas para las siete
+`Data` que no las tenían (`IAlmacenData`, `ICategoriaData`, `ILoteData`, `IMovimientoData`,
+`IPanelData`, `IProductoData`, `IZonaData`), con el mismo patrón que ya usaban
+`ILoginData`/`IUsuarioData`. Las siete `Business` adoptan el patrón de constructor doble que
+`LoginBusiness` y `UsuarioBusiness` ya tenían: uno sin parámetros para no romper a quien las
+instancia directo, y uno que recibe la interfaz. `Startup.ConfigureServices` registra las
+nueve `*Data` como `Scoped` y las nueve `*Business` como `Scoped`; los seis controllers dejan
+de hacer `new XBusiness()` en el campo y la reciben por constructor. Las listas de
+`AlmacenData` y `ProductoData` se convirtieron en variables locales dentro del `case` que las
+usa, en el mismo cambio — no después.
+
+**Verificado, no solo compilado.** 38 pruebas en verde (26 unitarias, 12 de integración
+omitidas sin base). Y contra la base local de Docker, con un token real de `demo.admin`: los
+siete endpoints (Almacenes, Categoria, Producto, Lote, Movimiento, Usuarios, Panel, Zona)
+respondieron `200` con datos reales, es decir que el contenedor resuelve toda la cadena
+`Controller → Business → Data → Conexion` sin un solo `new` de por medio.
+
+**Lo que no cambia.** El patrón `sOpcion`/`pParametro` y la forma de las respuestas siguen
+igual; esto es exclusivamente de qué construye qué, no de qué hace cada capa.
+
+---
+
+## D-44 · El `CrudController<T>` genérico queda descartado, no pendiente
+
+**La duda.** D-08 señalaba que los seis controllers repiten el mismo esqueleto
+`if/else if/try/catch`, que los siete `*Business.cs` son idénticos salvo el nombre del tipo,
+y que un genérico con mapeo por convención dejaría el backend en menos de la mitad de
+líneas. Quedó como "parcial" en `06-hallazgos.md` durante semanas, con la parte barata
+(entidades vacías, DTO duplicados) ya cerrada y la parte cara sin decidir ni descartar.
+
+**Decisión.** No se hace, y se cierra como descartada en vez de dejarla abierta. Un
+`CrudController<T>` oculta justo lo que hace legible este código: el patrón `sOpcion` es
+antiguo y sin tipar, pero es **el mismo patrón en las nueve entidades**, y un revisor que lo
+reconoce en la primera puede seguirlo en las demás sin releer nada. Una abstracción genérica
+cambia "repetitivo pero predecible" por "corto pero indirecto" — y para una demo, lo primero
+vale más que lo segundo. Pesa además la regla 2 de `CLAUDE.md`: cambios mínimos, esto no es
+un producto que vaya a crecer con más entidades.
+
+**Lo que sí se cerró de D-08**, porque no tenía esta disyuntiva: las cinco clases marcador
+vacías y los tres DTO duplicados (`UsuarioEntity`, `EntRequestUsuario`) salieron del árbol.
+Ver `06-hallazgos.md`, D-08.
+
+---
+
+## D-45 · *Lazy loading* del módulo de Usuarios, medido y descartado
+
+**La duda.** D-13 decía que el frontend entero se compila en un solo bundle inicial, y que
+separar módulos por rutas reduciría lo que el navegador descarga en el primer acceso. Quedó
+aplazado por el riesgo de romper algo en silencio, sin haber medido si el ahorro era real.
+
+**El experimento.** Se extrajo el módulo más pequeño y más aislado —Usuarios, una lista y un
+modal, sin dependencias de otros módulos— a un `UsuariosModule` con `loadChildren`, más un
+`SharedComponentsModule` para que `app-estado-carga` siguiera disponible en ambos lados.
+Compiló limpio y el `ng build --prod` reprodujo el mismo hash en dos corridas idénticas
+(control sano).
+
+**Medido, no supuesto.** El bundle principal **subió** de 1.01 MB a 1.06 MB, y lo que se
+separó fue un chunk de 19.4 KB. Extraer un módulo tan chico no compensa el costo fijo de
+`RouterModule.forChild` y el módulo adicional — el resultado es que el visitante descarga
+*más* en el primer acceso, no menos.
+
+**Decisión.** Se revierte el experimento entero y D-13 se cierra como **medido y
+descartado**, no aplazado. Si algún día se retoma, tiene que ser con dos o tres de los
+módulos más pesados (Inventario completo, no solo Usuarios) a la vez, porque el costo fijo
+por módulo solo se amortiza repartiendo bastante código detrás de cada uno.
+
+---
+
+## D-46 · `OnPush` en los componentes de listado, descartado
+
+**La duda.** D-14 señalaba que ningún componente usa `ChangeDetectionStrategy.OnPush`, y que
+Angular revisa los seis listados en cada ciclo de detección de cambios aunque nada haya
+cambiado.
+
+**Decisión.** No se hace. `OnPush` exige que cada actualización que no dispara un evento del
+DOM llame a `markForCheck()` a mano, y los seis listados actualizan sus datos por HTTP
+asíncrono (`fnFiltrarUsuarios`, `fnListarProductos`, etc.), que es exactamente el caso que
+`OnPush` no detecta solo. Olvidar un `markForCheck()` no rompe la compilación ni los tests:
+se manifiesta como una pantalla que se queda en blanco tras guardar o filtrar, con el dato
+ya en el servidor pero sin pintar — el peor tipo de defecto para una demo, porque parece que
+la operación falló cuando en realidad funcionó. El ahorro de rendimiento no se nota con el
+volumen de datos de esta demo; el riesgo de introducir ese defecto sí se notaría.
+
+---
+
+## D-47 · El frontend se queda en Angular 9
+
+**La duda.** D-02 lleva abierto desde la primera revisión: Angular 9 salió en febrero de
+2020 y está fuera de soporte desde agosto de 2021. Es el hallazgo que más veces reaparece
+como «lo que falta», y el argumento a favor de migrar es evidente: nadie quiere enseñar un
+frontend cinco versiones por detrás.
+
+**Decisión.** Se queda en Angular 9, y deja de contar como pendiente. El motivo no es el
+coste, que sería asumible por fases: **este repositorio es un proyecto universitario de 2021
+puesto a punto, y esa fecha es parte de lo que cuenta.** Un frontend en la última versión de
+Angular sobre un backend, un modelo de datos y una notación de 2021 no se lee como un
+proyecto mantenido, se lee como un proyecto reescrito — y entonces el trabajo original deja
+de verse.
+
+**El argumento técnico que lo cierra.** Migrar de verdad arrastra a Angular Material 3, que
+cambia el sistema de temas y el aspecto de prácticamente todos los componentes. Sería un
+rediseño completo de una interfaz que ya está donde se quiere. Se estaría pagando un
+rediseño no deseado para ganar un número de versión.
+
+**Lo que queda abierto.** Subir un par de versiones menores —lo justo para salir del rango
+más antiguo sin tocar Material— es viable y queda como opción para más adelante. También
+está sin resolver el desajuste de `@ng-bootstrap` 6.2.0 (pensado para Bootstrap 4) con
+Bootstrap 5.0.2, que es independiente de la versión de Angular. Ninguna de las dos es
+bloqueante ni urgente.
+
+---
+
 ## Resumen de las decisiones
 
 | # | Decisión | Nivel de duda |
@@ -1033,6 +1155,11 @@ delimitada cuya forma depende de la opción: validarla con atributos exigiría u
 | D-40 | Precio `DECIMAL(10,2)` y `sTelefono VARCHAR`, con el seed y la validación al día | Bajo — el coste es la cantidad de archivos, no el riesgo |
 | D-41 | Backend asíncrono de punta a punta | **Medio** — 25 archivos por una mejora que la demo no necesita; se hace por cómo se lee el código |
 | D-42 | El 400 de validación conserva el formato `{cod, mensaje}` | Ninguno — sin esto, añadir anotaciones habría roto el manejo de errores del frontend |
+| D-43 | Inyección de dependencias real con el contenedor de ASP.NET Core | Bajo — mismo patrón que ya tenían Login y Usuario |
+| D-44 | El `CrudController<T>` genérico queda descartado, no pendiente | Ninguno — la uniformidad del patrón actual es la que hace legible el código |
+| D-45 | *Lazy loading* de Usuarios: medido (main +50 KB) y descartado | Ninguno — se revirtió por completo tras medir |
+| D-46 | `OnPush` en los listados, descartado | Bajo — el riesgo (pantallas en blanco) pesa más que el ahorro, no medible en esta demo |
+| D-47 | El frontend se queda en Angular 9 | **Medio** — es la decisión que más hay que saber defender; se sostiene en que el proyecto es de 2021 y en no arrastrar a Material 3 |
 
 **Las tres que más merecen tu revisión: D-01, D-04 y D-09.**
 De las anteriores, la discutible es **D-24**: `localStorage` es la opción cómoda, no la

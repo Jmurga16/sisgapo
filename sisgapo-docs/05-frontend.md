@@ -297,9 +297,15 @@ Ver `07-migracion-tier-free.md` y `11-estado-portafolio.md`.
 | 13 | Errores silenciosos al iniciar sesión | 🟡 | `login.component.ts` | corregido |
 | 14 | `.toPromise()` deprecado | 🟡 | cinco servicios | pendiente |
 | 15 | 8 `.spec.ts` sin adaptar | 🟡 | todo el proyecto | pendiente |
-| 16 | Un solo módulo, sin carga diferida | 🟡 | `app.module.ts` | pendiente |
+| 16 | Un solo módulo, sin carga diferida | 🟡 | `app.module.ts` | descartado — se midió y el bundle creció (D-45) |
 | 17 | Tres sistemas de estilos conviviendo | 🟡 | `styles.css` | mitigado — Bootstrap reducido a grid |
 
 No quedan pendientes de gravedad alta en esta lista. La actualización de Angular, las
 pruebas de interfaz y la simplificación del stack visual son deuda de mantenimiento, no
 bloqueos para la demo.
+
+**Ojo con los dos «pendiente» de arriba.** Esta tabla es una lista local del frontend, no el
+inventario de la auditoría: `06-hallazgos.md` cierra sus 48 hallazgos y ninguno queda
+abierto. Las filas 14 y 15 —`.toPromise()` deprecado y los ocho `.spec.ts` sin adaptar— son
+mantenimiento menor que nunca entró en esos 48, y siguen ahí anotadas para no perderlas de
+vista.

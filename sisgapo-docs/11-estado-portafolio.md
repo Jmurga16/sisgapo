@@ -117,16 +117,23 @@ Cerrarlos solo compensa **si un revisor técnico va a leer el código** — no s
 cerrados: D-06 y D-07 (los precios llevan céntimos y el teléfono es texto), D-10 (el backend
 es asíncrono) y D-12 (la regla de rol vive en `PoliticaMovimiento`, con pruebas). Se
 cerraron aceptando el criterio de esta sección, no contra él: **son ruido para el visitante,
-pero no para el revisor**, y este proyecto se enseña para que lo lean. Los tres que quedan
-siguen siendo ruido de verdad — D-13 y D-14 se aplazaron porque el riesgo de dejar una
-pantalla en blanco supera un beneficio que nadie ha medido.
+pero no para el revisor**, y este proyecto se enseña para que lo lean.
+
+**Actualización del 7 de septiembre de 2026.** Los tres que quedaban se cerraron sin
+arreglarse, y esta sección es el motivo: son ruido de verdad. D-13 se probó y se midió —el
+bundle principal creció, no bajó—, D-14 arriesga pantallas en blanco por un ahorro que a
+esta escala nadie percibe, y D-02 (Angular 9) se queda como está porque migrar delataría que
+el proyecto no es de 2021 y arrastraría a Material 3. Los tres están firmados como decisión
+en `10-decisiones.md` (D-45, D-46 y D-47), que es distinto de dejarlos como pendientes.
 
 ## Orden recomendado
 
-1. Programar el reinicio periódico del seed en la instancia pública.
-2. Mantener `Demo__SoloLectura=true` como respaldo si se suspende el reinicio.
-3. Recargar la base de datos pública para que la rotación de contraseñas de las cuentas
-   históricas (S-12) surta efecto ahí.
+1. Programar el reinicio periódico del seed en la instancia pública. **Es lo único que
+   queda.**
+2. Dejar `Demo__SoloLectura` en `false` —como está hoy en el App Service— y ponerla en
+   `true` solo si el reinicio se suspende y hay que proteger la demo a mano.
+3. ~~Recargar la base pública para rotar las contraseñas históricas (S-12).~~ **Hecho el 7
+   de septiembre de 2026**, verificado por HTTP: las siete cuentas rechazan `123456`.
 4. Llevar al panel la actividad reciente y las entradas y salidas del período:
    `USP_MNT_Movimientos` opción `04` ya devuelve esos totales (`09-mejoras-propuestas.md`, M-11).
 5. Extender las pruebas de integración a los procedimientos de 2021 —Productos, Almacenes y

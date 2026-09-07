@@ -63,9 +63,10 @@ También en esta carpeta:
    realistas. Los scripts son reejecutables.
 5. Backend y frontend compilan hoy. El frontend necesita
    `NODE_OPTIONS=--openssl-legacy-provider`, ya fijado en los scripts de `package.json`.
-6. La auditoría encontró 48 hallazgos. Los bloqueantes de correctitud y los de
-   autenticación están corregidos y verificados contra SQL Server. La tanda del 6 de
-   septiembre de 2026 se verificó contra el backend público real, no solo en local.
+6. La auditoría encontró 48 hallazgos y **hoy no queda ninguno abierto**: 45 arreglados y
+   verificados, y tres cerrados con el motivo escrito de por qué no se arreglan (Angular 9,
+   *lazy loading* y `OnPush`). Lo verificado no es solo local: las últimas tandas se
+   comprobaron contra el backend público real.
 7. **La autenticación ya es real:** contraseñas con bcrypt, JWT firmado, `[Authorize]` en
    todos los controladores y guards por rol en las rutas de Angular. Ver S-02 a S-04.
 8. No hay secretos en el repositorio. Sí los hubo: la contraseña de SonarQube estuvo en
