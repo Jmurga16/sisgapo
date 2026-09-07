@@ -29,12 +29,14 @@ namespace Data
 
             List<ZonaEntity> lstZonas = new List<ZonaEntity>();
 
+            SqlConnection conn = null;
+
             try
             {
                 string sOpcion = "01";
                 ConfConexion();
 
-                var conn = new SqlConnection(conf);
+                conn = new SqlConnection(conf);
                 conn.Open();
 
                 SqlCommand _Command = new("USP_MNT_Zonas", conn);
@@ -43,7 +45,7 @@ namespace Data
                 _Command.Parameters.Add(new SqlParameter("@nIdZona", 0));
                 _Command.Parameters.Add(new SqlParameter("@sNombre", ""));
                 _Command.Parameters.Add(new SqlParameter("@sRutaImagen", ""));
-               
+
 
                 SqlDataReader reader = _Command.ExecuteReader();
 
@@ -59,13 +61,15 @@ namespace Data
 
                     lstZonas.Add(zonaEnt);
                 }
-
-                conn.Close();
             }
             catch (Exception ex)
             {
                 logger.Error(ex);
                 throw;
+            }
+            finally
+            {
+                conn?.Dispose();
             }
 
             return lstZonas;
@@ -77,13 +81,15 @@ namespace Data
 
             List<ZonaEntity> lstZonas = new List<ZonaEntity>();
 
+            SqlConnection conn = null;
+
             try
             {
-                
+
                 ConfConexion();
                 string sOpcion = "02";
 
-                var conn = new SqlConnection(conf);
+                conn = new SqlConnection(conf);
                 conn.Open();
 
                 SqlCommand _Command = new SqlCommand("USP_MNT_Zonas", conn);
@@ -92,7 +98,7 @@ namespace Data
                 _Command.Parameters.Add(new SqlParameter("@nIdZona", nIdZona));
                 _Command.Parameters.Add(new SqlParameter("@sNombre", ""));
                 _Command.Parameters.Add(new SqlParameter("@sRutaImagen", ""));
-             
+
 
                 SqlDataReader dreader = _Command.ExecuteReader();
 
@@ -108,13 +114,15 @@ namespace Data
 
                     lstZonas.Add(zonaEnt);
                 }
-
-                conn.Close();
             }
             catch (Exception ex)
             {
                 logger.Error(ex);
                 throw;
+            }
+            finally
+            {
+                conn?.Dispose();
             }
 
             return lstZonas;

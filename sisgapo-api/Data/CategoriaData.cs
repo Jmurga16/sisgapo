@@ -102,9 +102,10 @@ namespace Data
                         string sResultado = Convert.ToString(oCon.EjecutarEscalar("USP_MNT_Categorias", genEnt.sOpcion, genEnt.pParametro));
                         msj = sResultado;
                     }
-                    catch (Exception ex)
+                    catch (Exception e)
                     {
-                        msj = ex.Message;
+                        logger.Error(e);
+                        throw;
                     }
                     return msj;
                 #endregion

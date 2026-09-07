@@ -24,7 +24,9 @@ namespace Data
         #region Obtener Todos los usuarios
         public object LIS_UsuarioData(UsuarioEntity erp)
         {
-                        
+
+            SqlConnection conn = null;
+
             try
             {
 
@@ -34,7 +36,7 @@ namespace Data
 
                 ConfConexion();
 
-                var conn = new SqlConnection(conf);
+                conn = new SqlConnection(conf);
                 conn.Open();
 
                 SqlCommand _Command = new SqlCommand("USP_MNT_Usuarios", conn);
@@ -61,8 +63,6 @@ namespace Data
 
                         lstUsuarios.Add(usrEnt);
                     }
-
-                    conn.Close();
 
                     return lstUsuarios;
                 }
@@ -93,8 +93,6 @@ namespace Data
                         unitUsuario.Add(usrEntId);
                     }
 
-                    conn.Close();
-
                     return unitUsuario;
                 }
                 #endregion
@@ -106,9 +104,8 @@ namespace Data
                     if (_Command.ExecuteNonQuery() != 0)
                     {
                         strResultado = "OK";
-                        
+
                     }
-                    conn.Close();
 
                     return strResultado;
 
@@ -125,7 +122,10 @@ namespace Data
                 logger.Error(ex);
                 throw;
             }
-            
+            finally
+            {
+                conn?.Dispose();
+            }
 
         }
         #endregion
