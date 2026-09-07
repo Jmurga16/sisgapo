@@ -33,6 +33,8 @@ export class AlmacenesListComponent implements OnInit, AfterViewInit {
   ];
 
   dsAlmacenes = new MatTableDataSource<AlmacenListado>([]);
+  bCargando: boolean = false;
+  sError: string = '';
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -87,12 +89,17 @@ export class AlmacenesListComponent implements OnInit, AfterViewInit {
   }
 
   async fnListarAlmacenes(): Promise<void> {
+    this.bCargando = true;
+    this.sError = '';
     try {
       const parametros: ParametroApi[] = [];
       this.dsAlmacenes.data = await this.almacenesService
         .fnServAlmacenes<AlmacenListado[]>('01', parametros);
     } catch (error) {
       console.error(error);
+      this.sError = 'No se pudieron cargar los almacenes. Verifica tu conexión e inténtalo de nuevo.';
+    } finally {
+      this.bCargando = false;
     }
   }
 

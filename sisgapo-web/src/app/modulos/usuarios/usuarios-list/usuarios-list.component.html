@@ -40,7 +40,10 @@
     </div>
 </div>
 
-<div class="mat-elevation-z8">
+<app-estado-carga [bCargando]="bCargando" [sError]="sError" sTextoCarga="Cargando usuarios…"
+    (reintentar)="fnFiltrarUsuarios()"></app-estado-carga>
+
+<div class="mat-elevation-z8" [hidden]="bCargando || sError">
     <div class="tabla-scroll tabla-6col tabla-tarjetas">
         <table mat-table [dataSource]="dsUsuarios" matSort aria-describedby="tituloUsuarios">
             <ng-container matColumnDef="nIdUsuario">

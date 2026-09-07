@@ -89,6 +89,8 @@ export class MovimientosComponent implements OnInit, AfterViewInit {
   dHasta: string = '';
   oResumen: ResumenMovimientos = { nMovimientos: 0, nEntradas: 0, nSalidas: 0, nAjustes: 0 };
   dsMovimiento = new MatTableDataSource<MovimientoListado>([]);
+  bCargando: boolean = false;
+  sError: string = '';
   sVista: VistaKardex = 'lista';
   lDias: DiaKardex[] = [];
   nDiasVisibles: number = DIAS_POR_TANDA;
@@ -174,6 +176,8 @@ export class MovimientosComponent implements OnInit, AfterViewInit {
   async fnListarMovimientos(): Promise<void> {
     const filtros = this.fnFiltros();
 
+    this.bCargando = true;
+    this.sError = '';
     try {
       this.dsMovimiento.data = await this.inventarioService
         .fnServMovimiento<MovimientoListado[]>('01', filtros);
@@ -188,6 +192,9 @@ export class MovimientosComponent implements OnInit, AfterViewInit {
       }
     } catch (error) {
       console.error(error as HttpErrorResponse);
+      this.sError = 'No se pudo cargar el kardex. Verifica tu conexión e inténtalo de nuevo.';
+    } finally {
+      this.bCargando = false;
     }
   }
 

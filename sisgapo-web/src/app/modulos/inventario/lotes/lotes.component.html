@@ -51,7 +51,10 @@
     </div>
 </div>
 
-<div class="mat-elevation-z8">
+<app-estado-carga [bCargando]="bCargando" [sError]="sError" sTextoCarga="Cargando lotes…"
+    (reintentar)="fnListarLotes()"></app-estado-carga>
+
+<div class="mat-elevation-z8" [hidden]="bCargando || sError">
     <div class="tabla-scroll tabla-10col tabla-tarjetas">
         <table mat-table [dataSource]="dsLote" matSort aria-describedby="tituloLotes">
             <ng-container matColumnDef="sNombreLote">

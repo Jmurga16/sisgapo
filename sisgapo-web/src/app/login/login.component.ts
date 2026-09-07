@@ -22,6 +22,7 @@ export class LoginComponent implements OnInit {
   sUser = new FormControl();
   sPassword = new FormControl();
   nRol: number = 0;
+  bIngresando: boolean = false;
 
   //Credenciales públicas a propósito: sin ellas el enlace de la demo no lleva a
   //ninguna parte. Las tres cuentas están en el seed
@@ -85,6 +86,11 @@ export class LoginComponent implements OnInit {
       return;
     }
 
+    if (this.bIngresando) {
+      return;
+    }
+
+    this.bIngresando = true;
     try {
       const oSesion: Sesion = await this.loginService.fnServLogin(sNombreUsuario, sContrasenia);
 
@@ -119,9 +125,11 @@ export class LoginComponent implements OnInit {
       console.error(oError);
       await Swal.fire({
         title: 'No se pudo conectar',
-        text: 'El servidor no responde. Comprueba que la API esté levantada.',
+        text: 'El servidor puede estar despertando; espera unos segundos y vuelve a intentarlo.',
         icon: 'error'
       });
+    } finally {
+      this.bIngresando = false;
     }
   }
 }

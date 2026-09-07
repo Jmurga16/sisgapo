@@ -1,0 +1,13 @@
+<div *ngIf="bCargando" class="estado-mensaje" role="status" aria-live="polite">
+    <mat-icon class="icono-cargando">sync</mat-icon>
+    <span>{{ sTextoCarga }}</span>
+</div>
+
+<div *ngIf="!bCargando && sError" class="estado-mensaje estado-error" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ sError }}</span>
+    <button mat-stroked-button color="primary" type="button" (click)="reintentar.emit()">
+        <mat-icon>refresh</mat-icon>
+        Reintentar
+    </button>
+</div>

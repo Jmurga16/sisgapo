@@ -26,6 +26,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -51,6 +52,7 @@ import { MovimientosComponent } from './modulos/inventario/movimientos/movimient
 import { MovimientosModalComponent } from './modulos/inventario/movimientos/movimientos-modal/movimientos-modal.component';
 import { LoginComponent } from './login/login.component';
 import { InicioComponent } from './inicio/inicio.component';
+import { EstadoCargaComponent } from './shared/components/estado-carga/estado-carga.component';
 import { TokenInterceptor } from './shared/services/token.interceptor';
 
 
@@ -74,6 +76,7 @@ import { TokenInterceptor } from './shared/services/token.interceptor';
     MovimientosModalComponent,
     LoginComponent,
     InicioComponent,
+    EstadoCargaComponent,
   ],
   imports: [
     AppRoutingModule,
@@ -96,6 +99,7 @@ import { TokenInterceptor } from './shared/services/token.interceptor';
     MatMenuModule,
     MatNativeDateModule,
     MatPaginatorModule,
+    MatProgressSpinnerModule,
     MatListModule,
     MatSelectModule,
     MatSidenavModule,

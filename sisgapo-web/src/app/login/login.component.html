@@ -49,16 +49,21 @@
 
                 <mat-form-field class="campo" appearance="outline">
                     <mat-label>Usuario</mat-label>
-                    <input matInput type="text" [formControl]="sUser" autocomplete="username" name="usuario">
+                    <input matInput type="text" [formControl]="sUser" autocomplete="username" name="usuario"
+                        [disabled]="bIngresando">
                 </mat-form-field>
 
                 <mat-form-field class="campo" appearance="outline">
                     <mat-label>Contraseña</mat-label>
                     <input matInput type="password" [formControl]="sPassword" autocomplete="current-password"
-                        name="contrasenia">
+                        name="contrasenia" [disabled]="bIngresando">
                 </mat-form-field>
 
-                <button type="submit" color="primary" class="btnIngresar" mat-raised-button>Ingresar</button>
+                <button type="submit" color="primary" class="btnIngresar" mat-raised-button
+                    [disabled]="bIngresando">
+                    <mat-spinner *ngIf="bIngresando" diameter="20" class="spinner-boton"></mat-spinner>
+                    <span>{{ bIngresando ? 'Ingresando…' : 'Ingresar' }}</span>
+                </button>
 
             </form>
 
@@ -68,7 +73,8 @@
 
                 <div class="acceso-demo-roles">
                     <button type="button" class="chip-rol" *ngFor="let cuenta of lCuentasDemo"
-                        [matTooltip]="cuenta.sAlcance" (click)="fnEntrarComo(cuenta.sUsuario)">
+                        [matTooltip]="cuenta.sAlcance" [disabled]="bIngresando"
+                        (click)="fnEntrarComo(cuenta.sUsuario)">
                         {{cuenta.sRol}}
                     </button>
                 </div>

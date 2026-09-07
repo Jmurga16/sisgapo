@@ -52,6 +52,8 @@ export class UsuariosListComponent implements OnInit, AfterViewInit, OnDestroy {
   fRol = new FormControl(0);
   fEstado = new FormControl(2);
   dsUsuarios = new MatTableDataSource<UsuarioListado>([]);
+  bCargando: boolean = false;
+  sError: string = '';
   private filtrosSubscription: Subscription;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -123,11 +125,16 @@ export class UsuariosListComponent implements OnInit, AfterViewInit, OnDestroy {
       this.fEstado.value == null ? 2 : this.fEstado.value
     ];
 
+    this.bCargando = true;
+    this.sError = '';
     try {
       this.dsUsuarios.data = await this.usuariosService
         .fnServUsuarios<UsuarioListado[]>('02', parametros);
     } catch (error) {
       console.error(error as HttpErrorResponse);
+      this.sError = 'No se pudieron cargar los usuarios. Verifica tu conexión e inténtalo de nuevo.';
+    } finally {
+      this.bCargando = false;
     }
   }
 

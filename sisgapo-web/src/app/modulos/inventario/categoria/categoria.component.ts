@@ -31,6 +31,8 @@ export class CategoriaComponent implements OnInit, AfterViewInit {
     'Acciones',
   ];
   dsCategoria = new MatTableDataSource<CategoriaListado>([]);
+  bCargando: boolean = false;
+  sError: string = '';
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -70,11 +72,16 @@ export class CategoriaComponent implements OnInit, AfterViewInit {
   }
 
   async fnListarCategorias(): Promise<void> {
+    this.bCargando = true;
+    this.sError = '';
     try {
       this.dsCategoria.data = await this.inventarioService
         .fnServCategoria<CategoriaListado[]>('01', []);
     } catch (error) {
       console.error(error as HttpErrorResponse);
+      this.sError = 'No se pudieron cargar las categorías. Verifica tu conexión e inténtalo de nuevo.';
+    } finally {
+      this.bCargando = false;
     }
   }
 

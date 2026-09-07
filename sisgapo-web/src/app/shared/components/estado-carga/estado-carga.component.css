@@ -1,0 +1,24 @@
+.estado-mensaje {
+    display: flex;
+    min-height: 12rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .75rem;
+    color: #6b7280;
+    text-align: center;
+}
+
+.estado-error {
+    color: #b02a37;
+}
+
+.icono-cargando {
+    animation: girar 900ms linear infinite;
+}
+
+@keyframes girar {
+    to {
+        transform: rotate(360deg);
+    }
+}

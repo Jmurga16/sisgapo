@@ -48,6 +48,8 @@ export class LotesComponent implements OnInit, AfterViewInit {
   fCategoria = new FormControl(0);
   fProducto = new FormControl(0);
   dsLote = new MatTableDataSource<LoteListado>([]);
+  bCargando: boolean = false;
+  sError: string = '';
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -117,6 +119,8 @@ export class LotesComponent implements OnInit, AfterViewInit {
   }
 
   async fnListarLotes(): Promise<void> {
+    this.bCargando = true;
+    this.sError = '';
     try {
       this.dsLote.data = await this.inventarioService.fnServLote<LoteListado[]>(
         '01',
@@ -124,6 +128,9 @@ export class LotesComponent implements OnInit, AfterViewInit {
       );
     } catch (error) {
       console.error(error as HttpErrorResponse);
+      this.sError = 'No se pudieron cargar los lotes. Verifica tu conexión e inténtalo de nuevo.';
+    } finally {
+      this.bCargando = false;
     }
   }
 

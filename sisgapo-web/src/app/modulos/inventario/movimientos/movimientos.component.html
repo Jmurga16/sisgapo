@@ -103,7 +103,10 @@
     </div>
 </div>
 
-<div class="barra-vista">
+<app-estado-carga [bCargando]="bCargando" [sError]="sError" sTextoCarga="Cargando kardex…"
+    (reintentar)="fnListarMovimientos()"></app-estado-carga>
+
+<div class="barra-vista" [class.hidden]="bCargando || sError">
     <span class="barra-vista-titulo">{{sTituloKardex}}</span>
     <mat-button-toggle-group class="grupo-vista" [(value)]="sVista"
         aria-label="Forma de ver los movimientos">
@@ -118,7 +121,7 @@
     </mat-button-toggle-group>
 </div>
 
-<div class="mat-elevation-z8" [class.hidden]="sVista !== 'lista'">
+<div class="mat-elevation-z8" [class.hidden]="sVista !== 'lista' || bCargando || !!sError">
     <div class="tabla-scroll tabla-10col tabla-tarjetas">
         <table mat-table [dataSource]="dsMovimiento" matSort aria-describedby="tituloMovimientos">
             <ng-container matColumnDef="dFechaMov">
@@ -179,7 +182,7 @@
     <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
 </div>
 
-<div class="kardex" *ngIf="sVista === 'cronologia'">
+<div class="kardex" *ngIf="sVista === 'cronologia' && !bCargando && !sError">
 
     <div class="kardex-dia" *ngFor="let dia of lDiasVisibles">
 

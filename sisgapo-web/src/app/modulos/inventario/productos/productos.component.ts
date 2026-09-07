@@ -46,6 +46,8 @@ export class ProductosComponent implements OnInit, AfterViewInit {
   fAlmacen = new FormControl(0);
   fCategoria = new FormControl(0);
   dsProducto = new MatTableDataSource<ProductoListado>([]);
+  bCargando: boolean = false;
+  sError: string = '';
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -97,6 +99,8 @@ export class ProductosComponent implements OnInit, AfterViewInit {
   }
 
   async fnListarProductos(): Promise<void> {
+    this.bCargando = true;
+    this.sError = '';
     try {
       this.dsProducto.data = await this.inventarioService.fnServProducto<ProductoListado[]>(
         '03',
@@ -104,6 +108,9 @@ export class ProductosComponent implements OnInit, AfterViewInit {
       );
     } catch (error) {
       console.error(error as HttpErrorResponse);
+      this.sError = 'No se pudieron cargar los productos. Verifica tu conexión e inténtalo de nuevo.';
+    } finally {
+      this.bCargando = false;
     }
   }
 

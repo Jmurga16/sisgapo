@@ -21,7 +21,10 @@
         </button>
     </div>
 
-    <div class="mat-elevation-z2 categoria-tabla">
+    <app-estado-carga [bCargando]="bCargando" [sError]="sError" sTextoCarga="Cargando categorías…"
+        (reintentar)="fnListarCategorias()"></app-estado-carga>
+
+    <div class="mat-elevation-z2 categoria-tabla" [hidden]="bCargando || sError">
         <div class="tabla-scroll tabla-5col tabla-tarjetas">
             <table mat-table [dataSource]="dsCategoria" matSort aria-describedby="tituloCategorias">
                 <ng-container matColumnDef="nIdCategoria">
