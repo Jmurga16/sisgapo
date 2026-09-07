@@ -21,6 +21,7 @@ import { InventarioService } from '../inventario.service';
 import { MovimientosModalComponent } from './movimientos-modal/movimientos-modal.component';
 import { ConfiguracionService } from 'src/app/shared/services/configuracion.service';
 import { SesionService } from 'src/app/shared/services/sesion.service';
+import { DiaKardex, KardexCronologiaService, MovimientoKardex } from './kardex-cronologia.service';
 
 interface EventoFecha {
   value: Date;
@@ -29,27 +30,6 @@ interface EventoFecha {
 
 type VistaKardex = 'lista' | 'cronologia';
 
-
-interface MovimientoKardex extends MovimientoListado {
-  sHora: string;
-}
-
-interface DiaKardex {
-  sFecha: string;
-  sEtiqueta: string;
-  nEntradas: number;
-  nSalidas: number;
-  lMovimientos: MovimientoKardex[];
-}
-
-const DIAS_SEMANA = [
-  'domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'
-];
-
-const MESES = [
-  'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-  'julio', 'agosto', 'setiembre', 'octubre', 'noviembre', 'diciembre'
-];
 
 const DIAS_POR_TANDA = 10;
 
@@ -105,6 +85,7 @@ export class MovimientosComponent implements OnInit, AfterViewInit {
     public dialog: MatDialog,
     private route: ActivatedRoute,
     private media: MediaMatcher,
+    private kardexService: KardexCronologiaService,
   ) { }
 
   ngOnInit(): void {
@@ -306,56 +287,8 @@ export class MovimientosComponent implements OnInit, AfterViewInit {
   }
 
   private fnAgruparPorDia(): void {
-    const oDias: { [sFecha: string]: DiaKardex } = {};
-    const lFechas: string[] = [];
-
-    this.dsMovimiento.filteredData.forEach(mov => {
-      const sFecha = (mov.dFechaMov || '').substring(0, 10);
-
-      if (!oDias[sFecha]) {
-        oDias[sFecha] = {
-          sFecha,
-          sEtiqueta: this.fnEtiquetaFecha(sFecha),
-          nEntradas: 0,
-          nSalidas: 0,
-          lMovimientos: []
-        };
-        lFechas.push(sFecha);
-      }
-
-      oDias[sFecha].nEntradas += mov.nEntrada;
-      oDias[sFecha].nSalidas += mov.nSalida;
-      oDias[sFecha].lMovimientos.push({ ...mov, sHora: (mov.dFechaMov || '').substring(11, 16) });
-    });
-
-    //Descendente: el movimiento más reciente arriba, como en la tabla.
-    this.lDias = lFechas.sort().reverse().map(sFecha => oDias[sFecha]);
+    this.lDias = this.kardexService.fnAgruparPorDia(this.dsMovimiento.filteredData);
     this.nDiasVisibles = DIAS_POR_TANDA;
-  }
-
-  private fnEtiquetaFecha(sFecha: string): string {
-    const partes = sFecha.split('-');
-
-    if (partes.length < 3) {
-      return sFecha;
-    }
-
-    const fecha = new Date(Number(partes[0]), Number(partes[1]) - 1, Number(partes[2]));
-    const sEtiqueta = `${DIAS_SEMANA[fecha.getDay()]} ${fecha.getDate()} de ${MESES[fecha.getMonth()]} de ${fecha.getFullYear()}`;
-
-    const hoy = new Date();
-    const sHoy = this.fnFechaIso(hoy);
-    const sAyer = this.fnFechaIso(new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - 1));
-
-    if (sFecha === sHoy) {
-      return `Hoy · ${sEtiqueta}`;
-    }
-
-    if (sFecha === sAyer) {
-      return `Ayer · ${sEtiqueta}`;
-    }
-
-    return sEtiqueta;
   }
 
   private fnFiltros(): (string | number)[] {
