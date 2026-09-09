@@ -62,7 +62,7 @@
                 <button type="submit" color="primary" class="btnIngresar" mat-raised-button
                     [disabled]="bIngresando">
                     <mat-spinner *ngIf="bIngresando" diameter="20" class="spinner-boton"></mat-spinner>
-                    <span>{{ bIngresando ? 'Ingresando…' : 'Ingresar' }}</span>
+                    <span>{{ bIngresando ? sTextoIngresando : 'Ingresar' }}</span>
                 </button>
 
             </form>

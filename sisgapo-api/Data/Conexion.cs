@@ -74,6 +74,38 @@ namespace Data
         #endregion
 
 
+        #region Apertura con reintentos
+
+        private static readonly TimeSpan[] arEsperaReintento = { TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(6) };
+
+        private async Task<SqlConnection> fnAbrirConexionAsync()
+        {
+            for (int nIntento = 1; ; nIntento++)
+            {
+                SqlConnection conn = new SqlConnection(oSqlConnIN);
+
+                try
+                {
+                    await conn.OpenAsync();
+                    return conn;
+                }
+                catch (SqlException ex) when (nIntento <= arEsperaReintento.Length)
+                {
+                    conn.Dispose();
+                    logger.Warn(ex, "No se pudo abrir la conexion (intento {0}/{1}); reintentando en {2}s por si la base está saliendo de auto-pausa.",
+                        nIntento, arEsperaReintento.Length + 1, arEsperaReintento[nIntento - 1].TotalSeconds);
+                    await Task.Delay(arEsperaReintento[nIntento - 1]);
+                }
+                catch
+                {
+                    conn.Dispose();
+                    throw;
+                }
+            }
+        }
+        #endregion
+
+
         #region EjecutarDataReaderAsync
 
         public async Task<SqlDataReader> fnEjecutarDataReaderAsync(String sProcedure, params object[] valores)
@@ -82,13 +114,11 @@ namespace Data
 
             try
             {
-                conn = new SqlConnection(oSqlConnIN);
+                conn = await fnAbrirConexionAsync();
 
                 SqlCommand oCmd = new SqlCommand(sProcedure, conn);
                 oCmd.CommandType = CommandType.StoredProcedure;
                 fnAgregarParametros(oCmd, sProcedure, valores);
-
-                await conn.OpenAsync();
 
                 return await oCmd.ExecuteReaderAsync(CommandBehavior.CloseConnection);
             }
@@ -111,13 +141,11 @@ namespace Data
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(oSqlConnIN))
+                using (SqlConnection conn = await fnAbrirConexionAsync())
                 {
                     SqlCommand oCmd = new SqlCommand(sProcedure, conn);
                     oCmd.CommandType = CommandType.StoredProcedure;
                     fnAgregarParametros(oCmd, sProcedure, valores);
-
-                    await conn.OpenAsync();
 
                     object oResultado = await oCmd.ExecuteScalarAsync();
 

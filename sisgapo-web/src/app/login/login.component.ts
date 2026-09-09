@@ -23,6 +23,8 @@ export class LoginComponent implements OnInit {
   sPassword = new FormControl();
   nRol: number = 0;
   bIngresando: boolean = false;
+  sTextoIngresando: string = 'Ingresando…';
+  private nTimerDespertando: ReturnType<typeof setTimeout> | null = null;
 
   //Credenciales públicas a propósito: sin ellas el enlace de la demo no lleva a
   //ninguna parte. Las tres cuentas están en el seed
@@ -91,6 +93,12 @@ export class LoginComponent implements OnInit {
     }
 
     this.bIngresando = true;
+    this.sTextoIngresando = 'Ingresando…';
+
+    this.nTimerDespertando = setTimeout(() => {
+      this.sTextoIngresando = 'Despertando el servidor…';
+    }, 4000);
+
     try {
       const oSesion: Sesion = await this.loginService.fnServLogin(sNombreUsuario, sContrasenia);
 
@@ -129,6 +137,10 @@ export class LoginComponent implements OnInit {
         icon: 'error'
       });
     } finally {
+      if (this.nTimerDespertando) {
+        clearTimeout(this.nTimerDespertando);
+        this.nTimerDespertando = null;
+      }
       this.bIngresando = false;
     }
   }
