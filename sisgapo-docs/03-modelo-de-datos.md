@@ -27,7 +27,7 @@ TBL_DOCUMENTO          TBL_ROL
  │ nIdUsuario    │   │ nIdAlmacen (PK)                  │
  │ sNombreUsuario│   │ sNombre, sDireccion              │
  │ sContrasenia  │   │ nIdSupervisor → USUARIO (rol 2)  │
- │ (texto plano) │   │ nIdZona       → ZONA             │
+ │ (hash bcrypt) │   │ nIdZona       → ZONA             │
  └───────────────┘   │ bEstado (baja lógica)            │
                      └───────────────┬──────────────────┘
                                      │ nIdAlmacen
@@ -62,7 +62,7 @@ TBL_DOCUMENTO          TBL_ROL
                                                └───────────────────────────┘
 ```
 
-**Doce tablas.** El modelo es correcto en lo esencial: normalizado, con catálogos separados,
+**Trece tablas.** El modelo es correcto en lo esencial: normalizado, con catálogos separados,
 baja lógica donde corresponde y una tabla puente (`TBL_CAT_PROD`) que ubica un producto de
 una categoría en un almacén. `TBL_DET_PRODUCTO` tiene una fila por producto **y lote**, y
 `TBL_MOVIMIENTO` explica cómo llegó cada lote a su existencia actual.
@@ -93,7 +93,7 @@ los datos personales. El esquema reparado aplica estas garantías:
 - **`sContrasenia` guarda hashes bcrypt**, generados antes de llamar al procedimiento.
 - **`sTelefono` es `VARCHAR(20)`, no un número.** Un teléfono es un identificador: admite
   ceros a la izquierda y prefijos como `+51`, que un `INT` pierde o no acepta
-  (`06-hallazgos.md`, D-07). La regla de formato —nueve dígitos empezando por 9, con
+  (`historico/hallazgos-2026.md`, D-07). La regla de formato —nueve dígitos empezando por 9, con
   prefijo `+51` opcional— la aplica `UsuarioBusiness`, no la columna.
 - **`TBL_LOGIN` tiene clave primaria y `UNIQUE(sNombreUsuario)`**. El original no tenía
   ninguna de las dos restricciones.
@@ -115,7 +115,7 @@ insertan en la misma transacción.
 Un almacén pertenece a una zona y tiene un supervisor, que debe ser un usuario con `nRol = 2`.
 Esa regla **no está en el esquema** —no hay `CHECK` ni tabla aparte—, solo en el `WHERE` de
 la opción `04` del procedimiento. Nada impide asignar un administrador como supervisor
-mediante una llamada directa a la API.
+mediante una llamada directa a la API (`11-auditoria-y-cierre.md`, H-14).
 
 ### Inventario
 
@@ -149,7 +149,7 @@ Ahora `TBL_LOTE.sNombreLote` es `UNIQUE` y el correlativo se busca como hace
 `UNIQUE(nIdProducto, nIdLote)` y baja lógica propia. Un producto puede tener a la vez el lote
 que vence en marzo y el que vence en junio, cada uno con su existencia, su precio y su fecha:
 era el caso de uso central de un almacén con control de caducidad y el modelo de 2021 no lo
-soportaba (`09-mejoras-propuestas.md`, M-09).
+soportaba (`08-mejoras-propuestas.md`, M-09).
 
 `TBL_MOVIMIENTO` es el libro del almacén. Una fila por entrada, salida o ajuste sobre un lote:
 
@@ -205,7 +205,7 @@ Es coherente con que `ZonaController` sea el único controller REST.
 
 **Clientes no forma parte del esquema publicado.** La tabla, el procedimiento y el módulo
 se recuperaron del historial, pero se dejaron fuera de la demo hasta integrarlos y probarlos.
-La decisión y los comandos de recuperación están en `10-decisiones.md`, D-19.
+La decisión y los comandos de recuperación están en `09-decisiones.md`, D-19.
 
 ### La función `dbo.Split`
 
@@ -328,6 +328,9 @@ guarda `Lima`; el siguiente intento compara `sNombre = 'lima'`, que en una inter
 sensible a mayúsculas no coincide. Y si por casualidad sí detectase el duplicado, **no hay
 `ELSE`**: el procedimiento no devuelve nada y el cliente no se entera de que no se guardó.
 
+Ese era el original. `sql/09-usp-zonas.sql` compara con `LOWER` en los dos lados, tiene rama
+`ELSE` y responde `cod|mensaje` en todas las escrituras (C-03, C-05).
+
 **11. `USP_MNT_Productos` opción 07 — editar fechas de lote no hace nada.**
 
 ```sql
@@ -341,15 +344,18 @@ La opción 07 lee once valores de `@pParametro` y ninguno es `@nIdLote`. La vari
 registros. **Editar la fecha de fabricación o de vencimiento de un producto falla en
 silencio**, sin error: el procedimiento sigue devolviendo `'1|Se actualizó con éxito'`.
 
-Este es el bug funcional más serio del sistema, porque el control de vencimientos es el
-motivo por el que el cliente ficticio pedía el software.
+Era el bug funcional más serio del sistema, porque el control de vencimientos es el
+motivo por el que el cliente ficticio pedía el software. En `sql/07-usp-productos.sql` la
+opción 07 se quedó con nombre, almacén y categoría, y las fechas se editan desde
+`USP_MNT_Lotes` (C-02).
 
 **12. `@@IDENTITY` en vez de `SCOPE_IDENTITY()`.**
-`USP_MNT_Productos` opción 06 usa `@@IDENTITY` dos veces. `@@IDENTITY` devuelve el último
+En el original, `USP_MNT_Productos` opción 06 usa `@@IDENTITY` dos veces. `@@IDENTITY` devuelve el último
 identity de la sesión, incluidos los generados por triggers en otras tablas. Hoy no hay
 triggers, así que funciona; si alguien añade uno, este código empieza a insertar filas mal
 relacionadas de forma silenciosa. `USP_MNT_Usuarios` usa correctamente `SCOPE_IDENTITY()`
-para el mismo propósito — la inconsistencia está dentro del mismo repositorio.
+para el mismo propósito — la inconsistencia está dentro del mismo repositorio. En `sql/` los
+tres sitios usan ya `SCOPE_IDENTITY()`.
 
 **13. Las escrituras multi-tabla originalmente no usaban transacciones.**
 `USP_MNT_Productos` 06/07 y `USP_MNT_Usuarios` 04 ya ejecutan sus cambios dentro de una
@@ -409,11 +415,13 @@ Qué se corrigió en `sql/` respecto a los originales:
 | `TBL_USUARIO.nTelefono INT` pasa a `sTelefono VARCHAR(20)` | `01-esquema.sql`, `08-usp-usuarios.sql`, `03-seed.sql` |
 
 Las tres últimas filas no son correcciones de compatibilidad sino funcionalidad nueva: son
-los módulos de Lotes y Movimientos. Ver la sección 2 y `09-mejoras-propuestas.md`, M-09 y M-12.
+los módulos de Lotes y Movimientos. Ver la sección 2 y `08-mejoras-propuestas.md`, M-09 y M-12.
 
-**Los bugs de lógica 9–13 NO se corrigieron en `sql/`.** Son cambios de comportamiento, no de
-compatibilidad, y merecen decidirse a conciencia. Están priorizados en
-`06-hallazgos.md` y `09-mejoras-propuestas.md`.
+**Los cinco bugs de lógica, del 9 al 13, sí están corregidos en `sql/`.** En agosto esta
+sección decía lo contrario, y era cierto: entonces `sql/` solo arreglaba lo que impedía
+ejecutar. Cambió cuando la carpeta pasó a ser el juego mantenido (`09-decisiones.md`, D-13);
+cada corrección va marcada con `--[FIX]` en su procedimiento y con su hallazgo en
+`historico/hallazgos-2026.md` (C-02, C-05, C-06, C-07).
 
 ## 6. Si migras a otro motor
 
@@ -441,4 +449,4 @@ del sistema.
 
 Estimación honesta: **3 a 5 días** para portar los nueve procedimientos y la capa de datos, más
 pruebas. No es imposible, pero para una demo hay caminos más baratos.
-Ver `07-migracion-tier-free.md`, sección 4, donde se comparan las opciones.
+Ver `06-infraestructura.md`, sección 4, donde se comparan las opciones.

@@ -1,4 +1,4 @@
-# 08 — Plan de demo
+# 07 — Plan de demo
 
 Cómo presentar SISGAPO a un cliente potencial sin que juegue en tu contra.
 
@@ -25,12 +25,12 @@ En orden de impacto:
 
 | # | Elemento | Por qué funciona |
 |---|---|---|
-| 1 | **`06-hallazgos.md`** | 48 hallazgos priorizados de tu propio código, con lo corregido marcado y verificado. Demuestra criterio y honestidad, que es lo difícil de fingir |
+| 1 | **`historico/hallazgos-2026.md`** y **`11-auditoria-y-cierre.md`** | 48 hallazgos priorizados de tu propio código, los 48 cerrados y verificados, y la auditoría de cierre con lo que queda abierto. Demuestra criterio y honestidad, que es lo difícil de fingir |
 | 2 | **`docker compose up`** funcionando | Un comando y el sistema entero arranca. Elimina toda fricción de la demo |
 | 3 | La aplicación en vivo | Siete módulos con datos realistas, y un recorrido que llega hasta el kardex de un lote |
-| 4 | **`07-migracion-tier-free.md`** | Análisis de costos y decisiones de infraestructura. Lenguaje que un cliente entiende |
+| 4 | **`06-infraestructura.md`** | Análisis de costos y decisiones de infraestructura. Lenguaje que un cliente entiende |
 | 5 | El repositorio | Estructura por capas, convenciones consistentes, documentación |
-| 6 | `/swagger` | La API documentada y navegable |
+| 6 | `/swagger` | La API documentada y navegable. **Hoy solo en local:** en la instancia pública está apagado (`11-auditoria-y-cierre.md`, H-06) |
 
 **El orden importa.** Si abres con la aplicación, el cliente ve un CRUD de 2021. Si abres con
 el análisis, ve a alguien que sabe leer un sistema. Después la aplicación se ve mejor, porque
@@ -82,7 +82,7 @@ punto a favor.
 
 **Minuto 6–9 · La auditoría**
 
-Aquí es donde ganas la reunión. Abre `06-hallazgos.md`:
+Aquí es donde ganas la reunión. Abre `historico/hallazgos-2026.md`:
 
 > "Al recuperarlo hice una revisión completa: 48 hallazgos, clasificados en seguridad,
 > correctitud y deuda técnica, y priorizados. Los doce bloqueantes son estos."
@@ -106,7 +106,10 @@ completo, y demuestra que piensas en su factura.
 **"¿Por qué Angular 9 / .NET 5?"**
 > "Es la versión de 2021, cuando lo desarrollé. Verifiqué que el frontend sigue compilando en
 > Node 22 con un flag de OpenSSL, así que actualizarlo no es urgente para la demo. El backend
-> sí lo migré a .NET 8, porque .NET 5 ya no se puede desplegar en Azure."
+> primero lo migré a .NET 8 para volver a desplegarlo y, al cerrar la demo, a .NET 10 LTS."
+
+El paso a .NET 10 quedó aplicado el 2 de octubre de 2026; la evidencia y la verificación
+están en `11-auditoria-y-cierre.md`, H-01 a H-03.
 
 **"¿Por qué toda la lógica en stored procedures?"**
 > "Es el patrón con el que aprendí y el que usaba el entorno donde trabajaba. Tiene ventajas
@@ -132,7 +135,7 @@ escribiste tú, dilo así:
 > hicimos entre varios; el desarrollo del backend y el frontend lo hice yo."
 
 Una respuesta precisa siempre suena mejor que una absoluta, y no te expone si alguien
-encuentra el documento con los seis nombres. Ver `10-decisiones.md`, D-09.
+encuentra el documento con los seis nombres. Ver `09-decisiones.md`, D-09.
 
 **"¿Puedo verlo funcionando?"**
 Ten las dos vías listas: el enlace público **y** el `docker compose up` en tu portátil. Si el
@@ -153,7 +156,7 @@ enlace está frío, arranca Docker mientras se despierta y no pierdes el ritmo.
 - [ ] Abrir el enlace público para despertar el App Service y la base de datos
 - [ ] Comprobar que el login funciona
 - [ ] `docker compose up -d` como plan B
-- [ ] Tener `06-hallazgos.md` abierto en otra pestaña
+- [ ] Tener `historico/hallazgos-2026.md` abierto en otra pestaña
 - [ ] Si vas a crear registros durante la demo, hazlo una vez antes para verificar que no falla
 
 ## 6. El README del repositorio
@@ -170,9 +173,9 @@ Y un párrafo que conviene no quitar nunca, porque es el que convierte un reposi
 antiguo en una muestra de trabajo actual:
 
 > Al recuperarlo hice una auditoría completa: 48 hallazgos documentados y priorizados en
-> `sisgapo-docs/06-hallazgos.md`, incluidos varios bugs funcionales que reproduje contra
+> `sisgapo-docs/historico/hallazgos-2026.md`, incluidos varios bugs funcionales que reproduje contra
 > SQL Server 2022 antes de corregirlos. El registro de decisiones —qué elegí, qué descarté
-> y por qué— está en `sisgapo-docs/10-decisiones.md`.
+> y por qué— está en `sisgapo-docs/09-decisiones.md`.
 
 ## 7. Lo que no conviene hacer
 
@@ -186,8 +189,8 @@ Fecharlo no es disculparse: es dar contexto.
 con criterio técnico lo revisa por su cuenta y encuentra eso sin que tú lo hayas mencionado,
 el efecto es el contrario del que buscas.
 
-**No enseñes la edición de productos sin haber arreglado C-02.** Es la acción que un cliente
-prueba, y falla en silencio.
+**Prueba la edición de productos antes de cada demo.** Fallaba en silencio (C-02) y está
+corregida desde agosto de 2026, pero sigue siendo la acción que un cliente prueba primero.
 
 **No inventes funcionalidad.** Si te preguntan por reportes o por gestión de proveedores, di
 que estaban en el análisis (PN3) y no se llegaron a implementar. La respuesta correcta a "¿y
@@ -207,6 +210,10 @@ Ordenadas por lo que más cambian la percepción del proyecto:
 
 **Si solo haces una: Docker Compose.** Que alguien clone el repositorio, escriba un comando y
 tenga el sistema corriendo en dos minutos vale más que cualquier refactor que no vean.
+
+**Estado al cierre, octubre de 2026:** las tres primeras están hechas. La cuarta se descartó
+(`09-decisiones.md`, D-47) y la quinta sigue siendo la mejor pieza técnica pendiente
+(`08-mejoras-propuestas.md`, M-10).
 
 ## 9. La idea que sostiene todo esto
 

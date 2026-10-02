@@ -2,8 +2,8 @@
 
 > **Este documento describe el sistema tal como se encontró en 2021.** Los diagramas y los
 > fragmentos de código son la foto de partida, no el estado de hoy: sirven para entender de
-> dónde viene cada decisión. Lo que ha cambiado desde entonces está en `06-hallazgos.md`
-> (qué se arregló) y en `10-decisiones.md` (por qué). Los cambios que más afectan a lo que
+> dónde viene cada decisión. Lo que ha cambiado desde entonces está en `historico/hallazgos-2026.md`
+> (qué se arregló) y en `09-decisiones.md` (por qué). Los cambios que más afectan a lo que
 > se lee aquí:
 >
 > | Lo que dice este documento | Estado actual | Referencia |
@@ -13,7 +13,18 @@
 > | Dos viajes a la base por escritura (`sp_procedure_params_rowset`) | Uno: la firma está declarada en un diccionario | D-05 |
 > | Capas síncronas, `IDataReader` | `async`/`await` de punta a punta, `SqlDataReader` | D-10 |
 > | Sin autenticación | JWT + bcrypt, `[Authorize]` y guards por rol | S-02, S-03, S-04 |
-> | Seis procedimientos | Ocho: se añadieron Lotes y Movimientos | M-09, M-12 |
+> | Sin límite de intentos de acceso | Cinco por IP y minuto; después, `429` | S-09 |
+> | Todo instanciado con `new` | Contenedor de ASP.NET Core en las tres capas | D-03 |
+> | `appsettings.json` leído en cada petición | Configuración resuelta una vez, con los secretos en variables de entorno | D-04, S-01 |
+> | `return null` ante una opción desconocida | `400` con `{cod, mensaje}` | C-08 |
+> | Sin `nlog.config` ni middleware de excepciones | Los dos: registro en consola y archivo, y un `{cod, mensaje}` genérico ante un error no controlado | C-04, C-09 |
+> | DTO sin validación | Data Annotations en `Entity`, con el mismo `{cod, mensaje}` | D-11 |
+> | Origen CORS escrito en el código | `Cors:OrigenesPermitidos`, por configuración | S-08 |
+> | `pParametro` concatenado en el navegador | El frontend envía `parametros[]`; la API rechaza el delimitador y concatena | S-07 |
+> | Seis procedimientos | Nueve: se añadieron Panel, Lotes y Movimientos | M-09, M-11, M-12 |
+>
+> Los identificadores `S-`, `C-` y `D-` de la tabla son los de la auditoría de 2026, ya
+> cerrada. Lo que queda abierto hoy está en `11-auditoria-y-cierre.md`.
 
 ## 1. Vista general
 
@@ -55,7 +66,7 @@ generación de códigos de lote, baja lógica, filtros condicionales— están *
 stored procedures de T-SQL**.
 
 Esto tiene una consecuencia directa para la migración: **cambiar de motor de base de datos no
-es cambiar una cadena de conexión, es portar la aplicación entera.** Ver `07-migracion-tier-free.md`.
+es cambiar una cadena de conexión, es portar la aplicación entera.** Ver `06-infraestructura.md`.
 
 ## 2. Proyectos de la solución
 
@@ -116,7 +127,7 @@ else if (genEnt.sOpcion == "05" || genEnt.sOpcion == "06" || genEnt.sOpcion == "
 }
 else
 {
-    return null;    // ← ver 06-hallazgos.md, C-08
+    return null;    // ← ver historico/hallazgos-2026.md, C-08
 }
 ```
 
@@ -178,7 +189,7 @@ El controller lo parte y responde `{ "cod": "1", "mensaje": "Se registró con é
 
 1. **Sin tipado.** Todo viaja como string. Los `CAST(... AS INT)` fallan en tiempo de ejecución si el orden cambia.
 2. **Acoplamiento posicional.** El significado de un valor depende de su índice. Insertar un campo en medio rompe silenciosamente las tres capas.
-3. **El delimitador no se escapa.** Un almacén llamado `Norte|Sur` desplaza todos los parámetros siguientes. No es inyección SQL —los parámetros sí van parametrizados— pero sí corrupción de datos. Ver `06-hallazgos.md`, S-07.
+3. **El delimitador no se escapa.** Un almacén llamado `Norte|Sur` desplaza todos los parámetros siguientes. No es inyección SQL —los parámetros sí van parametrizados— pero sí corrupción de datos. Ver `historico/hallazgos-2026.md`, S-07.
 4. **Swagger queda inútil.** El contrato documentado es siempre `{ sOpcion, pParametro }`, sin decir qué significa cada uno.
 5. **No hay verbos HTTP.** Todo es `POST`, incluidas las lecturas. Sin caché, sin semántica REST.
 
@@ -189,7 +200,7 @@ disciplina es más mantenible que cuatro patrones distintos aplicados a medias. 
 implica tocar simultáneamente el SP, el `*Data.cs` y el `*.service.ts` de cada entidad.
 
 Si lo cambias, ve entidad por entidad y termina cada una antes de empezar la siguiente.
-Ver `09-mejoras-propuestas.md`, M-06.
+Ver `08-mejoras-propuestas.md`, M-06.
 
 ### La excepción: `ZonaController`
 
@@ -251,7 +262,7 @@ SqlHelper.ExecuteScalar(oSqlConnIN, CommandType.StoredProcedure, sProcedure, arP
 Server— para descubrir la firma del SP en tiempo de ejecución. Como los seis SPs tienen
 exactamente la misma firma (`@sOpcion VARCHAR(2)`, `@pParametro VARCHAR(MAX)`), esta
 introspección no aporta nada: se puede reemplazar por dos `SqlParameter` explícitos y
-eliminar ~120 de las 253 líneas de `Conexion.cs`. Ver `09-mejoras-propuestas.md`, M-02.
+eliminar ~120 de las 253 líneas de `Conexion.cs`. Ver `08-mejoras-propuestas.md`, M-02.
 
 **7. `USP_MNT_Almacenes`, opción `05`**
 ```sql
@@ -337,7 +348,7 @@ Consecuencias:
 - La configuración se relee del disco en cada request.
 
 Introducir DI es de las mejoras con mejor relación esfuerzo/beneficio: son ~15 líneas en
-`Startup` y cambiar constructores. Ver `09-mejoras-propuestas.md`, M-03.
+`Startup` y cambiar constructores. Ver `08-mejoras-propuestas.md`, M-03.
 
 ## 7. Pipeline HTTP y CORS
 
@@ -365,7 +376,7 @@ Tres problemas concretos:
 
 1. **`UseAuthorization()` sin `UseAuthentication()`.** Como no hay ningún `[Authorize]`, no hace nada. Es decorativo.
 2. **El origen CORS de producción probablemente estaba mal.** Permite `https://sisgapo.azurewebsites.net`, pero el frontend se desplegaba en Azure Static Web Apps (`*.azurestaticapps.net` — hay dos workflows). Los dominios no coinciden.
-3. **El frontend llamaba por HTTP y la API redirige a HTTPS.** `environment.prod.ts` apunta a `http://sisgapoback.azurewebsites.net/`, y `UseHttpsRedirection()` devuelve un 307. En un `POST` con preflight CORS eso suele romperse. Ver `06-hallazgos.md`, S-08.
+3. **El frontend llamaba por HTTP y la API redirige a HTTPS.** `environment.prod.ts` apunta a `http://sisgapoback.azurewebsites.net/`, y `UseHttpsRedirection()` devuelve un 307. En un `POST` con preflight CORS eso suele romperse. Ver `historico/hallazgos-2026.md`, S-08.
 
 **Swagger solo existe en Development.** Para una demo esto conviene invertirlo: exponer
 Swagger en producción es una de las cosas que mejor se ven al enseñar una API.
@@ -388,7 +399,7 @@ Con dos agravantes:
 - **No hay middleware de excepciones.** En producción (sin `UseDeveloperExceptionPage`) la excepción sale como un 500 sin cuerpo. El frontend hace `console.log(error)` y el usuario no ve nada.
 
 Resultado: cuando algo falla en producción, no hay traza en el servidor ni mensaje en el
-cliente. Ver `06-hallazgos.md`, C-09 y D-04.
+cliente. Ver `historico/hallazgos-2026.md`, C-09 y D-04.
 
 ## 9. Resumen para quien vaya a modificar el sistema
 

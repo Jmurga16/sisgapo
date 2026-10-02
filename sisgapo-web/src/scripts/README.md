@@ -13,4 +13,4 @@ El detalle de cada fallo está en `sisgapo-docs/03-modelo-de-datos.md` seccion 4
 `docker compose up -d` desde la raiz del repositorio.
 
 La decision de mantener las dos copias esta explicada en
-`sisgapo-docs/10-decisiones.md` (D-06 y D-13).
+`sisgapo-docs/09-decisiones.md` (D-06 y D-13).

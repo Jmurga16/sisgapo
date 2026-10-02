@@ -6,8 +6,13 @@ Sistema de gestión de almacén de productos orgánicos. Multi-almacén, con cat
 lotes y control de vencimientos.
 
 Desarrollado en 2021 como proyecto universitario (UNMSM, Ing. de Sistemas) y recuperado
-en 2026: documentado, auditado y reparado. La auditoría completa —48 hallazgos
-priorizados— está en [`sisgapo-docs/06-hallazgos.md`](sisgapo-docs/06-hallazgos.md).
+en 2026: documentado, auditado y reparado. La auditoría de la recuperación —48 hallazgos,
+los 48 cerrados— está en
+[`sisgapo-docs/historico/hallazgos-2026.md`](sisgapo-docs/historico/hallazgos-2026.md); lo que
+quedó abierto, corregido o descartado al cierre, en
+[`sisgapo-docs/11-auditoria-y-cierre.md`](sisgapo-docs/11-auditoria-y-cierre.md).
+
+**Estado:** cerrado como demo de portafolio el 2 de octubre de 2026. La demo sigue en línea.
 
 ## Pruébala
 
@@ -27,7 +32,7 @@ Entra con un clic desde la pantalla de acceso, o usa una de estas cuentas:
 | Capa | Stack |
 |---|---|
 | Frontend | Angular 9 + Angular Material |
-| Backend | ASP.NET Core 8 (API / Business / Data / Entity), JWT |
+| Backend | ASP.NET Core 10 (API / Business / Data / Entity), JWT |
 | Datos | SQL Server, lógica en stored procedures |
 
 ---
@@ -58,7 +63,7 @@ contra SQL Server, no una maqueta estática.
 
 ## Levantarlo en local
 
-Requisitos: Docker Desktop, .NET SDK 8 o 9, y Node 18+.
+Requisitos: Docker Desktop, .NET SDK 10 y Node 18+.
 
 ### 1. Base de datos
 
@@ -170,14 +175,9 @@ manualmente después de comprobar que ambos jobs están en verde.
 
 ---
 
-## Credenciales de demostración
+## Qué puede hacer cada cuenta
 
-| Usuario | Contraseña | Rol | Para probar |
-|---|---|---|---|
-| `demo.admin` | `SisgapoDemo2026!` | Administrador | Usuarios y mantenimiento de zonas |
-| `demo.supervisor` | `SisgapoDemo2026!` | Supervisor | Altas, ediciones, cambios de estado y ajustes de inventario |
-| `demo.asistente` | `SisgapoDemo2026!` | Asistente | Panel, consultas y registro de entradas y salidas |
-
+Las tres cuentas de la tabla de arriba comparten contraseña y cubren los tres roles.
 El Administrador es el único que mantiene Usuarios y Zonas. El Supervisor gestiona almacenes,
 categorías, productos y lotes (Zonas las ve, pero no las edita). El Asistente registra
 movimientos de inventario pero no puede ajustar existencias ni mantener lotes, así que sirve
@@ -185,7 +185,7 @@ para comprobar que menús y escrituras cambian según el rol.
 
 > Las contraseñas se guardan con bcrypt. La contraseña compartida y documentada es una
 > licencia de la demo, no del diseño: en el original de 2021 estaban en texto plano
-> (`06-hallazgos.md`, S-02).
+> (`sisgapo-docs/historico/hallazgos-2026.md`, S-02).
 > En una demo pública interactiva, programa el reinicio periódico de los datos. Usa
 > `Demo__SoloLectura=true` como alternativa temporal si el reinicio no está disponible.
 
@@ -206,9 +206,10 @@ Empieza por [`sisgapo-docs/README.md`](sisgapo-docs/README.md).
 | `03-modelo-de-datos.md` | Tablas, relaciones y procedimientos |
 | `04-api-referencia.md` | Endpoints y catálogo de `sOpcion` |
 | `05-frontend.md` | Módulos, rutas y servicios de Angular |
-| `06-hallazgos.md` | **Auditoría: bugs, deuda técnica y seguridad** |
-| `07-migracion-tier-free.md` | Infraestructura y costos: qué corre hoy y cómo redesplegarlo |
-| `08-plan-demo.md` | Cómo presentarlo |
-| `09-mejoras-propuestas.md` | Roadmap |
-| `10-decisiones.md` | Decisiones tomadas y alternativas descartadas |
-| `11-estado-portafolio.md` | Estado hecho/pendiente y revisión de suficiencia funcional |
+| `06-infraestructura.md` | Infraestructura y costos: qué corre hoy y cómo redesplegarlo |
+| `07-plan-demo.md` | Cómo presentarlo |
+| `08-mejoras-propuestas.md` | Roadmap: lo que sigue abierto |
+| `09-decisiones.md` | Decisiones tomadas y alternativas descartadas |
+| `10-migracion-contabo.md` | Propuesta para llevar la demo a un servidor propio |
+| `11-auditoria-y-cierre.md` | Auditoría, correcciones aplicadas y estado final |
+| `historico/` | La auditoría de 2026 (48 hallazgos, todos cerrados), las mejoras aplicadas y el estado inicial |

@@ -1,13 +1,9 @@
 ﻿using Entity;
-using Microsoft.Extensions.Configuration;
 using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Data
@@ -16,12 +12,7 @@ namespace Data
     public class ZonaData : IZonaData
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private string conf;
-        public string ConfConexion()
-        {
-            conf = ConfiguracionBD.sCadenaConexion;
-            return conf;
-        }
+        private readonly Conexion conexion = new Conexion(1);
 
         //Obtener Todos los zonas
         public async Task<List<ZonaEntity>> LIS_ZonaData()
@@ -34,10 +25,7 @@ namespace Data
             try
             {
                 string sOpcion = "01";
-                ConfConexion();
-
-                conn = new SqlConnection(conf);
-                await conn.OpenAsync();
+                conn = await conexion.fnAbrirConexionAsync();
 
                 SqlCommand _Command = new("USP_MNT_Zonas", conn);
                 _Command.CommandType = CommandType.StoredProcedure;
@@ -86,11 +74,9 @@ namespace Data
             try
             {
 
-                ConfConexion();
                 string sOpcion = "02";
 
-                conn = new SqlConnection(conf);
-                await conn.OpenAsync();
+                conn = await conexion.fnAbrirConexionAsync();
 
                 SqlCommand _Command = new SqlCommand("USP_MNT_Zonas", conn);
                 _Command.CommandType = CommandType.StoredProcedure;
@@ -156,12 +142,8 @@ namespace Data
 
             try
             {
-                ConfConexion();
-
-                using (var conn = new SqlConnection(conf))
+                using (var conn = await conexion.fnAbrirConexionAsync())
                 {
-                    await conn.OpenAsync();
-
                     SqlCommand _Command = new SqlCommand("USP_MNT_Zonas", conn);
                     _Command.CommandType = CommandType.StoredProcedure;
                     _Command.Parameters.Add(new SqlParameter("@sOpcion", sOpcion));

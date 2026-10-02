@@ -1,13 +1,14 @@
 # 04 — Referencia de la API
 
 Base URL en desarrollo: `https://localhost:44360/`
-Base URL en producción (histórica, ya no existe): `http://sisgapoback.azurewebsites.net/`
+Base URL de la demo pública: `https://app-sisgapo-api-egbrd9hygfcsdvgf.eastus-01.azurewebsites.net/`
+(cambiará si se ejecuta `10-migracion-contabo.md`)
 
 Swagger está disponible en `/swagger` **solo cuando el entorno es Development**.
 
 > **Todos los controladores llevan `[Authorize]`.** Salvo `/LoginService` y
 > `/ConfiguracionService`, cada endpoint exige `Authorization: Bearer <token>` y, en las
-> escrituras, el rol correspondiente. Ver la sección 2 y `06-hallazgos.md`, S-03.
+> escrituras, el rol correspondiente. Ver la sección 2 y `historico/hallazgos-2026.md`, S-03.
 
 ## 1. Convención general
 
@@ -19,14 +20,18 @@ Content-Type: application/json
 
 {
   "sOpcion": "05",
-  "pParametro": "valor1|valor2|valor3"
+  "parametros": ["valor1", "valor2", "valor3"]
 }
 ```
 
 - `sOpcion` — código de dos dígitos que selecciona la operación.
   **No es universal:** `"05"` es *insertar* en Almacenes y *listar por id* en Productos.
-- `pParametro` — argumentos concatenados con `|`, en orden posicional.
-  Para operaciones sin argumentos se envía `""`.
+- `parametros` — los argumentos como arreglo de cadenas, en orden posicional. Para
+  operaciones sin argumentos se envía `[]`. La API los une con `|` antes de llamar al
+  procedimiento y rechaza con `400` cualquier valor que contenga ese carácter (S-07). El
+  campo histórico `pParametro`, ya concatenado, solo se admite en lecturas. Las tablas de
+  cada endpoint numeran las posiciones del arreglo empezando en 1, como las lee el
+  procedimiento.
 
 **Respuesta de lecturas:** el arreglo de objetos tal cual lo devuelve el procedimiento.
 
@@ -35,12 +40,13 @@ Content-Type: application/json
 { "cod": "1", "mensaje": "Se registró con éxito" }
 ```
 
-**Si `sOpcion` no está en el rango esperado**, el controller hace `return null`, que ASP.NET
-Core traduce a `204 No Content` con cuerpo vacío. El frontend no lo maneja.
+**Si `sOpcion` no está en el rango esperado**, el controller responde
+`400 { "cod": "0", "mensaje": "Opcion no soportada: 09" }`. Hasta agosto de 2026 hacía
+`return null`, que ASP.NET Core traduce a un `204` sin cuerpo (C-08).
 
 **Errores de forma de la petición** — un `400` con el mismo cuerpo de dos campos que el
 resto de la API. Lo emiten las anotaciones de los DTO y el guard de cuerpo nulo de cada
-controller (`06-hallazgos.md`, D-11; `10-decisiones.md`, D-42):
+controller (`historico/hallazgos-2026.md`, D-11; `09-decisiones.md`, D-42):
 
 | Petición | Respuesta |
 |---|---|
@@ -119,7 +125,7 @@ además del `dFechaNacimiento` nativo. No devuelve el hash de contraseña.
 ```
 
 `sTelefono` es una cadena, no un número: admite el prefijo `+51` y conserva los ceros a la
-izquierda (`06-hallazgos.md`, D-07). Las opciones `04` y `05` lo aceptan con o sin prefijo,
+izquierda (`historico/hallazgos-2026.md`, D-07). Las opciones `04` y `05` lo aceptan con o sin prefijo,
 y `UsuarioBusiness` rechaza con `400` cualquier otra forma.
 
 **Respuesta de `04`, `05`, `06`** — este endpoint **no sigue** el contrato `cod`/`mensaje`:
@@ -128,7 +134,8 @@ y `UsuarioBusiness` rechaza con `400` cualquier otra forma.
 ```
 
 `UsuarioData` construye `"OK"` en C# a partir de `ExecuteNonQuery() != 0`, en vez de leer un
-mensaje del procedimiento. Es el único módulo así.
+mensaje del procedimiento. Es el único módulo así; la propuesta para alinearlo con los demás
+está en `11-auditoria-y-cierre.md`, H-12.
 
 **Detalle a tener en cuenta:** la opción `04` genera el nombre de usuario automáticamente
 (primer nombre + `.` + primer apellido). Si ya existe, añade `2`, `3`, etc. Ver
@@ -162,7 +169,7 @@ Ordena por `bEstado DESC, nIdZona`: los activos primero.
 **Respuesta de `05`, `06`, `07`** — `{ "cod": "1", "mensaje": "Se registró con éxito" }`
 
 La opción `07` puede rechazar el cambio con `cod = "0"`: no desactiva un almacén con
-productos activos, ni reactiva uno cuya zona esté de baja. Ver `10-decisiones.md`, D-35.
+productos activos, ni reactiva uno cuya zona esté de baja. Ver `09-decisiones.md`, D-35.
 
 > El frontend envía 5 valores en la opción `05`, pero el procedimiento solo lee 4. El quinto
 > (`nIdAlmacen`, que en alta viene vacío) se ignora sin efecto. Es inofensivo, pero explica
@@ -190,7 +197,7 @@ Es el módulo más coherente del conjunto: los índices de `pParametro` coincide
 con lo que el procedimiento lee, en todas las opciones.
 
 La opción `05` responde `cod = "0"` si la categoría todavía tiene productos activos, igual
-que la baja de almacén. Ver `10-decisiones.md`, D-35.
+que la baja de almacén. Ver `09-decisiones.md`, D-35.
 
 ## 6. `POST /InventarioService/Producto`
 
@@ -236,7 +243,7 @@ La edición de un producto se quedó con lo que de verdad le pertenece: **nombre
 categoría**. Cantidad, precio, unidad y fechas eran del lote y ahora se mantienen desde
 `/InventarioService/Lote`; la existencia solo la mueve `/InventarioService/Movimiento`.
 
-Esto cierra de raíz el defecto histórico de esta opción, documentado en `06-hallazgos.md`
+Esto cierra de raíz el defecto histórico de esta opción, documentado en `historico/hallazgos-2026.md`
 como C-02: el frontend enviaba diez valores y el procedimiento leía once, así que
 `@nIdCatProd` y `@nIdLote` quedaban en `NULL` y dos de los cuatro `UPDATE` no afectaban a
 ninguna fila —cambiar un producto de almacén no funcionaba, y cambiar su vencimiento
@@ -341,7 +348,7 @@ vez, la segunda lee el saldo ya actualizado en vez de pisarlo.
 
 Las lecturas están abiertas a cualquier usuario autenticado —el alta de un almacén necesita
 el desplegable de zonas—; las tres escrituras exigen rol Administrador. Ver
-`10-decisiones.md`, D-34.
+`09-decisiones.md`, D-34.
 
 | Verbo y ruta | Rol | Qué hace |
 |---|---|---|
@@ -388,7 +395,7 @@ se leen ahí:
 
 La API publicada no expone este endpoint. El módulo completo se recuperó del historial, pero
 se dejó fuera del árbol actual porque todavía no está integrado con los datos ni probado en
-el recorrido de la demo. Puede restaurarse con los comandos de `10-decisiones.md`, D-19.
+el recorrido de la demo. Puede restaurarse con los comandos de `09-decisiones.md`, D-19.
 
 ## 9. Tabla resumen de códigos
 

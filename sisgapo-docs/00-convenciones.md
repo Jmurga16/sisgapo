@@ -10,15 +10,16 @@ proyecto peor que respetarlas.
 sisgapo/
 ├── docker-compose.yml     Levanta SQL Server con el esquema y los datos de demo
 ├── docker/init-db.sh      Script de carga que usa el contenedor de inicialización
-├── sisgapo-api/           Backend .NET 5 — solución SISGAPO_Back.sln
+├── sisgapo-api/           Backend .NET 10 — solución SISGAPO_Back.sln
 │   ├── SISGAPO_API/       Capa web: controllers, Startup, appsettings
 │   ├── Business/          Capa de negocio
 │   ├── Data/              Acceso a datos, vía stored procedures
 │   ├── Entity/            DTOs
-│   └── Test/              xUnit (sin pruebas reales por ahora)
+│   └── Test/              xUnit: 26 pruebas unitarias y 13 de integración contra SQL Server
 ├── sisgapo-web/           Frontend Angular 9
 │   └── src/scripts/       Scripts SQL originales de 2021 — NO EJECUTAR
 └── sisgapo-docs/          Documentación y análisis
+    ├── historico/         Auditoría de 2026 ya cerrada, mejoras aplicadas, estado inicial
     └── sql/               Esquema mantenido y verificado
 ```
 
@@ -89,7 +90,7 @@ POST /AlmacenesService
 
 **Si cambias una operación, cámbiala en las tres capas a la vez**: procedimiento,
 `*Data.cs` y `*.service.ts`. Los cuatro bugs más graves del proyecto —C-02, C-12, C-13 y
-C-14 en `06-hallazgos.md`— son exactamente esto: una capa que dejó de estar de acuerdo con
+C-14 en `historico/hallazgos-2026.md`— son exactamente esto: una capa que dejó de estar de acuerdo con
 otra sin que nada lo detectara.
 
 Dos advertencias sobre el patrón:
@@ -120,14 +121,14 @@ Controller  →  Business  →  Data  →  Stored procedure
 
 **Las tres capas son asíncronas.** Un método nuevo devuelve `Task<T>` y usa
 `await ...Async()` para tocar la base; no hay `.Result` ni `.Wait()` en el backend y no
-deben aparecer (`10-decisiones.md`, D-41).
+deben aparecer (`09-decisiones.md`, D-41).
 
 **La validación de forma va en el DTO, la de negocio en el procedimiento.** Un campo
 obligatorio o con formato fijo se declara con Data Annotations en `Entity/`; el 400 sale con
 el mismo `{cod, mensaje}` que el resto de la API. Las reglas que dependen de los datos
-—unicidad, existencias, permisos— siguen en el procedimiento (`10-decisiones.md`, D-42).
+—unicidad, existencias, permisos— siguen en el procedimiento (`09-decisiones.md`, D-42).
 
-Es una decisión de 2021 que se mantiene (`10-decisiones.md`, D-04). Tiene una ventaja
+Es una decisión de 2021 que se mantiene (`09-decisiones.md`, D-04). Tiene una ventaja
 —se puede parchear sin desplegar— y una desventaja grande: la lógica no se puede probar
 con dobles ni revisar en un diff con comodidad.
 
@@ -196,5 +197,5 @@ pase por `Business` funciona, pero rompe la simetría que hace el código predec
 2. `npm run build` en `sisgapo-web` — sin errores.
 3. La operación probada **contra la base de datos**, no solo compilada. Los bugs de este
    proyecto no eran de compilación: eran capas que dejaron de entenderse entre sí.
-4. Si el cambio afecta al comportamiento, actualiza `06-hallazgos.md`; si es una decisión
-   discutible, anótala en `10-decisiones.md`.
+4. Si el cambio abre o cierra un hallazgo, actualiza `11-auditoria-y-cierre.md`; si es una decisión
+   discutible, anótala en `09-decisiones.md`.

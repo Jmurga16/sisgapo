@@ -11,7 +11,7 @@ quedan como evidencia del estado de 2021.
 
 | # | Archivo | Qué hace |
 |---|---|---|
-| 01 | `01-esquema.sql` | Crea las 12 tablas, claves foráneas e índices. Reejecutable |
+| 01 | `01-esquema.sql` | Crea las 13 tablas, claves foráneas e índices. Reejecutable |
 | 02 | `02-funcion-split.sql` | Función `dbo.Split` — la usan todos los SPs |
 | 03 | `03-seed.sql` | Datos de demostración ampliados |
 | 04 | `04-usp-login.sql` | `USP_MNT_Login` |
@@ -28,12 +28,15 @@ Los scripts `10`–`12` son módulos nuevos, no hay original que respetar. `07` 
 cambió de lógica: el listado de productos pasa a agregar sus lotes y la edición
 deja de tocar existencias y fechas. Ver `../03-modelo-de-datos.md`.
 
-Los scripts `04`–`09` son los originales con tres cambios mecánicos:
-codificación normalizada a UTF-8, `ALTER PROCEDURE` → `CREATE PROCEDURE`
-(afectaba solo a `05-usp-almacenes.sql`) y eliminación de `USE [DB_SISGAPO]`
-(Azure SQL no permite `USE`). Salvo por las bajas de `05` y `06` —ver abajo—, **la
-lógica T-SQL no se tocó**, incluidos sus bugs: están documentados en
-`../06-hallazgos.md`, no corregidos aquí.
+Los scripts `04`–`09` parten de los originales, con tres cambios mecánicos
+—codificación normalizada a UTF-8, `CREATE OR ALTER PROCEDURE` para poder
+reejecutarlos, y eliminación de `USE [DB_SISGAPO]`, que Azure SQL no admite— y con
+las correcciones de lógica de la auditoría de 2026: el duplicado de categorías en
+`06`; los filtros, las transacciones y `SCOPE_IDENTITY()` en `07`; el nombre de
+usuario sin sufijo forzado y el alta atómica en `08`; la actualización, la baja y
+la detección de duplicados de zonas en `09`. Cada una está explicada en
+`../historico/hallazgos-2026.md` (C-02, C-03, C-05, C-06, C-07, C-14). Esta carpeta
+es el juego mantenido desde `../09-decisiones.md`, D-13.
 
 Las bajas sí cambiaron. `USP_MNT_Almacenes` (07) y `USP_MNT_Categorias` (05)
 desactivaban sin comprobar nada, y con eso se podía dejar un producto activo
@@ -41,7 +44,7 @@ colgando de un almacén o de una categoría de baja —justo lo que verifica el
 invariante «Productos activos en almacén o categoría de baja = 0». Ahora rechazan
 la baja mientras queden productos activos, y un almacén no se puede reactivar si
 su zona está de baja. Es la regla que `USP_MNT_Zonas` ya aplicaba con los
-almacenes. Ver `../10-decisiones.md`, D-35.
+almacenes. Ver `../09-decisiones.md`, D-35.
 
 ## Cómo ejecutarlos
 
@@ -68,7 +71,8 @@ for f in [0-9][0-9]-*.sql; do
 done
 ```
 
-Cadena de conexión resultante para `appsettings.json`:
+Cadena de conexión resultante, para `SISGAPO_CONNECTION_STRING` (con `docker compose` no
+hace falta: el puerto es el 14330 y la cadena ya está en `appsettings.Development.json`):
 
 ```
 Server=localhost,1433;Database=DB_SISGAPO;User ID=sa;Password=Sisgapo!Demo2026;TrustServerCertificate=True
@@ -220,4 +224,4 @@ conserva estas cuentas históricas para revisar escenarios y responsables de alm
 | `jorge.salazar` | Asistente | **Usuario inactivo** — verifica el filtro de estado |
 
 Las cuentas genéricas son credenciales públicas de demostración. Ver
-`../06-hallazgos.md`, S-02.
+`../historico/hallazgos-2026.md`, S-02.

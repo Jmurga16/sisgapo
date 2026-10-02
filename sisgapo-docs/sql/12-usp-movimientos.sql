@@ -1,4 +1,4 @@
-﻿GO
+GO
 /****** Object:  StoredProcedure [dbo].[USP_MNT_Movimientos] ******/
 SET ANSI_NULLS ON
 GO
@@ -11,7 +11,7 @@ GO
     reportes automatizados para conocer los ingresos y salidas", pero el modelo de
     2021 no lo soportaba: la existencia era un nCantidad que se sobrescribía al
     editar el producto, sin dejar constancia de quién ni por qué.
-    Ver 09-mejoras-propuestas.md, M-12.
+    Ver 08-mejoras-propuestas.md, M-12.
 
     Reglas:
       - La existencia de un lote solo cambia aquí. TBL_DET_PRODUCTO.nCantidad es

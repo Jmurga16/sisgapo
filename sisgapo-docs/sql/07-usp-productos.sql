@@ -322,6 +322,23 @@ BEGIN
 			SET @nIdProducto	= (SELECT valor FROM @tParametro WHERE id = 1);	
 			SET @bEstado	  = (SELECT valor FROM @tParametro WHERE id = 2);	
 		END	
+
+		IF @bEstado = 0 AND EXISTS (
+			SELECT 1
+			FROM TBL_DET_PRODUCTO
+			WHERE nIdProducto = @nIdProducto
+			  AND bEstado = 1
+			  AND nCantidad > 0
+		)
+		BEGIN
+			SELECT CONCAT(
+				'0|El producto tiene ',
+				(SELECT SUM(nCantidad) FROM TBL_DET_PRODUCTO
+				 WHERE nIdProducto = @nIdProducto AND bEstado = 1),
+				' en existencia. Registra la salida antes de darlo de baja.'
+			);
+			RETURN;
+		END
         
 		BEGIN
 		

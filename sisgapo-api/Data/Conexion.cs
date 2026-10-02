@@ -78,7 +78,7 @@ namespace Data
 
         private static readonly TimeSpan[] arEsperaReintento = { TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(6) };
 
-        private async Task<SqlConnection> fnAbrirConexionAsync()
+        public async Task<SqlConnection> fnAbrirConexionAsync()
         {
             for (int nIntento = 1; ; nIntento++)
             {

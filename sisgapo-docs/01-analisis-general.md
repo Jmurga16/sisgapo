@@ -2,7 +2,7 @@
 
 ## 1. Contexto de negocio
 
-Extraído del documento original `Documento de Especificación de CUS.docx` (v4.0, julio 2021).
+Extraído del documento original `historico/Documento de Especificación de CUS.docx` (v4.0, julio 2021).
 
 **Cliente ficticio:** comercializadora *Nuevo Amanecer*, ubicada en Satipo (Junín, Perú).
 Compra café a agricultores, lo almacena en varios almacenes a nivel nacional y lo distribuye
@@ -32,7 +32,7 @@ a plantas procesadoras.
 > Nota sobre autoría: la carátula del documento de CUS lista seis integrantes de equipo y
 > atribuye la redacción del documento a dos de ellos. Si vas a presentar el proyecto como
 > trabajo propio, conviene ser preciso sobre qué parte hiciste tú (por ejemplo: "desarrollé el
-> backend y el frontend completos de un proyecto de equipo"). Ver `10-decisiones.md`, D-09.
+> backend y el frontend completos de un proyecto de equipo"). Ver `09-decisiones.md`, D-09.
 
 ## 2. Alcance funcional implementado
 
@@ -48,7 +48,7 @@ Doce casos de uso especificados, organizados en tres iteraciones.
 | 0006 | Editar Almacén | Administrador | Implementado (`sOpcion 06`) |
 | 0007 | Eliminar Almacén | Administrador | Implementado como baja lógica (`sOpcion 07`) |
 | 0008 | Agregar Producto | Administrador | Implementado (`sOpcion 06`) |
-| 0009 | Autenticar Usuario | Ambos | Implementado parcialmente — ver la sección 4 |
+| 0009 | Autenticar Usuario | Ambos | Implementado: bcrypt, JWT y límite de intentos (S-02, S-03, S-09) |
 | 0010 | Crear Categoría | Supervisor | Implementado (`sOpcion 03`) |
 | 0011 | Editar Categoría | Supervisor | Implementado (`sOpcion 04`) |
 | 0012 | Eliminar Categoría | Supervisor | Implementado como baja lógica (`sOpcion 05`) |
@@ -67,7 +67,7 @@ lo cual es una fortaleza para una demo: no hay pantallas a medias.
   Se validan tanto en el frontend como en el backend.
 - PN3 (abastecimiento / proveedores) no forma parte de la demo actual. El módulo histórico
   `Cliente` se recuperó y se documentó, pero se dejó fuera del árbol publicado hasta poder
-  integrarlo y probarlo. Ver `10-decisiones.md`, D-19.
+  integrarlo y probarlo. Ver `09-decisiones.md`, D-19.
 
 ## 3. Stack tecnológico
 
@@ -76,15 +76,15 @@ lo cual es una fortaleza para una demo: no hay pantallas a medias.
 | Componente | Versión | Notas |
 |---|---|---|
 | .NET | 8.0 (LTS) | Migrado desde 5.0, que llevaba fuera de soporte desde mayo de 2022 |
-| ASP.NET Core Web API | 8.0 | Patrón `Startup.cs` clásico, conservado a propósito — ver `10-decisiones.md`, D-05 |
+| ASP.NET Core Web API | 8.0 | Patrón `Startup.cs` clásico, conservado a propósito — ver `09-decisiones.md`, D-05 |
 | `Microsoft.Data.SqlClient` | 5.1.6 | Sustituye a `System.Data.SqlClient` 4.8.2, que tenía 2 CVE |
 | `Swashbuckle.AspNetCore` | 6.6.2 | Swagger, solo habilitado en Development |
 | `NLog` | 5.3.4 | Con `nlog.config` a consola y archivo |
-| `xUnit` | 2.9.2 | 16 pruebas unitarias, más 12 de integración contra SQL Server |
+| `xUnit` | 2.9.3 | 26 pruebas unitarias, más 13 de integración contra SQL Server |
 
 Cuatro proyectos: `SISGAPO_API` (web), `Business`, `Data`, `Entity`, más `Test`. Los paquetes
 sin uso de la versión original —`Microsoft.EntityFrameworkCore.SqlServer`,
-`Microsoft.AspNet.WebApi.Cors`— se retiraron; ver `06-hallazgos.md`, D-09.
+`Microsoft.AspNet.WebApi.Cors`— se retiraron; ver `historico/hallazgos-2026.md`, D-09.
 
 ### Frontend — `sisgapo-web/`
 
@@ -98,12 +98,14 @@ sin uso de la versión original —`Microsoft.EntityFrameworkCore.SqlServer`,
 | SweetAlert2 | 11.0.18 | Diálogos y alertas |
 | TypeScript | 3.8.3 | — |
 | TSLint | 6.1.0 | Deprecado en favor de ESLint |
-| Protractor | 5.4.3 | Deprecado; carpeta `e2e/` sin tests reales |
+| Karma + Jasmine | 4.4 / 3.5 | Doce `.spec.ts` de existencia. Protractor y `e2e/` se retiraron |
 
 ### Base de datos
 
-SQL Server (desplegado como Azure SQL Database). **Toda la lógica de negocio está en 6
-stored procedures.** El C# solo despacha llamadas y mapea `IDataReader` a DTOs.
+SQL Server: Azure SQL en la demo pública y SQL Server 2022 en Docker en local. **Casi toda
+la lógica de negocio está en nueve stored procedures** (`03-modelo-de-datos.md`, sección 3).
+El C# despacha llamadas y mapea `SqlDataReader` a DTOs; las únicas reglas que viven en C#
+son la verificación de contraseñas y la validación de los datos de un usuario.
 
 ### Infraestructura original (Azure)
 
@@ -123,129 +125,54 @@ enorme: F1 (gratis) o B1 bastan de sobra.
 > Verifica el costo real en el portal de Azure. Estos son precios de lista y pueden no
 > reflejar tu suscripción, descuentos ni el consumo real.
 
-## 4. Estado inicial verificado (agosto de 2026, antes de los arreglos)
+La infraestructura de hoy —gratuita— está en `06-infraestructura.md`; la alternativa en un
+servidor propio, en `10-migracion-contabo.md`.
 
-Todo lo de esta sección fue comprobado ejecutándolo, no inferido, en el momento de recuperar
-el proyecto. Es el punto de partida de la auditoría; el estado actual, con lo ya corregido,
-está en `06-hallazgos.md` y `11-estado-portafolio.md`.
+## 4. Estado inicial (agosto de 2026)
 
-### La infraestructura de Azure ya no existe
-
-```
-servidorsqlsan.database.windows.net    → NXDOMAIN (no existe)
-sisgapoback.azurewebsites.net          → NXDOMAIN (no existe)
-sisgapo.azurewebsites.net              → NXDOMAIN (no existe)
-```
-
-Los hostnames de Static Web Apps (`blue-sea-0c3542710`, `yellow-meadow-0e36f1a10`) sí
-resuelven, pero `*.azurestaticapps.net` apunta a un frontend compartido: que resuelva **no**
-confirma que el recurso siga activo.
-
-**Consecuencia práctica: no hay datos que exportar.** Lo que llamas "migración de base de
-datos" es en realidad una **reconstrucción desde los scripts SQL**. Eso simplifica mucho el
-trabajo — y también significa que puedes elegir cualquier motor sin costo de migración.
-
-**Primera acción recomendada:** entra al portal de Azure y confirma qué recursos siguen
-existiendo y qué se está facturando. Es posible que ya no estés pagando nada.
-
-### El backend compilaba, con avisos
-
-```
-dotnet build SISGAPO_Back.sln
-→ Build succeeded. 12 Warning(s), 0 Error(s).
-```
-
-Avisos de entonces: `NETSDK1138` (`net5.0` fuera de soporte), `NU1903`/`NU1902`
-(`System.Data.SqlClient` con CVE) y `NU1701` ×6 (paquetes de .NET Framework restaurados
-contra `net5.0`, incluido `Microsoft.ApplicationBlocks.Data`). Tras la migración a .NET 8 y
-la limpieza de dependencias, `dotnet build` compila hoy con **0 warnings**.
-
-### El frontend compila (con un flag)
-
-```
-npm install --legacy-peer-deps                                → 1481 paquetes, 32 s, exit 0
-npx ng build --prod                                           → FALLA
-NODE_OPTIONS=--openssl-legacy-provider npx ng build --prod    → OK, 32 s
-```
-
-El error sin el flag es `error:0308010C:digital envelope routines::unsupported`.
-
-Bundle resultante: `main-es2015` 877 kB, `main-es5` 1020 kB, `styles` 213 kB.
-Salida en `dist/SISGAPO-Front`.
-
-**Esto es una buena noticia importante.** Webpack 4 (que usa Angular 9) llama a
-`crypto.createHash('md4')`, y OpenSSL 3 —que trae Node 17+— ya no expone MD4. El flag
-`--openssl-legacy-provider` lo reactiva. Es decir: **no necesitas actualizar Angular para
-desplegar la demo.** Verificado en Node 22.23.1.
-
-### Autenticación y autorización, ya corregidas
-
-- `TBL_LOGIN` almacena hashes bcrypt; la contraseña nunca vuelve al frontend.
-- La API emite JWT con expiración, exige `[Authorize]` y vuelve a validar los roles.
-- Angular conserva la sesión, añade el token mediante interceptor y protege las rutas.
-- El administrador gestiona Usuarios; administrador y supervisor gestionan datos
-  operativos; el asistente consulta el panel y el inventario.
-- El seed incluye `demo.supervisor` y `demo.asistente` para recorrer ambos permisos.
-
-El estado original era una API pública con contraseñas en texto plano y un rol modificable
-desde `localStorage`. La reproducción y los arreglos están en `06-hallazgos.md`, S-02 a S-04.
-
-### Había secretos en la copia local, no en el repositorio
-
-- `sisgapo-api/SISGAPO_API/appsettings.json:11` — cadena de conexión completa con servidor,
-  usuario (`ink`) y contraseña en claro.
-- `sisgapo-api/Data/ProductoData.cs:190` — contraseña de una cuenta de Gmail, dentro de un
-  bloque de código comentado que enviaba notificaciones por correo.
-
-Aunque el servidor SQL ya no exista, **esas contraseñas deben considerarse comprometidas**.
-Si están reutilizadas en algún otro lado, cámbialas. Y no publiques el repositorio sin
-limpiarlas primero (incluido el historial de git, si lo hay).
-
-### Ninguno de los dos proyectos está bajo control de versiones localmente
-
-```
-sisgapo-api  → fatal: not a git repository
-sisgapo-web  → fatal: not a git repository
-
-[Resuelto en agosto de 2026: monorepo unico con los dos historiales importados.]
-```
-
-Existen workflows de GitHub Actions en `sisgapo-web/.github/workflows/`, así que en algún
-momento el frontend estuvo en GitHub. Hoy no hay `.git` en el disco. Para portafolio, esto es
-lo primero que hay que resolver: **sin repositorio público no hay nada que enseñar salvo la
-pantalla.**
+Cómo se encontró el proyecto al recuperarlo —infraestructura de Azure desaparecida,
+compilación con doce avisos, secretos en la copia local, sin control de versiones— está
+en [`historico/estado-inicial-2026-08.md`](historico/estado-inicial-2026-08.md). Es el
+punto de partida de la auditoría; el estado actual está en `11-auditoria-y-cierre.md`
+y `11-auditoria-y-cierre.md`.
 
 ## 5. Métricas del código
 
-### Backend — 2 271 líneas de C#
+Medidas el 1 de octubre de 2026, sin `bin/`, `obj/` ni `node_modules/`. Las de agosto,
+antes de los arreglos, están en el histórico.
+
+### Backend — 4 811 líneas de C#
 
 | Proyecto | Archivos | Líneas | Comentario |
 |---|---|---|---|
-| `Data` | 9 | 1 290 | La capa más pesada; `Conexion.cs` sola son 253 |
-| `SISGAPO_API` | 6 controllers + Startup/Program | 453 | Controllers con lógica repetida |
-| `Entity` | 8 | 255 | DTOs; 5 clases vacías sin usar |
-| `Business` | 7 | 236 | Pass-through puro |
-| `Test` | 2 | 37 | 1 test, roto |
+| `Data` | 20 | 1 669 | Nueve clases, nueve interfaces, `Conexion` y `ConfiguracionBD` |
+| `SISGAPO_API` | 13 | 1 291 | Siete controladores, `Startup`, `Program` y cuatro clases de `Seguridad` |
+| `Test` | 6 | — | 26 pruebas unitarias y 13 de integración |
+| `Business` | 10 | 547 | Nueve clases y `ParametroDelimitado`; `LoginBusiness` y `UsuarioBusiness` tienen lógica real |
+| `Entity` | 11 | 390 | DTOs, con Data Annotations donde hace falta |
 
-### Frontend — 96 archivos en `src/`
+### Base de datos — 2 710 líneas de T-SQL en `sql/`
 
-- 14 componentes (5 listas, 4 modales, login, inicio, nav-menu, zona-form, app)
-- 6 servicios (`login`, `panel`, `usuarios`, `almacenes`, `zona`, `inventario`)
+Doce scripts: esquema, función `Split`, seed y nueve procedimientos.
+
+### Frontend — 3 984 líneas de TypeScript, más 761 de pruebas
+
+- 19 componentes (7 listados, 6 modales, login, inicio, nav-menu, zona-form, estado-carga y app)
+- 9 servicios (`login`, `panel`, `usuarios`, `almacenes`, `zona`, `inventario`,
+  `configuracion`, `sesion`, `kardex-cronologia`), más el guard y el interceptor
 - 8 archivos de modelos compartidos
-- 13 scripts SQL
-- 12 archivos `.spec.ts` — predominan pruebas de existencia, con poca cobertura de comportamiento
+- 13 scripts SQL originales de 2021, congelados como evidencia
+- 12 archivos `.spec.ts`, todavía de existencia: comprueban que los métodos estén, no lo
+  que hacen (`11-auditoria-y-cierre.md`, MC-10)
 
-### Nivel de duplicación
+### Duplicación
 
-Es el rasgo más visible del código. Ejemplos concretos:
-
-- Los seis controllers repiten el mismo bloque `if (sOpcion == "01" || ...) { try { ... } catch { log; throw; } }`, con solo el rango de códigos cambiando.
-- Los siete `*Business.cs` son idénticos salvo el nombre del tipo: instancian su `*Data`, llaman a un método y hacen `catch { log; throw; }`.
-- Cada `*Data.cs` repite el bloque `while (dr.Read()) { new Entidad(); ... .Add(); }` una vez por cada `sOpcion`.
-- `CreacionTablasParte2.sql` es un duplicado literal de la segunda mitad de `CreacionTablas.sql`.
-- `PoblacionDatosParte2.sql` duplica datos de `PoblacionDatos.sql`.
-
-Nada de esto rompe la aplicación, pero infla el código a ~2 200 líneas donde ~900 bastarían.
+Sigue siendo el rasgo más visible del backend, y es deliberado: los seis controladores
+con `sOpcion` repiten el mismo esqueleto `if/else if/try/catch` y las nueve `Business` son
+casi idénticas. Se evaluó un genérico y se descartó porque esconde el patrón `sOpcion`,
+que es lo que hace predecible el código (`09-decisiones.md`, D-44). Lo que sí se limpió
+—clases vacías, DTO duplicados, código muerto— está en `historico/hallazgos-2026.md`,
+D-08 y D-09.
 
 ## 6. Valoración honesta para portafolio
 
@@ -259,13 +186,14 @@ Nada de esto rompe la aplicación, pero infla el código a ~2 200 líneas donde 
 
 **Lo que jugaba en contra en agosto de 2026, y su estado actual:**
 - Versiones fuera de soporte en las dos puntas (.NET 5, Angular 9) — ✅ el backend está en
-  .NET 8 (LTS); Angular sigue en 9 porque compila y no bloquea la demo (D-02, `06-hallazgos.md`).
+  .NET 10 LTS (H-01 en `11-auditoria-y-cierre.md`); Angular sigue en 9 por decisión
+  (D-02, D-47).
 - Autenticación decorativa y contraseñas en claro — ✅ corregido: bcrypt, JWT, `[Authorize]`
   y guards por rol (S-02 a S-04).
 - Secretos en el repositorio — ✅ ninguno vigente; el que sí hubo (S-10) se retiró del historial.
-- Sin inyección de dependencias — ⚠️ parcial: `LoginBusiness` y `UsuarioBusiness` admiten
-  dobles; el resto conserva instanciación directa (D-03).
-- Tests que no son tests — ✅ 16 pruebas unitarias y 12 de integración contra SQL Server,
+- Sin inyección de dependencias — ✅ corregido: las nueve `Business` y las nueve `Data` están
+  en el contenedor de ASP.NET Core y los controladores las reciben por constructor (D-03).
+- Tests que no son tests — ✅ 26 pruebas unitarias y 13 de integración contra SQL Server,
   ejecutadas por GitHub Actions en cada push (C-10).
 - Duplicación alta y código muerto (módulo `Cliente`, `WeatherForecast`, `Correo.cs` vacío) —
   ✅ limpiado; el módulo `Cliente` queda recuperable en el historial (D-19).
@@ -279,4 +207,4 @@ frontend → despliegue → CI). Eso vale más que la mitad de los portafolios.
 La estrategia que rinde más no es reescribirlo: es **presentarlo con fecha**, con las cuatro
 cosas que un revisor mira primero ya resueltas (secretos, contraseñas hasheadas, autenticación
 real, que se pueda levantar con un comando) y **documentar lo que harías distinto hoy**.
-Esa última parte —el criterio— es lo que un cliente compra. Ver `08-plan-demo.md`.
+Esa última parte —el criterio— es lo que un cliente compra. Ver `07-plan-demo.md`.

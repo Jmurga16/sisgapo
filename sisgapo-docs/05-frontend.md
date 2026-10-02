@@ -29,15 +29,9 @@ tocar una línea de código.
 de forma estricta, y `@ng-bootstrap` 6 declara Bootstrap 4 mientras el proyecto trae
 Bootstrap 5.
 
-Conviene fijarlo en `package.json` para no depender de que alguien recuerde el flag:
-
-```jsonc
-"scripts": {
-  "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider ng serve",
-  "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider ng build --prod"
-}
-```
-(requiere `npm i -D cross-env` para que funcione igual en Windows y Linux)
+Está fijado en `package.json` con `cross-env`, así que `npm start`, `npm run build` y
+`npm test` funcionan igual en Windows y en Linux sin recordar el flag. Verificado también
+en Node 24.19.
 
 ## 2. Estructura
 
@@ -94,7 +88,8 @@ de la demo: catálogo → partidas → historia de una partida.
 decide qué mostrar según la sesión: si no existe, renderiza el login dentro de su plantilla;
 si existe, muestra la barra lateral. Es un patrón poco habitual
 —el componente de navegación hace de guardián y de contenedor a la vez— y explica por qué el
-árbol de rutas se ve raro a primera vista.
+árbol de rutas se ve raro a primera vista. Tiene un efecto secundario: con la sesión
+abierta, `/login` pinta la barra dentro de la barra (`11-auditoria-y-cierre.md`, H-11).
 
 ## 4. Sesión y control de acceso
 
@@ -113,7 +108,7 @@ El menú se filtra por rol. El administrador gestiona usuarios y el catálogo de
 administrador y supervisor gestionan almacenes, catálogo y lotes; el asistente consulta el
 inventario y **registra entradas y salidas**. El supervisor entra al listado de Zonas
 —necesita saber en qué zona está su almacén— pero sin los botones de mantenimiento, y las
-rutas de alta y edición le responden con el guardián. Ver `10-decisiones.md`, D-34. El ajuste —corregir la existencia sin documento que lo respalde— queda
+rutas de alta y edición le responden con el guardián. Ver `09-decisiones.md`, D-34. El ajuste —corregir la existencia sin documento que lo respalde— queda
 para administrador y supervisor: `SesionService.fnPuedeAjustarInventario()` oculta la opción
 y `InventarioController` la rechaza con 403 aunque llegue por otra vía. La API vuelve a
 comprobar los permisos, por lo que ocultar botones no es la única barrera. En modo demo, la
@@ -182,19 +177,19 @@ existencia.
 selector: la **lista** —tabla paginada y ordenable, con el detalle completo— y la
 **cronología** —los movimientos agrupados por día, con el total de entradas y salidas de cada
 jornada y el saldo que dejó cada operación—. El botón «Kardex» del listado de Lotes abre
-directamente la cronología del lote. Ver `10-decisiones.md`, D-33.
+directamente la cronología del lote. Ver `09-decisiones.md`, D-33.
 
 La cronología no pagina como la tabla: muestra los diez días más recientes y crece de diez en
 diez con «Mostrar más días», con un pie que dice cuántos movimientos y cuántos días quedan
 por ver. El corte va por días completos porque partir una jornada rompe la agrupación, que es
-lo único que aporta la vista. Ver `10-decisiones.md`, D-36.
+lo único que aporta la vista. Ver `09-decisiones.md`, D-36.
 
 El cálculo de esa agrupación no vive en el componente: está en
 `movimientos/kardex-cronologia.service.ts`, junto con las etiquetas de día («Hoy ·»,
 «Ayer ·», y el nombre del día en castellano) y las interfaces `DiaKardex` y
 `MovimientoKardex`. El componente solo pide la lista agrupada y reinicia el contador de
 tandas. Es un service y no un pipe porque el resultado depende de la fecha de hoy, y un pipe
-puro con esa entrada mentiría sobre su pureza (`06-hallazgos.md`, D-15).
+puro con esa entrada mentiría sobre su pureza (`historico/hallazgos-2026.md`, D-15).
 
 Los dos selectores que elegían entre listas largas son ahora **autocompletados**: el producto
 en el alta de un lote —se busca por nombre de producto o de almacén— y el lote en el alta de
@@ -205,7 +200,7 @@ lo que se escribe para buscar, debajo lo que distingue una coincidencia de otra.
 
 `ZonaFormComponent` rompe el patrón: es una página completa en vez de un modal. Hasta
 2026 tenía además un defecto grave —su modo edición no editaba, siempre insertaba—,
-documentado en `06-hallazgos.md`, C-03 y ya corregido: ahora llama a `updateZona()` cuando
+documentado en `historico/hallazgos-2026.md`, C-03 y ya corregido: ahora llama a `updateZona()` cuando
 la ruta trae `:id`, y el módulo tiene actualización y baja lógica en las tres capas.
 
 La validación de imagen llama ahora a `fnValidarImagen()`, acepta las URL sin extensión de
@@ -233,7 +228,7 @@ la botonera— y `mat-dialog-actions.acciones-formulario`. Esos estilos viven un
 `styles.css`. Antes estaban repetidos en el CSS de tres componentes y, como Angular encapsula
 los estilos de componente, los dos módulos nuevos —Lotes y Movimientos— se quedaron sin
 ellos: el título salía sin barra azul y los campos con el ancho por defecto de Material, que
-es lo que descuadraba sus columnas. Ver `10-decisiones.md`, D-32.
+es lo que descuadraba sus columnas. Ver `09-decisiones.md`, D-32.
 
 El **encabezado de página** es también uno solo, `header-app`: título a la izquierda, con el
 mismo texto que la etiqueta del menú, y sin subtítulo salvo en el panel de inicio. Antes
@@ -244,13 +239,13 @@ La **pantalla de acceso** tiene tres pastillas, una por rol, que entran directam
 enlace que abre el detalle de las cuentas —usuario, alcance y la contraseña común— en un
 diálogo. Sin eso, el enlace público terminaba en un formulario vacío. Al apilarse, el panel
 de marca pasa a ser una banda azul con el texto en blanco: las ondas decorativas cruzaban el
-lema. Ver `10-decisiones.md`, D-37.
+lema. Ver `09-decisiones.md`, D-37.
 
 En **pantalla estrecha los listados no se muestran como tabla**. Por debajo de 768 px la
 clase `tabla-tarjetas` oculta la cabecera y convierte cada fila en una tarjeta cuyas celdas
 llevan su rótulo en `data-label`; el filtro, el paginador y el modo consulta siguen siendo los
 mismos. Movimientos no se convierte: en ese ancho arranca en la vista de cronología. Ver
-`10-decisiones.md`, D-38.
+`09-decisiones.md`, D-38.
 
 `AppDateAdapter` (`shared/services/AppDateAdapter.ts`) adapta el formato de fecha de Material
 al formato que espera el backend.
@@ -266,17 +261,18 @@ al formato que espera el backend.
 ```
 
 El host de producción ya apunta al App Service real, por HTTPS, y no al eliminado en 2021 ni
-a `localhost`. Ver `06-hallazgos.md`, S-08.
+a `localhost`. Ver `historico/hallazgos-2026.md`, S-08.
 
 ## 9. Despliegue
 
 El repositorio conserva un único workflow, `.github/workflows/ci.yml`, con tres trabajos:
 compilación y pruebas del backend, pruebas de integración contra un SQL Server levantado con
 `docker compose`, y build de producción del frontend con Node 22 y el lockfile, en cada push
-y pull request. Los workflows antiguos de Azure Static Web Apps se retiraron porque los
-recursos de 2021 ya no existen. El despliegue público ya existe, pero es manual: se hace a
+y pull request. De los workflows de Azure Static Web Apps de 2021 queda uno en
+`sisgapo-web/.github/workflows/`, que no se ejecuta: GitHub solo lee los de la raíz del
+repositorio, y el recurso al que apuntaba ya no existe (`11-auditoria-y-cierre.md`, MC-05). El despliegue público ya existe, pero es manual: se hace a
 mano después de comprobar que ambos trabajos de CI están en verde, no desde este workflow.
-Ver `07-migracion-tier-free.md` y `11-estado-portafolio.md`.
+Ver `06-infraestructura.md` y `11-auditoria-y-cierre.md`.
 
 ## 10. Resumen de problemas del frontend
 
@@ -305,7 +301,7 @@ pruebas de interfaz y la simplificación del stack visual son deuda de mantenimi
 bloqueos para la demo.
 
 **Ojo con los dos «pendiente» de arriba.** Esta tabla es una lista local del frontend, no el
-inventario de la auditoría: `06-hallazgos.md` cierra sus 48 hallazgos y ninguno queda
+inventario de la auditoría: `historico/hallazgos-2026.md` cierra sus 48 hallazgos y ninguno queda
 abierto. Las filas 14 y 15 —`.toPromise()` deprecado y los ocho `.spec.ts` sin adaptar— son
 mantenimiento menor que nunca entró en esos 48, y siguen ahí anotadas para no perderlas de
 vista.

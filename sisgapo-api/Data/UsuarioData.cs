@@ -1,24 +1,17 @@
 using Entity;
-using Microsoft.Extensions.Configuration;
 using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Data
 {
     public class UsuarioData : IUsuarioData
     {
-        private string conf;
+        private readonly Conexion conexion = new Conexion(1);
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
-        public string ConfConexion()
-        {
-            conf = ConfiguracionBD.sCadenaConexion;
-            return conf;
-        }
 
 
 
@@ -35,10 +28,7 @@ namespace Data
                 List<EntListaUsuarioId> unitUsuario = new List<EntListaUsuarioId>();
                 String strResultado = "";
 
-                ConfConexion();
-
-                conn = new SqlConnection(conf);
-                await conn.OpenAsync();
+                conn = await conexion.fnAbrirConexionAsync();
 
                 SqlCommand _Command = new SqlCommand("USP_MNT_Usuarios", conn);
                 _Command.CommandType = CommandType.StoredProcedure;

@@ -1,4 +1,4 @@
-﻿GO
+GO
 /****** Object:  StoredProcedure [dbo].[USP_MNT_Lotes] ******/
 SET ANSI_NULLS ON
 GO
@@ -10,7 +10,7 @@ GO
     Módulo nuevo. Hasta ahora TBL_DET_PRODUCTO tenía una fila por producto y esa
     fila apuntaba a un solo lote, así que un producto no podía tener dos partidas
     con vencimientos distintos: justo el caso de uso central de un almacén de
-    productos orgánicos. Ver 09-mejoras-propuestas.md, M-09.
+    productos orgánicos. Ver 08-mejoras-propuestas.md, M-09.
 
     A partir de aquí TBL_DET_PRODUCTO tiene una fila por producto Y lote. Este
     procedimiento mantiene esas filas; la existencia no se toca desde aquí, la

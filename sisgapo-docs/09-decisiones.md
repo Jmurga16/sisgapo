@@ -1,4 +1,4 @@
-# 10 — Registro de decisiones
+# 09 — Registro de decisiones
 
 Documento pedido explícitamente: **dónde dudé, qué alternativas había, qué elegí y por qué.**
 
@@ -51,7 +51,7 @@ la lógica de negocio de stored procedures a servicios de C# con pruebas" es una
 fuerte que "lo desplegué en el tier gratuito".
 
 Si tu objetivo fuera demostrar capacidad de modernización en vez de tener algo que enseñar
-pronto, mi recomendación sería D. Está desarrollada en `09-mejoras-propuestas.md`, M-10 con
+pronto, mi recomendación sería D. Está desarrollada en `08-mejoras-propuestas.md`, M-10 con
 el orden de ejecución seguro.
 
 **Reconsidera si:** la oferta gratuita de Azure SQL deja de existir o cambia de condiciones;
@@ -76,10 +76,14 @@ Se suma que ya tienes los workflows de Static Web Apps escritos y que conoces el
 **Qué me hizo dudar.** Cloudflare Pages es mejor que Static Web Apps para el frontend —más
 rápido, sin arranque en frío, ancho de banda ilimitado— y es un cambio de 15 minutos. No lo
 recomendé como principal solo porque lo que ya tienes también es gratis y funciona; queda
-anotado en `07-migracion-tier-free.md`, sección 9.
+anotado en `06-infraestructura.md`, sección 9.
 
 **Reconsidera si:** tu suscripción de Azure da problemas, o si haces M-10 y quedas libre de
 elegir motor. En ese caso: Cloudflare Pages + Fly.io + SQLite es la combinación más limpia.
+
+**Revisada el 1 de octubre de 2026.** La premisa —fuera de Azure no hay SQL Server gratuito
+gestionado— sigue siendo cierta, pero deja de decidir cuando hay un servidor que ya se paga:
+ahí SQL Server Express en contenedor cuesta cero adicional. Ver D-49.
 
 ---
 
@@ -101,6 +105,9 @@ otra vez fuera de soporte y con la misma conversación pendiente.
 **Reconsidera si:** el proyecto va a estar en mantenimiento activo. En ese caso ve a la LTS más
 reciente disponible cuando lo hagas.
 
+**Revisada el 1 de octubre de 2026.** El plazo se cumple: .NET 8 sale de soporte el 10 de
+noviembre de 2026, y la LTS más reciente es .NET 10. Ver D-50.
+
 ---
 
 ## D-04 · Conservar el patrón `sOpcion` / `pParametro`
@@ -110,7 +117,7 @@ acoplado por posición, con un delimitador que no se escapa. Es lo primero que c
 revisor.
 
 **Decisión: conservarlo.** Documentarlo a fondo, señalar sus problemas, y proponer el cambio
-como mejora opcional (`09-mejoras-propuestas.md`, M-06).
+como mejora opcional (`08-mejoras-propuestas.md`, M-06).
 
 **Por qué.** Tres razones:
 
@@ -147,7 +154,7 @@ cambio son un par de horas.
 
 **Recomendación práctica:** migra primero con `Startup`, verifica que todo funciona, y
 entonces —en un commit aparte— pásalo a hosting mínimo. Así el cambio de estilo es reversible
-sin tocar la migración. Anotado en `07-migracion-tier-free.md`, sección 3.
+sin tocar la migración. Anotado en `06-infraestructura.md`, sección 3.
 
 ---
 
@@ -213,7 +220,7 @@ de una demo**, o descarga las imágenes al proyecto.
 **La duda.** No estaba en el alcance del análisis. ¿Es pasarse?
 
 **Decisión: recomendarlo con prioridad alta**, con los `Dockerfile` y el `docker-compose.yml`
-esbozados en `07-migracion-tier-free.md` pero **sin crearlos** en el repositorio.
+esbozados en `06-infraestructura.md` pero **sin crearlos** en el repositorio.
 
 **Por qué.** Es la respuesta directa a tu objetivo principal. Una demo tiene dos formas de
 fallar: que no se pueda levantar, o que el enlace público esté frío justo cuando la enseñas.
@@ -237,7 +244,7 @@ reproducirlo.
 integrantes** y atribuye la redacción a dos de ellos.
 
 **Decisión: mencionarlo, de forma neutral, en `01-analisis-general.md`, sección 1 y en
-`08-plan-demo.md`, sección 4.**
+`07-plan-demo.md`, sección 4.**
 
 **Por qué.** No es una contradicción: lo más probable es que el desarrollo lo hicieras tú y el
 análisis fuera de equipo. Pero es un **riesgo concreto para el objetivo que me diste**: si vas
@@ -298,11 +305,11 @@ Con diez documentos, es aceptable.
 **La duda.** Los 29 hallazgos podrían haber ido cada uno en su documento temático (los de base
 de datos en el 03, los de frontend en el 05…).
 
-**Decisión: `06-hallazgos.md` centralizado**, con referencias cruzadas desde y hacia los
+**Decisión: `historico/hallazgos-2026.md` centralizado**, con referencias cruzadas desde y hacia los
 documentos temáticos.
 
 **Por qué.** El documento de hallazgos es **la pieza con más valor para tu objetivo**
-(`08-plan-demo.md`, sección 2). Una lista completa, priorizada y con un plan de ataque es algo que se
+(`07-plan-demo.md`, sección 2). Una lista completa, priorizada y con un plan de ataque es algo que se
 puede enseñar tal cual en una reunión. Repartida en seis documentos, deja de ser enseñable.
 
 Además permite ver la distribución de un vistazo —8 bloqueantes, 13 importantes, 8 menores—,
@@ -392,7 +399,7 @@ Lo compensa un comentario al principio del bloque explicando el escenario.
 
 ## D-17 · El panel de inicio, antes que la autenticación
 
-**La duda.** `09-mejoras-propuestas.md` marca M-11 (panel) como 🤔 y M-02 (JWT) como ✅.
+**La duda.** `08-mejoras-propuestas.md` marca M-11 (panel) como 🤔 y M-02 (JWT) como ✅.
 El orden natural sería autenticar primero.
 
 **Decisión: construir el panel y dejar la autenticación para después.**
@@ -574,7 +581,7 @@ Se conserva `Startup.cs` en vez de pasar al modelo de `Program.cs` de nivel supe
 **Decisión:** `TBL_DET_PRODUCTO.nCantidad` sigue existiendo como saldo vigente del lote, en
 vez de calcularse con un `SUM(TBL_MOVIMIENTO.nCantidad)` cada vez que se lee.
 
-**Por qué.** `09-mejoras-propuestas.md`, M-12 proponía lo segundo. Calcularlo obliga a añadir
+**Por qué.** `08-mejoras-propuestas.md`, M-12 proponía lo segundo. Calcularlo obliga a añadir
 una agregación al listado de productos, al de lotes, a los cuatro bloques del panel y a los
 selectores: seis consultas reescritas para no ganar nada visible. Guardarlo cuesta mantener un
 invariante —existencia = suma del kardex— que un solo procedimiento controla, dentro de una
@@ -848,7 +855,7 @@ API con `curl` o Swagger, y a ese le sobra un clic más.
 
 **Por qué la contraseña sigue en claro.** Esconderla no protegería nada: es pública por
 diseño, la base no tiene datos reales y el modo consulta bloquea las escrituras cuando la
-demo está desplegada. Ver `06-hallazgos.md`, S-02.
+demo está desplegada. Ver `historico/hallazgos-2026.md`, S-02.
 
 **Lo que trajo consigo.** El seed añade `demo.admin` (rol 1). Antes, ninguna cuenta pública
 llegaba a Usuarios —y con D-34, tampoco al mantenimiento de Zonas—: dos módulos que existían
@@ -909,7 +916,7 @@ tres líneas y deja intacto todo lo demás.
 ## D-40 · El precio lleva céntimos y el teléfono deja de ser un número
 
 **La duda.** Los hallazgos D-06 y D-07 estaban marcados como 🟡 y con una nota en
-`11-estado-portafolio.md` que decía, con razón, que «no se ven salvo que alguien meta un
+`11-auditoria-y-cierre.md` que decía, con razón, que «no se ven salvo que alguien meta un
 precio con céntimos». Cambiar un tipo de columna toca la base, los procedimientos, las
 entidades, la capa Data y el formulario: es de los cambios que más archivos mueven por menos
 efecto visible.
@@ -938,7 +945,7 @@ sobre el valor sin espacios ni guiones. El campo del formulario pasa de `type="n
 ## D-41 · El backend pasa a asíncrono de punta a punta
 
 **La duda.** D-10 es 🟡 y su propio texto dice que «para el tráfico de una demo no se nota».
-La regla 2 de `CLAUDE.md` pide cambios mínimos. Y el cambio toca 25 archivos: `Conexion`,
+La regla del proyecto es hacer cambios mínimos. Y el cambio toca 25 archivos: `Conexion`,
 nueve `*Data`, nueve `*Business`, seis controllers y las pruebas.
 
 **Decisión.** Se hace igual, por un motivo que no es el rendimiento: **este proyecto es una
@@ -1024,7 +1031,7 @@ igual; esto es exclusivamente de qué construye qué, no de qué hace cada capa.
 **La duda.** D-08 señalaba que los seis controllers repiten el mismo esqueleto
 `if/else if/try/catch`, que los siete `*Business.cs` son idénticos salvo el nombre del tipo,
 y que un genérico con mapeo por convención dejaría el backend en menos de la mitad de
-líneas. Quedó como "parcial" en `06-hallazgos.md` durante semanas, con la parte barata
+líneas. Quedó como "parcial" en `historico/hallazgos-2026.md` durante semanas, con la parte barata
 (entidades vacías, DTO duplicados) ya cerrada y la parte cara sin decidir ni descartar.
 
 **Decisión.** No se hace, y se cierra como descartada en vez de dejarla abierta. Un
@@ -1032,12 +1039,12 @@ líneas. Quedó como "parcial" en `06-hallazgos.md` durante semanas, con la part
 antiguo y sin tipar, pero es **el mismo patrón en las nueve entidades**, y un revisor que lo
 reconoce en la primera puede seguirlo en las demás sin releer nada. Una abstracción genérica
 cambia "repetitivo pero predecible" por "corto pero indirecto" — y para una demo, lo primero
-vale más que lo segundo. Pesa además la regla 2 de `CLAUDE.md`: cambios mínimos, esto no es
+vale más que lo segundo. Pesa además la regla de cambios mínimos del proyecto: esto no es
 un producto que vaya a crecer con más entidades.
 
 **Lo que sí se cerró de D-08**, porque no tenía esta disyuntiva: las cinco clases marcador
 vacías y los tres DTO duplicados (`UsuarioEntity`, `EntRequestUsuario`) salieron del árbol.
-Ver `06-hallazgos.md`, D-08.
+Ver `historico/hallazgos-2026.md`, D-08.
 
 ---
 
@@ -1109,6 +1116,129 @@ bloqueante ni urgente.
 
 ---
 
+## Revisión del 1 de octubre de 2026
+
+Antes de cerrar el proyecto se repasaron las 47 decisiones contra el código y la
+infraestructura de hoy. La pregunta para cada una era la misma: ¿sigue siendo cierto lo
+que se decidió, y lo cumple el código?
+
+| Decisión | Resultado | Nota |
+|---|---|---|
+| D-01 · Conservar SQL Server | **Vigente** | Sigue siendo la decisión de fondo. Si se va a un VPS (D-49), el motor no cambia: SQL Server Express en contenedor |
+| D-02 · Seguir en Azure | **Superada si se ejecuta D-49** | Era consecuencia de «no hay SQL Server gratuito fuera de Azure»; con un servidor ya pagado, lo hay |
+| D-03 · .NET 8 y no .NET 9 | **Superada por el calendario** | Acertó al evitar .NET 9, que caduca el mismo día; .NET 8 sale de soporte el 10 de noviembre de 2026. Ver D-50 |
+| D-04 · Conservar `sOpcion`/`pParametro` | **Vigente** | S-07 cerró el riesgo que la hacía dudosa. M-06 sigue siendo opcional |
+| D-05 · Conservar `Startup.cs` | **Vigente** | El «commit aparte» que pasaría a hosting mínimo nunca se hizo; queda como MC-08 en `11-auditoria-y-cierre.md` |
+| D-08 · Docker Compose | **Ejecutada** | Y es la base de D-49: lo que levanta el sistema en local es lo que lo levantaría en el servidor |
+| D-09 · Autoría en equipo | **Vigente** | Sin cambios; el documento de casos de uso pasó a `historico/` |
+| D-11 · Documentos numerados | **Vigente, aplicada otra vez** | D-48 deja infraestructura en 06 y reserva el último número para el cierre |
+| D-12 · Auditoría centralizada | **Vigente** | La de 2026 pasó a `historico/`; la auditoría final cierra la serie como documento 11 |
+| D-17 · El panel antes que la autenticación | **Cerrada** | La deuda que asumía desapareció con S-02 a S-04 |
+| D-19 · «Tracking» fuera del árbol | **Vigente** | No se restaura en el cierre; los comandos de recuperación siguen ahí |
+| D-24 · Token en `localStorage` | **Vigente; D-49 abre la alternativa** | Con API y frontend bajo el mismo dominio, la cookie `HttpOnly` deja de ser imposible. Sigue siendo opcional para una demo sin datos reales |
+| D-26 · La existencia se guarda | **Vigente** | La prueba que la sostiene sigue en CI. H-08 (la baja de un producto no mira existencias) no rompe el invariante, pero deja stock fuera del panel |
+| D-30 · Las pruebas de integración se omiten solas | **Vigente** | Comprobado el 2 de octubre: sin Docker, 26 en verde y 13 omitidas |
+| D-35 · Las bajas validan antes | **Vigente, completa** | Almacenes, categorías, lotes y productos validan antes de desactivar |
+| D-39 · `overrides` de `websocket-driver` | **Vigente** | Es el precedente para tratar los avisos de `npm audit` (H-04) |
+| D-43 · Inyección de dependencias | **Vigente, con dos cabos** | La configuración sigue en clases estáticas (MC-03) y quedan los constructores sin parámetros (MC-04) |
+| D-47 · Angular 9 | **Vigente** | Su coste visible son los avisos de H-04; se acepta |
+
+Las que no aparecen en la tabla —D-06, D-07, D-10, D-13 a D-16, D-18, D-20 a D-23, D-25,
+D-27 a D-29, D-31 a D-34, D-36 a D-38, D-40 a D-42 y D-44 a D-46— se revisaron y siguen
+vigentes sin matices: el código hace lo que dicen.
+
+---
+
+## D-48 · La documentación se reorganiza para el cierre
+
+**La duda.** Con los 48 hallazgos cerrados, `06-hallazgos.md` había dejado de ser una lista
+de trabajo y era un registro de 65 KB que había que leer entero para saber que no quedaba
+nada. Lo mismo pasaba con las ocho mejoras ya hechas de `08-mejoras-propuestas.md` y con la
+sección de estado inicial de `01-analisis-general.md`: verdad en agosto, ruido en octubre.
+
+**Decisión.** Lo resuelto pasa a `sisgapo-docs/historico/`, íntegro y sin reescribir; el
+06 queda para infraestructura, 07 para el guion, 08 para mejoras, 09 para decisiones y 10
+para la migración. La auditoría y el estado final se consolidan en el último documento,
+`11-auditoria-y-cierre.md`. Los identificadores `S-`, `C-` y `D-` del histórico no se
+renumeran: medio repositorio los cita.
+
+**Por qué no borrar.** La auditoría de 2026 es la pieza con más valor del portafolio
+(D-12): lo que cambia es que deja de estar en la lista de pendientes, no que deje de
+enseñarse. Y por qué no dejarlo todo donde estaba: un documento que mezcla lo vivo con lo
+cerrado obliga a quien llega a hacer la clasificación que el autor no hizo.
+
+**Y una regla para esta pasada:** primero se documenta, después se toca. La auditoría de
+cierre listó los hallazgos antes de aplicar el bloque imprescindible; el mismo documento
+distingue ahora lo corregido de lo que queda para una eventual reapertura.
+
+**Coste asumido.** Tres comentarios en `sql/` citan todavía los nombres antiguos de los
+documentos (`11-auditoria-y-cierre.md`, MC-11): son código y no se tocaron.
+
+---
+
+## D-49 · Migrar la demo a un VPS propio — propuesta
+
+**La duda.** La demo cuesta US$ 0 en Azure y funciona. Pero arranca en frío —18 segundos
+medidos el 1 de octubre—, depende de dos ofertas gratuitas y no tiene dónde programar el
+reinicio del seed, que es el único pendiente de infraestructura desde septiembre. Y hay un
+VPS de Contabo que ya se paga.
+
+**Opciones consideradas**
+
+| Opción | Esfuerzo | Costo adicional | Qué resuelve |
+|---|---|---|---|
+| Quedarse en Azure y programar el reinicio con un workflow | 2 h | US$ 0 | Solo el reinicio; exige abrir el cortafuegos de la base o montar OIDC |
+| **VPS: SQL Server Express, API y frontend en contenedores** | medio día | US$ 0 | El arranque en frío, los límites de las ofertas y el reinicio, que pasa a ser una línea de cron |
+| VPS solo para la base; API y frontend siguen en Azure | 3 h | US$ 0 | El reinicio y la pausa de la base; el arranque en frío de la API sigue, y la base queda expuesta a internet |
+| SQLite y un solo contenedor (M-10) | más de una semana | US$ 0 | Todo, y además elimina el servidor de base de datos; pero es el proyecto de modernización, no un cambio de hosting |
+
+**Propuesta: la segunda.** Conserva D-01 —el T-SQL no se toca—, reutiliza el
+`docker compose` y el `init-db.sh` que ya existen (D-08), y convierte el pendiente del
+reinicio en una línea. Lo que cuesta es operar un servidor: sistema, parches, TLS y
+registros pasan a ser propios. El plan completo, con los archivos que faltan y la vuelta
+atrás, está en `10-migracion-contabo.md`.
+
+**Qué me hace dudar.** Un solo servidor es un punto único de fallo, y una demo caída el
+día que alguien la abre desde el portafolio es peor que una demo lenta. Se mitiga con una
+comprobación externa gratuita y con mantener Azure una semana en paralelo, pero el riesgo
+no desaparece.
+
+**Reconsidera si:** el VPS tiene menos de 4 GB de memoria libre, no hay un dominio al que
+colgarlo, o ya está cargado con otros servicios que compitan con SQL Server.
+
+**Estado:** confirmada el 2 de octubre de 2026. Se ejecutará en una rama separada después
+de crear un tag sobre el estado Azure + Hostinger. D-02 sigue describiendo el punto de
+retorno, no la infraestructura objetivo.
+
+---
+
+## D-50 · Pasar a .NET 10 antes del 10 de noviembre de 2026 — ejecutada
+
+**La duda.** D-03 eligió .NET 8 por ser LTS «con soporte hasta noviembre de 2026». Ese mes
+ya está aquí. ¿Se migra un proyecto que se está cerrando?
+
+**Propuesta: sí, y antes de archivar.** .NET 10 es la LTS vigente, con soporte hasta
+noviembre de 2028, y el cambio es el mismo que D-25 ya hizo una vez: cinco
+`TargetFramework`, las versiones de los paquetes y una línea en el workflow
+(`11-auditoria-y-cierre.md`, H-01 a H-03). Con las 39 pruebas como red, son dos o tres
+horas.
+
+**Por qué no dejarlo.** Un proyecto cerrado sobre un runtime sin soporte envejece mal en
+dos sentidos: deja de recibir parches, y cualquiera que lo clone dentro de seis meses verá
+el aviso antes que el código. Cerrarlo sobre una LTS con dos años por delante es lo que
+permite no volver a abrirlo.
+
+**Por qué no esperar a .NET 11.** Es STS, el mismo motivo por el que D-03 descartó .NET 9.
+
+**Orden respecto a D-49.** Primero esto: las imágenes de contenedor se construyen sobre el
+runtime, y no tiene sentido construirlas sobre uno que caduca en semanas.
+
+**Estado:** aplicada el 2 de octubre de 2026. La solución compila sin avisos, las 26
+unitarias pasan, las 13 de integración quedan listas para CI y el análisis transitivo de
+NuGet no encuentra vulnerabilidades.
+
+---
+
 ## Resumen de las decisiones
 
 | # | Decisión | Nivel de duda |
@@ -1129,7 +1259,7 @@ bloqueante ni urgente.
 | D-14 | Scripts reejecutables con `CREATE OR ALTER` | Ninguno |
 | D-15 | Publicar la base en el puerto 14330 | Ninguno |
 | D-16 | Fechas del seed relativas a `GETDATE()` | Bajo |
-| D-17 | El panel antes que la autenticación | **Medio** — invierte el orden de `09-mejoras-propuestas.md` |
+| D-17 | El panel antes que la autenticación | **Medio** — invierte el orden de `08-mejoras-propuestas.md` |
 | D-18 | Monorepo con el historial de 2021 importado | Bajo |
 | D-19 | «Tracking» fuera del árbol, dentro del historial | **Medio** — revisa C-11 antes de opinar |
 | D-20 | Tipar respuestas sin activar `strict` completo | Bajo |
@@ -1160,6 +1290,9 @@ bloqueante ni urgente.
 | D-45 | *Lazy loading* de Usuarios: medido (main +50 KB) y descartado | Ninguno — se revirtió por completo tras medir |
 | D-46 | `OnPush` en los listados, descartado | Bajo — el riesgo (pantallas en blanco) pesa más que el ahorro, no medible en esta demo |
 | D-47 | El frontend se queda en Angular 9 | **Medio** — es la decisión que más hay que saber defender; se sostiene en que el proyecto es de 2021 y en no arrastrar a Material 3 |
+| D-48 | La documentación se reorganiza para el cierre: histórico, 06 nuevo, 12 y dos renombrados | Bajo — nada se borra y los identificadores del histórico no cambian |
+| D-49 | Migrar la demo a un VPS propio (propuesta) | **Medio** — resuelve el arranque en frío y el reinicio del seed a cambio de operar un servidor |
+| D-50 | .NET 10 antes del 10 de noviembre de 2026 (propuesta) | Ninguno — es mantenimiento con fecha |
 
 **Las tres que más merecen tu revisión: D-01, D-04 y D-09.**
 De las anteriores, la discutible es **D-24**: `localStorage` es la opción cómoda, no la
@@ -1167,3 +1300,5 @@ correcta. Con la autenticación ya cerrada, D-17 deja de ser una deuda.
 De las nuevas, la que conviene mirar es **D-26**: guardar la existencia además de poder
 calcularla es la clase de atajo que envejece mal, y aquí se sostiene solo porque hay una
 prueba que lo vigila. Si algún día esa prueba se cae del CI, la decisión deja de ser válida.
+Del cierre, las dos que esperan confirmación son **D-49** y **D-50**: la primera es una
+propuesta; la segunda tiene fecha.

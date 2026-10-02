@@ -241,6 +241,27 @@ namespace Test
         }
 
         [HechoConBaseDeDatos]
+        public void NoSePuedeDarDeBajaUnProductoConExistencia()
+        {
+            using (SqlConnection conn = BaseDeDatosPruebas.fnAbrir())
+            using (ProductoDePrueba oProducto = new ProductoDePrueba(conn, fnNombre(), 40))
+            {
+                string sConExistencia = BaseDeDatosPruebas.fnEjecutar(conn, "USP_MNT_Productos", "08",
+                    String.Format("{0}|0", oProducto.nIdProducto));
+
+                Assert.StartsWith("0|", sConExistencia);
+
+                BaseDeDatosPruebas.fnEjecutar(conn, "USP_MNT_Movimientos", "02",
+                    String.Format("{0}|S|40|Despacho total|1", oProducto.nIdDetProd));
+
+                string sVacio = BaseDeDatosPruebas.fnEjecutar(conn, "USP_MNT_Productos", "08",
+                    String.Format("{0}|0", oProducto.nIdProducto));
+
+                Assert.StartsWith("1|", sVacio);
+            }
+        }
+
+        [HechoConBaseDeDatos]
         public void NoSePuedeMoverUnLoteDadoDeBaja()
         {
             using (SqlConnection conn = BaseDeDatosPruebas.fnAbrir())

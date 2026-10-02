@@ -1,4 +1,4 @@
-# 07 — Infraestructura y costos
+# 06 — Infraestructura y costos
 
 Cómo se pasó de ~US$ 78/mes a US$ 0/mes: qué se eligió, por qué, y cómo volver a desplegarlo
 si hiciera falta.
@@ -6,23 +6,31 @@ si hiciera falta.
 > **Estado: ejecutado.** El backend corre en un App Service F1 y el frontend en Static Web
 > Apps, ambos gratuitos; el enlace está en el [README](../README.md). Lo que queda aquí es el
 > análisis que llevó a esa elección y la receta de despliegue, no una lista de tareas.
+>
+> **Verificado el 1 de octubre de 2026:** el frontend responde en un segundo y la API en 18 s
+> cuando sale de la pausa (`11-auditoria-y-cierre.md`, sección 2). La alternativa a este
+> despliegue —llevar el sistema a un servidor propio— está en `10-migracion-contabo.md`.
 
 ## 1. Qué corre hoy
 
 | Capa | Servicio | SKU | Costo |
 |---|---|---|---|
 | Frontend | Azure Static Web Apps | Free | US$ 0 |
-| API | Azure App Service, Linux, .NET 8 | F1 (Free) | US$ 0 |
+| API | Azure App Service, Linux, .NET 10 | F1 (Free) | US$ 0 |
 | Base de datos | Azure SQL | Oferta gratuita, serverless con auto-pausa | US$ 0 |
 | Desarrollo y demos presenciales | SQL Server 2022 en Docker | — | US$ 0 |
 
 El despliegue es **manual**: se publica a mano después de comprobar que los dos trabajos de
-CI están en verde. No hay entrega continua (`11-estado-portafolio.md`).
+CI están en verde. No hay entrega continua (`11-auditoria-y-cierre.md`).
 
 Las dos capas gratuitas se duermen tras un rato sin tráfico, así que la primera petición
 después de una pausa tarda. Los listados lo enseñan con el componente `app-estado-carga` y su
-botón de reintento (`06-hallazgos.md`, C-21); para una demo en vivo, lo que mejor funciona
+botón de reintento (`historico/hallazgos-2026.md`, C-21); para una demo en vivo, lo que mejor funciona
 sigue siendo abrir el enlace un par de minutos antes.
+
+Los límites de las dos ofertas gratuitas, por si cambian: el plan F1 da 60 minutos de CPU al
+día y 1 GB de memoria; la oferta gratuita de Azure SQL, 100 000 segundos de vCore y 32 GB al
+mes, y al agotarlos la base se pausa hasta el mes siguiente.
 
 ## 2. De dónde venía el costo
 
@@ -49,7 +57,7 @@ nuevo sin publicar la aplicación como *self-contained*. Lo mismo pasa en casi c
 plataforma gratuita.
 
 Por eso migrar a .NET 8 (LTS) no fue una mejora opcional sino la condición de entrada al
-tier gratuito. Hecho y verificado: `06-hallazgos.md`, D-01.
+tier gratuito. Hecho y verificado: `historico/hallazgos-2026.md`, D-01.
 
 ## 4. La decisión de base de datos
 
@@ -88,9 +96,9 @@ SQLite es la opción técnicamente más elegante —sin servidor de base de dato
 frío, sin depender de la política de precios de nadie—, pero exige llevar toda la lógica de
 negocio de T-SQL a C#: 4–6 días. **Reconsidérala si** el objetivo pasa a ser demostrar
 capacidad de modernización y no solo que el sistema funciona; está desarrollada en
-`09-mejoras-propuestas.md`, M-10.
+`08-mejoras-propuestas.md`, M-10.
 
-Ver `10-decisiones.md`, D-01 para el razonamiento completo.
+Ver `09-decisiones.md`, D-01 para el razonamiento completo.
 
 ## 5. La decisión de hosting
 
@@ -127,7 +135,7 @@ Usuario
   │         │
   │         └── llamadas HTTPS
   │                 │
-  └──────────────► App Service F1 (Free)  API .NET 8                 US$ 0
+  └──────────────► App Service F1 (Free)  API .NET 10                US$ 0
                             │
                             └──► Azure SQL (oferta gratuita)         US$ 0
                                  serverless, auto-pausa
@@ -141,11 +149,11 @@ Y en paralelo, para desarrollo y demos presenciales: `docker compose up`.
 
 | Fase | Qué se hizo | Dónde está hoy |
 |---|---|---|
-| Higiene | Borrar recursos huérfanos, sacar la cadena de conexión y la clave JWT a variables de entorno | `06-hallazgos.md`, S-01, S-10 |
+| Higiene | Borrar recursos huérfanos, sacar la cadena de conexión y la clave JWT a variables de entorno | `historico/hallazgos-2026.md`, S-01, S-10 |
 | Base de datos local | Los doce scripts de `sql/` reejecutables, cargados por `docker compose up db-init` | `03-modelo-de-datos.md`, `sql/README.md` |
-| .NET 8 | Migración desde .NET 5, 0 avisos, `Microsoft.Data.SqlClient` en vez de la dependencia con CVE | `06-hallazgos.md`, D-01, S-05, S-06 |
-| Bugs visibles | Los que un cliente encuentra en los primeros cinco minutos | `06-hallazgos.md`, C-02, C-03, C-08, D-09 |
-| Autenticación real | bcrypt, JWT con el rol como *claim*, `[Authorize]`, guards por rol y menú filtrado | `06-hallazgos.md`, S-02 a S-04 |
+| .NET 8 | Migración desde .NET 5, 0 avisos, `Microsoft.Data.SqlClient` en vez de la dependencia con CVE | `historico/hallazgos-2026.md`, D-01, S-05, S-06 |
+| Bugs visibles | Los que un cliente encuentra en los primeros cinco minutos | `historico/hallazgos-2026.md`, C-02, C-03, C-08, D-09 |
+| Autenticación real | bcrypt, JWT con el rol como *claim*, `[Authorize]`, guards por rol y menú filtrado | `historico/hallazgos-2026.md`, S-02 a S-04 |
 | Despliegue | App Service F1 + Static Web Apps + Azure SQL gratuito | Sección 7 |
 
 ## 7. Cómo repetir el despliegue
@@ -169,7 +177,7 @@ lo admite dentro de una conexión a otra base. **No hay migraciones**, así que 
 obligatorio una vez por base. Verificar con los conteos que imprime `03-seed.sql`
 (ver `sql/README.md`).
 
-**API.** App Service en plan **F1**, Linux, pila .NET 8. Publicar con `dotnet publish` + zip
+**API.** App Service en plan **F1**, Linux, pila .NET 10. Publicar con `dotnet publish` + zip
 deploy, o con GitHub Actions. Después, en **Configuración → Configuración de la aplicación**,
 estas cinco. Van todas ahí, como *application settings*: la hoja «Cadenas de conexión»
 **no sirve**, porque Azure la expone con el prefijo `SQLAZURECONNSTR_` y `ConfiguracionBD` no
@@ -180,7 +188,7 @@ lee ese proveedor.
 | `SISGAPO_CONNECTION_STRING` | `Server=tcp:<servidor>.database.windows.net,1433;Initial Catalog=<base>;User ID=<admin>;Password=<clave>;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;` | Es la primera que consulta `ConfiguracionBD`. Sin ella, fuera de `Development` la API no arranca |
 | `SISGAPO_JWT_KEY` | 32 caracteres o más, al azar | Firma los tokens. `ConfiguracionJwt` rechaza claves más cortas con un mensaje explícito |
 | `Cors__OrigenesPermitidos__0` | `https://<tu-app>.azurestaticapps.net` | Sobrescribe el `localhost:4200` de `appsettings.json`. Sin barra final y con el esquema |
-| `Demo__SoloLectura` | `false`, o sin definir | Las escrituras quedan **abiertas** a propósito: crear un producto o registrar un movimiento es lo que hace útil la demo. Ponerla en `true` solo para cerrarla puntualmente (`06-hallazgos.md`, S-11) |
+| `Demo__SoloLectura` | `false`, o sin definir | Las escrituras quedan **abiertas** a propósito: crear un producto o registrar un movimiento es lo que hace útil la demo. Ponerla en `true` solo para cerrarla puntualmente (`historico/hallazgos-2026.md`, S-11) |
 | `ASPNETCORE_ENVIRONMENT` | `Production` | Redundante —es el valor por defecto— pero deja explícito que `appsettings.Development.json` no se carga |
 
 Dos detalles que cuestan una tarde si se pasan por alto:
@@ -243,11 +251,16 @@ Combinación gratuita sin Azure, por si la suscripción da problemas:
 **El problema es la base de datos.** Fuera de Azure no hay SQL Server gratuito gestionado, y
 un contenedor de SQL Server necesita ~2 GB de RAM, más de lo que dan los planes gratuitos.
 
-Por eso, para conservar el T-SQL, **Azure es la única vía gratuita**. Si se acepta
-reescribirlo, se abre todo lo demás — y en ese caso conviene ir directamente a SQLite
-(opción D), que además elimina el servidor de base de datos.
+Por eso, para conservar el T-SQL sin pagar nada nuevo, **Azure es la única vía gratuita
+gestionada**. Si se acepta reescribirlo, se abre todo lo demás — y en ese caso conviene ir
+directamente a SQLite (opción D), que además elimina el servidor de base de datos.
 
-Ver `10-decisiones.md`, D-02.
+**Hay una tercera vía que en agosto no se consideró: un servidor que ya se paga.** En un
+VPS, SQL Server Express en contenedor conserva el T-SQL entero, no tiene arranque en frío y
+deja programar el reinicio del seed con una línea de cron. La propuesta completa está en
+`10-migracion-contabo.md`.
+
+Ver `09-decisiones.md`, D-02.
 
 ## 10. Resumen
 

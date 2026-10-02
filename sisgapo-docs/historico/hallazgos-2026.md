@@ -1,4 +1,9 @@
-# 06 — Hallazgos
+# Hallazgos de la recuperación — agosto y septiembre de 2026
+
+> **Documento histórico.** Fue `06-hallazgos.md` hasta el 1 de octubre de 2026. Los 48
+> hallazgos están cerrados y nada de lo que hay aquí se mantiene: la auditoría vigente es
+> [`../11-auditoria-y-cierre.md`](../11-auditoria-y-cierre.md). Las rutas a otros
+> documentos apuntan a la carpeta superior.
 
 Inventario completo de problemas encontrados en el análisis. Clasificados en tres grupos:
 **S** seguridad, **C** correctitud, **D** deuda técnica.
@@ -24,7 +29,7 @@ El estado de cada uno va en su título: *corregido*, *cerrado* o *descartado*.
 | **Total** | **48** | **45** | **3** | **0** |
 
 **«Cerrado con motivo» no es un pendiente disfrazado.** Son hallazgos reales que se decidió
-*no* arreglar, con el porqué escrito en `10-decisiones.md`. Son exactamente tres:
+*no* arreglar, con el porqué escrito en `../09-decisiones.md`. Son exactamente tres:
 
 | Hallazgo | Por qué no se arregla | Decisión |
 |---|---|---|
@@ -43,7 +48,7 @@ Lo último que se cerró, el 7 de septiembre de 2026:
 
 El detalle de cada hallazgo está más abajo, en su grupo. Lo que ya **no** está en este
 documento es el registro de qué tanda cerró qué y en qué orden: eso vive en el historial de
-Git y en `10-decisiones.md`, y aquí solo era ruido.
+Git y en `../09-decisiones.md`, y aquí solo era ruido.
 
 ### De dónde se partió
 
@@ -105,7 +110,7 @@ dentro de un bloque comentado que enviaba notificaciones por correo:
 //    string Contrasenia = "<contraseña>";
 ```
 
-El servidor SQL ya no existe (`01-analisis-general.md`, sección 4), pero **ambas contraseñas deben considerarse
+El servidor SQL ya no existe (`../01-analisis-general.md`, sección 4), pero **ambas contraseñas deben considerarse
 comprometidas**. Si están reutilizadas en cualquier otro sitio, cámbialas hoy.
 
 ### Verificación del historial — 23 de agosto de 2026
@@ -161,7 +166,7 @@ cliente potencial con perfil técnico va a mirar primero.
 
 **Arreglo:** BCrypt o Argon2 en la capa de aplicación, `VARCHAR(255)` para el hash, y quitar
 `sContrasenia` de la proyección de la opción `03`. Para el seed, generar los hashes de las
-contraseñas de demo. Ver `09-mejoras-propuestas.md`, M-01.
+contraseñas de demo. Ver `../08-mejoras-propuestas.md`, M-01.
 
 **Nota sobre las cuentas `demo.*`.** Las tres —`demo.admin`, `demo.supervisor`,
 `demo.asistente`— comparten `SisgapoDemo2026!` y la pantalla de acceso la muestra en claro.
@@ -169,7 +174,7 @@ No es un descuido: son credenciales públicas por diseño, contra una base sin d
 con la demo desplegada en modo consulta (`Demo:SoloLectura`). Se guardan con el mismo bcrypt
 que las demás, porque el mecanismo tiene que ser el real aunque el dato no lo sea. La cuenta
 `admin` de 2021 conserva una clave de mantenimiento distinta, que no se publica en ningún
-sitio. Ver `10-decisiones.md`, D-37.
+sitio. Ver `../09-decisiones.md`, D-37.
 
 ### 🔴 S-03 · La API no tiene autenticación — **corregido**
 
@@ -188,7 +193,7 @@ curl -X POST http://<api>/UsuariosService \
   -d '{"sOpcion":"01","pParametro":""}'
 ```
 
-Si publicas la demo, publicas una API abierta. Ver `09-mejoras-propuestas.md`, M-02.
+Si publicas la demo, publicas una API abierta. Ver `../08-mejoras-propuestas.md`, M-02.
 
 ### 🔴 S-04 · El frontend no protege ninguna ruta — **corregido**
 
@@ -227,7 +232,7 @@ ensamblado solo para .NET Framework; el compilador avisa con `NU1701`. Hoy funci
 
 Se usa solo en `Conexion.cs`, para `SqlHelper.ExecuteReader`, `ExecuteScalar` y
 `ExecuteDataset`. Reemplazarlo por ADO.NET plano o Dapper son unas 80 líneas.
-Ver `09-mejoras-propuestas.md`, M-03.
+Ver `../08-mejoras-propuestas.md`, M-03.
 
 ### 🟠 S-07 · El delimitador `|` no se escapa — **corregido**
 
@@ -244,7 +249,7 @@ escrituras con valores que la interfaz nunca le ofreció.
 
 **Arreglo mínimo:** rechazar `|` en la validación del formulario y también en el backend.
 **Arreglo real:** abandonar el formato delimitado y pasar objetos JSON tipados.
-Ver `09-mejoras-propuestas.md`, M-06.
+Ver `../08-mejoras-propuestas.md`, M-06.
 
 **Arreglo aplicado:** los servicios Angular envían cada valor por separado en `parametros`.
 La capa de negocio rechaza cualquier valor que contenga `|` y solo después construye el
@@ -293,6 +298,9 @@ pública cuatro años: **hay que rotarla** y comprobar que no está reutilizada.
 conserva los commits huérfanos de los *push* anteriores y los sigue sirviendo por URL
 directa, así que el valor antiguo continúa siendo recuperable por quien tenga un hash previo.
 
+**Cerrado el 2 de septiembre de 2026.** La instancia de SonarQube era local y está en
+desuso, y esa contraseña no se usa en ningún otro sitio: no procede rotarla.
+
 ### 🟡 S-09 · Sin límite de intentos de autenticación — **corregido**
 
 CUS-0009 lo especifica explícitamente ("si el usuario ha excedido el número de intentos…").
@@ -323,7 +331,7 @@ periódico del seed**, no el candado. El filtro queda como respaldo para momento
 **Estado verificado el 7 de septiembre de 2026:** `Demo__SoloLectura=FALSE` está **definida
 de forma explícita** en la configuración de `app-sisgapo-api`, que es lo que cierra el
 hallazgo: el valor ya no es el implícito del `appsettings.json`, es una decisión escrita en
-la instancia. Ver `11-estado-portafolio.md`.
+la instancia. Ver `../11-auditoria-y-cierre.md`.
 
 ### 🔴 S-12 · Cuentas de persona con contraseña `123456` — **corregido**
 
@@ -334,7 +342,7 @@ El seed creaba seis cuentas históricas con nombres de persona (`jose.m`, `alex.
 real» (S-02) se desmiente sola. Llegó a estar así en la instancia pública: el 6 de
 septiembre de 2026, `jose.m` / `123456` devolvía un JWT válido.
 
-**Corregido en el seed** (`sql/03-seed.sql`): las seis cuentas se rehashearon con bcrypt
+**Corregido en el seed** (`../sql/03-seed.sql`): las seis cuentas se rehashearon con bcrypt
 factor 11 sobre una contraseña fuerte que no se publica en ningún sitio. Siguen apareciendo
 en el listado de Usuarios como datos de relleno realistas, pero ya no se entra con ellas.
 Las tres `demo.*` conservan `SisgapoDemo2026!`, que es pública a propósito.
@@ -354,7 +362,7 @@ Cinco fallos bloqueantes acumulados. `CreacionTablas.sql` no crea la columna
 `ALTER PROCEDURE` en vez de `CREATE`; `CreacionTablasParte2.sql` y `PoblacionDatosParte2.sql`
 duplican objetos y datos; y todos llevan `USE DB_SISGAPO`, que Azure SQL no admite.
 
-Detalle completo en `03-modelo-de-datos.md`, sección 4. Versión corregida y **verificada
+Detalle completo en `../03-modelo-de-datos.md`, sección 4. Versión corregida y **verificada
 ejecutándose** en `sql/`.
 
 Es el hallazgo con más impacto práctico: sin base de datos no hay demo.
@@ -375,7 +383,7 @@ las dos operaciones centrales de un sistema de gestión de almacén con control 
 Se corrigió primero alineando las posiciones, y después el módulo de Lotes eliminó la clase
 entera de error: la opción `07` se quedó con cinco parámetros —nombre, almacén, categoría y
 los dos identificadores— y dos `UPDATE`. Las fechas y la existencia se mantienen desde
-`USP_MNT_Lotes` y `USP_MNT_Movimientos`. Ver `04-api-referencia.md`, secciones 6 a 6.2.
+`USP_MNT_Lotes` y `USP_MNT_Movimientos`. Ver `../04-api-referencia.md`, secciones 6 a 6.2.
 
 ### 🔴 C-03 · Editar una zona crea un duplicado
 
@@ -561,7 +569,7 @@ y aquí se hizo al revés.
   mientras el resto de entidades son `public`.
 
 **Estado actual:** el módulo **no** forma parte del árbol de trabajo — ver
-`10-decisiones.md`, D-19, donde se explica por qué se dejó fuera y cómo recuperarlo en un
+`../09-decisiones.md`, D-19, donde se explica por qué se dejó fuera y cómo recuperarlo en un
 solo comando.
 
 **Lo que sí era código muerto de verdad**, y se eliminó: `SISGAPO_API/WeatherForecast.cs`
@@ -808,7 +816,7 @@ Azure App Service ya no ofrece .NET 5 como pila de runtime, así que **desplegar
 App Service nuevo no es posible sin publicar como *self-contained***.
 
 La migración a .NET 8 (LTS) es el requisito técnico central del plan de migración.
-Ver `07-migracion-tier-free.md`, sección 5.
+Ver `../06-infraestructura.md`, sección 5.
 
 ### 🟠 D-02 · Angular 9 está fuera de soporte — **cerrado: no se migra, y es deliberado**
 
@@ -825,7 +833,7 @@ este repositorio es el trabajo universitario de 2021 puesto a punto, y un fronte
 última versión de Angular contradiría esa fecha. Además, saltar hasta Material 3 obligaría a
 rehacer el diseño, que es precisamente lo que se quiere enseñar. Subir un par de versiones
 menores queda como opción abierta para más adelante; hasta entonces esto no es una deuda
-pendiente sino una decisión. Ver `10-decisiones.md`, D-47.
+pendiente sino una decisión. Ver `../09-decisiones.md`, D-47.
 
 ### 🟠 D-03 · Sin inyección de dependencias — **corregido**
 
@@ -838,7 +846,7 @@ una trampa para cuando se registraran como `Scoped`.
 **Corregido el 7 de septiembre de 2026.** Las siete interfaces que faltaban se crearon, las
 nueve `*Business`/`*Data` se registraron como `Scoped` en `Startup`, los controllers reciben
 su Business por constructor, y las dos listas problemáticas pasaron a variables locales en
-el mismo cambio. Detalle completo y verificación en `10-decisiones.md`, D-43.
+el mismo cambio. Detalle completo y verificación en `../09-decisiones.md`, D-43.
 
 ### 🟠 D-04 · La configuración se lee del disco en cada petición
 
@@ -878,7 +886,7 @@ Todo esto para descubrir algo que ya se sabe: **los seis procedimientos tienen l
 parámetros explícitamente y funciona igual.
 
 Eliminarlo quita ~120 de las 253 líneas de `Conexion.cs` y la mitad de las llamadas a la base
-de datos. Ver `09-mejoras-propuestas.md`, M-03.
+de datos. Ver `../08-mejoras-propuestas.md`, M-03.
 
 ### 🟡 D-06 · Los precios son `INT` — **corregido**
 
@@ -892,15 +900,15 @@ Debería ser `DECIMAL(10,2)` en la base y `decimal` en C#.
 
 | Capa | Cambio |
 |---|---|
-| `sql/01-esquema.sql` | `nPrecio DECIMAL(10,2)`, más `CK_DETPROD_PRECIO CHECK (nPrecio >= 0)` junto a la de cantidad |
-| `sql/07-usp-productos.sql`, `sql/11-usp-lotes.sql` | `@nPrecioUnitario` y `@nPrecio` declarados `DECIMAL(10,2)` |
-| `sql/03-seed.sql` | los 33 precios llevan céntimos reales (`38.50`, `2.75`, `950.00`), que es lo que hace visible el arreglo |
+| `../sql/01-esquema.sql` | `nPrecio DECIMAL(10,2)`, más `CK_DETPROD_PRECIO CHECK (nPrecio >= 0)` junto a la de cantidad |
+| `../sql/07-usp-productos.sql`, `../sql/11-usp-lotes.sql` | `@nPrecioUnitario` y `@nPrecio` declarados `DECIMAL(10,2)` |
+| `../sql/03-seed.sql` | los 33 precios llevan céntimos reales (`38.50`, `2.75`, `950.00`), que es lo que hace visible el arreglo |
 | `Entity` | `EListaLotes.nPrecio`, `EListaLotesById.nPrecio` a `decimal`; `EListaProductos.nValor` y los tres `nValor` de `PanelEntity`, de `long` a `decimal` |
 | `Data` | `Int32.Parse(...)` / `Int64.Parse(...)` sobre esas columnas, a `Convert.ToDecimal(...)` |
 | Frontend | los importes se muestran con `number:'1.2-2'` en Productos, Lotes y el panel; los dos campos de precio son `step="0.01"` y `min="0"` |
 
 El valor del inventario de la demo pasa de `81976` a `84616.90`, y ese es el número que
-documenta ahora `sql/README.md`. El bloque de invariantes del seed imprime el valor en una
+documenta ahora `../sql/README.md`. El bloque de invariantes del seed imprime el valor en una
 consulta aparte: al ser `DECIMAL`, en el `UNION ALL` arrastraba a los conteos a su tipo y
 los sacaba como `21.00`.
 
@@ -937,7 +945,7 @@ tres DTO (`GeneralEntity`, `UsuarioEntity`, `EntRequestUsuario`) para lo mismo.
 **Lo que queda igual, a propósito:** un `CrudController<T>` genérico que unificara los seis
 controllers y las siete `*Business` se evaluó y se descartó — no por esfuerzo, sino porque
 esconde el patrón `sOpcion`, que es lo que hace predecible este código en las nueve
-entidades. Cerrado como decisión, no como pendiente: ver `10-decisiones.md`, D-44.
+entidades. Cerrado como decisión, no como pendiente: ver `../09-decisiones.md`, D-44.
 
 ### 🟡 D-09 · Restos de andamiaje y archivos generados
 
@@ -1083,7 +1091,7 @@ en `app-routing.module.ts`.
 más chico y aislado— a uno lazy. Resultado, medido con el mismo `ng build --prod`: el bundle
 principal **subió** de 1.01 MB a 1.06 MB; solo se separaron 19.4 KB. El costo fijo de un
 módulo adicional no lo compensa un módulo tan pequeño. Se revirtió el experimento entero.
-Detalle en `10-decisiones.md`, D-45.
+Detalle en `../09-decisiones.md`, D-45.
 
 ### 🟡 D-14 · Ningún componente usa `OnPush` — **descartado**
 
@@ -1091,7 +1099,7 @@ Los 15 componentes corren en detección de cambios `Default`. `OnPush` exigiría
 `ChangeDetectorRef.markForCheck()` manual en cada uno de los puntos donde un listado carga
 datos por `await` — sin él, la vista no se repinta y la tabla se queda en blanco después de
 una carga que sí funcionó. El riesgo de ese defecto silencioso pesa más que un ahorro de
-rendimiento que esta demo no llega a necesitar. Ver `10-decisiones.md`, D-46.
+rendimiento que esta demo no llega a necesitar. Ver `../09-decisiones.md`, D-46.
 
 ### 🟡 D-15 · `movimientos.component.ts` mezcla tabla, filtros y cálculo de fechas en 371 líneas — **corregido**
 
@@ -1174,7 +1182,7 @@ la pantalla de Lotes ordena por él. Se añadió con el módulo de Lotes, junto 
   de bloqueo de dependencias, asi que conviene hacerlo en un cambio aparte.
 
 La carga diferida por módulo y `OnPush` ya no están en esta lista: se probaron y se
-descartaron (D-13, D-14 — ver `10-decisiones.md`, D-45 y D-46).
+descartaron (D-13, D-14 — ver `../09-decisiones.md`, D-45 y D-46).
 
 ---
 
@@ -1185,6 +1193,6 @@ motivo escrito (D-02, D-13, D-14)—, así que ya no hay un «orden de ataque» 
 estado, con sus cifras, está al principio del documento.
 
 Lo que queda vivo no son hallazgos sino mantenimiento de la instancia pública, y está en
-`11-estado-portafolio.md`: **el reinicio periódico del seed**, que es el control que sustituye
+`../11-auditoria-y-cierre.md`: **el reinicio periódico del seed**, que es el control que sustituye
 al modo solo lectura (S-11). Las mejoras opcionales que nunca fueron hallazgos —incluida la
-subida de un par de versiones de Angular— están en `09-mejoras-propuestas.md`.
+subida de un par de versiones de Angular— están en `../08-mejoras-propuestas.md`.
