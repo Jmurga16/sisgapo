@@ -1,0 +1,5 @@
+.angular
+.scannerwork
+coverage
+dist
+node_modules

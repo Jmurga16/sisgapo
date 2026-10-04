@@ -23,4 +23,13 @@ for archivo in /sql/[0-9][0-9]-*.sql; do
   $SQLCMD -S $SERVIDOR -U sa -P "$MSSQL_SA_PASSWORD" -C -d DB_SISGAPO -b -i "$archivo"
 done
 
+# Solo en el VPS: la API entra con un login que únicamente ejecuta procedimientos, no con sa.
+if [ -n "${SISGAPO_APP_PASSWORD:-}" ]; then
+  echo "==> Login sisgapo_app"
+  $SQLCMD -S $SERVIDOR -U sa -P "$MSSQL_SA_PASSWORD" -C -b \
+    -Q "IF SUSER_ID(N'sisgapo_app') IS NULL CREATE LOGIN sisgapo_app WITH PASSWORD = N'\$(SISGAPO_APP_PASSWORD)'; ELSE ALTER LOGIN sisgapo_app WITH PASSWORD = N'\$(SISGAPO_APP_PASSWORD)';"
+  $SQLCMD -S $SERVIDOR -U sa -P "$MSSQL_SA_PASSWORD" -C -d DB_SISGAPO -b \
+    -Q "IF USER_ID(N'sisgapo_app') IS NULL CREATE USER sisgapo_app FOR LOGIN sisgapo_app; GRANT EXECUTE ON SCHEMA::dbo TO sisgapo_app;"
+fi
+
 echo "==> Base de datos lista."
