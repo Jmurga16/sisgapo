@@ -1,6 +1,8 @@
 import { MediaMatcher } from '@angular/cdk/layout';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Event, NavigationEnd, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { Rol } from 'src/app/shared/models';
 import { ConfiguracionService } from 'src/app/shared/services/configuracion.service';
 import { SesionService } from 'src/app/shared/services/sesion.service';
@@ -43,6 +45,7 @@ export class NavMenuComponent implements OnInit, OnDestroy {
   listaNav: OpcionMenu[] = [];
 
   private readonly mobileQueryListener: () => void;
+  private oNavegacion: Subscription;
 
   constructor(
     changeDetectorRef: ChangeDetectorRef,
@@ -59,10 +62,22 @@ export class NavMenuComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.configuracionService.fnCargar();
     this.fnCargarSesion();
+
+    // La sesión también cambia fuera de aquí: el interceptor la cierra ante un 401 y navega a /login.
+    this.oNavegacion = this.router.events
+      .pipe(filter((evento: Event): evento is NavigationEnd => evento instanceof NavigationEnd))
+      .subscribe(evento => {
+        this.fnCargarSesion();
+
+        if (this.nRol > 0 && evento.urlAfterRedirects === '/login') {
+          this.router.navigateByUrl('/inicio');
+        }
+      });
   }
 
   ngOnDestroy(): void {
     this.mobileQuery.removeEventListener('change', this.mobileQueryListener);
+    this.oNavegacion.unsubscribe();
   }
 
   fnRuteo(ruta: string, snav?: { close: () => void }): void {

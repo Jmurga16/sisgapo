@@ -9,7 +9,6 @@ import { ProductosComponent } from './modulos/inventario/productos/productos.com
 import { LotesComponent } from './modulos/inventario/lotes/lotes.component';
 import { MovimientosComponent } from './modulos/inventario/movimientos/movimientos.component';
 
-import { NavMenuComponent } from './nav-menu/nav-menu/nav-menu.component';
 import { InicioComponent } from './inicio/inicio.component';
 import { AuthGuard } from './shared/services/auth.guard';
 import { Rol } from './shared/models';
@@ -18,7 +17,8 @@ const rolesGestion = [Rol.Administrador, Rol.Supervisor];
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: NavMenuComponent },
+  // Sin componente: la pantalla de acceso la pinta el menú del shell cuando no hay sesión.
+  { path: 'login', children: [] },
   { path: 'inicio', component: InicioComponent, canActivate: [AuthGuard], data: { titulo: 'Panel' } },
   {
     path: 'usuarios',
