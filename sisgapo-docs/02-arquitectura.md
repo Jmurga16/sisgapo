@@ -30,7 +30,7 @@
 
 ```
 ┌────────────────────────────────────────────┐
-│  Angular 9 SPA        (sisgapo-web)        │
+│  Angular 14 SPA       (sisgapo-web)        │
 │  Componentes → Servicios (HttpClient)      │
 └──────────────────┬─────────────────────────┘
                    │  HTTP POST, JSON

@@ -28,7 +28,7 @@ el proyecto no es una mejora sino mantenimiento, y está en `11-auditoria-y-cier
 | M-04 | Corregir C-02 y C-03 | 2 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ✅ | **hecho** |
 | M-05 | Limpiar código muerto | 30 min | ⭐ | ⭐⭐⭐ | ✅ | **hecho** |
 | M-06 | Sustituir `pParametro` por JSON | 2 días | ⭐ | ⭐⭐⭐⭐ | 🤔 | mitigado |
-| M-07 | Actualizar Angular | 3–5 días | ⭐⭐ | ⭐⭐⭐ | ❌ | descartado (D-47) |
+| M-07 | Actualizar Angular | 3–5 días | ⭐⭐ | ⭐⭐⭐ | ✅ | **hasta la 14** (D-51); más allá, descartado (D-47) |
 | M-08 | Pruebas reales | 2–3 días | ⭐ | ⭐⭐⭐⭐⭐ | 🤔 | **a medias:** unitarias e integración de los módulos nuevos |
 | M-09 | Múltiples lotes por producto | 2 días | ⭐⭐⭐ | ⭐⭐⭐ | ✅ | **hecho** |
 | M-10 | Lógica de T-SQL a C# | 6–8 días | ⭐⭐ | ⭐⭐⭐⭐⭐ | 🤔 | pendiente |

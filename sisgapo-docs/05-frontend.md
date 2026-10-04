@@ -1,37 +1,28 @@
 # 05 — Frontend
 
-Aplicación Angular 9 de página única. Código en `sisgapo-web/src/`.
+Aplicación Angular 14 de página única. Código en `sisgapo-web/src/`.
 
 ## 1. Cómo levantarlo
 
 ```bash
 cd sisgapo-web
-npm install --legacy-peer-deps
-
-# El flag NO es opcional en Node 17 o superior
-NODE_OPTIONS=--openssl-legacy-provider npx ng serve        # http://localhost:4200
-NODE_OPTIONS=--openssl-legacy-provider npx ng build --prod # dist/SISGAPO-Front
+npm install
+npx ng serve    # http://localhost:4200
+npx ng build    # dist/SISGAPO-Front; la configuración por defecto es la de producción
 ```
 
-**Por qué hace falta el flag.** Angular 9 usa Webpack 4, que calcula hashes de módulo con
-`crypto.createHash('md4')`. OpenSSL 3 —el que trae Node 17 y posteriores— retiró MD4 del
-proveedor por defecto. Sin el flag, el build muere con:
+Verificado en Node 22.23.1 y en Node 24.19: `npm ci` sin `--legacy-peer-deps`, el build de
+producción en unos 20 s y `ng serve` sin `NODE_OPTIONS`.
 
-```
-error:0308010C:digital envelope routines::unsupported
-```
+Hasta octubre de 2026 el frontend estaba en Angular 9 y necesitaba tres rodeos: el flag
+`--openssl-legacy-provider`, porque Webpack 4 calculaba hashes con MD4 y OpenSSL 3 ya no lo
+ofrece; `--legacy-peer-deps`, porque `@ng-bootstrap` 6 declaraba Bootstrap 4; y el
+`overrides` de `websocket-driver` para que `ng serve` arrancara en Node 24. Angular 14 trae
+Webpack 5 y `webpack-dev-server` 4, y `@ng-bootstrap` se retiró porque no se usaba: ninguno
+de los tres hace falta. Ver `09-decisiones.md`, D-51.
 
-`--openssl-legacy-provider` reactiva el proveedor antiguo. **Verificado en Node 22.23.1:**
-con el flag, `npm install` (1481 paquetes, 32 s) y `ng build --prod` (32 s) funcionan sin
-tocar una línea de código.
-
-`--legacy-peer-deps` hace falta porque npm 7+ aplica los rangos de dependencias entre pares
-de forma estricta, y `@ng-bootstrap` 6 declara Bootstrap 4 mientras el proyecto trae
-Bootstrap 5.
-
-Está fijado en `package.json` con `cross-env`, así que `npm start`, `npm run build` y
-`npm test` funcionan igual en Windows y en Linux sin recordar el flag. Verificado también
-en Node 24.19.
+`npm run lint` llama a TSLint directamente: el builder `tslint` de Angular desapareció en la
+versión 12. Señala unas 400 faltas de estilo que ya estaban en 2021; no forma parte del CI.
 
 ## 2. Estructura
 
@@ -208,17 +199,16 @@ Unsplash y admite `.png`, `.jpg`, `.jpeg` y `.webp` aunque haya parámetros de c
 
 ## 7. Interfaz y estilos
 
-- **Angular Material 9** como base: `MatTable`, `MatDialog`, `MatSidenav`, `MatPaginator`, `MatDatepicker`, `MatSelect`, `MatAutocomplete`.
+- **Angular Material 14** como base: `MatTable`, `MatDialog`, `MatSidenav`, `MatPaginator`, `MatDatepicker`, `MatSelect`, `MatAutocomplete`.
 - **Bootstrap 5.0.2**, del que solo se cargan *reboot* y *grid*: la aplicacion usa
   unicamente `row`, `col-md-*` y `justify-content-center`. Cargar el framework completo
   costaba 96 KB de CSS bloqueante sin usarlos.
-- **`@ng-bootstrap` 6.2.0**, que está hecho para Bootstrap 4 → desajuste de versión.
-- **`@ng-select`** para los desplegables con búsqueda.
 - **SweetAlert2** para confirmaciones y avisos.
 
-Tres sistemas de estilos conviviendo. Funciona, pero produce inconsistencias visuales —
-botones de Material junto a botones de Bootstrap, espaciados que no cuadran— y hace que
-el CSS global sea más difícil de mantener. Las listas comparten ahora cabecera, filtros,
+Dos sistemas de estilos conviviendo, desde que `@ng-bootstrap` y `@ng-select` —importados
+pero sin uso en ninguna plantilla— salieron con la subida a Angular 14. Funciona, pero
+produce inconsistencias visuales —espaciados de Material junto a la rejilla de Bootstrap— y
+hace que el CSS global sea más difícil de mantener. Las listas comparten ahora cabecera, filtros,
 scroll horizontal, acciones y paginador responsive en `styles.css`; los estilos propios
 quedan en cada componente.
 

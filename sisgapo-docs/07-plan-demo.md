@@ -103,9 +103,10 @@ completo, y demuestra que piensas en su factura.
 
 ## 4. Preguntas que te van a hacer
 
-**"¿Por qué Angular 9 / .NET 5?"**
-> "Es la versión de 2021, cuando lo desarrollé. Verifiqué que el frontend sigue compilando en
-> Node 22 con un flag de OpenSSL, así que actualizarlo no es urgente para la demo. El backend
+**"¿Por qué Angular 14 y no la última?"**
+> "Lo desarrollé en 2021 con Angular 9. Lo subí hasta la 14 porque es la última versión en la
+> que Angular Material conserva sus componentes clásicos: de la 15 en adelante cambian el
+> aspecto de todos los formularios y tablas, y eso ya es rediseñar la interfaz. El backend
 > primero lo migré a .NET 8 para volver a desplegarlo y, al cerrar la demo, a .NET 10 LTS."
 
 El paso a .NET 10 quedó aplicado el 2 de octubre de 2026; la evidencia y la verificación

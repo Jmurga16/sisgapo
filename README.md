@@ -31,7 +31,7 @@ Entra con un clic desde la pantalla de acceso, o usa una de estas cuentas:
 
 | Capa | Stack |
 |---|---|
-| Frontend | Angular 9 + Angular Material |
+| Frontend | Angular 14 + Angular Material |
 | Backend | ASP.NET Core 10 (API / Business / Data / Entity), JWT |
 | Datos | SQL Server, lógica en stored procedures |
 
@@ -99,13 +99,11 @@ entorno de la tabla de abajo y falla con un mensaje explícito si faltan.
 
 ```bash
 cd sisgapo-web
-npm install --legacy-peer-deps
+npm install
 npm start
 ```
 
-En `http://localhost:4200`. Los scripts de `package.json` ya incluyen
-`NODE_OPTIONS=--openssl-legacy-provider`, obligatorio en Node 17+ porque Webpack 4 usa
-MD4 y OpenSSL 3 no lo expone.
+En `http://localhost:4200`. Funciona en Node 22 y en Node 24 sin flags.
 
 ### Secretos
 

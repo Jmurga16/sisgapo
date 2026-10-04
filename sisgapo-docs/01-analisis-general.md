@@ -90,14 +90,12 @@ sin uso de la versión original —`Microsoft.EntityFrameworkCore.SqlServer`,
 
 | Componente | Versión | Notas |
 |---|---|---|
-| Angular | 9.1.2 | Salió en 2020; fuera de soporte |
-| Angular Material + CDK | 9.2.4 | — |
-| Bootstrap | 5.0.2 | Conviviendo con Material y con `@ng-bootstrap` 6 (que espera Bootstrap 4) |
-| `@ng-bootstrap/ng-bootstrap` | 6.2.0 | Desajuste de versión con Bootstrap 5 |
-| `@ng-select/ng-select` | 7.0.1 | — |
+| Angular | 14.3.0 | Desde octubre de 2026; era 9.1.2. Fuera de soporte, pero es el techo antes de Material MDC (D-51) |
+| Angular Material + CDK | 14.2.7 | Mismos componentes y tema que en la 9 |
+| Bootstrap | 5.0.2 | Solo *reboot* y *grid* |
 | SweetAlert2 | 11.0.18 | Diálogos y alertas |
-| TypeScript | 3.8.3 | — |
-| TSLint | 6.1.0 | Deprecado en favor de ESLint |
+| TypeScript | 4.8.4 | — |
+| TSLint | 6.1.3 | Deprecado en favor de ESLint; se ejecuta fuera del CLI |
 | Karma + Jasmine | 4.4 / 3.5 | Doce `.spec.ts` de existencia. Protractor y `e2e/` se retiraron |
 
 ### Base de datos
@@ -186,8 +184,8 @@ D-08 y D-09.
 
 **Lo que jugaba en contra en agosto de 2026, y su estado actual:**
 - Versiones fuera de soporte en las dos puntas (.NET 5, Angular 9) — ✅ el backend está en
-  .NET 10 LTS (H-01 en `11-auditoria-y-cierre.md`); Angular sigue en 9 por decisión
-  (D-02, D-47).
+  .NET 10 LTS (H-01 en `11-auditoria-y-cierre.md`); Angular subió a la 14 y se queda ahí
+  para no cambiar Material (D-51).
 - Autenticación decorativa y contraseñas en claro — ✅ corregido: bcrypt, JWT, `[Authorize]`
   y guards por rol (S-02 a S-04).
 - Secretos en el repositorio — ✅ ninguno vigente; el que sí hubo (S-10) se retiró del historial.

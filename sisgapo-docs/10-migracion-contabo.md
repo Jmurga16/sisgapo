@@ -114,7 +114,7 @@ bien: lo que se lee es la consola, con `docker compose logs api`.
 FROM node:22-alpine AS build
 WORKDIR /src
 COPY package.json package-lock.json ./
-RUN npm ci --legacy-peer-deps
+RUN npm ci
 COPY . .
 RUN npm run build
 
@@ -143,8 +143,8 @@ server {
 }
 ```
 
-`npm run build` ya lleva `NODE_OPTIONS=--openssl-legacy-provider` vía `cross-env`, que es
-una dependencia de desarrollo: por eso el `npm ci` no lleva `--omit=dev`. Antes de
+El compilador de Angular es una dependencia de desarrollo: por eso el `npm ci` no lleva
+`--omit=dev`. Desde Angular 14 el build no necesita `NODE_OPTIONS` (D-51). Antes de
 construir la imagen, `environment.prod.ts` tiene que apuntar a `https://api.sisgapo.<dominio>/`.
 Conviene un `.dockerignore` con `node_modules`, `dist` y `coverage` en los dos proyectos.
 

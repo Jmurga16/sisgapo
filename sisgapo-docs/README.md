@@ -61,15 +61,15 @@ También en esta carpeta:
 1. CRUD de inventario bien delimitado: usuarios, zonas, almacenes, categorías y
    productos, más lotes, movimientos con kardex y un panel de control con existencias y
    control de vencimientos.
-2. Backend .NET 10 en cuatro proyectos por capas, frontend Angular 9, y **casi toda la
+2. Backend .NET 10 en cuatro proyectos por capas, frontend Angular 14, y **casi toda la
    lógica de negocio en nueve procedimientos almacenados de T-SQL**.
 3. Doce casos de uso especificados en 2021, los doce con código y pantalla. Sobre eso, tres
    módulos añadidos en 2026 —panel, lotes y movimientos— que cierran el dominio: un producto
    puede tener varias partidas y la existencia deja de sobrescribirse.
 4. `docker compose up -d` levanta SQL Server, crea la base y carga datos de demostración
    realistas. Los scripts son reejecutables.
-5. Backend y frontend compilan hoy, sin avisos el primero. El frontend necesita
-   `NODE_OPTIONS=--openssl-legacy-provider`, ya fijado en los scripts de `package.json`.
+5. Backend y frontend compilan hoy en Node 22 y 24 sin flags; el backend, además, sin
+   avisos.
 6. La auditoría de la recuperación encontró 48 hallazgos y **los 48 están cerrados**: 45
    arreglados y tres cerrados con el motivo escrito. La auditoría de cierre, hecha el 1 de
    octubre, encontró 16 más; los necesarios para cerrar la demo se corrigieron el día 2 y

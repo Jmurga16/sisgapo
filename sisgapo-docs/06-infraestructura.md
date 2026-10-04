@@ -131,7 +131,7 @@ a Cloudflare Pages sería un cambio de 15 minutos si algún día conviene.
 ```
 Usuario
   │
-  ├──► Azure Static Web Apps (Free)      Angular 9 compilado         US$ 0
+  ├──► Azure Static Web Apps (Free)      Angular compilado           US$ 0
   │         │
   │         └── llamadas HTTPS
   │                 │

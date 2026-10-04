@@ -911,6 +911,9 @@ interfaz es la misma; solo cambia de dónde sale el analizador.
 una migración de cuatro versiones mayores en una demo que ya funciona. El `overrides` son
 tres líneas y deja intacto todo lo demás.
 
+**Estado:** superada por D-51. Con Angular 14, `sockjs` ya pide `websocket-driver` 0.7.4 y
+el `overrides` se retiró.
+
 ---
 
 ## D-40 · El precio lleva céntimos y el teléfono deja de ser un número
@@ -1114,6 +1117,9 @@ está sin resolver el desajuste de `@ng-bootstrap` 6.2.0 (pensado para Bootstrap
 Bootstrap 5.0.2, que es independiente de la versión de Angular. Ninguna de las dos es
 bloqueante ni urgente.
 
+**Estado:** las dos se resolvieron en D-51, que sube hasta Angular 14 sin tocar Material y
+retira `@ng-bootstrap`.
+
 ---
 
 ## Revisión del 1 de octubre de 2026
@@ -1239,6 +1245,54 @@ NuGet no encuentra vulnerabilidades.
 
 ---
 
+## D-51 · Angular sube a la 14, y no más — ejecutada
+
+**La duda.** D-47 dejó el frontend en Angular 9 y anotó una salida: «subir un par de
+versiones sin tocar Material». Antes de construir las imágenes del VPS (D-49), ¿se toma esa
+salida, y hasta dónde?
+
+**Decisión: hasta Angular 14 con Material 14.** Es la última versión en la que Material
+conserva sus componentes clásicos y el tema `indigo-pink` de la 9. Material 15 pasa a MDC,
+que cambia la altura de los campos, el relleno de los diálogos y el aspecto de las tablas
+—D-32 ya avisaba de que rompe la cabecera de los modales—, y Material 3 llega en la 17. Subir
+más es rediseñar la interfaz, que es justo lo que D-47 quería evitar.
+
+**Qué compra.** Los tres rodeos de Angular 9 desaparecen: `--openssl-legacy-provider`
+(Webpack 5 ya no usa MD4), `--legacy-peer-deps` y el `overrides` de D-39 (`sockjs` 0.3.24 ya
+pide `websocket-driver` 0.7.4). El `Dockerfile` del VPS queda en `npm ci` y `npm run build`,
+sin variables de entorno que recordar.
+
+**Cómo se hizo.** `ng update` versión a versión de la 10 a la 12; en la 11 y en la 12 el
+grupo del framework saltó una versión de más, así que en la 13 y en la 14 se fijaron las
+versiones a mano y se ejecutaron solo las migraciones (`--migrate-only`). La de la 14 cambió
+`FormControl` por `UntypedFormControl` en doce componentes: es la conversión oficial para
+conservar el comportamiento sin tipar los formularios. Salieron `@ng-bootstrap`,
+`@ng-select` y `@angular/localize`, importados en `app.module.ts` y sin uso en ninguna
+plantilla, y con ellos el desajuste con Bootstrap 5 que D-47 dejaba abierto.
+
+**Verificación.** Build de producción en Node 22 y 24 sin flags, con el mismo hash en los dos.
+`ng serve` en Node 24. Capturas antes y después contra la base local —acceso, panel,
+Productos, Lotes, Movimientos, Zonas, menú lateral y el modal de alta de lote—: mismo
+aspecto y misma alineación. La única diferencia es el asterisco de obligatorio: Material 14
+lo deduce de `Validators.required`, así que ahora lo llevan todos los
+campos obligatorios y no solo los dos del modal de Usuarios que tenían `required` en la
+plantilla. Se deja así porque es más coherente; si se quisiera el aspecto exacto de la 9,
+bastaría `hideRequiredMarker` en `MAT_FORM_FIELD_DEFAULT_OPTIONS`.
+
+**Lo que no arregla.** `npm audit --omit=dev` baja de 23 avisos a 10, todos en los propios
+paquetes de Angular, y su corrección empieza en la 20: es el coste de quedarse en la 14. Las
+pruebas de Karma siguen sin compilar, como antes de la migración: los *specs* son de 2021 y
+no se actualizaron cuando cambiaron los constructores. El builder de TSLint desapareció en la
+12, así que `npm run lint` llama a `tslint` directamente.
+
+**Reconsidera si:** se decide rediseñar la interfaz. Entonces el salto natural es a la versión
+vigente con Material 3, de una vez, y no versión a versión.
+
+**Estado:** aplicada el 4 de octubre de 2026 en la rama `migracion-angular`. Sustituye a
+D-39 y cierra lo que D-47 dejaba abierto.
+
+---
+
 ## Resumen de las decisiones
 
 | # | Decisión | Nivel de duda |
@@ -1281,7 +1335,7 @@ NuGet no encuentra vulnerabilidades.
 | D-36 | La cronología crece por tandas de días | Bajo — revisa el cierre de D-33 |
 | D-37 | Acceso de un clic en la pantalla de entrada; credenciales en un diálogo | Bajo — es una demo sin datos reales |
 | D-38 | En móvil los listados se leen como tarjetas | Bajo — el dato sigue declarado una sola vez |
-| D-39 | `websocket-driver` fijado a 0.7.4 con `overrides` | Ninguno — sin ello `ng serve` no arranca en Node 24 |
+| D-39 | `websocket-driver` fijado a 0.7.4 con `overrides` | Ninguno — superada por D-51 |
 | D-40 | Precio `DECIMAL(10,2)` y `sTelefono VARCHAR`, con el seed y la validación al día | Bajo — el coste es la cantidad de archivos, no el riesgo |
 | D-41 | Backend asíncrono de punta a punta | **Medio** — 25 archivos por una mejora que la demo no necesita; se hace por cómo se lee el código |
 | D-42 | El 400 de validación conserva el formato `{cod, mensaje}` | Ninguno — sin esto, añadir anotaciones habría roto el manejo de errores del frontend |
@@ -1289,10 +1343,11 @@ NuGet no encuentra vulnerabilidades.
 | D-44 | El `CrudController<T>` genérico queda descartado, no pendiente | Ninguno — la uniformidad del patrón actual es la que hace legible el código |
 | D-45 | *Lazy loading* de Usuarios: medido (main +50 KB) y descartado | Ninguno — se revirtió por completo tras medir |
 | D-46 | `OnPush` en los listados, descartado | Bajo — el riesgo (pantallas en blanco) pesa más que el ahorro, no medible en esta demo |
-| D-47 | El frontend se queda en Angular 9 | **Medio** — es la decisión que más hay que saber defender; se sostiene en que el proyecto es de 2021 y en no arrastrar a Material 3 |
+| D-47 | El frontend se queda en Angular 9 | Bajo — matizada por D-51: se sube hasta donde Material no cambia |
 | D-48 | La documentación se reorganiza para el cierre: histórico, 06 nuevo, 12 y dos renombrados | Bajo — nada se borra y los identificadores del histórico no cambian |
 | D-49 | Migrar la demo a un VPS propio (propuesta) | **Medio** — resuelve el arranque en frío y el reinicio del seed a cambio de operar un servidor |
 | D-50 | .NET 10 antes del 10 de noviembre de 2026 (propuesta) | Ninguno — es mantenimiento con fecha |
+| D-51 | Angular sube a la 14, y no más | Bajo — la 14 es el techo antes de Material MDC |
 
 **Las tres que más merecen tu revisión: D-01, D-04 y D-09.**
 De las anteriores, la discutible es **D-24**: `localStorage` es la opción cómoda, no la
