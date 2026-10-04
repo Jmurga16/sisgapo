@@ -150,7 +150,7 @@ namespace Test
             public Task<object> LIS_UsuarioData(GeneralEntity erp)
             {
                 UltimoParametro = erp.pParametro;
-                return Task.FromResult<object>("OK");
+                return Task.FromResult<object>("1|Se registró con éxito");
             }
         }
     }

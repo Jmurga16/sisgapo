@@ -53,10 +53,14 @@ namespace SISGAPO_API.Controllers
             {
                 try
                 {
-                    
-                    string result = Convert.ToString(await objUsuarios.LIS_UsuarioBusiness(erp));
-                    
-                    return Ok(new { mensaje = result});
+                    string sResultado = Convert.ToString(await objUsuarios.LIS_UsuarioBusiness(erp));
+                    string[] listaRes = (sResultado ?? "").Split('|');
+
+                    return Ok(new
+                    {
+                        cod = listaRes[0],
+                        mensaje = listaRes.Length > 1 ? listaRes[1] : ""
+                    });
                 }
                 catch (Exception e)
                 {

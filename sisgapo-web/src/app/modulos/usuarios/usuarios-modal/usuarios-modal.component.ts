@@ -10,7 +10,7 @@ import {
   GeneroOpcion,
   ListaOpcion,
   ParametroApi,
-  RespuestaUsuarios,
+  RespuestaApi,
   UsuarioDetalle
 } from 'src/app/shared/models';
 import { APP_DATE_FORMATS, AppDateAdapter } from 'src/app/shared/services/AppDateAdapter';
@@ -140,16 +140,10 @@ export class UsuariosModalComponent implements OnInit {
 
     try {
       const respuesta = await this.usuariosService
-        .fnServUsuarios<RespuestaUsuarios>(opcion, parametros);
+        .fnServUsuarios<RespuestaApi>(opcion, parametros);
 
-      if (respuesta.mensaje === 'OK') {
-        await Swal.fire({
-          title: this.data.accion === AccionModal.Agregar
-            ? 'Se registró con éxito'
-            : 'Se actualizó con éxito',
-          icon: 'success',
-          timer: 3500
-        });
+      if (respuesta.cod === '1') {
+        await Swal.fire({ title: respuesta.mensaje, icon: 'success', timer: 3500 });
         this.fnCerrarModal(1);
       } else {
         await Swal.fire({ title: 'No se pudo guardar', text: respuesta.mensaje, icon: 'error' });

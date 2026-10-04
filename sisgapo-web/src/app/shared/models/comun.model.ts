@@ -5,10 +5,6 @@ export interface RespuestaApi {
   mensaje: string;
 }
 
-export interface RespuestaUsuarios {
-  mensaje: string;
-}
-
 export interface ConfiguracionAplicacion {
   demoSoloLectura: boolean;
 }

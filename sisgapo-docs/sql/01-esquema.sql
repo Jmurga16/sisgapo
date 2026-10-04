@@ -27,6 +27,7 @@
      [8] TBL_MOVIMIENTO           : tabla nueva. Registra entradas, salidas y ajustes
                                    sobre un lote, con fecha, usuario, motivo y saldo.
                                    Las existencias dejan de sobrescribirse a mano.
+     [9] TBL_USUARIO              : un documento (tipo y número) por persona.
 
    Ejecutar en este orden:
      01-esquema.sql  →  02-funcion-split.sql  →  03-seed.sql  →  04..12-usp-*.sql
@@ -89,7 +90,8 @@ CREATE TABLE TBL_USUARIO (
     bEstado          BIT          NOT NULL DEFAULT 1,   -- baja lógica
 
     CONSTRAINT FK_USUARIO_DOCUMENTO FOREIGN KEY (nTipoDoc) REFERENCES TBL_DOCUMENTO(nIdDocumento),
-    CONSTRAINT FK_USUARIO_ROL       FOREIGN KEY (nRol)     REFERENCES TBL_ROL(nIdRol)
+    CONSTRAINT FK_USUARIO_ROL       FOREIGN KEY (nRol)     REFERENCES TBL_ROL(nIdRol),
+    CONSTRAINT UQ_USUARIO_DOCUMENTO UNIQUE (nTipoDoc, sNumDoc)
 );
 GO
 

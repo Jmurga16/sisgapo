@@ -151,7 +151,13 @@ BEGIN
 			SET @sTelefono			= (SELECT valor FROM @tParametro WHERE id = 8);
 			SET @dFechaNacimiento	= (SELECT valor FROM @tParametro WHERE id = 9);
 			SET @sContrasenia		= (SELECT valor FROM @tParametro WHERE id = 10);
-		END	
+		END
+
+		IF EXISTS (SELECT 1 FROM [TBL_USUARIO] WHERE nTipoDoc = @nTipoDoc AND sNumDoc = @sNumDoc)
+		BEGIN
+			SELECT '0|Ya existe un usuario con ese documento'
+			RETURN;
+		END
 
 		BEGIN TRY
 			BEGIN TRANSACTION;
@@ -188,6 +194,8 @@ BEGIN
 			VALUES(@nIdUsuario, @sNombreUsuario, @sContrasenia);
 
 			COMMIT TRANSACTION;
+
+			SELECT CONCAT('1|Se registró con éxito. Usuario: ', @sNombreUsuario)
 		END TRY
 		BEGIN CATCH
 			IF @@TRANCOUNT > 0
@@ -213,42 +221,74 @@ BEGIN
 			SET @dFechaNacimiento	= (SELECT valor FROM @tParametro WHERE id = 9);
 			SET @sContrasenia		= (SELECT valor FROM @tParametro WHERE id = 10);
 			SET @nIdUsuario			= (SELECT valor FROM @tParametro WHERE id = 11);
-		END	
-                                     
-		 UPDATE [TBL_USUARIO]                           
-		 SET 
-			sNombres			= @sNombres,                           
-			sApellidos			= @sApellidos,       
-			nTipoDoc			= @nTipoDoc,
-			sNumDoc				= @sNumDoc,
-			sSexo				= @sSexo,
-			nRol				= @nIdRol,
-			sDireccion			= @sDireccion,
-			sTelefono			= @sTelefono,
-			dFechaNacimiento	= @dFechaNacimiento
-		 WHERE 
-			nIdUsuario = @nIdUsuario                          
-		 
+		END
 
-		 IF (LEN(LTRIM(RTRIM(ISNULL(@sContrasenia, '')))) > 0)
-		 BEGIN
-			 UPDATE [TBL_LOGIN]
-			 SET
-				sContrasenia	= @sContrasenia
-			 WHERE
+		IF NOT EXISTS (SELECT 1 FROM [TBL_USUARIO] WHERE nIdUsuario = @nIdUsuario)
+		BEGIN
+			SELECT '0|El usuario no existe'
+			RETURN;
+		END
+
+		IF EXISTS (SELECT 1 FROM [TBL_USUARIO]
+		            WHERE nTipoDoc = @nTipoDoc AND sNumDoc = @sNumDoc AND nIdUsuario <> @nIdUsuario)
+		BEGIN
+			SELECT '0|Ya existe otro usuario con ese documento'
+			RETURN;
+		END
+
+		BEGIN TRY
+			BEGIN TRANSACTION;
+
+			UPDATE [TBL_USUARIO]
+			SET
+				sNombres			= @sNombres,
+				sApellidos			= @sApellidos,
+				nTipoDoc			= @nTipoDoc,
+				sNumDoc				= @sNumDoc,
+				sSexo				= @sSexo,
+				nRol				= @nIdRol,
+				sDireccion			= @sDireccion,
+				sTelefono			= @sTelefono,
+				dFechaNacimiento	= @dFechaNacimiento
+			WHERE
 				nIdUsuario = @nIdUsuario
-		 END
-                                                       
-	END;                            
+
+			IF (LEN(LTRIM(RTRIM(ISNULL(@sContrasenia, '')))) > 0)
+			BEGIN
+				 UPDATE [TBL_LOGIN]
+				 SET
+					sContrasenia	= @sContrasenia
+				 WHERE
+					nIdUsuario = @nIdUsuario
+			END
+
+			COMMIT TRANSACTION;
+
+			SELECT '1|Se actualizó con éxito'
+		END TRY
+		BEGIN CATCH
+			IF @@TRANCOUNT > 0
+				ROLLBACK TRANSACTION;
+
+			THROW;
+		END CATCH;
+
+	END;                          
 
                                                            
 	ELSE IF @sOpcion = '06'  -- ELIMINAR (D)                                                          
 	BEGIN  
 		BEGIN
 			SET @nIdUsuario	= (SELECT valor FROM @tParametro WHERE id = 1);	
-			SET @bEstado	= (SELECT valor FROM @tParametro WHERE id = 2);	
-		END	
-        
+			SET @bEstado	= (SELECT valor FROM @tParametro WHERE id = 2);
+		END
+
+		IF NOT EXISTS (SELECT 1 FROM [TBL_USUARIO] WHERE nIdUsuario = @nIdUsuario)
+		BEGIN
+			SELECT '0|El usuario no existe'
+			RETURN;
+		END
+
 		BEGIN
 			
 			--Eliminación Directa                                                             
@@ -258,7 +298,9 @@ BEGIN
 			UPDATE [TBL_USUARIO]
 				SET	 bEstado = @bEstado
 			WHERE nIdUsuario = @nIdUsuario
-        END                                               
+
+			SELECT CONCAT('1|', IIF(@bEstado = 1, 'Se activó con éxito', 'Se desactivó con éxito'))
+        END                                             
 	END;                                                        
                                        	 
 	

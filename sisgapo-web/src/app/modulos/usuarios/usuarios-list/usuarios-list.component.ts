@@ -13,7 +13,7 @@ import {
   DatosModal,
   ListaOpcion,
   ParametroApi,
-  RespuestaUsuarios,
+  RespuestaApi,
   UsuarioListado,
   ValorEstado
 } from 'src/app/shared/models';
@@ -155,12 +155,12 @@ export class UsuariosListComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     try {
-      const respuesta = await this.usuariosService.fnServUsuarios<RespuestaUsuarios>(
+      const respuesta = await this.usuariosService.fnServUsuarios<RespuestaApi>(
         '06',
         [nIdUsuario, estado]
       );
 
-      if (respuesta.mensaje === 'OK') {
+      if (respuesta.cod === '1') {
         await Swal.fire({
           title: activar
             ? 'Se activó el usuario con éxito'

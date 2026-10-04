@@ -23,10 +23,13 @@ namespace Data
 
             try
             {
+                if (erp.sOpcion == "04" || erp.sOpcion == "05" || erp.sOpcion == "06")
+                {
+                    return await conexion.fnEjecutarEscalarAsync("USP_MNT_Usuarios", erp.sOpcion, erp.pParametro);
+                }
 
                 List<EntListaUsuarios> lstUsuarios = new List<EntListaUsuarios>();
                 List<EntListaUsuarioId> unitUsuario = new List<EntListaUsuarioId>();
-                String strResultado = "";
 
                 conn = await conexion.fnAbrirConexionAsync();
 
@@ -88,25 +91,7 @@ namespace Data
                 }
                 #endregion
 
-                #region 04:Insertar | 05:Actualizar
-                else if (erp.sOpcion == "04" || erp.sOpcion == "05" || erp.sOpcion == "06")
-                {
-
-                    if (await _Command.ExecuteNonQueryAsync() != 0)
-                    {
-                        strResultado = "OK";
-
-                    }
-
-                    return strResultado;
-
-                }
-                #endregion
-
-                else
-                {
-                    return null;
-                }
+                return null;
             }
             catch (Exception ex)
             {
