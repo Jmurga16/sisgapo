@@ -264,7 +264,7 @@ BEGIN
         BEGIN CATCH
 
             IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
-            SELECT CONCAT('0|No se pudo registrar el movimiento: ', ERROR_MESSAGE())
+            THROW;
 
         END CATCH
 

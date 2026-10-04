@@ -248,7 +248,7 @@ BEGIN
         BEGIN CATCH
 
             IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
-            SELECT CONCAT('0|No se pudo registrar el lote: ', ERROR_MESSAGE())
+            THROW;
 
         END CATCH
 
@@ -340,7 +340,7 @@ BEGIN
         BEGIN CATCH
 
             IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
-            SELECT CONCAT('0|No se pudo actualizar el lote: ', ERROR_MESSAGE())
+            THROW;
 
         END CATCH
 

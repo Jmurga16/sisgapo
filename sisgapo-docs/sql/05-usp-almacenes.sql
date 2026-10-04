@@ -119,6 +119,15 @@ BEGIN
 		
 		END	
 
+		IF NOT EXISTS (SELECT 1 FROM TBL_USUARIO WHERE nIdUsuario = @nIdUsuario AND nRol = 2 AND bEstado = 1)
+		BEGIN
+			SELECT '0|El supervisor debe ser un usuario activo con rol de supervisor'
+		END
+		ELSE IF EXISTS (SELECT 1 FROM TBL_ALMACEN WHERE LOWER(LTRIM(RTRIM(sNombre))) = LOWER(LTRIM(RTRIM(@sNombre))))
+		BEGIN
+			SELECT '0|Ya existe un almacén con ese nombre'
+		END
+		ELSE
 		BEGIN
 
 			INSERT INTO [TBL_ALMACEN]
@@ -126,9 +135,9 @@ BEGIN
 			VALUES(@sNombre, @sDireccion, @nIdUsuario,   @nIdZona, 1)
 
       SELECT '1|Se registró con éxito'
-      		
+
 		END
-		
+
 	END
 	   
 	   
@@ -140,20 +149,39 @@ BEGIN
 			SET @nIdUsuario	= cast((SELECT valor FROM @tParametro WHERE id = 3) AS INT);
 			SET @nIdZona	= CAST((SELECT valor FROM @tParametro WHERE id = 4) AS INT);			
 			SET @nIdAlmacen	= cast((SELECT valor FROM @tParametro WHERE id = 5) AS INT);
-	END	
-                              
-		  UPDATE [TBL_ALMACEN]                           
-		  SET 
+	END
+
+		IF NOT EXISTS (SELECT 1 FROM TBL_ALMACEN WHERE nIdAlmacen = @nIdAlmacen)
+		BEGIN
+			SELECT '0|El almacén no existe'
+		END
+		ELSE IF NOT EXISTS (SELECT 1 FROM TBL_USUARIO WHERE nIdUsuario = @nIdUsuario AND nRol = 2 AND bEstado = 1)
+		BEGIN
+			SELECT '0|El supervisor debe ser un usuario activo con rol de supervisor'
+		END
+		ELSE IF EXISTS (SELECT 1 FROM TBL_ALMACEN
+		                 WHERE LOWER(LTRIM(RTRIM(sNombre))) = LOWER(LTRIM(RTRIM(@sNombre)))
+		                   AND nIdAlmacen <> @nIdAlmacen)
+		BEGIN
+			SELECT '0|Ya existe otro almacén con ese nombre'
+		END
+		ELSE
+		BEGIN
+
+		  UPDATE [TBL_ALMACEN]
+		  SET
         sNombre       = @sNombre,
         sDireccion    = @sDireccion,
         nIdSupervisor = @nIdUsuario,
         nIdZona       = @nIdZona
-		  WHERE 
-			  nIdAlmacen = @nIdAlmacen                          
+		  WHERE
+			  nIdAlmacen = @nIdAlmacen
 
       SELECT '1|Se actualizó con éxito'
-        
-	END;                            
+
+		END
+
+	END;                          
 
                                                            
 	ELSE IF @sOpcion = '07'  -- ELIMINAR/ACTIVAR (D)                                                          
