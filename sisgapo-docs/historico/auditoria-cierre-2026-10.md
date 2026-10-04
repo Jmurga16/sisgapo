@@ -1,9 +1,10 @@
 # Auditoría de cierre — octubre de 2026
 
 > **Histórico.** Es la auditoría con la que se cerró la demo, con las correcciones del 2 y del
-> 4 de octubre de 2026, y se conserva tal como quedó. Lo que no se hizo —H-04 y H-16, aceptados,
-> y seis mejoras MC— sigue, con los mismos identificadores y el motivo, en
-> [`../11-auditoria-y-cierre.md`](../11-auditoria-y-cierre.md). Las rutas que cita son las de
+> 4 de octubre de 2026, y se conserva tal como quedó. No queda ningún hallazgo abierto: H-04 y
+> H-16 se cerraron por decisión (`../09-decisiones.md`, D-51 y D-55), y las seis mejoras MC que
+> no se aplicaron están, con su motivo, en [`../08-mejoras-posibles.md`](../08-mejoras-posibles.md).
+> Fue el documento 11 hasta el 4 de octubre de 2026. Las rutas que cita son las de
 > `sisgapo-docs/`.
 
 Revisión completa de código y documentación hecha el **1 de octubre de 2026** para dar el
@@ -111,7 +112,7 @@ comportamiento ya conocido: el cifrado va activado por defecto y la cadena local
 **Aplicado:** paquetes directos actualizados en la misma tanda que H-01, con compilación
 sin avisos y la suite como red.
 
-#### 🟡 H-04 · `npm audit` devuelve 23 avisos, ninguno en el bundle — aceptado
+#### ✅ H-04 · `npm audit` devuelve 23 avisos, ninguno en el bundle — cerrado por decisión
 
 `sisgapo-web/package-lock.json`
 
@@ -127,8 +128,8 @@ después de cada uno. Lo que no se pueda subir sin romper Webpack 4 es coste de 
 conviene decirlo en el README en una línea. **Esfuerzo:** 1–2 h.
 
 **Aceptado el 4 de octubre de 2026.** La subida a Angular 14 (D-51) los bajó a 10, pero todos
-en paquetes `@angular/*`, y su corrección empieza en Angular 20. Es el coste de no rediseñar la
-interfaz; sigue en `../11-auditoria-y-cierre.md`.
+en paquetes `@angular/*`, y su corrección empieza en Angular 20. Es el coste de quedarse en la
+14 sin rediseñar la interfaz, y está anotado en `../09-decisiones.md`, D-51.
 
 #### ✅ H-05 · El límite de intentos de acceso depende de la IP de conexión — cerrado
 
@@ -310,7 +311,7 @@ genérico—. **Esfuerzo:** 15 min; el seed ya cumple la regla.
 05 responden `0|Ya existe…` antes de llegar a la restricción. Cubierto por una prueba de
 integración.
 
-#### 🟡 H-16 · Las cantidades son enteras — aceptado
+#### ✅ H-16 · Las cantidades son enteras — cerrado por decisión
 
 `TBL_DET_PRODUCTO.nCantidad INT`, `TBL_MOVIMIENTO.nCantidad INT`, y `int` en las entidades
 
@@ -321,15 +322,17 @@ procedimientos que mueven cantidades, en `Entity`, en `Data` y en los dos formul
 Es un cambio de modelo, no un arreglo: **para la demo, no hacerlo**; queda anotado por si
 el proyecto se reabre.
 
-**Aceptado el 4 de octubre de 2026** como limitación del modelo; sigue en
-`../11-auditoria-y-cierre.md`.
+**Cerrado por decisión el 4 de octubre de 2026** (`../09-decisiones.md`, D-55): el modelo se
+queda en enteros, y los formularios de producto, lote y movimiento rechazan una cantidad con
+decimales con un mensaje claro, en vez de dejar que el procedimiento falle con el error
+genérico.
 
 ## 4. Mejoras de código propuestas
 
 Nada de esto es un defecto visible. Son las cosas que un revisor que lea el código
 anotaría, ordenadas por lo que más aportan por hora. El 4 de octubre de 2026 se aplicaron
 MC-04, MC-05, MC-06, MC-07 y MC-11, marcadas abajo; las demás siguen en
-`../11-auditoria-y-cierre.md` con el motivo para no hacerlas.
+`../08-mejoras-posibles.md` con el motivo para no hacerlas.
 
 | # | Mejora | Dónde | Esfuerzo |
 |---|---|---|---|
@@ -413,8 +416,19 @@ de este cierre.
 - [x] Reinicio periódico del seed: cron nocturno en el VPS desde el 4 de octubre de 2026.
 - [x] Enlace público actualizado a `https://sisgapo.devkora.com`.
 - [x] H-07 y H-12 a H-15 corregidos el 4 de octubre de 2026, con cinco pruebas de integración
-  nuevas; H-04 y H-16, aceptados.
-- [x] MC-04 a MC-07 y MC-11 aplicadas; las otras seis MC, descartadas mientras el proyecto
-  siga cerrado.
-- [x] La migración pasa a `migracion-contabo-2026-10.md` y el documento 10 es ahora el manual de
-  usuario.
+  nuevas; H-04 y H-16, cerrados por decisión (D-51 y D-55).
+- [x] MC-04 a MC-07 y MC-11 aplicadas; las otras seis MC, en `../08-mejoras-posibles.md`.
+- [x] La migración pasa a `migracion-contabo-2026-10.md`, el documento 10 es ahora el manual de
+  usuario y este documento deja de ser el 11 (D-54).
+
+### Estado verificado el 4 de octubre de 2026, al terminar
+
+| Comprobación | Resultado |
+|---|---|
+| Backend | .NET 10, compila sin avisos. Análisis NuGet, incluido el transitivo, sin vulnerabilidades |
+| Pruebas | 45 en verde contra el SQL Server de `docker compose` —27 unitarias y 18 de integración—, sin omitir ninguna; el CI ejecuta las mismas en cada push |
+| Frontend | Angular 14 con Material 14; build de producción sin flags en Node 22 y 24 (D-51) |
+| `npm audit --omit=dev` | 10 avisos, todos en los propios paquetes de Angular: coste aceptado de D-51 |
+| Demo pública | `https://sisgapo.devkora.com` responde en menos de un segundo, sin arranque en frío, con certificado de Let's Encrypt |
+| Datos de la demo | Se recargan desde el seed cada noche y en cada despliegue |
+| Secretos | Ninguno versionado. Los del servidor viven en un `.env` que no sale de él |

@@ -1,9 +1,9 @@
 # Hallazgos de la recuperación — agosto y septiembre de 2026
 
 > **Documento histórico.** Fue `06-hallazgos.md` hasta el 1 de octubre de 2026. Los 48
-> hallazgos están cerrados y nada de lo que hay aquí se mantiene: la auditoría vigente es
-> [`../11-auditoria-y-cierre.md`](../11-auditoria-y-cierre.md). Las rutas a otros
-> documentos apuntan a la carpeta superior.
+> hallazgos están cerrados y nada de lo que hay aquí se mantiene: la auditoría que la siguió
+> es la de cierre, [`auditoria-cierre-2026-10.md`](auditoria-cierre-2026-10.md). Las rutas a
+> otros documentos apuntan a la carpeta superior.
 
 Inventario completo de problemas encontrados en el análisis. Clasificados en tres grupos:
 **S** seguridad, **C** correctitud, **D** deuda técnica.
@@ -166,7 +166,7 @@ cliente potencial con perfil técnico va a mirar primero.
 
 **Arreglo:** BCrypt o Argon2 en la capa de aplicación, `VARCHAR(255)` para el hash, y quitar
 `sContrasenia` de la proyección de la opción `03`. Para el seed, generar los hashes de las
-contraseñas de demo. Ver `../08-mejoras-propuestas.md`, M-01.
+contraseñas de demo. Ver `../08-mejoras-posibles.md`, M-01.
 
 **Nota sobre las cuentas `demo.*`.** Las tres —`demo.admin`, `demo.supervisor`,
 `demo.asistente`— comparten `SisgapoDemo2026!` y la pantalla de acceso la muestra en claro.
@@ -193,7 +193,7 @@ curl -X POST http://<api>/UsuariosService \
   -d '{"sOpcion":"01","pParametro":""}'
 ```
 
-Si publicas la demo, publicas una API abierta. Ver `../08-mejoras-propuestas.md`, M-02.
+Si publicas la demo, publicas una API abierta. Ver `../08-mejoras-posibles.md`, M-02.
 
 ### 🔴 S-04 · El frontend no protege ninguna ruta — **corregido**
 
@@ -232,7 +232,7 @@ ensamblado solo para .NET Framework; el compilador avisa con `NU1701`. Hoy funci
 
 Se usa solo en `Conexion.cs`, para `SqlHelper.ExecuteReader`, `ExecuteScalar` y
 `ExecuteDataset`. Reemplazarlo por ADO.NET plano o Dapper son unas 80 líneas.
-Ver `../08-mejoras-propuestas.md`, M-03.
+Ver `../08-mejoras-posibles.md`, M-03.
 
 ### 🟠 S-07 · El delimitador `|` no se escapa — **corregido**
 
@@ -249,7 +249,7 @@ escrituras con valores que la interfaz nunca le ofreció.
 
 **Arreglo mínimo:** rechazar `|` en la validación del formulario y también en el backend.
 **Arreglo real:** abandonar el formato delimitado y pasar objetos JSON tipados.
-Ver `../08-mejoras-propuestas.md`, M-06.
+Ver `../08-mejoras-posibles.md`, M-06.
 
 **Arreglo aplicado:** los servicios Angular envían cada valor por separado en `parametros`.
 La capa de negocio rechaza cualquier valor que contenga `|` y solo después construye el
@@ -331,7 +331,7 @@ periódico del seed**, no el candado. El filtro queda como respaldo para momento
 **Estado verificado el 7 de septiembre de 2026:** `Demo__SoloLectura=FALSE` está **definida
 de forma explícita** en la configuración de `app-sisgapo-api`, que es lo que cierra el
 hallazgo: el valor ya no es el implícito del `appsettings.json`, es una decisión escrita en
-la instancia. Ver `../11-auditoria-y-cierre.md`.
+la instancia.
 
 ### 🔴 S-12 · Cuentas de persona con contraseña `123456` — **corregido**
 
@@ -886,7 +886,7 @@ Todo esto para descubrir algo que ya se sabe: **los seis procedimientos tienen l
 parámetros explícitamente y funciona igual.
 
 Eliminarlo quita ~120 de las 253 líneas de `Conexion.cs` y la mitad de las llamadas a la base
-de datos. Ver `../08-mejoras-propuestas.md`, M-03.
+de datos. Ver `../08-mejoras-posibles.md`, M-03.
 
 ### 🟡 D-06 · Los precios son `INT` — **corregido**
 
@@ -1192,7 +1192,7 @@ descartaron (D-13, D-14 — ver `../09-decisiones.md`, D-45 y D-46).
 motivo escrito (D-02, D-13, D-14)—, así que ya no hay un «orden de ataque» que seguir. El
 estado, con sus cifras, está al principio del documento.
 
-Lo que queda vivo no son hallazgos sino mantenimiento de la instancia pública, y está en
-`../11-auditoria-y-cierre.md`: **el reinicio periódico del seed**, que es el control que sustituye
-al modo solo lectura (S-11). Las mejoras opcionales que nunca fueron hallazgos —incluida la
-subida de un par de versiones de Angular— están en `../08-mejoras-propuestas.md`.
+Lo que quedaba vivo no eran hallazgos sino mantenimiento de la instancia pública: **el
+reinicio periódico del seed**, que es el control que sustituye al modo solo lectura (S-11).
+Quedó resuelto el 4 de octubre de 2026 con el cron del VPS. Las mejoras opcionales que nunca fueron hallazgos —incluida la
+subida de un par de versiones de Angular— están en `../08-mejoras-posibles.md`.

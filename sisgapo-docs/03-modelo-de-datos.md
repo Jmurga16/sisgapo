@@ -153,7 +153,7 @@ Ahora `TBL_LOTE.sNombreLote` es `UNIQUE` y el correlativo se busca como hace
 `UNIQUE(nIdProducto, nIdLote)` y baja lógica propia. Un producto puede tener a la vez el lote
 que vence en marzo y el que vence en junio, cada uno con su existencia, su precio y su fecha:
 era el caso de uso central de un almacén con control de caducidad y el modelo de 2021 no lo
-soportaba (`08-mejoras-propuestas.md`, M-09).
+soportaba (`08-mejoras-posibles.md`, M-09).
 
 `TBL_MOVIMIENTO` es el libro del almacén. Una fila por entrada, salida o ajuste sobre un lote:
 
@@ -421,7 +421,7 @@ Qué se corrigió en `sql/` respecto a los originales:
 | `TBL_USUARIO.nTelefono INT` pasa a `sTelefono VARCHAR(20)` | `01-esquema.sql`, `08-usp-usuarios.sql`, `03-seed.sql` |
 
 Las tres últimas filas no son correcciones de compatibilidad sino funcionalidad nueva: son
-los módulos de Lotes y Movimientos. Ver la sección 2 y `08-mejoras-propuestas.md`, M-09 y M-12.
+los módulos de Lotes y Movimientos. Ver la sección 2 y `08-mejoras-posibles.md`, M-09 y M-12.
 
 **Los cinco bugs de lógica, del 9 al 13, sí están corregidos en `sql/`.** En agosto esta
 sección decía lo contrario, y era cierto: entonces `sql/` solo arreglaba lo que impedía

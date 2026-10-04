@@ -24,7 +24,7 @@
 > | Seis procedimientos | Nueve: se añadieron Panel, Lotes y Movimientos | M-09, M-11, M-12 |
 >
 > Los identificadores `S-`, `C-` y `D-` de la tabla son los de la auditoría de 2026, ya
-> cerrada. Lo que queda abierto hoy está en `11-auditoria-y-cierre.md`.
+> cerrada. Lo que se podría mejorar está en `08-mejoras-posibles.md`.
 
 ## 1. Vista general
 
@@ -200,7 +200,7 @@ disciplina es más mantenible que cuatro patrones distintos aplicados a medias. 
 implica tocar simultáneamente el SP, el `*Data.cs` y el `*.service.ts` de cada entidad.
 
 Si lo cambias, ve entidad por entidad y termina cada una antes de empezar la siguiente.
-Ver `08-mejoras-propuestas.md`, M-06.
+Ver `08-mejoras-posibles.md`, M-06.
 
 ### La excepción: `ZonaController`
 
@@ -262,7 +262,7 @@ SqlHelper.ExecuteScalar(oSqlConnIN, CommandType.StoredProcedure, sProcedure, arP
 Server— para descubrir la firma del SP en tiempo de ejecución. Como los seis SPs tienen
 exactamente la misma firma (`@sOpcion VARCHAR(2)`, `@pParametro VARCHAR(MAX)`), esta
 introspección no aporta nada: se puede reemplazar por dos `SqlParameter` explícitos y
-eliminar ~120 de las 253 líneas de `Conexion.cs`. Ver `08-mejoras-propuestas.md`, M-02.
+eliminar ~120 de las 253 líneas de `Conexion.cs`. Ver `08-mejoras-posibles.md`, M-02.
 
 **7. `USP_MNT_Almacenes`, opción `05`**
 ```sql
@@ -348,7 +348,7 @@ Consecuencias:
 - La configuración se relee del disco en cada request.
 
 Introducir DI es de las mejoras con mejor relación esfuerzo/beneficio: son ~15 líneas en
-`Startup` y cambiar constructores. Ver `08-mejoras-propuestas.md`, M-03.
+`Startup` y cambiar constructores. Ver `08-mejoras-posibles.md`, M-03.
 
 ## 7. Pipeline HTTP y CORS
 

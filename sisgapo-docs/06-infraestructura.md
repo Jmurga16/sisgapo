@@ -40,6 +40,10 @@ Europa pasa al horario de invierno). Deja su registro en `/opt/sisgapo/sembrar.l
 plantilla es `deploy/env.example`. La API entra a SQL Server con `sisgapo_app`, que solo puede
 ejecutar procedimientos; `sa` lo usa únicamente la carga (`09-decisiones.md`, D-52).
 
+**El repositorio no se archiva** en GitHub mientras la demo esté en línea: un repositorio
+archivado no ejecuta el CI ni admite cambios, y la demo seguirá necesitando un parche de vez
+en cuando.
+
 El acceso al servidor, las demás demos y la bitácora de cambios se documentan fuera de este
 repositorio, en la ficha del VPS.
 
@@ -107,7 +111,7 @@ SQLite es la opción técnicamente más elegante —sin servidor de base de dato
 frío, sin depender de la política de precios de nadie—, pero exige llevar toda la lógica de
 negocio de T-SQL a C#: 4–6 días. **Reconsidérala si** el objetivo pasa a ser demostrar
 capacidad de modernización y no solo que el sistema funciona; está desarrollada en
-`08-mejoras-propuestas.md`, M-10.
+`08-mejoras-posibles.md`, M-10.
 
 Ver `09-decisiones.md`, D-01 para el razonamiento completo.
 

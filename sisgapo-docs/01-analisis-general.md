@@ -131,7 +131,8 @@ La infraestructura de hoy —un VPS propio, sin coste adicional— está en
 Cómo se encontró el proyecto al recuperarlo —infraestructura de Azure desaparecida,
 compilación con doce avisos, secretos en la copia local, sin control de versiones— está
 en [`historico/estado-inicial-2026-08.md`](historico/estado-inicial-2026-08.md). Es el
-punto de partida de la auditoría; el estado actual está en `11-auditoria-y-cierre.md`.
+punto de partida de la auditoría; el estado al cerrar, en
+`historico/auditoria-cierre-2026-10.md`.
 
 ## 5. Métricas del código
 
@@ -160,7 +161,7 @@ Doce scripts: esquema, función `Split`, seed y nueve procedimientos.
 - 8 archivos de modelos compartidos
 - 13 scripts SQL originales de 2021, congelados como evidencia
 - 12 archivos `.spec.ts`, todavía de existencia: comprueban que los métodos estén, no lo
-  que hacen (`11-auditoria-y-cierre.md`, MC-10)
+  que hacen (`08-mejoras-posibles.md`, MC-10)
 
 ### Duplicación
 

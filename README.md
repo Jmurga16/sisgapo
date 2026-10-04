@@ -11,8 +11,8 @@ los 48 cerrados— está en
 [`sisgapo-docs/historico/hallazgos-2026.md`](sisgapo-docs/historico/hallazgos-2026.md), y la
 del cierre, en
 [`sisgapo-docs/historico/auditoria-cierre-2026-10.md`](sisgapo-docs/historico/auditoria-cierre-2026-10.md).
-El estado final —sin hallazgos abiertos, con lo que no se hizo y por qué— está en
-[`sisgapo-docs/11-auditoria-y-cierre.md`](sisgapo-docs/11-auditoria-y-cierre.md), y cómo se
+No queda ningún hallazgo abierto. Lo que se podría hacer y no se hace, con su motivo, está
+en [`sisgapo-docs/08-mejoras-posibles.md`](sisgapo-docs/08-mejoras-posibles.md), y cómo se
 usa la aplicación, en
 [`sisgapo-docs/10-manual-de-usuario.md`](sisgapo-docs/10-manual-de-usuario.md).
 
@@ -214,8 +214,7 @@ Empieza por [`sisgapo-docs/README.md`](sisgapo-docs/README.md).
 | `05-frontend.md` | Módulos, rutas y servicios de Angular |
 | `06-infraestructura.md` | Infraestructura y costos: qué corre hoy y cómo redesplegarlo |
 | `07-plan-demo.md` | Cómo presentarlo |
-| `08-mejoras-propuestas.md` | Roadmap: lo que sigue abierto |
+| `08-mejoras-posibles.md` | Lo que se podría hacer y no se hace, con su motivo |
 | `09-decisiones.md` | Decisiones tomadas y alternativas descartadas |
 | `10-manual-de-usuario.md` | Cómo se usa: acceso, permisos por rol y cada pantalla |
-| `11-auditoria-y-cierre.md` | Estado final de la demo: lo aceptado y lo que no se hace, con su motivo |
 | `historico/` | Las dos auditorías de 2026, ya cerradas, las mejoras aplicadas, el plan de la migración al VPS y el estado inicial |

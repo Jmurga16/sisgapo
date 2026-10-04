@@ -1,7 +1,8 @@
-# 08 — Mejoras propuestas
+# 08 — Mejoras posibles
 
-Catálogo de mejoras más allá del alcance original de 2021. Cada una lleva esfuerzo estimado,
-impacto para la demo y una recomendación explícita de **hacerla o no hacerla**.
+Lo que se podría hacer y no se hace: las mejoras más allá del alcance original de 2021 (`M-`)
+y las mejoras de código que dejó la auditoría de cierre (`MC-`). Cada una lleva esfuerzo
+estimado y una recomendación explícita de **hacerla o no hacerla**.
 
 Todo lo de aquí es **opcional**. El alcance original está completo —12 de 12 casos de uso—
 y encima hay tres módulos que no estaban en 2021. Lo que sí hay que hacer antes de archivar
@@ -75,21 +76,15 @@ empezar la siguiente. `ZonaController` ya funciona así y sirve de plantilla.
 
 ## ❌ M-07 · Actualizar Angular
 
-**Resolvería:** `historico/hallazgos-2026.md`, D-02 · **Esfuerzo:** 3–5 días
+**Resolvía:** `historico/hallazgos-2026.md`, D-02 · **Esfuerzo:** hecho hasta la 14
 
-Angular 9 a la versión actual son más de diez versiones mayores. La ruta oficial
-(`ng update` versión a versión) es lenta y con este código —que mezcla Material, Bootstrap 5
-y `@ng-bootstrap` 6— probablemente se atasque. Suele salir más rápido **crear un proyecto
-nuevo y portar los componentes**.
+El frontend subió de Angular 9 a la 14 en octubre de 2026 (`09-decisiones.md`, D-51) y **se
+queda ahí**. La 14 es la última versión en la que Material conserva sus componentes
+clásicos: de la 15 en adelante cambian los formularios, las tablas y los diálogos, y eso es
+rediseñar la interfaz. Nada de este documento depende de subirlo.
 
-**El argumento en contra, y es fuerte:** Angular 9 **compila hoy en Node 22 y en Node 24**
-con `--openssl-legacy-provider`, ya fijado en los scripts de `package.json`. La
-actualización no desbloquea nada; solo mejora cómo se ve el `package.json`.
-
-**Decisión:** descartado, y firmado como tal en `09-decisiones.md`, D-47: el proyecto es de
-2021 y esa fecha es parte de lo que cuenta, y migrar de verdad arrastra a Material 3, que
-es un rediseño. El coste que sí queda a la vista son los avisos de `npm audit`
-(`11-auditoria-y-cierre.md`, H-04).
+El coste que queda a la vista son los 10 avisos de `npm audit`, todos en paquetes de Angular,
+que solo se corrigen a partir de la 20. Está anotado y aceptado en D-51.
 
 ## 🤔 M-08 · Pruebas de verdad
 
@@ -190,6 +185,22 @@ No llegan a mejora con número, pero salieron al hacer las otras:
   traerlos a `inicio.component`. Medio día.
 - **Exportar el kardex.** El listado tiene filtros y totales; un CSV de lo filtrado es lo que
   un cliente del rubro pediría a continuación. Dos horas, sin tocar la API.
+
+## Mejoras de código que no se aplican
+
+Salieron de la auditoría de cierre (`historico/auditoria-cierre-2026-10.md`, sección 4) y
+conservan su identificador. MC-04 a MC-07 y MC-11 se aplicaron el 4 de octubre de 2026
+(`09-decisiones.md`, D-53). Estas seis se evaluaron y se dejan: ninguna cambia lo que ve
+quien usa o revisa la demo.
+
+| # | Mejora | Esfuerzo | Por qué no se aplica |
+|---|---|---|---|
+| MC-01 | **Un solo catálogo de opciones de escritura.** «Qué `sOpcion` escribe» está declarado en el chequeo de rol de cada controlador, en el `bEscritura` de cada `Business` y en `DemoSoloLecturaFilter` | 2 h | Las tres listas coinciden y las pruebas del modo demo vigilan la del filtro. Unificarlas rinde cuando una entidad gana una opción, y con el proyecto cerrado no la gana ninguna |
+| MC-02 | **Registrar cada excepción una vez.** `Data`, `Business`, el controlador y el middleware registran la misma excepción: cuatro entradas por fallo | 1 h | Cambia la convención de `00-convenciones.md`, sección 8, en las tres capas de las nueve entidades. Es el estilo de 2021 y se lee coherente |
+| MC-03 | **Configuración inyectada.** `ConfiguracionBD` y `ConfiguracionJwt` leen `appsettings` por su cuenta, y `Data` hace `new Conexion(1)` en nueve constructores | 2 h | Refactor de nueve clases sin efecto visible; la configuración real ya la cubren las pruebas de integración |
+| MC-08 | **Hosting mínimo.** `Program.cs` + `Startup.cs` al modelo de `WebApplication.CreateBuilder` | 2 h | Es D-05: `Startup.cs` sigue soportado en .NET 10 y cambiarlo no aporta nada a la demo |
+| MC-09 | **Un solo registro.** NLog y `Microsoft.Extensions.Logging` conviven sin integrarse | 1 h | Va con MC-02: las dos cambian cómo se registra, y se harían juntas |
+| MC-10 | **Frontend.** `.toPromise()`, `JSON.stringify` con `Content-Type` a mano en seis servicios, y once `.spec.ts` que no compilan y no están en el CI (`05-frontend.md`, sección 10) | 3–4 h | `.toPromise()` solo se sustituye con RxJS 7, y el frontend se queda en Angular 14 con sus dependencias (D-51). Lo demás es estilo |
 
 ## Rutas recomendadas
 

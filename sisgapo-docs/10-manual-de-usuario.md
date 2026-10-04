@@ -235,6 +235,7 @@ Cuando la aplicación rechaza algo, lo dice con un mensaje. Los más habituales:
 | *El producto tiene N en existencia…* / *El lote todavía tiene N en existencia…* | Registra la salida de esa mercadería antes de dar de baja |
 | *La unidad de medida debe coincidir con los demás lotes del producto* | Usa la misma unidad que los lotes que ya tiene |
 | *El lote solo tiene N en existencia* | La salida pide más de lo que hay |
+| *La cantidad debe ser un número entero.* | Las cantidades se registran en unidades enteras de la U.M. del producto; el sistema no admite fracciones |
 | *La cantidad contada coincide con la existencia: no hay ajuste que registrar* | El conteo cuadra; no hace falta ajuste |
 | *Demasiados intentos* | Cinco intentos de acceso fallidos en un minuto: espera un minuto |
 | *No se pudieron cargar…* con el botón *Reintentar* | La API no respondió; *Reintentar* vuelve a pedir los datos |

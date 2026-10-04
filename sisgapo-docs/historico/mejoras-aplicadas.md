@@ -1,6 +1,6 @@
 # Mejoras aplicadas (agosto–septiembre de 2026)
 
-Las ocho entradas de `../08-mejoras-propuestas.md` que se llegaron a hacer, con el detalle
+Las ocho entradas de `../08-mejoras-posibles.md` que se llegaron a hacer, con el detalle
 de qué se hizo y cómo se comprobó. Se mueven aquí para que el roadmap vivo tenga solo lo
 abierto. Los identificadores `S-`, `C-` y `D-` remiten a `hallazgos-2026.md`, en esta
 misma carpeta.
@@ -151,7 +151,8 @@ dependencias completo el 7 de septiembre (`../09-decisiones.md`, D-43).
 
 Lo que quedó fuera, a propósito o por falta de tanda: `UsuarioData` y `ZonaData` siguen
 abriendo su propia `SqlConnection` en vez de pasar por `Conexion` (es H-09 en
-`../11-auditoria-y-cierre.md`), y la configuración sigue en clases estáticas (MC-03).
+`auditoria-cierre-2026-10.md`, corregido el 2 de octubre), y la configuración sigue en clases
+estáticas (MC-03, en `../08-mejoras-posibles.md`).
 
 ## ✅ M-04 · Corregir los bugs que se ven
 
@@ -246,7 +247,7 @@ ninguna tabla, y el frontend usa la misma URL configurada que el resto de la apl
 
 **Resultado:** es la entrada visual de la demo y resume el estado actual. Lo que le falta
 —actividad reciente y entradas y salidas del período— está anotado como ampliación en
-`../08-mejoras-propuestas.md`: `USP_MNT_Movimientos` opción `04` ya devuelve esos totales.
+`../08-mejoras-posibles.md`: `USP_MNT_Movimientos` opción `04` ya devuelve esos totales.
 
 ## ✅ M-12 · Movimientos de inventario
 

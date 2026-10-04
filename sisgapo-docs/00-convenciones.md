@@ -197,5 +197,5 @@ pase por `Business` funciona, pero rompe la simetría que hace el código predec
 2. `npm run build` en `sisgapo-web` — sin errores.
 3. La operación probada **contra la base de datos**, no solo compilada. Los bugs de este
    proyecto no eran de compilación: eran capas que dejaron de entenderse entre sí.
-4. Si el cambio abre o cierra un hallazgo, actualiza `11-auditoria-y-cierre.md`; si es una decisión
-   discutible, anótala en `09-decisiones.md`.
+4. Si el cambio aplica o descarta una mejora, actualiza `08-mejoras-posibles.md`; si es una
+   decisión discutible, anótala en `09-decisiones.md`.

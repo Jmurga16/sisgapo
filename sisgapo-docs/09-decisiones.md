@@ -51,7 +51,7 @@ la lógica de negocio de stored procedures a servicios de C# con pruebas" es una
 fuerte que "lo desplegué en el tier gratuito".
 
 Si tu objetivo fuera demostrar capacidad de modernización en vez de tener algo que enseñar
-pronto, mi recomendación sería D. Está desarrollada en `08-mejoras-propuestas.md`, M-10 con
+pronto, mi recomendación sería D. Está desarrollada en `08-mejoras-posibles.md`, M-10 con
 el orden de ejecución seguro.
 
 **Reconsidera si:** la oferta gratuita de Azure SQL deja de existir o cambia de condiciones;
@@ -117,7 +117,7 @@ acoplado por posición, con un delimitador que no se escapa. Es lo primero que c
 revisor.
 
 **Decisión: conservarlo.** Documentarlo a fondo, señalar sus problemas, y proponer el cambio
-como mejora opcional (`08-mejoras-propuestas.md`, M-06).
+como mejora opcional (`08-mejoras-posibles.md`, M-06).
 
 **Por qué.** Tres razones:
 
@@ -399,7 +399,7 @@ Lo compensa un comentario al principio del bloque explicando el escenario.
 
 ## D-17 · El panel de inicio, antes que la autenticación
 
-**La duda.** `08-mejoras-propuestas.md` marca M-11 (panel) como 🤔 y M-02 (JWT) como ✅.
+**La duda.** `08-mejoras-posibles.md` marca M-11 (panel) como 🤔 y M-02 (JWT) como ✅.
 El orden natural sería autenticar primero.
 
 **Decisión: construir el panel y dejar la autenticación para después.**
@@ -581,7 +581,7 @@ Se conserva `Startup.cs` en vez de pasar al modelo de `Program.cs` de nivel supe
 **Decisión:** `TBL_DET_PRODUCTO.nCantidad` sigue existiendo como saldo vigente del lote, en
 vez de calcularse con un `SUM(TBL_MOVIMIENTO.nCantidad)` cada vez que se lee.
 
-**Por qué.** `08-mejoras-propuestas.md`, M-12 proponía lo segundo. Calcularlo obliga a añadir
+**Por qué.** `08-mejoras-posibles.md`, M-12 proponía lo segundo. Calcularlo obliga a añadir
 una agregación al listado de productos, al de lotes, a los cuatro bloques del panel y a los
 selectores: seis consultas reescritas para no ganar nada visible. Guardarlo cuesta mantener un
 invariante —existencia = suma del kardex— que un solo procedimiento controla, dentro de una
@@ -919,7 +919,7 @@ el `overrides` se retiró.
 ## D-40 · El precio lleva céntimos y el teléfono deja de ser un número
 
 **La duda.** Los hallazgos D-06 y D-07 estaban marcados como 🟡 y con una nota en
-`11-auditoria-y-cierre.md` que decía, con razón, que «no se ven salvo que alguien meta un
+el documento de estado de entonces que decía, con razón, que «no se ven salvo que alguien meta un
 precio con céntimos». Cambiar un tipo de columna toca la base, los procedimientos, las
 entidades, la capa Data y el formulario: es de los cambios que más archivos mueven por menos
 efecto visible.
@@ -1134,11 +1134,11 @@ que se decidió, y lo cumple el código?
 | D-02 · Seguir en Azure | **Superada si se ejecuta D-49** | Era consecuencia de «no hay SQL Server gratuito fuera de Azure»; con un servidor ya pagado, lo hay |
 | D-03 · .NET 8 y no .NET 9 | **Superada por el calendario** | Acertó al evitar .NET 9, que caduca el mismo día; .NET 8 sale de soporte el 10 de noviembre de 2026. Ver D-50 |
 | D-04 · Conservar `sOpcion`/`pParametro` | **Vigente** | S-07 cerró el riesgo que la hacía dudosa. M-06 sigue siendo opcional |
-| D-05 · Conservar `Startup.cs` | **Vigente** | El «commit aparte» que pasaría a hosting mínimo nunca se hizo; queda como MC-08 en `11-auditoria-y-cierre.md` |
+| D-05 · Conservar `Startup.cs` | **Vigente** | El «commit aparte» que pasaría a hosting mínimo nunca se hizo; queda como MC-08 en `08-mejoras-posibles.md` |
 | D-08 · Docker Compose | **Ejecutada** | Y es la base de D-49: lo que levanta el sistema en local es lo que lo levantaría en el servidor |
 | D-09 · Autoría en equipo | **Vigente** | Sin cambios; el documento de casos de uso pasó a `historico/` |
 | D-11 · Documentos numerados | **Vigente, aplicada otra vez** | D-48 deja infraestructura en 06 y reserva el último número para el cierre |
-| D-12 · Auditoría centralizada | **Vigente** | La de 2026 pasó a `historico/`; la auditoría final cierra la serie como documento 11 |
+| D-12 · Auditoría centralizada | **Vigente** | La de 2026 pasó a `historico/`; la auditoría final cierra la serie como documento 11, que pasó también al histórico al cerrarse (D-54) |
 | D-17 · El panel antes que la autenticación | **Cerrada** | La deuda que asumía desapareció con S-02 a S-04 |
 | D-19 · «Tracking» fuera del árbol | **Vigente** | No se restaura en el cierre; los comandos de recuperación siguen ahí |
 | D-24 · Token en `localStorage` | **Vigente; D-49 abre la alternativa** | Con API y frontend bajo el mismo dominio, la cookie `HttpOnly` deja de ser imposible. Sigue siendo opcional para una demo sin datos reales |
@@ -1159,13 +1159,14 @@ vigentes sin matices: el código hace lo que dicen.
 
 **La duda.** Con los 48 hallazgos cerrados, `06-hallazgos.md` había dejado de ser una lista
 de trabajo y era un registro de 65 KB que había que leer entero para saber que no quedaba
-nada. Lo mismo pasaba con las ocho mejoras ya hechas de `08-mejoras-propuestas.md` y con la
+nada. Lo mismo pasaba con las ocho mejoras ya hechas de `08-mejoras-posibles.md` y con la
 sección de estado inicial de `01-analisis-general.md`: verdad en agosto, ruido en octubre.
 
 **Decisión.** Lo resuelto pasa a `sisgapo-docs/historico/`, íntegro y sin reescribir; el
 06 queda para infraestructura, 07 para el guion, 08 para mejoras, 09 para decisiones y 10
 para la migración. La auditoría y el estado final se consolidan en el último documento,
-`11-auditoria-y-cierre.md`. Los identificadores `S-`, `C-` y `D-` del histórico no se
+`11-auditoria-y-cierre.md` —desde D-54, en `historico/auditoria-cierre-2026-10.md`—. Los
+identificadores `S-`, `C-` y `D-` del histórico no se
 renumeran: medio repositorio los cita.
 
 **Por qué no borrar.** La auditoría de 2026 es la pieza con más valor del portafolio
@@ -1283,7 +1284,8 @@ plantilla. Se deja así porque es más coherente; si se quisiera el aspecto exac
 bastaría `hideRequiredMarker` en `MAT_FORM_FIELD_DEFAULT_OPTIONS`.
 
 **Lo que no arregla.** `npm audit --omit=dev` baja de 23 avisos a 10, todos en los propios
-paquetes de Angular, y su corrección empieza en la 20: es el coste de quedarse en la 14. Las
+paquetes de Angular, y su corrección empieza en la 20: es el coste de quedarse en la 14, y se
+acepta (era H-04 de la auditoría de cierre). Las
 pruebas de Karma siguen sin compilar, como antes de la migración: los *specs* son de 2021 y
 no se actualizaron cuando cambiaron los constructores. El builder de TSLint desapareció en la
 12, así que `npm run lint` llama a `tslint` directamente.
@@ -1333,9 +1335,10 @@ segundos. Dejarlos escritos y sin hacer es honesto, pero se lee como trabajo a m
 
 **Decisión.** Se cierran los que tienen un arreglo acotado y verificable: H-07 y H-12 a
 H-15, con cinco pruebas de integración nuevas, y las mejoras mecánicas o de limpieza, MC-04
-a MC-07 y MC-11. Quedan H-04 y H-16, que son un cambio de plataforma y uno de modelo, y las
-MC que son refactors o cambian una convención (MC-01 a MC-03 y MC-08 a MC-10). Cada una
-conserva en `11-auditoria-y-cierre.md` el motivo para no hacerla.
+a MC-07 y MC-11. Quedan fuera H-04, que es el coste ya anotado en D-51; H-16, que es un
+cambio de modelo y se resuelve en D-55; y las MC que son refactors o cambian una convención
+(MC-01 a MC-03 y MC-08 a MC-10), que pasan a `08-mejoras-posibles.md` con el motivo para no
+hacerlas.
 
 **Lo que cambia para quien llama a la API:**
 
@@ -1359,7 +1362,7 @@ constructores sin parámetros de `Business`.
 
 ---
 
-## D-54 · El documento 10 pasa a ser el manual de usuario
+## D-54 · La documentación termina en el 10: el manual de usuario
 
 **La duda.** Ejecutada la migración, `10-migracion-contabo.md` era un plan cumplido: lo
 vigente ya estaba en `06-infraestructura.md` y en `deploy/`. Y la documentación explicaba
@@ -1374,7 +1377,40 @@ pantalla en el orden en que se recorre y los mensajes con que la aplicación rec
 hueco en el 10 obliga a explicar algo que no aporta nada. Las citas al documento antiguo
 apuntan ahora al histórico.
 
+**Y el 11 desaparece.** Con los hallazgos cerrados, `11-auditoria-y-cierre.md` solo guardaba
+una tabla de estado y seis mejoras no aplicadas. Las mejoras van con las demás en
+`08-mejoras-posibles.md` —antes `08-mejoras-propuestas.md`—, que ya era el catálogo de lo que
+se podría hacer, y la tabla de estado, al histórico de la auditoría de cierre, que es donde
+el cierre está contado. Dos documentos de mejoras con nombres casi iguales habrían obligado a
+explicar en qué se distinguen.
+
 **Estado:** aplicada el 4 de octubre de 2026.
+
+---
+
+## D-55 · Las cantidades siguen siendo enteras
+
+**La duda.** H-16 de la auditoría de cierre: no se puede registrar una salida de 12,5 kg, y en
+un almacén de productos que se venden a granel es una limitación real. Peor todavía, los
+formularios aceptaban el decimal y el procedimiento, al no poder convertirlo a `INT`, fallaba
+con el mensaje genérico de error.
+
+**Decisión: el modelo se queda en enteros**, y los formularios de producto, lote y movimiento
+rechazan una cantidad con decimales con un mensaje claro antes de llamar a la API.
+
+**Por qué no `DECIMAL`.** Medido el 4 de octubre de 2026: unas noventa líneas de T-SQL en
+seis scripts —esquema, seed, Productos, Lotes, Movimientos y Panel—, doce propiedades de
+`Entity` con sus lecturas en `Data` y diecisiete archivos de Angular entre formularios,
+listados, panel y cronología. Todo dentro del módulo que sostiene el invariante del kardex
+(D-26), para una demo que se entiende igual con unidades enteras: el seed mide la vainilla en
+gramos.
+
+**Lo que queda.** Una llamada directa a la API con decimales sigue recibiendo el 500
+genérico. El formulario es la única puerta que usa una persona.
+
+**Reconsidera si:** el sistema pasa a usarse con datos reales de productos a granel.
+
+**Estado:** aplicada el 4 de octubre de 2026. Cierra H-16 de la auditoría de cierre.
 
 ---
 
@@ -1398,7 +1434,7 @@ apuntan ahora al histórico.
 | D-14 | Scripts reejecutables con `CREATE OR ALTER` | Ninguno |
 | D-15 | Publicar la base en el puerto 14330 | Ninguno |
 | D-16 | Fechas del seed relativas a `GETDATE()` | Bajo |
-| D-17 | El panel antes que la autenticación | **Medio** — invierte el orden de `08-mejoras-propuestas.md` |
+| D-17 | El panel antes que la autenticación | **Medio** — invierte el orden de `08-mejoras-posibles.md` |
 | D-18 | Monorepo con el historial de 2021 importado | Bajo |
 | D-19 | «Tracking» fuera del árbol, dentro del historial | **Medio** — revisa C-11 antes de opinar |
 | D-20 | Tipar respuestas sin activar `strict` completo | Bajo |
@@ -1435,7 +1471,8 @@ apuntan ahora al histórico.
 | D-51 | Angular sube a la 14, y no más | Bajo — la 14 es el techo antes de Material MDC |
 | D-52 | En el VPS, un solo dominio detrás del proxy común | Bajo — es el patrón que ya usan las otras demos del servidor |
 | D-53 | Los hallazgos con arreglo acotado se cierran; la API deja de admitir `pParametro` | Bajo — el único cambio de contrato no tiene cliente que lo use |
-| D-54 | El documento 10 pasa a ser el manual de usuario; la migración, al histórico | Ninguno |
+| D-54 | La documentación termina en el 10: manual de usuario; la migración y el 11, al histórico; las mejoras, en el 08 | Ninguno |
+| D-55 | Las cantidades siguen siendo enteras; los formularios rechazan decimales con un mensaje claro | Bajo — es una limitación real para productos a granel, medida y aceptada |
 
 **Las tres que más merecen tu revisión: D-01, D-04 y D-09.**
 De las anteriores, la discutible es **D-24**: `localStorage` es la opción cómoda, no la

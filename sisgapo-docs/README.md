@@ -7,7 +7,8 @@ Sistemas), recuperado en 2026 y **cerrado como demo de portafolio el 2 de octubr
 Estado: **funciona en local con un comando, y hay una demo pública en vivo** (enlace en el
 [README de la raíz](../README.md)). Desde el 4 de octubre de 2026 corre en un VPS propio, en
 contenedores, y la base de datos se reconstruye cada noche desde los scripts de `sql/`. No
-queda ningún hallazgo abierto: lo que no se hizo, y por qué, está en el documento 11.
+queda ningún hallazgo abierto: lo que se podría hacer y no se hace, con su motivo, está en el
+documento 08.
 
 ---
 
@@ -19,7 +20,7 @@ queda ningún hallazgo abierto: lo que no se hizo, y por qué, está en el docum
 | Escribir código | [`00-convenciones.md`](00-convenciones.md) |
 | Entender el sistema | `01` → `02` → `03` |
 | Usar la aplicación | [`10-manual-de-usuario.md`](10-manual-de-usuario.md) |
-| Saber en qué estado quedó | [`11-auditoria-y-cierre.md`](11-auditoria-y-cierre.md) |
+| Saber qué no se hizo y por qué | [`08-mejoras-posibles.md`](08-mejoras-posibles.md) |
 | Presentarlo | [`07-plan-demo.md`](07-plan-demo.md) |
 | Saber cómo se cerró | [`historico/auditoria-cierre-2026-10.md`](historico/auditoria-cierre-2026-10.md) |
 | Moverlo a otro servidor | [`06-infraestructura.md`](06-infraestructura.md) y, como antecedente, [`historico/migracion-contabo-2026-10.md`](historico/migracion-contabo-2026-10.md) |
@@ -37,10 +38,9 @@ queda ningún hallazgo abierto: lo que no se hizo, y por qué, está en el docum
 | 05 | [Frontend](05-frontend.md) | Módulos Angular, rutas, servicios, componentes, sesión |
 | 06 | [Infraestructura y costos](06-infraestructura.md) | De dónde venía el gasto, qué corre hoy y cómo redesplegar |
 | 07 | [Plan de demo](07-plan-demo.md) | Cómo presentar el proyecto: guion y qué decir |
-| 08 | [Mejoras propuestas](08-mejoras-propuestas.md) | El roadmap opcional: lo que sigue abierto, con estimaciones |
+| 08 | [Mejoras posibles](08-mejoras-posibles.md) | Lo que se podría hacer y no se hace: el roadmap y las mejoras de código, con estimaciones y motivo |
 | 09 | [Decisiones](09-decisiones.md) | Registro de decisiones tomadas, alternativas descartadas y su revisión al cierre |
 | 10 | [Manual de usuario](10-manual-de-usuario.md) | Cómo se usa: acceso, permisos por rol y cada pantalla, con los mensajes que devuelve |
-| 11 | [Auditoría y cierre](11-auditoria-y-cierre.md) | **Estado final verificado**: las limitaciones aceptadas y lo que no se hace, con su motivo; la auditoría de cierre completa está en el histórico |
 
 Los módulos de Lotes y Movimientos se documentan repartidos: modelo en el `03`, contratos en
 el `04`, pantallas en el `05` y las decisiones que los sostienen en el `09` (D-26 a D-31).
@@ -74,9 +74,9 @@ También en esta carpeta:
    avisos.
 6. La auditoría de la recuperación encontró 48 hallazgos y **los 48 están cerrados**: 45
    arreglados y tres cerrados con el motivo escrito. La auditoría de cierre, hecha el 1 de
-   octubre, encontró 16 más: 13 se corrigieron entre el 2 y el 4 de octubre, uno se cerró
-   por decisión y dos —una limitación del modelo y los avisos de `npm audit` de Angular— se
-   aceptan con el motivo escrito.
+   octubre, encontró 16 más: 13 se corrigieron entre el 2 y el 4 de octubre y tres se
+   cerraron por decisión, con el motivo escrito —Swagger solo en local, los avisos de
+   `npm audit` como coste de quedarse en Angular 14 y las cantidades enteras—.
 7. **La autenticación es real:** contraseñas con bcrypt, JWT firmado, `[Authorize]` en
    todos los controladores, guards por rol en Angular y límite de intentos de acceso.
 8. No hay secretos en el repositorio. Sí los hubo: una contraseña de SonarQube estuvo en
