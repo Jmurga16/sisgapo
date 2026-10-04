@@ -1,8 +1,8 @@
 # Auditoría de cierre — octubre de 2026
 
 > **Histórico.** Es la auditoría con la que se cerró la demo, con las correcciones del 2 y del
-> 4 de octubre de 2026, y se conserva tal como quedó. Lo que sigue abierto —H-04, H-07, H-12 a
-> H-16 y las mejoras MC— se mantiene, con los mismos identificadores, en
+> 4 de octubre de 2026, y se conserva tal como quedó. Lo que no se hizo —H-04 y H-16, aceptados,
+> y seis mejoras MC— sigue, con los mismos identificadores y el motivo, en
 > [`../11-auditoria-y-cierre.md`](../11-auditoria-y-cierre.md). Las rutas que cita son las de
 > `sisgapo-docs/`.
 
@@ -75,7 +75,7 @@ mismo tipo de cambio mecánico que D-25 documentó para pasar de .NET 5 a 8:
   `Microsoft.Extensions.Configuration` y `.Json`, `Microsoft.NET.Test.Sdk`,
   `coverlet.collector`;
 - `dotnet-version: 10.0.x` en los dos trabajos del workflow;
-- al ejecutar la migración del documento 10, la imagen base del `Dockerfile`.
+- al ejecutar la migración (`migracion-contabo-2026-10.md`), la imagen base del `Dockerfile`.
 
 Verificación: compilar sin avisos, 39 pruebas en verde con `docker compose`, y el
 recorrido por HTTP de D-41. **Esfuerzo:** 2–3 h. Decisión registrada como D-50.
@@ -111,7 +111,7 @@ comportamiento ya conocido: el cifrado va activado por defecto y la cadena local
 **Aplicado:** paquetes directos actualizados en la misma tanda que H-01, con compilación
 sin avisos y la suite como red.
 
-#### 🟡 H-04 · `npm audit` devuelve 23 avisos, ninguno en el bundle
+#### 🟡 H-04 · `npm audit` devuelve 23 avisos, ninguno en el bundle — aceptado
 
 `sisgapo-web/package-lock.json`
 
@@ -126,6 +126,10 @@ en `package.json` como ya se hizo con `websocket-driver` (D-39); comprobar `npm 
 después de cada uno. Lo que no se pueda subir sin romper Webpack 4 es coste de D-47 y
 conviene decirlo en el README en una línea. **Esfuerzo:** 1–2 h.
 
+**Aceptado el 4 de octubre de 2026.** La subida a Angular 14 (D-51) los bajó a 10, pero todos
+en paquetes `@angular/*`, y su corrección empieza en Angular 20. Es el coste de no rediseñar la
+interfaz; sigue en `../11-auditoria-y-cierre.md`.
+
 #### ✅ H-05 · El límite de intentos de acceso depende de la IP de conexión — cerrado
 
 `sisgapo-api/SISGAPO_API/Startup.cs`, política `Login`
@@ -134,7 +138,7 @@ El limitador particiona por `Connection.RemoteIpAddress`. Detrás de un proxy in
 no reenvíe cabeceras, esa IP es la del proxy para todas las personas: cinco intentos
 fallidos de cualquiera bloquean el acceso de todas durante un minuto. En App Service la
 plataforma activa el reenvío por su cuenta (`ASPNETCORE_FORWARDEDHEADERS_ENABLED`), así
-que hoy funciona; en un VPS con nginx, Apache o Caddy delante (documento 10) deja de
+que hoy funciona; en un VPS con nginx, Apache o Caddy delante (`migracion-contabo-2026-10.md`) deja de
 funcionar en silencio.
 
 **Propuesta:** definir `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true` en el entorno del
@@ -156,7 +160,7 @@ pueden ser verdad a la vez.
 **Decisión:** se mantiene solo en desarrollo. El guion lo presenta expresamente como una
 pieza para la demostración local y no promete una ruta pública.
 
-#### 🟡 H-07 · Los `CATCH` de los procedimientos devuelven el error de SQL al cliente
+#### ✅ H-07 · Los `CATCH` de los procedimientos devuelven el error de SQL al cliente — cerrado
 
 `sql/07-usp-productos.sql` (06, 07), `sql/11-usp-lotes.sql` (03, 04),
 `sql/12-usp-movimientos.sql` (02)
@@ -168,6 +172,12 @@ misma clase de fuga que C-19 cerró en `CategoriaData`, reabierta en el otro ext
 **Propuesta:** devolver un mensaje fijo y relanzar con `THROW`, para que el middleware
 registre el detalle en el servidor y responda el `{cod, mensaje}` genérico, como hace ya
 `USP_MNT_Usuarios` opción 04. **Esfuerzo:** 30 min.
+
+**Aplicado el 4 de octubre de 2026:** los cinco `CATCH` deshacen la transacción y relanzan con
+`THROW`. Comprobado provocando una violación de clave foránea dentro del alta de un lote: el
+procedimiento lanza el error en vez de devolverlo como texto y el lote no queda creado. Las
+reglas de negocio siguen respondiendo `0|…` antes de abrir la transacción, así que ningún
+mensaje pensado para la pantalla pasa por el `CATCH`.
 
 ### Correctitud
 
@@ -240,7 +250,7 @@ también el 401 del interceptor, que cerraba la sesión sin avisar al menú y de
 encima del formulario. Con sesión, `/login` lleva a `/inicio`. Esta vez sí se reprodujo en el
 navegador, en la demo pública.
 
-#### 🟡 H-12 · Usuarios responde `{ mensaje: "OK" }` y, cuando falla, `{ mensaje: "" }`
+#### ✅ H-12 · Usuarios responde `{ mensaje: "OK" }` y, cuando falla, `{ mensaje: "" }` — cerrado
 
 `sisgapo-api/Data/UsuarioData.cs`, `UsuarioController.cs`, `sql/08-usp-usuarios.sql`
 
@@ -254,7 +264,12 @@ como los demás, que `UsuarioData` use `fnEjecutarEscalarAsync`, y que el contro
 la respuesta. El frontend cambia dos comparaciones (`respuesta.mensaje === 'OK'` →
 `respuesta.cod === '1'`). **Esfuerzo:** 1 h, tres capas a la vez.
 
-#### 🟡 H-13 · La edición de un usuario no va en transacción
+**Aplicado el 4 de octubre de 2026,** tal como se propuso. El alta responde además con el
+nombre de usuario generado (`1|Se registró con éxito. Usuario: maria.ramirez`), y editar o
+desactivar un id que no existe responde `0|El usuario no existe`. Cubierto por
+`MantenimientoIntegracionTests`.
+
+#### ✅ H-13 · La edición de un usuario no va en transacción — cerrado
 
 `sql/08-usp-usuarios.sql` opción 05
 
@@ -263,7 +278,10 @@ C-07; la 05 (edición) hace el `UPDATE` de `TBL_USUARIO` y, si llega contraseña
 `TBL_LOGIN`, sin transacción. **Propuesta:** el mismo bloque que la 04. **Esfuerzo:**
 10 min.
 
-#### 🟡 H-14 · Almacenes no valida el rol del supervisor ni el nombre repetido
+**Aplicado el 4 de octubre de 2026:** la opción 05 va en `BEGIN TRY / BEGIN TRANSACTION`, con
+`THROW` en el `CATCH`, igual que la 04.
+
+#### ✅ H-14 · Almacenes no valida el rol del supervisor ni el nombre repetido — cerrado
 
 `sql/05-usp-almacenes.sql` opciones 05 y 06
 
@@ -273,7 +291,12 @@ hallazgos. Tampoco hay comprobación de nombre duplicado, que sí tienen zonas y
 categorías. **Propuesta:** dos `IF EXISTS` con respuesta `0|…`, como en
 `USP_MNT_Categorias`. **Esfuerzo:** 30 min.
 
-#### 🟡 H-15 · El número de documento no es único
+**Aplicado el 4 de octubre de 2026:** las opciones 05 y 06 exigen un supervisor activo con
+rol de supervisor —el mismo criterio de la lista de la opción 04— y rechazan un nombre que
+ya use otro almacén, sin distinguir mayúsculas ni espacios. La edición comprueba además que
+el almacén exista. Cubierto por dos pruebas de integración.
+
+#### ✅ H-15 · El número de documento no es único — cerrado
 
 `sql/01-esquema.sql`, `TBL_USUARIO.sNumDoc`
 
@@ -283,7 +306,11 @@ segundos. **Propuesta:** `UNIQUE (nTipoDoc, sNumDoc)` en el esquema y el mensaje
 correspondiente en la opción 04 —hoy el `THROW` del `CATCH` lo convertiría en un 500
 genérico—. **Esfuerzo:** 15 min; el seed ya cumple la regla.
 
-#### 🟡 H-16 · Las cantidades son enteras
+**Aplicado el 4 de octubre de 2026:** `UQ_USUARIO_DOCUMENTO` en el esquema, y las opciones 04 y
+05 responden `0|Ya existe…` antes de llegar a la restricción. Cubierto por una prueba de
+integración.
+
+#### 🟡 H-16 · Las cantidades son enteras — aceptado
 
 `TBL_DET_PRODUCTO.nCantidad INT`, `TBL_MOVIMIENTO.nCantidad INT`, y `int` en las entidades
 
@@ -294,24 +321,29 @@ procedimientos que mueven cantidades, en `Entity`, en `Data` y en los dos formul
 Es un cambio de modelo, no un arreglo: **para la demo, no hacerlo**; queda anotado por si
 el proyecto se reabre.
 
+**Aceptado el 4 de octubre de 2026** como limitación del modelo; sigue en
+`../11-auditoria-y-cierre.md`.
+
 ## 4. Mejoras de código propuestas
 
 Nada de esto es un defecto visible. Son las cosas que un revisor que lea el código
-anotaría, ordenadas por lo que más aportan por hora. Ninguna está aplicada.
+anotaría, ordenadas por lo que más aportan por hora. El 4 de octubre de 2026 se aplicaron
+MC-04, MC-05, MC-06, MC-07 y MC-11, marcadas abajo; las demás siguen en
+`../11-auditoria-y-cierre.md` con el motivo para no hacerlas.
 
 | # | Mejora | Dónde | Esfuerzo |
 |---|---|---|---|
 | MC-01 | **Un solo catálogo de opciones de escritura.** Hoy «qué `sOpcion` escribe» está declarado tres veces: en el chequeo de rol de cada controlador, en el `bEscritura` de cada `Business` y en `DemoSoloLecturaFilter`. Si una entidad gana una opción, hay que acordarse de tres sitios | `Controllers/*`, `Business/*`, `Seguridad/DemoSoloLecturaFilter.cs` | 2 h |
 | MC-02 | **Registrar cada excepción una vez.** `Data`, `Business`, el controlador y el middleware hacen `logger.Error` sobre la misma excepción: cuatro entradas por fallo. Quitar los `try/catch/log/throw` de las tres capas y dejar el middleware. Cambia la convención de `00-convenciones.md`, sección 8, así que es una decisión | las tres capas | 1 h |
 | MC-03 | **Configuración inyectada.** `ConfiguracionBD` y `ConfiguracionJwt` construyen su propia `IConfiguration` estática y leen `appsettings` por su cuenta; las pruebas no pueden sustituirlas. Pasar a `IConfiguration`/`IOptions` y registrar `Conexion` en el contenedor en vez de `new Conexion(1)` en nueve constructores | `Data/ConfiguracionBD.cs`, `Seguridad/ConfiguracionJwt.cs`, `Data/*Data.cs` | 2 h |
-| MC-04 | **Quitar los constructores sin parámetros de `Business`** (`: this(new XData())`). Mantienen viva la ruta `new` que D-43 cerró; solo los usa una prueba de `PoliticaMovimientoTests`, que puede construir el controlador con dobles | `Business/*.cs`, `Test/PoliticaMovimientoTests.cs` | 30 min |
-| MC-05 | **Restos.** `using System.Net; using System.Net.Mail;` en `ProductoData`; `using Microsoft.AspNetCore.Cors;` y el comentario `//using System.Web.Http.Cors;` en `InventarioController`; `#region Almacen` encabezando `CrudProductos`; los comentarios `// fnServAlmacenes`; `ConfConexion()` en `UsuarioData` y `ZonaData`, que solo copian una propiedad estática. Y dos restos fuera del código: `sisgapo-web/.github/workflows/azure-static-web-apps-yellow-meadow-0e36f1a10.yml`, un workflow de 2021 que GitHub no ejecuta desde esa ruta y que apunta a un recurso que ya no existe; y las plantillas ARM de 2021 en `SISGAPO_API/Properties/ServiceDependencies/`, versionadas bajo una ruta que `.gitignore` excluye: o se declaran evidencia, como hace `01-analisis-general.md`, o se retiran | varios | 30 min |
-| MC-06 | **Lectura de columnas.** `Int32.Parse(Convert.ToString(dr["x"]))` en unas 150 líneas, donde `Convert.ToInt32(dr["x"])` hace lo mismo sin pasar por texto | `Data/*Data.cs` | 1 h, mecánico |
-| MC-07 | **Un solo contrato de entrada.** `ParametroDelimitado.Preparar` todavía acepta el `pParametro` plano en las lecturas; con `parametros` ya en todos los servicios Angular, la ruta vieja solo añade una forma más de llamar a la API | `Business/ParametroDelimitado.cs`, `04-api-referencia.md` | 30 min |
+| MC-04 | **Quitar los constructores sin parámetros de `Business`** (`: this(new XData())`). Mantienen viva la ruta `new` que D-43 cerró; solo los usa una prueba de `PoliticaMovimientoTests`, que puede construir el controlador con dobles. **Hecho:** la prueba usa un doble de las cuatro interfaces de datos | `Business/*.cs`, `Test/PoliticaMovimientoTests.cs` | 30 min |
+| MC-05 | **Restos.** `using System.Net; using System.Net.Mail;` en `ProductoData`; `using Microsoft.AspNetCore.Cors;` y el comentario `//using System.Web.Http.Cors;` en `InventarioController`; `#region Almacen` encabezando `CrudProductos`; los comentarios `// fnServAlmacenes`; `ConfConexion()` en `UsuarioData` y `ZonaData`, que solo copian una propiedad estática. Y dos restos fuera del código: `sisgapo-web/.github/workflows/azure-static-web-apps-yellow-meadow-0e36f1a10.yml`, un workflow de 2021 que GitHub no ejecuta desde esa ruta y que apunta a un recurso que ya no existe; y las plantillas ARM de 2021 en `SISGAPO_API/Properties/ServiceDependencies/`, versionadas bajo una ruta que `.gitignore` excluye: o se declaran evidencia, como hace `01-analisis-general.md`, o se retiran. **Hecho:** los restos de código, fuera; el workflow, retirado; las plantillas ARM se quedan como evidencia, y `.gitignore` lo dice | varios | 30 min |
+| MC-06 | **Lectura de columnas.** `Int32.Parse(Convert.ToString(dr["x"]))` en unas 150 líneas, donde `Convert.ToInt32(dr["x"])` hace lo mismo sin pasar por texto. **Hecho:** eran 67 líneas, no 150, incluidas tres de `Int64` y dos de `Boolean` | `Data/*Data.cs` | 1 h, mecánico |
+| MC-07 | **Un solo contrato de entrada.** `ParametroDelimitado.Preparar` todavía acepta el `pParametro` plano en las lecturas; con `parametros` ya en todos los servicios Angular, la ruta vieja solo añade una forma más de llamar a la API. **Hecho:** una petición con `pParametro` recibe un 400 (`../09-decisiones.md`, D-53) | `Business/ParametroDelimitado.cs`, `04-api-referencia.md` | 30 min |
 | MC-08 | **Hosting mínimo.** `Program.cs` + `Startup.cs` al modelo de `WebApplication.CreateBuilder`. D-05 lo dejó para «un commit aparte» que nunca llegó; sigue siendo opcional | `SISGAPO_API/Program.cs`, `Startup.cs` | 2 h |
 | MC-09 | **Un solo registro.** NLog y `Microsoft.Extensions.Logging` conviven sin integrarse: los mensajes de Kestrel y de autenticación salen por un canal y con un formato, y los de la aplicación por otro. `NLog.Web.AspNetCore` o `ILogger<T>` del framework, pero uno | `Startup.cs`, `nlog.config`, las tres capas | 1 h |
 | MC-10 | **Frontend.** `.toPromise()` (retirado en RxJS 8), `JSON.stringify` manual con `Content-Type` a mano en seis servicios, y doce `.spec.ts` que solo comprueban que exista un método. Ya anotado en `05-frontend.md`, sección 10; se queda como mantenimiento | `src/app/**/*.service.ts`, `*.spec.ts` | 3–4 h |
-| MC-11 | **Rutas antiguas en comentarios.** `sql/01-esquema.sql:240` y `sql/09-usp-zonas.sql:10` citan `06-hallazgos.md`; `sql/cargar-base.ps1:27` cita `07-migracion-tier-free.md`. Son comentarios, no se tocaron en esta pasada; corregirlos con el próximo cambio de código | `sql/` | 5 min |
+| MC-11 | **Rutas antiguas en comentarios.** `sql/01-esquema.sql:240` y `sql/09-usp-zonas.sql:10` citan `06-hallazgos.md`; `sql/cargar-base.ps1:27` cita `07-migracion-tier-free.md`. Son comentarios, no se tocaron en esta pasada; corregirlos con el próximo cambio de código. **Hecho** con los arreglos del 4 de octubre | `sql/` | 5 min |
 
 ## 5. Documentación: qué estaba desactualizado y qué se hizo
 
@@ -328,7 +360,7 @@ dejar la documentación cerrada. Cada fila es una afirmación que ya no coincid�
 | `04-api-referencia.md` | Mostraba el `pParametro` plano como contrato; «`return null` → 204» (es un 400 con mensaje); URL de producción histórica | Contrato con `parametros`; errores reales; URL vigente |
 | `05-frontend.md` | Recomendaba fijar `cross-env`, que ya está en `package.json`; daba por retirados los workflows de Static Web Apps de 2021, y queda uno | Corregido |
 | `06-hallazgos.md` | 48 hallazgos, los 48 cerrados: no quedaba nada que auditar | Movido a `historico/hallazgos-2026.md`; la auditoría final cierra ahora la serie como documento 11 |
-| `07-migracion-tier-free.md` | El nombre ya no describía el contenido; sin verificación posterior al 7 de septiembre; los límites de las ofertas gratuitas sin cifras | Renombrado a `06-infraestructura.md`; verificación de hoy; límites; remite al 10 |
+| `07-migracion-tier-free.md` | El nombre ya no describía el contenido; sin verificación posterior al 7 de septiembre; los límites de las ofertas gratuitas sin cifras | Renombrado a `06-infraestructura.md`; verificación de hoy; límites; remite a la migración |
 | `07-plan-demo.md` | Swagger en el guion sin estar expuesto (H-06); C-02 como pendiente; la tabla de «una sola mejora» con mejoras ya hechas | Corregido |
 | `08-mejoras-propuestas.md` | M-03 «parcial» (D-43 lo cerró en septiembre); ocho mejoras ya hechas ocupaban el documento | Las hechas, a `historico/mejoras-aplicadas.md`; quedan las abiertas |
 | `09-decisiones.md` | Sin revisión posterior a D-47; sin decisiones del cierre | Sección «Revisión del 1 de octubre de 2026» y D-48 a D-50 |
@@ -343,7 +375,7 @@ El detalle, decisión por decisión, está en `09-decisiones.md`. El resumen:
 | Resultado | Decisiones |
 |---|---|
 | **Vigentes sin cambios** | D-04, D-06, D-07, D-09 a D-16, D-18 a D-23, D-25 a D-47. Lo que decidieron sigue siendo cierto y el código lo cumple |
-| **Vigentes, pero el 10 las toca** | D-01 (SQL Server se conserva, en contenedor); D-24 (con la API y el frontend en el mismo dominio, la cookie `HttpOnly` deja de ser imposible: sigue siendo opcional); D-05 y MC-08 |
+| **Vigentes, pero la migración las toca** | D-01 (SQL Server se conserva, en contenedor); D-24 (con la API y el frontend en el mismo dominio, la cookie `HttpOnly` deja de ser imposible: sigue siendo opcional); D-05 y MC-08 |
 | **Superadas** | D-02 («fuera de Azure no hay SQL Server gratuito»: con un VPS ya pagado, lo hay); D-03 (.NET 8 por ser LTS: deja de serlo en noviembre, D-50); D-08 y D-17 (ya ejecutadas o cerradas) |
 
 ## 7. Recomendaciones
@@ -354,11 +386,11 @@ que se haría si el proyecto se reabre.
 | # | Recomendación | Por qué | Esfuerzo |
 |---|---|---|---|
 | R-01 | **Aplicar H-01, H-02 y H-03 antes de archivar — hecho** | El repositorio queda sobre un runtime con soporte y sin paquetes NuGet vulnerables conocidos | — |
-| R-02 | **Migrar al VPS en una rama separada** (`10-migracion-contabo.md`) — **hecho** | El estado Azure + Hostinger queda congelado primero en un tag; la migración no forma parte de este cierre | medio día |
+| R-02 | **Migrar al VPS en una rama separada** (`migracion-contabo-2026-10.md`) — **hecho** | El estado Azure + Hostinger queda congelado primero en un tag; la migración no forma parte de este cierre | medio día |
 | R-03 | Si Azure se queda: programar el reinicio del seed con un workflow `schedule` que ejecute `cargar-base` contra Azure SQL | Es el único pendiente de infraestructura desde septiembre. Exige abrir el cortafuegos de Azure SQL a los *runners* de GitHub o usar OIDC con `az sql server firewall-rule`; no es gratis en complejidad | 2 h |
 | R-04 | Arreglos baratos con efecto visible: H-08, H-09, H-10 — **hechos** | Quedan cubiertos la baja con existencias, el despertar de Azure SQL y el reintento de configuración | — |
 | R-05 | Mantener Swagger solo en desarrollo — **decidido** | El guion distingue la demostración local de la pública | — |
-| R-06 | Dejar H-11 a H-16 y las MC documentadas, sin hacer | Son ruido para el visitante; valen si se reabre el proyecto, no para cerrarlo | — |
+| R-06 | Dejar H-11 a H-16 y las MC documentadas, sin hacer — **revisada el 4 de octubre de 2026**: ese día se corrigieron H-11, H-07 y H-12 a H-15, y se aplicaron cinco MC (`../09-decisiones.md`, D-53). Quedan H-04, H-16 y seis MC | Son ruido para el visitante; valen si se reabre el proyecto, no para cerrarlo | — |
 | R-07 | Sacar `cred.fake` y `SISGAPO.7z` del clon — **hecho** el 4 de octubre de 2026: la nota fue a la carpeta de claves del equipo y el `.7z`, a una de respaldos fuera del repositorio | Están ignorados por Git y no salen del equipo, pero una nota con datos de conexión no debería vivir dentro de un clon, y el `.7z` son 13 MB de una copia cuyo contenido ya está en el repositorio. Un gestor de contraseñas y una carpeta aparte | 5 min |
 | R-08 | Fechar el cierre en el README y en este documento; no archivar el repositorio en GitHub mientras la demo esté en línea | Un repositorio archivado no ejecuta workflows ni admite cambios, y la demo seguirá necesitando un parche de vez en cuando | 5 min |
 
@@ -380,3 +412,9 @@ de este cierre.
   las 39 sin omitir ninguna (validado el 4 de octubre de 2026).
 - [x] Reinicio periódico del seed: cron nocturno en el VPS desde el 4 de octubre de 2026.
 - [x] Enlace público actualizado a `https://sisgapo.devkora.com`.
+- [x] H-07 y H-12 a H-15 corregidos el 4 de octubre de 2026, con cinco pruebas de integración
+  nuevas; H-04 y H-16, aceptados.
+- [x] MC-04 a MC-07 y MC-11 aplicadas; las otras seis MC, descartadas mientras el proyecto
+  siga cerrado.
+- [x] La migración pasa a `migracion-contabo-2026-10.md` y el documento 10 es ahora el manual de
+  usuario.

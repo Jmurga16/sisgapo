@@ -1,8 +1,9 @@
 # 04 — Referencia de la API
 
 Base URL en desarrollo: `https://localhost:44360/`
-Base URL de la demo pública: `https://app-sisgapo-api-egbrd9hygfcsdvgf.eastus-01.azurewebsites.net/`
-(cambiará si se ejecuta `10-migracion-contabo.md`)
+Base URL de la demo pública: `https://sisgapo.devkora.com/api/`. La web reenvía `/api/*` a la
+API y quita el prefijo, así que los endpoints son los mismos: `/api/LoginService` llega como
+`/LoginService`, y `/api/api/zona`, como `/api/zona` (`09-decisiones.md`, D-52).
 
 Swagger está disponible en `/swagger` **solo cuando el entorno es Development**.
 
@@ -29,9 +30,10 @@ Content-Type: application/json
 - `parametros` — los argumentos como arreglo de cadenas, en orden posicional. Para
   operaciones sin argumentos se envía `[]`. La API los une con `|` antes de llamar al
   procedimiento y rechaza con `400` cualquier valor que contenga ese carácter (S-07). El
-  campo histórico `pParametro`, ya concatenado, solo se admite en lecturas. Las tablas de
-  cada endpoint numeran las posiciones del arreglo empezando en 1, como las lee el
-  procedimiento.
+  campo histórico `pParametro`, ya concatenado, **no se admite**: una petición que lo traiga
+  recibe un `400` (`09-decisiones.md`, D-53). Las tablas de cada endpoint conservan el
+  nombre `pParametro` porque es el del procedimiento, y numeran las posiciones del arreglo
+  empezando en 1, como las lee.
 
 **Respuesta de lecturas:** el arreglo de objetos tal cual lo devuelve el procedimiento.
 
@@ -128,14 +130,16 @@ además del `dFechaNacimiento` nativo. No devuelve el hash de contraseña.
 izquierda (`historico/hallazgos-2026.md`, D-07). Las opciones `04` y `05` lo aceptan con o sin prefijo,
 y `UsuarioBusiness` rechaza con `400` cualquier otra forma.
 
-**Respuesta de `04`, `05`, `06`** — este endpoint **no sigue** el contrato `cod`/`mensaje`:
+**Respuesta de `04`, `05`, `06`** — `{cod, mensaje}`, como el resto de la API. El alta
+devuelve además el nombre de usuario que generó:
 ```json
-{ "mensaje": "OK" }
+{ "cod": "1", "mensaje": "Se registró con éxito. Usuario: maria.ramirez" }
 ```
 
-`UsuarioData` construye `"OK"` en C# a partir de `ExecuteNonQuery() != 0`, en vez de leer un
-mensaje del procedimiento. Es el único módulo así; la propuesta para alinearlo con los demás
-está en `11-auditoria-y-cierre.md`, H-12.
+Responden `cod = "0"` si el tipo y número de documento ya son de otra persona, o si el id
+de la edición o del cambio de estado no existe. Hasta octubre de 2026 este endpoint devolvía
+`{ "mensaje": "OK" }`, construido en C# a partir de las filas afectadas
+(`historico/auditoria-cierre-2026-10.md`, H-12).
 
 **Detalle a tener en cuenta:** la opción `04` genera el nombre de usuario automáticamente
 (primer nombre + `.` + primer apellido). Si ya existe, añade `2`, `3`, etc. Ver
@@ -168,12 +172,10 @@ Ordena por `bEstado DESC, nIdZona`: los activos primero.
 
 **Respuesta de `05`, `06`, `07`** — `{ "cod": "1", "mensaje": "Se registró con éxito" }`
 
-La opción `07` puede rechazar el cambio con `cod = "0"`: no desactiva un almacén con
+Las tres pueden rechazar el cambio con `cod = "0"`. El alta y la edición, si el supervisor
+no es un usuario activo con rol de supervisor o si el nombre ya es de otro almacén
+(`historico/auditoria-cierre-2026-10.md`, H-14). La `07` no desactiva un almacén con
 productos activos, ni reactiva uno cuya zona esté de baja. Ver `09-decisiones.md`, D-35.
-
-> El frontend envía 5 valores en la opción `05`, pero el procedimiento solo lee 4. El quinto
-> (`nIdAlmacen`, que en alta viene vacío) se ignora sin efecto. Es inofensivo, pero explica
-> por qué el mismo método sirve para alta y edición.
 
 ## 5. `POST /InventarioService/Categoria`
 

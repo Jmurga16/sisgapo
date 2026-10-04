@@ -97,6 +97,9 @@ los datos personales. El esquema reparado aplica estas garantías:
   prefijo `+51` opcional— la aplica `UsuarioBusiness`, no la columna.
 - **`TBL_LOGIN` tiene clave primaria y `UNIQUE(sNombreUsuario)`**. El original no tenía
   ninguna de las dos restricciones.
+- **`TBL_USUARIO` tiene `UNIQUE(nTipoDoc, sNumDoc)`**: una persona, un documento. Las
+  opciones `04` y `05` lo comprueban antes y responden `0|Ya existe…`, así que la restricción
+  es la red, no el mensaje.
 
 `USP_MNT_Usuarios` opción `04` genera el nombre de usuario automáticamente:
 
@@ -112,10 +115,11 @@ insertan en la misma transacción.
 
 ### Almacenes
 
-Un almacén pertenece a una zona y tiene un supervisor, que debe ser un usuario con `nRol = 2`.
-Esa regla **no está en el esquema** —no hay `CHECK` ni tabla aparte—, solo en el `WHERE` de
-la opción `04` del procedimiento. Nada impide asignar un administrador como supervisor
-mediante una llamada directa a la API (`11-auditoria-y-cierre.md`, H-14).
+Un almacén pertenece a una zona y tiene un supervisor, que debe ser un usuario activo con
+`nRol = 2`. Esa regla **no está en el esquema** —no hay `CHECK` ni tabla aparte—, sino en el
+procedimiento: la opción `04` solo lista esos usuarios, y el alta y la edición rechazan
+cualquier otro, igual que un nombre que ya use otro almacén
+(`historico/auditoria-cierre-2026-10.md`, H-14).
 
 ### Inventario
 
@@ -358,8 +362,10 @@ para el mismo propósito — la inconsistencia está dentro del mismo repositori
 tres sitios usan ya `SCOPE_IDENTITY()`.
 
 **13. Las escrituras multi-tabla originalmente no usaban transacciones.**
-`USP_MNT_Productos` 06/07 y `USP_MNT_Usuarios` 04 ya ejecutan sus cambios dentro de una
-transacción y revierten el conjunto ante un error.
+`USP_MNT_Productos` 06/07 y `USP_MNT_Usuarios` 04 y 05 ya ejecutan sus cambios dentro de
+una transacción y revierten el conjunto ante un error, igual que Lotes y Movimientos. Los
+`CATCH` relanzan el error con `THROW` en vez de devolver su texto: la API lo registra y la
+pantalla recibe un mensaje genérico (`historico/auditoria-cierre-2026-10.md`, H-07).
 
 ## 5. Cómo recrear la base de datos
 

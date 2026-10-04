@@ -1,4 +1,11 @@
-# 10 — Migración a un VPS de Contabo
+# Migración a un VPS de Contabo — octubre de 2026
+
+> **Documento histórico.** Fue `10-migracion-contabo.md` hasta el 4 de octubre de 2026, el día
+> en que se ejecutó. Se conserva como se escribió, con el plan y lo que cambió al aplicarlo: la
+> infraestructura vigente y cómo redesplegarla están en
+> [`../06-infraestructura.md`](../06-infraestructura.md), y el porqué de los cambios, en
+> `../09-decisiones.md`, D-49 y D-52. Las rutas a otros documentos apuntan a la carpeta
+> superior.
 
 > **Estado: ejecutada el 4 de octubre de 2026.** La demo corre en
 > `https://sisgapo.devkora.com`. Lo desplegado no es exactamente lo que se escribe abajo: el
@@ -384,4 +391,5 @@ Lo que lo haría cambiar: que el VPS esté por debajo de 4 GB de memoria libre, 
 haya un dominio al que colgarlo. En cualquiera de los dos casos, la alternativa es
 quedarse en Azure y resolver el reinicio del seed con R-03.
 
-La decisión quedó confirmada como D-49 en `09-decisiones.md`; falta ejecutarla.
+La decisión quedó confirmada como D-49 en `09-decisiones.md` y se ejecutó el 4 de octubre de
+2026; lo que cambió está en la sección 0.

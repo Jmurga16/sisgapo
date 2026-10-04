@@ -80,7 +80,7 @@ lo cual es una fortaleza para una demo: no hay pantallas a medias.
 | `Microsoft.Data.SqlClient` | 5.1.6 | Sustituye a `System.Data.SqlClient` 4.8.2, que tenía 2 CVE |
 | `Swashbuckle.AspNetCore` | 6.6.2 | Swagger, solo habilitado en Development |
 | `NLog` | 5.3.4 | Con `nlog.config` a consola y archivo |
-| `xUnit` | 2.9.3 | 26 pruebas unitarias, más 13 de integración contra SQL Server |
+| `xUnit` | 2.9.3 | 27 pruebas unitarias, más 18 de integración contra SQL Server |
 
 Cuatro proyectos: `SISGAPO_API` (web), `Business`, `Data`, `Entity`, más `Test`. Los paquetes
 sin uso de la versión original —`Microsoft.EntityFrameworkCore.SqlServer`,
@@ -123,8 +123,8 @@ enorme: F1 (gratis) o B1 bastan de sobra.
 > Verifica el costo real en el portal de Azure. Estos son precios de lista y pueden no
 > reflejar tu suscripción, descuentos ni el consumo real.
 
-La infraestructura de hoy —gratuita— está en `06-infraestructura.md`; la alternativa en un
-servidor propio, en `10-migracion-contabo.md`.
+La infraestructura de hoy —un VPS propio, sin coste adicional— está en
+`06-infraestructura.md`; cómo se llegó a ella, en `historico/migracion-contabo-2026-10.md`.
 
 ## 4. Estado inicial (agosto de 2026)
 
@@ -144,7 +144,7 @@ antes de los arreglos, están en el histórico.
 |---|---|---|---|
 | `Data` | 20 | 1 669 | Nueve clases, nueve interfaces, `Conexion` y `ConfiguracionBD` |
 | `SISGAPO_API` | 13 | 1 291 | Siete controladores, `Startup`, `Program` y cuatro clases de `Seguridad` |
-| `Test` | 6 | — | 26 pruebas unitarias y 13 de integración |
+| `Test` | 7 | — | 27 pruebas unitarias y 18 de integración |
 | `Business` | 10 | 547 | Nueve clases y `ParametroDelimitado`; `LoginBusiness` y `UsuarioBusiness` tienen lógica real |
 | `Entity` | 11 | 390 | DTOs, con Data Annotations donde hace falta |
 
@@ -190,7 +190,7 @@ D-08 y D-09.
 - Secretos en el repositorio — ✅ ninguno vigente; el que sí hubo (S-10) se retiró del historial.
 - Sin inyección de dependencias — ✅ corregido: las nueve `Business` y las nueve `Data` están
   en el contenedor de ASP.NET Core y los controladores las reciben por constructor (D-03).
-- Tests que no son tests — ✅ 26 pruebas unitarias y 13 de integración contra SQL Server,
+- Tests que no son tests — ✅ 27 pruebas unitarias y 18 de integración contra SQL Server,
   ejecutadas por GitHub Actions en cada push (C-10).
 - Duplicación alta y código muerto (módulo `Cliente`, `WeatherForecast`, `Correo.cs` vacío) —
   ✅ limpiado; el módulo `Cliente` queda recuperable en el historial (D-19).

@@ -95,19 +95,19 @@ es un rediseño. El coste que sí queda a la vista son los avisos de `npm audit`
 
 **Resuelve:** `historico/hallazgos-2026.md`, C-10 · **Esfuerzo restante:** 2 días
 
-Lo que hay: 26 pruebas unitarias —`LoginBusiness`, `UsuarioBusiness`, el filtro de modo demo
-y la política de movimientos— y 13 de integración que ejecutan `USP_MNT_Lotes`,
-`USP_MNT_Movimientos` contra SQL Server, incluido el invariante «existencia = suma del
-kardex». CI corre las dos suites en cada push; las de integración se omiten solas si no hay
+Lo que hay: 27 pruebas unitarias —`LoginBusiness`, `UsuarioBusiness`, el filtro de modo demo
+y la política de movimientos— y 18 de integración que ejecutan `USP_MNT_Lotes`,
+`USP_MNT_Movimientos`, `USP_MNT_Usuarios` y `USP_MNT_Almacenes` contra SQL Server, incluido
+el invariante «existencia = suma del kardex». CI corre las dos suites en cada push; las de integración se omiten solas si no hay
 `SISGAPO_TEST_CONNECTION_STRING` (D-30).
 
 **Lo que queda, por orden de retorno:**
 
-1. **Integración de los procedimientos de 2021** —Productos, Almacenes, Categorías, Usuarios
-   y Zonas—, que son los que tuvieron los bugs históricos. El andamiaje
-   (`BaseDeDatosPruebas`, `ProductoDePrueba`) ya existe; son casos, no infraestructura. De
-   paso cubriría las reglas de D-35 y los hallazgos H-08, H-13 y H-14 de la auditoría de
-   cierre.
+1. **Integración de los procedimientos de 2021** —Productos, Categorías y Zonas, y lo que
+   falta de Almacenes y Usuarios—, que son los que tuvieron los bugs históricos. El
+   andamiaje (`BaseDeDatosPruebas`, `ProductoDePrueba`) ya existe; son casos, no
+   infraestructura. De paso cubriría las reglas de D-35 y el hallazgo H-08 de la auditoría
+   de cierre; H-12, H-14 y H-15 ya tienen las suyas en `MantenimientoIntegracionTests`.
 2. **Los doce `.spec.ts` del frontend** siguen comprobando que existan los métodos, no lo que
    hacen. Lo que más rinde es probar los dos servicios con lógica: `SesionService`
    (caducidad) y `KardexCronologiaService` (agrupación por día).
@@ -145,7 +145,7 @@ llevarla a servicios de C#, con Dapper o EF Core para el acceso a datos.
 3. Al terminar, valorar SQLite: la aplicación entera en un contenedor, sin servidor de base
    de datos.
 
-Con la propuesta del VPS (`10-migracion-contabo.md`) esta mejora pierde su argumento de
+Con la demo en el VPS (`historico/migracion-contabo-2026-10.md`) esta mejora pierde su argumento de
 infraestructura —SQL Server deja de ser un problema de hosting— y se queda con el que
 siempre fue el bueno: el de portafolio.
 

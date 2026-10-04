@@ -25,7 +25,7 @@ En orden de impacto:
 
 | # | Elemento | Por qué funciona |
 |---|---|---|
-| 1 | **`historico/hallazgos-2026.md`**, **`historico/auditoria-cierre-2026-10.md`** y **`11-auditoria-y-cierre.md`** | 48 hallazgos priorizados de tu propio código, los 48 cerrados y verificados; la auditoría de cierre, y lo que queda abierto. Demuestra criterio y honestidad, que es lo difícil de fingir |
+| 1 | **`historico/hallazgos-2026.md`**, **`historico/auditoria-cierre-2026-10.md`** y **`11-auditoria-y-cierre.md`** | 48 hallazgos priorizados de tu propio código, los 48 cerrados y verificados; la auditoría de cierre, y el estado final con lo que se aceptó y por qué. Demuestra criterio y honestidad, que es lo difícil de fingir |
 | 2 | **`docker compose up`** funcionando | Un comando y el sistema entero arranca. Elimina toda fricción de la demo |
 | 3 | La aplicación en vivo | Siete módulos con datos realistas, y un recorrido que llega hasta el kardex de un lote |
 | 4 | **`06-infraestructura.md`** | Análisis de costos y decisiones de infraestructura. Lenguaje que un cliente entiende |

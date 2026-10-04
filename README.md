@@ -11,8 +11,10 @@ los 48 cerrados— está en
 [`sisgapo-docs/historico/hallazgos-2026.md`](sisgapo-docs/historico/hallazgos-2026.md), y la
 del cierre, en
 [`sisgapo-docs/historico/auditoria-cierre-2026-10.md`](sisgapo-docs/historico/auditoria-cierre-2026-10.md).
-Lo que sigue abierto está en
-[`sisgapo-docs/11-auditoria-y-cierre.md`](sisgapo-docs/11-auditoria-y-cierre.md).
+El estado final —sin hallazgos abiertos, con lo que no se hizo y por qué— está en
+[`sisgapo-docs/11-auditoria-y-cierre.md`](sisgapo-docs/11-auditoria-y-cierre.md), y cómo se
+usa la aplicación, en
+[`sisgapo-docs/10-manual-de-usuario.md`](sisgapo-docs/10-manual-de-usuario.md).
 
 **Estado:** cerrado como demo de portafolio el 2 de octubre de 2026. Desde el 4 de octubre
 la demo corre en un VPS propio, en contenedores.
@@ -152,13 +154,14 @@ dotnet test sisgapo-api/SISGAPO_Back.sln --configuration Release
 ```
 
 La suite unitaria cubre autenticación con bcrypt, usuarios inactivos, hashes corruptos,
-validación de usuarios, modo demo y rechazo del delimitador legado.
+validación de usuarios, modo demo y el rechazo del delimitador y del `pParametro` legado.
 
 Las pruebas de integración se ejecutan contra SQL Server y cubren las reglas de Lotes y
 Movimientos —salida que deja el lote en negativo, ajuste sin diferencia, movimiento sin
 motivo, baja de un lote con existencia, código de lote repetido, unidad homogénea entre
-partidas— y el invariante del módulo: la existencia de un lote es siempre la suma de su
-kardex. Necesitan la base cargada:
+partidas—, el invariante del módulo —la existencia de un lote es siempre la suma de su
+kardex— y las reglas de Usuarios y Almacenes: documento repetido, supervisor sin ese rol,
+nombre de almacén repetido y las respuestas `cod|mensaje`. Necesitan la base cargada:
 
 ```bash
 docker compose up -d
@@ -213,6 +216,6 @@ Empieza por [`sisgapo-docs/README.md`](sisgapo-docs/README.md).
 | `07-plan-demo.md` | Cómo presentarlo |
 | `08-mejoras-propuestas.md` | Roadmap: lo que sigue abierto |
 | `09-decisiones.md` | Decisiones tomadas y alternativas descartadas |
-| `10-migracion-contabo.md` | Cómo se llevó la demo a un servidor propio, y qué cambió respecto al plan |
-| `11-auditoria-y-cierre.md` | Estado de la demo cerrada y lo que sigue abierto |
-| `historico/` | La auditoría de 2026 (48 hallazgos, todos cerrados), las mejoras aplicadas y el estado inicial |
+| `10-manual-de-usuario.md` | Cómo se usa: acceso, permisos por rol y cada pantalla |
+| `11-auditoria-y-cierre.md` | Estado final de la demo: lo aceptado y lo que no se hace, con su motivo |
+| `historico/` | Las dos auditorías de 2026, ya cerradas, las mejoras aplicadas, el plan de la migración al VPS y el estado inicial |

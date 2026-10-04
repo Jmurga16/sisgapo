@@ -262,11 +262,11 @@ apuntaban al App Service por HTTPS (`historico/hallazgos-2026.md`, S-08); siguen
 El repositorio conserva un único workflow, `.github/workflows/ci.yml`, con tres trabajos:
 compilación y pruebas del backend, pruebas de integración contra un SQL Server levantado con
 `docker compose`, y build de producción del frontend con Node 22 y el lockfile, en cada push
-y pull request. De los workflows de Azure Static Web Apps de 2021 queda uno en
-`sisgapo-web/.github/workflows/`, que no se ejecuta: GitHub solo lee los de la raíz del
-repositorio, y el recurso al que apuntaba ya no existe (`11-auditoria-y-cierre.md`, MC-05). El despliegue público es manual: `bash deploy/deploy.sh`,
-con el CI en verde; no sale de este workflow.
-Ver `06-infraestructura.md` y `11-auditoria-y-cierre.md`.
+y pull request. El último workflow de Azure Static Web Apps de 2021, que seguía en
+`sisgapo-web/.github/workflows/` sin ejecutarse, se retiró en octubre de 2026
+(`historico/auditoria-cierre-2026-10.md`, MC-05). El despliegue público es manual:
+`bash deploy/deploy.sh`, con el CI en verde; no sale de este workflow.
+Ver `06-infraestructura.md`.
 
 ## 10. Resumen de problemas del frontend
 

@@ -8,7 +8,7 @@ si hiciera falta.
 > Las secciones 2 a 7 cuentan la etapa anterior en Azure —App Service F1, Static Web Apps y
 > Azure SQL gratuitos—, que se conserva a propósito como prueba de concepto del tier gratuito y
 > como vuelta atrás, con los tags `demo-azure` y `demo-azure-hostinger`. La copia del frontend
-> en Hostinger se retiró. Cómo se llegó al VPS, en `10-migracion-contabo.md`.
+> en Hostinger se retiró. Cómo se llegó al VPS, en `historico/migracion-contabo-2026-10.md`.
 
 ## 1. Qué corre hoy
 
@@ -269,7 +269,7 @@ directamente a SQLite (opción D), que además elimina el servidor de base de da
 **Hay una tercera vía que en agosto no se consideró: un servidor que ya se paga.** En un
 VPS, SQL Server Express en contenedor conserva el T-SQL entero, no tiene arranque en frío y
 deja programar el reinicio del seed con una línea de cron. Es la que se ejecutó el 4 de
-octubre de 2026: `10-migracion-contabo.md` y la sección 1.
+octubre de 2026: `historico/migracion-contabo-2026-10.md` y la sección 1.
 
 Ver `09-decisiones.md`, D-02.
 

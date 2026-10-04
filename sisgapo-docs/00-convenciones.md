@@ -15,7 +15,7 @@ sisgapo/
 │   ├── Business/          Capa de negocio
 │   ├── Data/              Acceso a datos, vía stored procedures
 │   ├── Entity/            DTOs
-│   └── Test/              xUnit: 26 pruebas unitarias y 13 de integración contra SQL Server
+│   └── Test/              xUnit: 27 pruebas unitarias y 18 de integración contra SQL Server
 ├── sisgapo-web/           Frontend Angular 14
 │   └── src/scripts/       Scripts SQL originales de 2021 — NO EJECUTAR
 └── sisgapo-docs/          Documentación y análisis

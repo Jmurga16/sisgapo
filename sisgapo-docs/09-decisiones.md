@@ -1177,8 +1177,9 @@ cerrado obliga a quien llega a hacer la clasificación que el autor no hizo.
 cierre listó los hallazgos antes de aplicar el bloque imprescindible; el mismo documento
 distingue ahora lo corregido de lo que queda para una eventual reapertura.
 
-**Coste asumido.** Tres comentarios en `sql/` citan todavía los nombres antiguos de los
-documentos (`11-auditoria-y-cierre.md`, MC-11): son código y no se tocaron.
+**Coste asumido.** Tres comentarios en `sql/` citaban todavía los nombres antiguos de los
+documentos (`historico/auditoria-cierre-2026-10.md`, MC-11): eran código y no se tocaron en
+esa pasada. Se corrigieron el 4 de octubre, con D-53.
 
 ---
 
@@ -1202,7 +1203,7 @@ VPS de Contabo que ya se paga.
 `docker compose` y el `init-db.sh` que ya existen (D-08), y convierte el pendiente del
 reinicio en una línea. Lo que cuesta es operar un servidor: sistema, parches, TLS y
 registros pasan a ser propios. El plan completo, con los archivos que faltan y la vuelta
-atrás, está en `10-migracion-contabo.md`.
+atrás, está en `historico/migracion-contabo-2026-10.md`.
 
 **Qué me hace dudar.** Un solo servidor es un punto único de fallo, y una demo caída el
 día que alguien la abre desde el portafolio es peor que una demo lenta. Se mitiga con una
@@ -1297,7 +1298,8 @@ D-39 y cierra lo que D-47 dejaba abierto.
 
 ## D-52 · En el VPS, un solo dominio detrás del proxy común — ejecutada
 
-**La duda.** `10-migracion-contabo.md` suponía un servidor vacío: Caddy propio con el 80 y el
+**La duda.** `10-migracion-contabo.md` —hoy `historico/migracion-contabo-2026-10.md`— suponía
+un servidor vacío: Caddy propio con el 80 y el
 443, la API en `api.sisgapo.<dominio>` y la conexión con `sa`. El VPS ya tenía cinco demos
 detrás de un Caddy común. ¿Se sigue el plan o el patrón del servidor?
 
@@ -1315,7 +1317,62 @@ detrás de un Caddy común. ¿Se sigue el plan o el patrón del servidor?
 descartó por tener dos dominios. Sigue sin hacerse.
 
 **Reconsidera si:** el proxy común desaparece. Entonces vuelve el Caddy propio de la sección 3
-del documento 10.
+de `historico/migracion-contabo-2026-10.md`.
+
+**Estado:** aplicada el 4 de octubre de 2026.
+
+---
+
+## D-53 · Los hallazgos con arreglo acotado se cierran antes de dar la demo por terminada
+
+**La duda.** R-06 recomendaba dejar H-11 a H-16 y las mejoras MC documentadas y sin hacer:
+para una demo cerrada eran ruido. Pero cinco de esos hallazgos eran arreglos de minutos con
+efecto visible —dos personas con el mismo DNI, un administrador como supervisor de un
+almacén, el texto de un error de SQL en una alerta— que un revisor encuentra en treinta
+segundos. Dejarlos escritos y sin hacer es honesto, pero se lee como trabajo a medias.
+
+**Decisión.** Se cierran los que tienen un arreglo acotado y verificable: H-07 y H-12 a
+H-15, con cinco pruebas de integración nuevas, y las mejoras mecánicas o de limpieza, MC-04
+a MC-07 y MC-11. Quedan H-04 y H-16, que son un cambio de plataforma y uno de modelo, y las
+MC que son refactors o cambian una convención (MC-01 a MC-03 y MC-08 a MC-10). Cada una
+conserva en `11-auditoria-y-cierre.md` el motivo para no hacerla.
+
+**Lo que cambia para quien llama a la API:**
+
+- Usuarios deja de ser la excepción y responde `{cod, mensaje}` como los demás (H-12).
+- La API ya no admite el `pParametro` concatenado: una petición que lo traiga recibe un
+  `400` (MC-07). Nadie lo usaba desde que los servicios de Angular pasaron a `parametros`, y
+  mantenerlo era una segunda forma de llamar a la API sin un solo cliente. D-04 sigue en
+  pie: el delimitado existe, pero solo lo arma la capa `Business`.
+- Un error inesperado de SQL dentro de una transacción ya no vuelve como texto: se relanza,
+  lo registra el middleware y la pantalla recibe el mensaje genérico (H-07).
+
+**Qué me hizo dudar.** Romper R-06 un día después de escribirla. Lo que la sostenía era no
+reabrir el proyecto, y esto no lo reabre: no cambia ninguna convención ni ninguna
+dependencia, y la suite pasa de 39 a 45 pruebas.
+
+**Reconsidera si:** aparece un cliente de la API distinto del frontend que envíe
+`pParametro`.
+
+**Estado:** aplicada el 4 de octubre de 2026. Cierra también el segundo cabo de D-43, los
+constructores sin parámetros de `Business`.
+
+---
+
+## D-54 · El documento 10 pasa a ser el manual de usuario
+
+**La duda.** Ejecutada la migración, `10-migracion-contabo.md` era un plan cumplido: lo
+vigente ya estaba en `06-infraestructura.md` y en `deploy/`. Y la documentación explicaba
+todo del sistema menos cómo se usa: el guion de `07-plan-demo.md` es para presentarlo, no
+para quien lo abre por su cuenta.
+
+**Decisión.** La migración pasa a `historico/migracion-contabo-2026-10.md`, como pasaron las
+dos auditorías (D-48), y el número 10 lo ocupa un manual de usuario: permisos por rol, cada
+pantalla en el orden en que se recorre y los mensajes con que la aplicación rechaza algo.
+
+**Por qué reutilizar el número.** Los documentos numerados se leen como un índice (D-11): un
+hueco en el 10 obliga a explicar algo que no aporta nada. Las citas al documento antiguo
+apuntan ahora al histórico.
 
 **Estado:** aplicada el 4 de octubre de 2026.
 
@@ -1374,9 +1431,11 @@ del documento 10.
 | D-47 | El frontend se queda en Angular 9 | Bajo — matizada por D-51: se sube hasta donde Material no cambia |
 | D-48 | La documentación se reorganiza para el cierre: histórico, 06 nuevo, 12 y dos renombrados | Bajo — nada se borra y los identificadores del histórico no cambian |
 | D-49 | Migrar la demo a un VPS propio (ejecutada) | **Medio** — resuelve el arranque en frío y el reinicio del seed a cambio de operar un servidor |
-| D-50 | .NET 10 antes del 10 de noviembre de 2026 (propuesta) | Ninguno — es mantenimiento con fecha |
+| D-50 | .NET 10 antes del 10 de noviembre de 2026 (ejecutada) | Ninguno — es mantenimiento con fecha |
 | D-51 | Angular sube a la 14, y no más | Bajo — la 14 es el techo antes de Material MDC |
 | D-52 | En el VPS, un solo dominio detrás del proxy común | Bajo — es el patrón que ya usan las otras demos del servidor |
+| D-53 | Los hallazgos con arreglo acotado se cierran; la API deja de admitir `pParametro` | Bajo — el único cambio de contrato no tiene cliente que lo use |
+| D-54 | El documento 10 pasa a ser el manual de usuario; la migración, al histórico | Ninguno |
 
 **Las tres que más merecen tu revisión: D-01, D-04 y D-09.**
 De las anteriores, la discutible es **D-24**: `localStorage` es la opción cómoda, no la
@@ -1384,5 +1443,5 @@ correcta. Con la autenticación ya cerrada, D-17 deja de ser una deuda.
 De las nuevas, la que conviene mirar es **D-26**: guardar la existencia además de poder
 calcularla es la clase de atajo que envejece mal, y aquí se sostiene solo porque hay una
 prueba que lo vigila. Si algún día esa prueba se cae del CI, la decisión deja de ser válida.
-Del cierre, las dos que esperan confirmación son **D-49** y **D-50**: la primera es una
-propuesta; la segunda tiene fecha.
+Del cierre, **D-49** y **D-50** ya están ejecutadas; la que conviene mirar es **D-53**,
+porque es la única que cambia el contrato de la API después de dar la demo por cerrada.
