@@ -116,7 +116,7 @@ están en `historico/auditoria-cierre-2026-10.md`, H-01 a H-03.
 > "Es el patrón con el que aprendí y el que usaba el entorno donde trabajaba. Tiene ventajas
 > —el plan de ejecución está optimizado, se puede parchear sin desplegar— y una desventaja
 > grande: la lógica no se puede testear ni versionar bien. Hoy la pondría en la capa de
-> aplicación. En la documentación estimé lo que costaría moverla: entre cuatro y seis días."
+> aplicación. En la documentación estimé lo que costaría moverla: entre seis y ocho días."
 
 Esta respuesta es fuerte porque no descalifica la decisión pasada, explica el contexto, y
 demuestra que has calculado la alternativa.
@@ -140,7 +140,7 @@ encuentra el documento con los seis nombres. Ver `09-decisiones.md`, D-09.
 
 **"¿Puedo verlo funcionando?"**
 Ten las dos vías listas: el enlace público **y** el `docker compose up` en tu portátil. Si el
-enlace está frío, arranca Docker mientras se despierta y no pierdes el ritmo.
+enlace no responde, arranca Docker y sigue en local sin perder el ritmo.
 
 ## 5. Antes de cada demo — lista de comprobación
 
@@ -163,20 +163,16 @@ enlace está frío, arranca Docker mientras se despierta y no pierdes el ritmo.
 ## 6. El README del repositorio
 
 Es lo primero que abre cualquiera, y ya está escrito: [`README.md`](../README.md) en la
-raíz del monorepo. Tiene lo que hace falta —qué es, el arranque en tres pasos, las
-credenciales de demostración y el índice de la documentación— y explica el modo de solo
-lectura disponible para una demo pública.
+raíz del monorepo. Tiene lo que hace falta: qué es, el arranque en tres pasos, las
+credenciales de demostración y el índice de la documentación.
 
-Ya tiene el enlace a la instancia pública, arriba del todo, junto con las dos cuentas de
-demostración. Las capturas del panel, acceso y productos también están enlazadas.
+Ya tiene el enlace a la instancia pública, arriba del todo, junto con las tres cuentas de
+demostración. Las capturas del panel, acceso, productos y de la vista en un teléfono también
+están enlazadas.
 
-Y un párrafo que conviene no quitar nunca, porque es el que convierte un repositorio
-antiguo en una muestra de trabajo actual:
-
-> Al recuperarlo hice una auditoría completa: 48 hallazgos documentados y priorizados en
-> `sisgapo-docs/historico/hallazgos-2026.md`, incluidos varios bugs funcionales que reproduje contra
-> SQL Server 2022 antes de corregirlos. El registro de decisiones —qué elegí, qué descarté
-> y por qué— está en `sisgapo-docs/09-decisiones.md`.
+Y una cabecera que conviene no quitar nunca, porque es la que convierte un repositorio
+antiguo en una muestra de trabajo actual: la que fecha el proyecto en 2021, dice que se
+recuperó, auditó y reparó en 2026, y enlaza las dos auditorías.
 
 ## 7. Lo que no conviene hacer
 
@@ -193,8 +189,8 @@ el efecto es el contrario del que buscas.
 **Prueba la edición de productos antes de cada demo.** Fallaba en silencio (C-02) y está
 corregida desde agosto de 2026, pero sigue siendo la acción que un cliente prueba primero.
 
-**No inventes funcionalidad.** Si te preguntan por reportes o por gestión de proveedores, di
-que estaban en el análisis (PN3) y no se llegaron a implementar. La respuesta correcta a "¿y
+**No inventes funcionalidad.** Si te preguntan por la gestión de proveedores, di que estaba
+en el análisis (PN3) y no se llegó a implementar. La respuesta correcta a "¿y
 esto?" es "no está, y sé por qué".
 
 ## 8. Si tuvieras tiempo para una sola mejora
@@ -207,14 +203,14 @@ Ordenadas por lo que más cambian la percepción del proyecto:
 | Autenticación JWT + contraseñas hasheadas | 6 h | ⭐⭐⭐⭐⭐ Quita la objeción más obvia |
 | Corregir C-02 y C-03 | 2 h | ⭐⭐⭐⭐ Evita que falle justo cuando lo prueban |
 | Actualizar el frontend a Angular moderno | 3–5 días | ⭐⭐⭐ Se nota, pero no es lo que más pesa |
-| Mover la lógica de T-SQL a C# con tests | 4–6 días | ⭐⭐⭐⭐ Es la mejor pieza técnica, pero es un proyecto en sí |
+| Mover la lógica de T-SQL a C# con tests | 6–8 días | ⭐⭐⭐⭐ Es la mejor pieza técnica, pero es un proyecto en sí |
 
 **Si solo haces una: Docker Compose.** Que alguien clone el repositorio, escriba un comando y
 tenga el sistema corriendo en dos minutos vale más que cualquier refactor que no vean.
 
-**Estado al cierre, octubre de 2026:** las tres primeras están hechas. La cuarta se descartó
-(`09-decisiones.md`, D-47) y la quinta sigue siendo la mejor pieza técnica pendiente
-(`08-mejoras-posibles.md`, M-10).
+**Estado al cierre, octubre de 2026:** las tres primeras están hechas. La cuarta se hizo hasta
+Angular 14 (`09-decisiones.md`, D-51) y más allá no se hace. La quinta es la mejor pieza
+técnica de las que no se hacen (`08-mejoras-posibles.md`, M-10).
 
 ## 9. La idea que sostiene todo esto
 

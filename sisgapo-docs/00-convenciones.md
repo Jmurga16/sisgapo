@@ -10,6 +10,7 @@ proyecto peor que respetarlas.
 sisgapo/
 ├── docker-compose.yml     Levanta SQL Server con el esquema y los datos de demo
 ├── docker/init-db.sh      Script de carga que usa el contenedor de inicialización
+├── deploy/                Despliegue en el VPS: compose.yaml, deploy.sh, remoto.sh, sembrar.sh
 ├── sisgapo-api/           Backend .NET 10 — solución SISGAPO_Back.sln
 │   ├── SISGAPO_API/       Capa web: controllers, Startup, appsettings
 │   ├── Business/          Capa de negocio
@@ -19,7 +20,7 @@ sisgapo/
 ├── sisgapo-web/           Frontend Angular 14
 │   └── src/scripts/       Scripts SQL originales de 2021 — NO EJECUTAR
 └── sisgapo-docs/          Documentación y análisis
-    ├── historico/         Auditoría de 2026 ya cerrada, mejoras aplicadas, estado inicial
+    ├── historico/         Las dos auditorías de 2026, mejoras aplicadas, migración al VPS, estado inicial
     └── sql/               Esquema mantenido y verificado
 ```
 
@@ -115,7 +116,9 @@ Controller  →  Business  →  Data  →  Stored procedure
 ```
 
 - **Controller** valida `sOpcion`, llama a negocio y da forma a la respuesta.
-- **Business** es hoy un pasamanos con `try/catch`. No contiene reglas de negocio.
+- **Business** es casi un pasamanos con `try/catch`. Las excepciones: `LoginBusiness`
+  verifica el hash bcrypt, `UsuarioBusiness` valida y hashea, y `ParametroDelimitado` arma el
+  `pParametro`.
 - **Data** abre la conexión y mapea `SqlDataReader` a DTOs.
 - **El procedimiento tiene toda la lógica real.**
 
@@ -145,7 +148,8 @@ pase por `Business` funciona, pero rompe la simetría que hace el código predec
   `IIF(bEstado = 1, 'Activo', 'Inactivo')`, y ordenan `bEstado DESC` para que lo activo
   salga primero. Los selectores de formulario, en cambio, ofrecen **solo activos**.
 - **Las escrituras multi-tabla van en transacción**, con `BEGIN TRY` / `BEGIN
-  TRANSACTION` / `COMMIT` y un `CATCH` que hace `ROLLBACK` y devuelve `'0|<motivo>'`.
+  TRANSACTION` / `COMMIT` y un `CATCH` que hace `ROLLBACK` y relanza con `THROW`. Las reglas
+  de negocio responden `'0|<motivo>'` antes de abrir la transacción.
 - **Los identificadores de `TBL_ROL` están cableados** en el código (`nRol = 2` para
   supervisores). Cambiarlos rompe la asignación de supervisores y el filtro de usuarios.
 
@@ -188,8 +192,8 @@ pase por `Business` funciona, pero rompe la simetría que hace el código predec
 - `CREATE OR ALTER PROCEDURE`, para que los scripts se puedan reejecutar.
 - Los parámetros se leen al principio del bloque de cada opción, con
   `SET @x = (SELECT valor FROM @tParametro WHERE id = n)`.
-- Las correcciones posteriores a 2021 van marcadas con un comentario `--[FIX]` que
-  explica **qué hacía antes**. Así el diff se entiende sin abrir el historial.
+- Las correcciones posteriores a 2021 no se narran en el código: el porqué de cada una está
+  en su hallazgo del histórico y en el commit.
 
 ## 9. Antes de dar algo por terminado
 

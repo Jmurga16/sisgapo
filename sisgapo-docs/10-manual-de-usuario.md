@@ -8,8 +8,9 @@ demás documentos.
 ## 1. Antes de empezar
 
 Es una demo con datos de prueba. Se puede crear, editar, dar de baja y mover inventario sin
-miedo: **cada noche, a las 03:00 de Lima, los datos vuelven a su estado inicial**, y lo mismo
-pasa cada vez que se despliega una versión nueva.
+miedo: **cada noche, de madrugada, los datos vuelven a su estado inicial**, y lo mismo
+pasa cada vez que se despliega una versión nueva. La recarga es a las 03:00 de Lima, o a las
+04:00 de finales de octubre a finales de marzo, por el horario de invierno del servidor.
 
 Hay tres cuentas, una por rol, con la misma contraseña:
 
@@ -243,4 +244,4 @@ Cuando la aplicación rechaza algo, lo dice con un mensaje. Los más habituales:
 | Barra *Demo pública en modo consulta* | La demo está en solo lectura: se puede recorrer todo, pero las altas, ediciones y cambios de estado están deshabilitados |
 
 Los datos que cree o cambie una prueba no hace falta limpiarlos: vuelven a su estado inicial
-a las 03:00 de Lima.
+esa misma madrugada.

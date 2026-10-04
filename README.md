@@ -32,7 +32,8 @@ Entra con un clic desde la pantalla de acceso, o usa una de estas cuentas:
 | `demo.asistente` | `SisgapoDemo2026!` | Asistente — consulta y registra entradas y salidas |
 
 > Es una demo con datos de prueba: puedes crear, editar y mover inventario libremente.
-> Cada noche, a las 03:00 de Lima, los datos vuelven a su estado inicial.
+> Cada noche, a las 03:00 de Lima (04:00 de finales de octubre a finales de marzo), los
+> datos vuelven a su estado inicial.
 
 | Capa | Stack |
 |---|---|
@@ -121,7 +122,7 @@ dar por configuración —variables de entorno, `dotnet user-secrets` en local, 
 | `SISGAPO_CONNECTION_STRING` | Cadena de conexión a SQL Server | Sin ella la API no responde a nada que toque datos |
 | `SISGAPO_JWT_KEY` | Clave con la que se firman los tokens | Mínimo 32 caracteres (HMAC-SHA256 firma con 256 bits) |
 
-Y estos dos, que no son secretos pero sí cambian por entorno:
+Y estas tres, que no son secretos pero sí cambian por entorno:
 
 | Clave de `appsettings.json` | Para qué | Por defecto |
 |---|---|---|
@@ -140,10 +141,10 @@ En el VPS, `MSSQL_SA_PASSWORD` del `docker-compose.yml` deja de aplicar: la base
 `deploy/compose.yaml` con sus propias contraseñas, en un `.env` que no sale del servidor
 (plantilla en `deploy/env.example`).
 
-Para una demo pública, activa el modo de consulta con la variable
-`Demo__SoloLectura=true`. La API devolverá 403 ante cualquier escritura y el frontend
-ocultará o deshabilitará esas acciones. En local queda desactivado para poder recorrer los
-CRUD completos.
+El modo de consulta, `Demo__SoloLectura=true`, hace que la API devuelva 403 ante cualquier
+escritura y que el frontend oculte o deshabilite esas acciones. Está desactivado en local y
+en la demo pública, que deja crear y mover libremente porque sus datos vuelven al seed cada
+noche; sirve para cerrarla de forma puntual.
 
 ---
 
@@ -192,8 +193,8 @@ para comprobar que menús y escrituras cambian según el rol.
 > Las contraseñas se guardan con bcrypt. La contraseña compartida y documentada es una
 > licencia de la demo, no del diseño: en el original de 2021 estaban en texto plano
 > (`sisgapo-docs/historico/hallazgos-2026.md`, S-02).
-> En una demo pública interactiva, programa el reinicio periódico de los datos. Usa
-> `Demo__SoloLectura=true` como alternativa temporal si el reinicio no está disponible.
+> Lo que protege la demo pública es el reinicio nocturno de los datos (cron del VPS,
+> `sisgapo-docs/06-infraestructura.md`, sección 1).
 
 Al crear usuarios nuevos se exige una contraseña inicial de al menos 8 caracteres. Editar
 los datos de una persona no cambia su contraseña. No se incluye recuperación porque la demo
@@ -207,6 +208,7 @@ Empieza por [`sisgapo-docs/README.md`](sisgapo-docs/README.md).
 
 | Documento | Para qué |
 |---|---|
+| `00-convenciones.md` | Notación, capas, el contrato `sOpcion`/`parametros` y estilo |
 | `01-analisis-general.md` | Qué hace el sistema y en qué estado está |
 | `02-arquitectura.md` | Capas y flujo de un request |
 | `03-modelo-de-datos.md` | Tablas, relaciones y procedimientos |
@@ -217,4 +219,4 @@ Empieza por [`sisgapo-docs/README.md`](sisgapo-docs/README.md).
 | `08-mejoras-posibles.md` | Lo que se podría hacer y no se hace, con su motivo |
 | `09-decisiones.md` | Decisiones tomadas y alternativas descartadas |
 | `10-manual-de-usuario.md` | Cómo se usa: acceso, permisos por rol y cada pantalla |
-| `historico/` | Las dos auditorías de 2026, ya cerradas, las mejoras aplicadas, el plan de la migración al VPS y el estado inicial |
+| `historico/` | Las dos auditorías de 2026, ya cerradas, las mejoras aplicadas, el plan de la migración al VPS, el estado inicial y el documento de casos de uso de 2021 |

@@ -173,6 +173,11 @@ Y en paralelo, para desarrollo y demos presenciales: `docker compose up`.
 
 ## 7. Cómo repetir el despliegue en Azure (vuelta atrás)
 
+Lo que sigue es el despliegue del tag `demo-azure`, con .NET 8 y Angular 9. Con el código de
+`main` cambian tres cosas: la pila del App Service es .NET 10, el workflow usa Node 22 sin
+`NODE_OPTIONS`, y `environment.prod.ts`, que en `main` vale `/api/`, tiene que apuntar al App
+Service.
+
 **Base de datos.** Crear la base en Azure SQL con la oferta gratuita, **marcando la opción de
 auto-pausar** al agotar la asignación. Añadir la IP propia al firewall y activar «Permitir que
 los servicios de Azure accedan al servidor». Después, cargar esquema y datos:
@@ -192,7 +197,7 @@ lo admite dentro de una conexión a otra base. **No hay migraciones**, así que 
 obligatorio una vez por base. Verificar con los conteos que imprime `03-seed.sql`
 (ver `sql/README.md`).
 
-**API.** App Service en plan **F1**, Linux, pila .NET 10. Publicar con `dotnet publish` + zip
+**API.** App Service en plan **F1**, Linux, pila .NET 8. Publicar con `dotnet publish` + zip
 deploy, o con GitHub Actions. Después, en **Configuración → Configuración de la aplicación**,
 estas cinco. Van todas ahí, como *application settings*: la hoja «Cadenas de conexión»
 **no sirve**, porque Azure la expone con el prefijo `SQLAZURECONNSTR_` y `ConfiguracionBD` no
@@ -232,7 +237,7 @@ OpenSSL, y `output_location: "dist/SISGAPO-Front"`:
           output_location: "dist/SISGAPO-Front"
 ```
 
-Y `environment.prod.ts` apunta al App Service por **HTTPS** (`05-frontend.md`, sección 9).
+Y `environment.prod.ts` apunta al App Service por **HTTPS** (`05-frontend.md`, sección 8).
 
 **Verificación final:**
 
@@ -282,10 +287,10 @@ Ver `09-decisiones.md`, D-02.
 1. **El App Service S1 era el 94 % del costo**, no la base de datos. Y un plan sin
    aplicaciones dentro sigue facturando.
 2. **Migrar a .NET 8 fue el requisito de entrada** al tier gratuito, no una mejora opcional.
-3. **Se conservó el T-SQL**: Azure SQL gratuito para el enlace público, SQL Server en Docker
-   para desarrollo y demos presenciales.
-4. **El arranque en frío es el precio del tier gratuito.** Se paga con un aviso honesto en la
-   interfaz y abriendo el enlace antes de enseñarlo, no con dinero.
+3. **Se conservó el T-SQL**: Azure SQL gratuito para el enlace público hasta octubre de 2026,
+   SQL Server en Docker para desarrollo y demos presenciales.
+4. **El arranque en frío era el precio del tier gratuito.** Se pagó con un aviso honesto en la
+   interfaz y abriendo el enlace antes de enseñarlo, hasta que la demo pasó al VPS.
 5. **US$ 0/mes, y el enlace público funciona.**
 6. **Desde octubre de 2026, un servidor que ya se pagaba.** El mismo T-SQL en SQL Server
    Express, sin arranque en frío y con el reinicio nocturno resuelto.

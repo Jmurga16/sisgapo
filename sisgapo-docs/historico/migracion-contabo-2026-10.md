@@ -310,7 +310,7 @@ el acceso desde la otra. Si lo bloquean, las cabeceras no están llegando.
 
 ## 6. El reinicio periódico del seed
 
-Es el pendiente de `11-auditoria-y-cierre.md`, y aquí es una línea en el `crontab` del
+Es el pendiente de la auditoría de cierre (`auditoria-cierre-2026-10.md`, R-03), y aquí es una línea en el `crontab` del
 usuario que gestiona Docker:
 
 ```

@@ -8,7 +8,8 @@
 >
 > | Lo que dice este documento | Estado actual | Referencia |
 > |---|---|---|
-> | ASP.NET Core 5 | .NET 8 | D-01 |
+> | ASP.NET Core 5 | .NET 10 | D-01; `09-decisiones.md`, D-50 |
+> | Angular 9 | Angular 14 | `09-decisiones.md`, D-51 |
 > | `SqlHelper` / `Microsoft.ApplicationBlocks.Data` | ADO.NET plano con `Microsoft.Data.SqlClient` | S-05, S-06 |
 > | Dos viajes a la base por escritura (`sp_procedure_params_rowset`) | Uno: la firma está declarada en un diccionario | D-05 |
 > | Capas síncronas, `IDataReader` | `async`/`await` de punta a punta, `SqlDataReader` | D-10 |
@@ -30,7 +31,7 @@
 
 ```
 ┌────────────────────────────────────────────┐
-│  Angular 14 SPA       (sisgapo-web)        │
+│  Angular 9 SPA        (sisgapo-web)        │
 │  Componentes → Servicios (HttpClient)      │
 └──────────────────┬─────────────────────────┘
                    │  HTTP POST, JSON
@@ -262,7 +263,7 @@ SqlHelper.ExecuteScalar(oSqlConnIN, CommandType.StoredProcedure, sProcedure, arP
 Server— para descubrir la firma del SP en tiempo de ejecución. Como los seis SPs tienen
 exactamente la misma firma (`@sOpcion VARCHAR(2)`, `@pParametro VARCHAR(MAX)`), esta
 introspección no aporta nada: se puede reemplazar por dos `SqlParameter` explícitos y
-eliminar ~120 de las 253 líneas de `Conexion.cs`. Ver `08-mejoras-posibles.md`, M-02.
+eliminar ~120 de las 253 líneas de `Conexion.cs`. Se hizo así: `historico/mejoras-aplicadas.md`, M-03.
 
 **7. `USP_MNT_Almacenes`, opción `05`**
 ```sql
@@ -348,7 +349,7 @@ Consecuencias:
 - La configuración se relee del disco en cada request.
 
 Introducir DI es de las mejoras con mejor relación esfuerzo/beneficio: son ~15 líneas en
-`Startup` y cambiar constructores. Ver `08-mejoras-posibles.md`, M-03.
+`Startup` y cambiar constructores. Se hizo: `historico/mejoras-aplicadas.md`, M-03.
 
 ## 7. Pipeline HTTP y CORS
 
@@ -378,8 +379,8 @@ Tres problemas concretos:
 2. **El origen CORS de producción probablemente estaba mal.** Permite `https://sisgapo.azurewebsites.net`, pero el frontend se desplegaba en Azure Static Web Apps (`*.azurestaticapps.net` — hay dos workflows). Los dominios no coinciden.
 3. **El frontend llamaba por HTTP y la API redirige a HTTPS.** `environment.prod.ts` apunta a `http://sisgapoback.azurewebsites.net/`, y `UseHttpsRedirection()` devuelve un 307. En un `POST` con preflight CORS eso suele romperse. Ver `historico/hallazgos-2026.md`, S-08.
 
-**Swagger solo existe en Development.** Para una demo esto conviene invertirlo: exponer
-Swagger en producción es una de las cosas que mejor se ven al enseñar una API.
+**Swagger solo existe en Development.** Se valoró exponerlo en producción para enseñar la
+API, y se decidió mantenerlo solo en local (`historico/auditoria-cierre-2026-10.md`, H-06).
 
 ## 8. Manejo de errores
 

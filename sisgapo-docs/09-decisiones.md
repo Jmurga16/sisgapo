@@ -154,7 +154,7 @@ cambio son un par de horas.
 
 **Recomendación práctica:** migra primero con `Startup`, verifica que todo funciona, y
 entonces —en un commit aparte— pásalo a hosting mínimo. Así el cambio de estilo es reversible
-sin tocar la migración. Anotado en `06-infraestructura.md`, sección 3.
+sin tocar la migración. Anotado como MC-08 en `08-mejoras-posibles.md`.
 
 ---
 
@@ -233,8 +233,8 @@ infraestructura funcionales excede "análisis y documentación". Están escritos
 copiar.
 
 **Ejecutado después.** El `docker-compose.yml` existe hoy en la raíz del repositorio, con un
-servicio `db-init` que carga los scripts de `sql/`; el documento 07 remite a él en vez de
-reproducirlo.
+servicio `db-init` que carga los scripts de `sql/`; `06-infraestructura.md`, sección 8,
+remite a él en vez de reproducirlo.
 
 ---
 
@@ -328,8 +328,9 @@ mantenido. `sisgapo-web/src/scripts/` queda congelado como evidencia de 2021.**
 
 **Por qué.** La alternativa era una tercera copia, y tres juegos de scripts es peor que
 dos en todos los sentidos. La historia se sigue contando igual de bien: los originales
-enseñan qué había mal, `sql/` enseña cómo quedó. Los arreglos van marcados con `--[FIX]`
-y una explicación de qué hacía antes, así que el diff es legible sin herramientas.
+enseñan qué había mal, `sql/` enseña cómo quedó. Los arreglos se marcaron al principio con
+`--[FIX]` y una explicación de qué hacía antes; en octubre de 2026 esas marcas se retiraron,
+y el porqué de cada arreglo quedó en su hallazgo del histórico, que es donde se lee.
 
 **Reconsidera si:** llegas a desplegar en Azure y quieres migraciones versionadas en vez
 de scripts idempotentes.
@@ -494,8 +495,8 @@ de una vez habría convertido este arreglo acotado en una reescritura de los for
 los `@ViewChild`. `strictNullChecks`, `strictPropertyInitialization` y `strictTemplates`
 quedan para una migración gradual.
 
-La excepción de usuarios se mantiene explícita: sus escrituras devuelven `{ mensaje }`,
-sin `cod`, mientras los demás módulos devuelven `{ cod, mensaje }`.
+Usuarios fue la excepción hasta el 4 de octubre de 2026: sus escrituras devolvían
+`{ mensaje }`, sin `cod`. Desde D-53 responde `{ cod, mensaje }` como los demás módulos.
 
 ---
 
@@ -644,7 +645,7 @@ comentario del controlador y en el `SET @nIdUsuario` de cada procedimiento.
 
 ## D-30 · Las pruebas de integración se omiten solas
 
-**Decisión:** las doce pruebas contra SQL Server se saltan si no existe la variable
+**Decisión:** las pruebas contra SQL Server —doce entonces, dieciocho al cierre— se saltan si no existe la variable
 `SISGAPO_TEST_CONNECTION_STRING`, en vez de fallar o de levantar un contenedor por su cuenta
 con Testcontainers.
 
@@ -854,8 +855,7 @@ el 90 % de las visitas; el usuario y la contraseña solo los necesita quien vaya
 API con `curl` o Swagger, y a ese le sobra un clic más.
 
 **Por qué la contraseña sigue en claro.** Esconderla no protegería nada: es pública por
-diseño, la base no tiene datos reales y el modo consulta bloquea las escrituras cuando la
-demo está desplegada. Ver `historico/hallazgos-2026.md`, S-02.
+diseño, la base no tiene datos reales y la demo desplegada vuelve al seed cada noche. Ver `historico/hallazgos-2026.md`, S-02.
 
 **Lo que trajo consigo.** El seed añade `demo.admin` (rol 1). Antes, ninguna cuenta pública
 llegaba a Usuarios —y con D-34, tampoco al mantenimiento de Zonas—: dos módulos que existían
@@ -1152,6 +1152,13 @@ que se decidió, y lo cumple el código?
 Las que no aparecen en la tabla —D-06, D-07, D-10, D-13 a D-16, D-18, D-20 a D-23, D-25,
 D-27 a D-29, D-31 a D-34, D-36 a D-38, D-40 a D-42 y D-44 a D-46— se revisaron y siguen
 vigentes sin matices: el código hace lo que dicen.
+
+**Lo que cambió después, hasta el 4 de octubre.** La tabla es la foto del 1 de octubre. Desde
+entonces se ejecutó D-49, así que D-02 queda superada y D-08 levanta el servidor de verdad.
+D-51 superó a D-39 y matizó a D-47: Angular 14, con los avisos de H-04 como coste aceptado.
+H-08 se corrigió el 2 de octubre. D-53 cerró el segundo cabo de D-43, los constructores sin
+parámetros, y la excepción de Usuarios de D-20. Las marcas `--[FIX]` de D-13 se retiraron, y
+las pruebas son 27 unitarias y 18 de integración.
 
 ---
 

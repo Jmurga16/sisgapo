@@ -87,10 +87,7 @@ BEGIN
 	BEGIN
 
 		BEGIN
-			--[FIX] Filtros opcionales por almacen y categoria. Los dos desplegables de
-			--      la pantalla de productos existian desde 2021 pero sus valores nunca
-			--      llegaban a la consulta: filtrar no hacia absolutamente nada.
-			--      0 o vacio = todos, igual que el filtro de rol en Usuarios.
+			--0 o vacio = todos, igual que el filtro de rol en Usuarios.
 			SET @nIdAlmacen   = ISNULL((SELECT valor FROM @tParametro WHERE id = 1), 0);
 			SET @nIdCategoria = ISNULL((SELECT valor FROM @tParametro WHERE id = 2), 0);
 		END
@@ -200,9 +197,6 @@ BEGIN
          			
 		END	
 
-		--[FIX] Los cuatro INSERT van en una transaccion. Antes, si fallaba el tercero,
-		--      los dos primeros quedaban confirmados y el producto se quedaba sin lote
-		--      ni detalle: desaparecia del listado (INNER JOIN) sin explicacion.
 		BEGIN TRY
 
 			BEGIN TRANSACTION;

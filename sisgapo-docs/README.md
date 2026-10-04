@@ -70,7 +70,7 @@ También en esta carpeta:
    puede tener varias partidas y la existencia deja de sobrescribirse.
 4. `docker compose up -d` levanta SQL Server, crea la base y carga datos de demostración
    realistas. Los scripts son reejecutables.
-5. Backend y frontend compilan hoy en Node 22 y 24 sin flags; el backend, además, sin
+5. El frontend compila en Node 22 y 24 sin flags, y el backend, con el SDK de .NET 10, sin
    avisos.
 6. La auditoría de la recuperación encontró 48 hallazgos y **los 48 están cerrados**: 45
    arreglados y tres cerrados con el motivo escrito. La auditoría de cierre, hecha el 1 de

@@ -153,7 +153,7 @@ Ahora `TBL_LOTE.sNombreLote` es `UNIQUE` y el correlativo se busca como hace
 `UNIQUE(nIdProducto, nIdLote)` y baja lógica propia. Un producto puede tener a la vez el lote
 que vence en marzo y el que vence en junio, cada uno con su existencia, su precio y su fecha:
 era el caso de uso central de un almacén con control de caducidad y el modelo de 2021 no lo
-soportaba (`08-mejoras-posibles.md`, M-09).
+soportaba (`historico/mejoras-aplicadas.md`, M-09).
 
 `TBL_MOVIMIENTO` es el libro del almacén. Una fila por entrada, salida o ajuste sobre un lote:
 
@@ -189,7 +189,7 @@ Nueve procedimientos más una función. Toda la lógica de negocio del sistema e
 | Procedimiento | Opciones | Firma |
 |---|---|---|
 | `USP_MNT_Login` | — | `@sNombreUsuario` |
-| `USP_MNT_Zonas` | 01–03 | `@sOpcion`, `@nIdZona`, `@sNombre`, `@sRutaImagen` |
+| `USP_MNT_Zonas` | 01–05 | `@sOpcion`, `@nIdZona`, `@sNombre`, `@sRutaImagen`, `@bEstado` |
 | `USP_MNT_Categorias` | 01–05 | `@sOpcion`, `@pParametro` |
 | `USP_MNT_Almacenes` | 01–07 | `@sOpcion`, `@pParametro` |
 | `USP_MNT_Usuarios` | 01–06 | `@sOpcion`, `@pParametro` |
@@ -411,7 +411,7 @@ Qué se corrigió en `sql/` respecto a los originales:
 | Se elimina el duplicado de `CreacionTablasParte2.sql` | fusionado |
 | Se elimina el duplicado de `PoblacionDatosParte2.sql` | fusionado |
 | Todo pasa a UTF-8 | todos |
-| `ALTER PROCEDURE` → `CREATE PROCEDURE` | `05-usp-almacenes.sql` |
+| `ALTER PROCEDURE` → `CREATE OR ALTER PROCEDURE` (`09-decisiones.md`, D-14) | todos |
 | Se elimina `USE [DB_SISGAPO]` (Azure SQL no lo admite) | todos |
 | Datos de demostración ampliados y con acentos correctos | `03-seed.sql` |
 | `TBL_DET_PRODUCTO` pasa a una fila por producto y lote, con estado propio | `01-esquema.sql` |
@@ -421,34 +421,33 @@ Qué se corrigió en `sql/` respecto a los originales:
 | `TBL_USUARIO.nTelefono INT` pasa a `sTelefono VARCHAR(20)` | `01-esquema.sql`, `08-usp-usuarios.sql`, `03-seed.sql` |
 
 Las tres últimas filas no son correcciones de compatibilidad sino funcionalidad nueva: son
-los módulos de Lotes y Movimientos. Ver la sección 2 y `08-mejoras-posibles.md`, M-09 y M-12.
+los módulos de Lotes y Movimientos. Ver la sección 2 y `historico/mejoras-aplicadas.md`, M-09 y M-12.
 
 **Los cinco bugs de lógica, del 9 al 13, sí están corregidos en `sql/`.** En agosto esta
 sección decía lo contrario, y era cierto: entonces `sql/` solo arreglaba lo que impedía
 ejecutar. Cambió cuando la carpeta pasó a ser el juego mantenido (`09-decisiones.md`, D-13);
-cada corrección va marcada con `--[FIX]` en su procedimiento y con su hallazgo en
-`historico/hallazgos-2026.md` (C-02, C-05, C-06, C-07).
+cada corrección está documentada con su hallazgo en `historico/hallazgos-2026.md` (C-02,
+C-05, C-06, C-07).
 
 ## 6. Si migras a otro motor
 
 El coste real de cambiar de motor no son las tablas —el DDL es casi portable— sino los
-**950 líneas de T-SQL** de los procedimientos. Inventario de lo que no es estándar:
+**unas 2 100 líneas de T-SQL** de los procedimientos. Inventario de lo que no es estándar:
 
 | Construcción | Dónde | Equivalente en PostgreSQL |
 |---|---|---|
 | `IIF(cond, a, b)` | Todos los `USP_MNT_*` | `CASE WHEN cond THEN a ELSE b END` |
-| `SCOPE_IDENTITY()` / `@@IDENTITY` | Usuarios, Productos | `RETURNING id` |
+| `SCOPE_IDENTITY()` | Usuarios, Productos, Lotes | `RETURNING id` |
 | `IDENTITY(1,1)` | Todas las tablas | `GENERATED ALWAYS AS IDENTITY` |
 | `DECLARE @tabla TABLE (...)` | Todos | Tabla temporal o `unnest()` |
 | `dbo.Split(...)` | Todos | `string_to_array()` / `unnest() WITH ORDINALITY` |
 | `CONVERT(VARCHAR, fecha, 23)` | Usuarios op. 03 | `to_char(fecha, 'YYYY-MM-DD')` |
-| `sp_procedure_params_rowset` | `Conexion.cs` | No existe; hay que eliminarlo |
 | `VARCHAR(MAX)` | Todas | `TEXT` |
 | `BIT` | Todas | `BOOLEAN` |
 | `GO` (separador de lotes) | Todos | No existe; es de sqlcmd, no de T-SQL |
 | Corchetes `[TBL_X]` | Todos | Comillas dobles o nada |
 
-A eso se suma cambiar `System.Data.SqlClient` por `Npgsql` en la capa `Data`, y que
+A eso se suma cambiar `Microsoft.Data.SqlClient` por `Npgsql` en la capa `Data`, y que
 PostgreSQL **pliega los identificadores sin comillas a minúsculas** — lo que rompe el mapeo
 del C#, que accede por nombre exacto (`dr["nIdAlmacen"]`). Habría que revisar cada `dr[...]`
 del sistema.

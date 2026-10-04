@@ -390,20 +390,21 @@ que se haría si el proyecto se reabre.
 |---|---|---|---|
 | R-01 | **Aplicar H-01, H-02 y H-03 antes de archivar — hecho** | El repositorio queda sobre un runtime con soporte y sin paquetes NuGet vulnerables conocidos | — |
 | R-02 | **Migrar al VPS en una rama separada** (`migracion-contabo-2026-10.md`) — **hecho** | El estado Azure + Hostinger queda congelado primero en un tag; la migración no forma parte de este cierre | medio día |
-| R-03 | Si Azure se queda: programar el reinicio del seed con un workflow `schedule` que ejecute `cargar-base` contra Azure SQL | Es el único pendiente de infraestructura desde septiembre. Exige abrir el cortafuegos de Azure SQL a los *runners* de GitHub o usar OIDC con `az sql server firewall-rule`; no es gratis en complejidad | 2 h |
+| R-03 | Si Azure se queda: programar el reinicio del seed con un workflow `schedule` que ejecute `cargar-base` contra Azure SQL — **no aplica**: el reinicio lo hace el cron del VPS desde el 4 de octubre de 2026 | Es el único pendiente de infraestructura desde septiembre. Exige abrir el cortafuegos de Azure SQL a los *runners* de GitHub o usar OIDC con `az sql server firewall-rule`; no es gratis en complejidad | 2 h |
 | R-04 | Arreglos baratos con efecto visible: H-08, H-09, H-10 — **hechos** | Quedan cubiertos la baja con existencias, el despertar de Azure SQL y el reintento de configuración | — |
 | R-05 | Mantener Swagger solo en desarrollo — **decidido** | El guion distingue la demostración local de la pública | — |
 | R-06 | Dejar H-11 a H-16 y las MC documentadas, sin hacer — **revisada el 4 de octubre de 2026**: ese día se corrigieron H-11, H-07 y H-12 a H-15, y se aplicaron cinco MC (`../09-decisiones.md`, D-53). Quedan H-04, H-16 y seis MC | Son ruido para el visitante; valen si se reabre el proyecto, no para cerrarlo | — |
 | R-07 | Sacar `cred.fake` y `SISGAPO.7z` del clon — **hecho** el 4 de octubre de 2026: la nota fue a la carpeta de claves del equipo y el `.7z`, a una de respaldos fuera del repositorio | Están ignorados por Git y no salen del equipo, pero una nota con datos de conexión no debería vivir dentro de un clon, y el `.7z` son 13 MB de una copia cuyo contenido ya está en el repositorio. Un gestor de contraseñas y una carpeta aparte | 5 min |
-| R-08 | Fechar el cierre en el README y en este documento; no archivar el repositorio en GitHub mientras la demo esté en línea | Un repositorio archivado no ejecuta workflows ni admite cambios, y la demo seguirá necesitando un parche de vez en cuando | 5 min |
+| R-08 | Fechar el cierre en el README y en este documento; no archivar el repositorio en GitHub mientras la demo esté en línea — **hecho**; lo de no archivar está en `../06-infraestructura.md`, sección 1 | Un repositorio archivado no ejecuta workflows ni admite cambios, y la demo seguirá necesitando un parche de vez en cuando | 5 min |
 
 ## 8. Estado final y lista de cierre
 
 La demo queda cerrada el **2 de octubre de 2026** con login, panel, usuarios, zonas,
 almacenes, categorías, productos, lotes, movimientos y kardex; backend en .NET 10,
-frontend Angular 9 (14 desde el 4 de octubre, D-51) y SQL Server. La actualización de Angular, las mejoras MC y los
-hallazgos H-11 a H-16 son decisiones o mantenimiento para una reapertura, no requisitos
-de este cierre.
+frontend Angular 9 (14 desde el 4 de octubre, D-51) y SQL Server. Lo que el 2 de octubre
+quedó para una reapertura se resolvió el 4: H-11 a H-16 se corrigieron o se cerraron por
+decisión (D-53 y D-55), Angular subió a la 14 y ahí se queda (D-51), y las seis MC que no se
+aplicaron están en `../08-mejoras-posibles.md`.
 
 - [x] Auditoría de código y documentación consolidada en este documento.
 - [x] H-01, H-02 y H-03: .NET 10, paquetes actualizados y análisis NuGet sin vulnerabilidades.
@@ -412,7 +413,7 @@ de este cierre.
 - [x] D-49: migración a Contabo aprobada como trabajo posterior y aislado.
 - [x] Estado Azure + Hostinger preparado como punto de retorno anterior a la migración.
 - [x] Las 13 pruebas de integración corren en el CI contra SQL Server: el trabajo `sql` ejecuta
-  las 39 sin omitir ninguna (validado el 4 de octubre de 2026).
+  las 39 sin omitir ninguna (validado el 4 de octubre de 2026; al cierre son 45).
 - [x] Reinicio periódico del seed: cron nocturno en el VPS desde el 4 de octubre de 2026.
 - [x] Enlace público actualizado a `https://sisgapo.devkora.com`.
 - [x] H-07 y H-12 a H-15 corregidos el 4 de octubre de 2026, con cinco pruebas de integración

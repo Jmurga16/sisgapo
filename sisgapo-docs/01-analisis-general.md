@@ -75,11 +75,11 @@ lo cual es una fortaleza para una demo: no hay pantallas a medias.
 
 | Componente | Versión | Notas |
 |---|---|---|
-| .NET | 8.0 (LTS) | Migrado desde 5.0, que llevaba fuera de soporte desde mayo de 2022 |
-| ASP.NET Core Web API | 8.0 | Patrón `Startup.cs` clásico, conservado a propósito — ver `09-decisiones.md`, D-05 |
-| `Microsoft.Data.SqlClient` | 5.1.6 | Sustituye a `System.Data.SqlClient` 4.8.2, que tenía 2 CVE |
-| `Swashbuckle.AspNetCore` | 6.6.2 | Swagger, solo habilitado en Development |
-| `NLog` | 5.3.4 | Con `nlog.config` a consola y archivo |
+| .NET | 10.0 (LTS) | Migrado desde 5.0, que llevaba fuera de soporte desde mayo de 2022, pasando por 8.0 (`09-decisiones.md`, D-50) |
+| ASP.NET Core Web API | 10.0 | Patrón `Startup.cs` clásico, conservado a propósito — ver `09-decisiones.md`, D-05 |
+| `Microsoft.Data.SqlClient` | 7.1.1 | Sustituye a `System.Data.SqlClient` 4.8.2, que tenía 2 CVE |
+| `Swashbuckle.AspNetCore` | 10.2.3 | Swagger, solo habilitado en Development |
+| `NLog` | 6.2.1 | Con `nlog.config` a consola y archivo |
 | `xUnit` | 2.9.3 | 27 pruebas unitarias, más 18 de integración contra SQL Server |
 
 Cuatro proyectos: `SISGAPO_API` (web), `Business`, `Data`, `Entity`, más `Test`. Los paquetes
@@ -96,14 +96,16 @@ sin uso de la versión original —`Microsoft.EntityFrameworkCore.SqlServer`,
 | SweetAlert2 | 11.0.18 | Diálogos y alertas |
 | TypeScript | 4.8.4 | — |
 | TSLint | 6.1.3 | Deprecado en favor de ESLint; se ejecuta fuera del CLI |
-| Karma + Jasmine | 4.4 / 3.5 | Doce `.spec.ts` de existencia. Protractor y `e2e/` se retiraron |
+| Karma + Jasmine | 6.4 / 3.8 | Doce `.spec.ts` de existencia. Protractor y `e2e/` se retiraron |
 
 ### Base de datos
 
 SQL Server 2022: Express en un contenedor del VPS para la demo pública, y en Docker en local. **Casi toda
 la lógica de negocio está en nueve stored procedures** (`03-modelo-de-datos.md`, sección 3).
-El C# despacha llamadas y mapea `SqlDataReader` a DTOs; las únicas reglas que viven en C#
-son la verificación de contraseñas y la validación de los datos de un usuario.
+El C# despacha llamadas y mapea `SqlDataReader` a DTOs. Las reglas que viven en C# son
+pocas: la verificación de contraseñas, la validación de los datos de un usuario, el armado
+del `pParametro` —que rechaza el `|` y el formato antiguo—, las anotaciones de los DTO y el
+permiso de ajuste por rol.
 
 ### Infraestructura original (Azure)
 
@@ -159,13 +161,13 @@ Doce scripts: esquema, función `Split`, seed y nueve procedimientos.
 - 9 servicios (`login`, `panel`, `usuarios`, `almacenes`, `zona`, `inventario`,
   `configuracion`, `sesion`, `kardex-cronologia`), más el guard y el interceptor
 - 8 archivos de modelos compartidos
-- 13 scripts SQL originales de 2021, congelados como evidencia
+- 12 scripts SQL originales de 2021, congelados como evidencia
 - 12 archivos `.spec.ts`, todavía de existencia: comprueban que los métodos estén, no lo
   que hacen (`08-mejoras-posibles.md`, MC-10)
 
 ### Duplicación
 
-Sigue siendo el rasgo más visible del backend, y es deliberado: los seis controladores
+Sigue siendo el rasgo más visible del backend, y es deliberado: los cuatro controladores
 con `sOpcion` repiten el mismo esqueleto `if/else if/try/catch` y las nueve `Business` son
 casi idénticas. Se evaluó un genérico y se descartó porque esconde el patrón `sOpcion`,
 que es lo que hace predecible el código (`09-decisiones.md`, D-44). Lo que sí se limpió

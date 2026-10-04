@@ -49,7 +49,7 @@ src/app/
         └── inventario.service.ts   (compartido por las cuatro pantallas)
 ```
 
-**Un solo `NgModule`.** Los 18 componentes se declaran en `app.module.ts` y se cargan todos en
+**Un solo `NgModule`.** Los 19 componentes se declaran en `app.module.ts` y se cargan todos en
 el bundle inicial: `main` pesa unos 966 kB. Para siete pantallas sigue siendo asumible, pero
 dividir en módulos con carga diferida es la mejora obvia si el sistema creciera.
 
@@ -214,7 +214,7 @@ hace que el CSS global sea más difícil de mantener. Las listas comparten ahora
 scroll horizontal, acciones y paginador responsive en `styles.css`; los estilos propios
 quedan en cada componente.
 
-Los **cinco modales** comparten esqueleto: cabecera `clstitulo`, cuerpo en
+Los **seis modales** comparten esqueleto: cabecera `clstitulo`, cuerpo en
 `mat-dialog-content.contenido-formulario` —que le da scroll propio y deja fijos el título y
 la botonera— y `mat-dialog-actions.acciones-formulario`. Esos estilos viven una sola vez en
 `styles.css`. Antes estaban repetidos en el CSS de tres componentes y, como Angular encapsula
@@ -285,17 +285,15 @@ Ver `06-infraestructura.md`.
 | 11 | Workflow con `output_location` incorrecto | 🟠 | `.github/workflows/` | corregido |
 | 12 | URL cableada en `InicioComponent` | 🟡 | `inicio.component.ts` | corregido |
 | 13 | Errores silenciosos al iniciar sesión | 🟡 | `login.component.ts` | corregido |
-| 14 | `.toPromise()` deprecado | 🟡 | cinco servicios | pendiente |
-| 15 | 11 `.spec.ts` que no compilan | 🟡 | todo el proyecto | pendiente |
+| 14 | `.toPromise()` deprecado | 🟡 | seis servicios | no se aplica (`08-mejoras-posibles.md`, MC-10) |
+| 15 | 11 `.spec.ts` que no compilan | 🟡 | todo el proyecto | no se aplica (`08-mejoras-posibles.md`, MC-10) |
 | 16 | Un solo módulo, sin carga diferida | 🟡 | `app.module.ts` | descartado — se midió y el bundle creció (D-45) |
 | 17 | Tres sistemas de estilos conviviendo | 🟡 | `styles.css` | mitigado — Bootstrap reducido a grid y `@ng-bootstrap` retirado (D-51) |
 
-No quedan pendientes de gravedad alta en esta lista. Subir Angular más allá de la 14, las
-pruebas de interfaz y la simplificación del stack visual son deuda de mantenimiento, no
-bloqueos para la demo.
+No queda nada pendiente en esta lista. Subir Angular más allá de la 14 está descartado
+(`09-decisiones.md`, D-51).
 
-**Ojo con los dos «pendiente» de arriba.** Esta tabla es una lista local del frontend, no el
-inventario de la auditoría: `historico/hallazgos-2026.md` cierra sus 48 hallazgos y ninguno queda
-abierto. Las filas 14 y 15 —`.toPromise()` deprecado y los once `.spec.ts` que no compilan— son
-mantenimiento menor que nunca entró en esos 48, y siguen ahí anotadas para no perderlas de
-vista.
+Las filas 14 y 15 —`.toPromise()` deprecado y los once `.spec.ts` que no compilan— son
+mantenimiento menor que nunca entró en los 48 hallazgos de `historico/hallazgos-2026.md`.
+Están evaluadas como MC-10 y no se aplican: `.toPromise()` solo se sustituye con RxJS 7, y el
+frontend se queda en Angular 14 con sus dependencias.

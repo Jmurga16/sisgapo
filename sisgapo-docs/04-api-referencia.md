@@ -13,7 +13,8 @@ Swagger está disponible en `/swagger` **solo cuando el entorno es Development**
 
 ## 1. Convención general
 
-Todos los endpoints menos `/api/Zona` comparten el mismo contrato:
+Todos los endpoints menos `/LoginService`, `/ConfiguracionService` y `/api/zona` comparten
+el mismo contrato:
 
 ```http
 POST /{Servicio}
@@ -63,7 +64,7 @@ la zona.
 
 ## 2. `POST /LoginService`
 
-Único endpoint que no usa `sOpcion`.
+Usa un objeto tipado, no `sOpcion`.
 
 **Request**
 ```json

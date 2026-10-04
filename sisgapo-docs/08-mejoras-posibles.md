@@ -17,9 +17,9 @@ H-01 a H-03: el runtime y los paquetes).
 
 ## Resumen
 
-> **Estado a 1 de octubre de 2026.** Ocho de las catorce mejoras están aplicadas y
+> **Estado al cierre, 4 de octubre de 2026.** Ocho de las catorce mejoras están aplicadas y
 > verificadas: M-01 a M-05, M-09, M-11 y M-12. Qué se hizo en cada una y cómo se comprobó
-> está en `historico/mejoras-aplicadas.md`; en este documento quedan solo las abiertas.
+> está en `historico/mejoras-aplicadas.md`; aquí se desarrollan las que no se aplicaron.
 
 | # | Mejora | Esfuerzo | Demo | Portafolio | Reco. | Estado |
 |---|---|---|---|---|---|---|
@@ -29,14 +29,14 @@ H-01 a H-03: el runtime y los paquetes).
 | M-04 | Corregir C-02 y C-03 | 2 h | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ✅ | **hecho** |
 | M-05 | Limpiar código muerto | 30 min | ⭐ | ⭐⭐⭐ | ✅ | **hecho** |
 | M-06 | Sustituir `pParametro` por JSON | 2 días | ⭐ | ⭐⭐⭐⭐ | 🤔 | mitigado |
-| M-07 | Actualizar Angular | 3–5 días | ⭐⭐ | ⭐⭐⭐ | ✅ | **hasta la 14** (D-51); más allá, descartado (D-47) |
+| M-07 | Actualizar Angular | 3–5 días | ⭐⭐ | ⭐⭐⭐ | ❌ | **hasta la 14** (D-51); más allá, no se hace |
 | M-08 | Pruebas reales | 2–3 días | ⭐ | ⭐⭐⭐⭐⭐ | 🤔 | **a medias:** unitarias e integración de los módulos nuevos |
 | M-09 | Múltiples lotes por producto | 2 días | ⭐⭐⭐ | ⭐⭐⭐ | ✅ | **hecho** |
-| M-10 | Lógica de T-SQL a C# | 6–8 días | ⭐⭐ | ⭐⭐⭐⭐⭐ | 🤔 | pendiente |
+| M-10 | Lógica de T-SQL a C# | 6–8 días | ⭐⭐ | ⭐⭐⭐⭐⭐ | 🤔 | no se hace |
 | M-11 | Reportes y panel | 3 días | ⭐⭐⭐⭐ | ⭐⭐⭐ | 🤔 | **hecho** |
 | M-12 | Movimientos de inventario | 4 días | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ | **hecho** |
-| M-13 | Módulo de proveedores (PN3) | 5 días | ⭐⭐ | ⭐⭐ | ❌ | pendiente |
-| M-14 | Reescritura completa | 3–4 semanas | ⭐⭐⭐ | ⭐⭐⭐⭐ | ❌ | pendiente |
+| M-13 | Módulo de proveedores (PN3) | 5 días | ⭐⭐ | ⭐⭐ | ❌ | descartado |
+| M-14 | Reescritura completa | 3–4 semanas | ⭐⭐⭐ | ⭐⭐⭐⭐ | ❌ | descartado |
 
 ---
 
@@ -44,7 +44,7 @@ H-01 a H-03: el runtime y los paquetes).
 
 > **Mitigación aplicada.** El frontend ya envía un arreglo de valores y el backend rechaza
 > `|` antes de reconstruir `pParametro`. Los procedimientos continúan usando `dbo.Split`,
-> por lo que la sustitución completa descrita aquí sigue pendiente.
+> por lo que la sustitución completa descrita aquí no se hace.
 
 **Resuelve de raíz:** `historico/hallazgos-2026.md`, S-07 · **Esfuerzo:** 2 días
 
@@ -103,8 +103,8 @@ el invariante «existencia = suma del kardex». CI corre las dos suites en cada 
    andamiaje (`BaseDeDatosPruebas`, `ProductoDePrueba`) ya existe; son casos, no
    infraestructura. De paso cubriría las reglas de D-35 y el hallazgo H-08 de la auditoría
    de cierre; H-12, H-14 y H-15 ya tienen las suyas en `MantenimientoIntegracionTests`.
-2. **Los doce `.spec.ts` del frontend** siguen comprobando que existan los métodos, no lo que
-   hacen. Lo que más rinde es probar los dos servicios con lógica: `SesionService`
+2. **Los doce `.spec.ts` del frontend** comprueban que existan los métodos, no lo que hacen,
+   y once ni compilan (MC-10). Lo que más rinde es probar los dos servicios con lógica: `SesionService`
    (caducidad) y `KardexCronologiaService` (agrupación por día).
 3. **Un recorrido de extremo a extremo** con Playwright: login → listar → crear → mover →
    dar de baja. Uno solo, el de la demo.
