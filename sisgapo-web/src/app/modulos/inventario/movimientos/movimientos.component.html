@@ -126,7 +126,7 @@
         <table mat-table [dataSource]="dsMovimiento" matSort aria-describedby="tituloMovimientos">
             <ng-container matColumnDef="dFechaMov">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
-                <td mat-cell *matCellDef="let element" data-label="Fecha">{{element.dFechaMov}}</td>
+                <td mat-cell *matCellDef="let element" data-label="Fecha" class="celda-cifra">{{element.dFechaMov}}</td>
             </ng-container>
             <ng-container matColumnDef="sTipoNombre">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
@@ -162,7 +162,7 @@
             </ng-container>
             <ng-container matColumnDef="nSaldo">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Saldo</th>
-                <td mat-cell *matCellDef="let element" data-label="Saldo">{{element.nSaldo | number}} {{element.sNombreUM}}</td>
+                <td mat-cell *matCellDef="let element" data-label="Saldo" class="celda-cifra">{{element.nSaldo | number}} {{element.sNombreUM}}</td>
             </ng-container>
             <ng-container matColumnDef="sMotivo">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Motivo</th>

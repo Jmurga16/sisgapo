@@ -119,6 +119,15 @@ body {
     min-width: 1200px;
 }
 
+.tabla-scroll .mat-header-cell,
+.tabla-scroll .mat-cell {
+    padding-right: 1rem;
+}
+
+.celda-cifra {
+    white-space: nowrap;
+}
+
 .col-acciones {
     width: 1%;
     white-space: nowrap;
@@ -148,6 +157,22 @@ body {
     justify-content: flex-start;
     align-items: center;
     gap: 1rem;
+}
+
+/* En escritorio, Editar y Dar de baja van en el menú ⋮; en las tarjetas del móvil,
+   .acciones-secundarias los vuelve a mostrar como botones. */
+.acciones-secundarias {
+    display: none;
+}
+
+.mat-menu-item.opcion-baja,
+.mat-menu-item.opcion-baja .mat-icon {
+    color: #b02a37;
+}
+
+.mat-menu-item.opcion-alta,
+.mat-menu-item.opcion-alta .mat-icon {
+    color: #1e7e34;
 }
 
 .acciones-formulario {
@@ -467,6 +492,14 @@ body {
 
     .tabla-tarjetas .acciones .mat-button-base {
         flex: 1 1 7rem;
+    }
+
+    .acciones-secundarias {
+        display: contents;
+    }
+
+    .acciones .acciones-menu {
+        display: none;
     }
 
     .tabla-tarjetas .mat-row .celda-sin-datos {
