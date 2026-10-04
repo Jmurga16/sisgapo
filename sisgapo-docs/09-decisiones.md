@@ -1421,6 +1421,38 @@ genérico. El formulario es la única puerta que usa una persona.
 
 ---
 
+## D-56 · En escritorio, Productos y Lotes guardan Editar y Dar de baja en un menú ⋮
+
+**La duda.** El recorrido en el navegador del 4 de octubre de 2026 encontró la tabla de Lotes
+ilegible a 1400 px: «CAF0001Café», «KilogramosS/ 38.502027-05-04». Material 14 solo da
+relleno horizontal a la primera y a la última celda de cada fila; mientras la tabla tenía
+sitio no se notaba, pero con diez columnas y tres botones de acción, los textos se juntaban.
+En Productos, el valor se partía en dos líneas: «S/» arriba y la cifra abajo.
+
+**Decisión, en tres partes.**
+
+- Todas las celdas de los listados llevan relleno a la derecha (`styles.css`).
+- Las cifras —existencia, precio, valor, fechas y saldo— no se parten (`celda-cifra`).
+- En Productos y Lotes, la acción que lleva a otra pantalla —*Lotes*, *Kardex*— se queda
+  como botón; *Editar* y *Dar de baja* o *Activar* pasan a un menú ⋮. Libera unos 230 px.
+
+**Por qué solo en esas dos.** Son las únicas con diez columnas y acciones; Usuarios,
+Almacenes y Categorías tienen sitio para los tres botones.
+
+**Por qué no también en el teléfono.** En las tarjetas de D-38 los botones ya caben a todo
+el ancho y se tocan mejor que un menú. Las dos versiones están en la plantilla y el CSS
+muestra una u otra (`acciones-secundarias`, `acciones-menu`). Es justo la duplicación que
+D-38 quería evitar, pero acotada a dos celdas de acciones y con los mismos `*ngIf` de
+permisos dentro.
+
+**Lo que trajo consigo.** En el panel, la cifra de *Valor del inventario* también se partía
+en un teléfono. Las cuatro tarjetas apilan ahora el icono sobre el texto por debajo de
+768 px.
+
+**Estado:** aplicada el 4 de octubre de 2026.
+
+---
+
 ## Resumen de las decisiones
 
 | # | Decisión | Nivel de duda |
@@ -1480,6 +1512,7 @@ genérico. El formulario es la única puerta que usa una persona.
 | D-53 | Los hallazgos con arreglo acotado se cierran; la API deja de admitir `pParametro` | Bajo — el único cambio de contrato no tiene cliente que lo use |
 | D-54 | La documentación termina en el 10: manual de usuario; la migración y el 11, al histórico; las mejoras, en el 08 | Ninguno |
 | D-55 | Las cantidades siguen siendo enteras; los formularios rechazan decimales con un mensaje claro | Bajo — es una limitación real para productos a granel, medida y aceptada |
+| D-56 | En escritorio, Productos y Lotes guardan Editar y Dar de baja en un menú ⋮ | Ninguno — es presentación |
 
 **Las tres que más merecen tu revisión: D-01, D-04 y D-09.**
 De las anteriores, la discutible es **D-24**: `localStorage` es la opción cómoda, no la

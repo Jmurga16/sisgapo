@@ -144,7 +144,8 @@ puede desactivar**.
 
 Es el catálogo. Se filtra por texto, almacén y categoría. Cada fila resume las partidas del
 producto: cuántos lotes tiene, la existencia total con su unidad de medida, el valor y el
-vencimiento más próximo. El botón **Lotes** de cada fila lleva a sus partidas (sección 10).
+vencimiento más próximo. El botón **Lotes** de cada fila lleva a sus partidas (sección 10);
+*Editar* y *Desactivar* están en el menú ⋮ de la fila.
 
 **Alta.** *Agregar producto* pide nombre, almacén, categoría y los datos de la primera
 partida: cantidad, unidad de medida, precio por unidad y fechas de fabricación y
@@ -167,7 +168,8 @@ el mismo café puede tener dos lotes que vencen en meses distintos. Se llega des
 *Inventario → Lotes* o desde el botón *Lotes* de un producto, que deja el filtro puesto.
 
 El listado se filtra por texto, almacén, categoría y producto. Cada fila tiene **Kardex**,
-que abre la historia de ese lote en Movimientos, *Editar* y *Dar de baja* o *Activar*.
+que abre la historia de ese lote en Movimientos, y el menú ⋮ con *Editar* y *Dar de baja* o
+*Activar*. En un teléfono esas acciones salen como botones al pie de cada tarjeta.
 
 **Alta.** *Agregar lote* pide el producto —se busca escribiendo su nombre o el del almacén—,
 el código, la cantidad inicial, la unidad de medida, el precio y las fechas.

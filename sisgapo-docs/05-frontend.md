@@ -239,6 +239,11 @@ llevan su rótulo en `data-label`; el filtro, el paginador y el modo consulta si
 mismos. Movimientos no se convierte: en ese ancho arranca en la vista de cronología. Ver
 `09-decisiones.md`, D-38.
 
+En escritorio, **Productos y Lotes muestran un solo botón por fila** —*Lotes* o *Kardex*— y
+guardan *Editar* y *Dar de baja* en un menú ⋮. Las dos versiones de las acciones están en la
+plantilla: `acciones-secundarias` son los botones de las tarjetas y `acciones-menu` el menú,
+y `styles.css` enseña una u otra según el ancho. Ver `09-decisiones.md`, D-56.
+
 `AppDateAdapter` (`shared/services/AppDateAdapter.ts`) adapta el formato de fecha de Material
 al formato que espera el backend.
 

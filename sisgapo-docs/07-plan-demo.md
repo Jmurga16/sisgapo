@@ -151,7 +151,7 @@ enlace no responde, arranca Docker y sigue en local sin perder el ritmo.
 - [x] `docker compose up` probado desde cero
 - [x] Base de datos poblada (5 zonas, 5 almacenes, 7 categorías, 25 productos, 33 lotes, 61 movimientos)
 - [x] Capturas del panel, acceso y productos en el README
-- [ ] Recorrido completo en el navegador, con la consola abierta y en móvil
+- [x] Recorrido completo en el navegador, con la consola abierta y en móvil — 4 de octubre de 2026, sin errores en consola; dejó D-56
 
 **Cinco minutos antes de cada reunión**
 - [ ] Abrir el enlace público: ya no se duerme, pero confirma que el servidor responde
