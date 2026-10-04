@@ -8,8 +8,10 @@ lotes y control de vencimientos.
 Desarrollado en 2021 como proyecto universitario (UNMSM, Ing. de Sistemas) y recuperado
 en 2026: documentado, auditado y reparado. La auditoría de la recuperación —48 hallazgos,
 los 48 cerrados— está en
-[`sisgapo-docs/historico/hallazgos-2026.md`](sisgapo-docs/historico/hallazgos-2026.md); lo que
-quedó abierto, corregido o descartado al cierre, en
+[`sisgapo-docs/historico/hallazgos-2026.md`](sisgapo-docs/historico/hallazgos-2026.md), y la
+del cierre, en
+[`sisgapo-docs/historico/auditoria-cierre-2026-10.md`](sisgapo-docs/historico/auditoria-cierre-2026-10.md).
+Lo que sigue abierto está en
 [`sisgapo-docs/11-auditoria-y-cierre.md`](sisgapo-docs/11-auditoria-y-cierre.md).
 
 **Estado:** cerrado como demo de portafolio el 2 de octubre de 2026. Desde el 4 de octubre
@@ -212,5 +214,5 @@ Empieza por [`sisgapo-docs/README.md`](sisgapo-docs/README.md).
 | `08-mejoras-propuestas.md` | Roadmap: lo que sigue abierto |
 | `09-decisiones.md` | Decisiones tomadas y alternativas descartadas |
 | `10-migracion-contabo.md` | Cómo se llevó la demo a un servidor propio, y qué cambió respecto al plan |
-| `11-auditoria-y-cierre.md` | Auditoría, correcciones aplicadas y estado final |
+| `11-auditoria-y-cierre.md` | Estado de la demo cerrada y lo que sigue abierto |
 | `historico/` | La auditoría de 2026 (48 hallazgos, todos cerrados), las mejoras aplicadas y el estado inicial |

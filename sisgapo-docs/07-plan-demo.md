@@ -25,12 +25,12 @@ En orden de impacto:
 
 | # | Elemento | Por qué funciona |
 |---|---|---|
-| 1 | **`historico/hallazgos-2026.md`** y **`11-auditoria-y-cierre.md`** | 48 hallazgos priorizados de tu propio código, los 48 cerrados y verificados, y la auditoría de cierre con lo que queda abierto. Demuestra criterio y honestidad, que es lo difícil de fingir |
+| 1 | **`historico/hallazgos-2026.md`**, **`historico/auditoria-cierre-2026-10.md`** y **`11-auditoria-y-cierre.md`** | 48 hallazgos priorizados de tu propio código, los 48 cerrados y verificados; la auditoría de cierre, y lo que queda abierto. Demuestra criterio y honestidad, que es lo difícil de fingir |
 | 2 | **`docker compose up`** funcionando | Un comando y el sistema entero arranca. Elimina toda fricción de la demo |
 | 3 | La aplicación en vivo | Siete módulos con datos realistas, y un recorrido que llega hasta el kardex de un lote |
 | 4 | **`06-infraestructura.md`** | Análisis de costos y decisiones de infraestructura. Lenguaje que un cliente entiende |
 | 5 | El repositorio | Estructura por capas, convenciones consistentes, documentación |
-| 6 | `/swagger` | La API documentada y navegable. **Hoy solo en local:** en la instancia pública está apagado (`11-auditoria-y-cierre.md`, H-06) |
+| 6 | `/swagger` | La API documentada y navegable. **Hoy solo en local:** en la instancia pública está apagado (`historico/auditoria-cierre-2026-10.md`, H-06) |
 
 **El orden importa.** Si abres con la aplicación, el cliente ve un CRUD de 2021. Si abres con
 el análisis, ve a alguien que sabe leer un sistema. Después la aplicación se ve mejor, porque
@@ -110,7 +110,7 @@ completo, y demuestra que piensas en su factura.
 > primero lo migré a .NET 8 para volver a desplegarlo y, al cerrar la demo, a .NET 10 LTS."
 
 El paso a .NET 10 quedó aplicado el 2 de octubre de 2026; la evidencia y la verificación
-están en `11-auditoria-y-cierre.md`, H-01 a H-03.
+están en `historico/auditoria-cierre-2026-10.md`, H-01 a H-03.
 
 **"¿Por qué toda la lógica en stored procedures?"**
 > "Es el patrón con el que aprendí y el que usaba el entorno donde trabajaba. Tiene ventajas

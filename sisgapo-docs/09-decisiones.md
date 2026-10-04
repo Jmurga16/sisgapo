@@ -1228,7 +1228,7 @@ ya está aquí. ¿Se migra un proyecto que se está cerrando?
 **Propuesta: sí, y antes de archivar.** .NET 10 es la LTS vigente, con soporte hasta
 noviembre de 2028, y el cambio es el mismo que D-25 ya hizo una vez: cinco
 `TargetFramework`, las versiones de los paquetes y una línea en el workflow
-(`11-auditoria-y-cierre.md`, H-01 a H-03). Con las 39 pruebas como red, son dos o tres
+(`historico/auditoria-cierre-2026-10.md`, H-01 a H-03). Con las 39 pruebas como red, son dos o tres
 horas.
 
 **Por qué no dejarlo.** Un proyecto cerrado sobre un runtime sin soporte envejece mal en

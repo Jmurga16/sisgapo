@@ -18,9 +18,9 @@ scripts de `sql/`. La migración prevista a un VPS propio está en el documento 
 | Ponerlo a correr | el [README de la raíz](../README.md) |
 | Escribir código | [`00-convenciones.md`](00-convenciones.md) |
 | Entender el sistema | `01` → `02` → `03` |
-| Saber qué quedó abierto o descartado | [`11-auditoria-y-cierre.md`](11-auditoria-y-cierre.md) |
+| Saber qué sigue abierto | [`11-auditoria-y-cierre.md`](11-auditoria-y-cierre.md) |
 | Presentarlo | [`07-plan-demo.md`](07-plan-demo.md) |
-| Saber cómo se cerró y qué falta | [`11-auditoria-y-cierre.md`](11-auditoria-y-cierre.md) |
+| Saber cómo se cerró | [`historico/auditoria-cierre-2026-10.md`](historico/auditoria-cierre-2026-10.md) |
 | Moverlo a otro servidor | [`10-migracion-contabo.md`](10-migracion-contabo.md) |
 | Ver cómo se llegó hasta aquí | [`historico/`](historico/README.md) |
 
@@ -39,7 +39,7 @@ scripts de `sql/`. La migración prevista a un VPS propio está en el documento 
 | 08 | [Mejoras propuestas](08-mejoras-propuestas.md) | El roadmap opcional: lo que sigue abierto, con estimaciones |
 | 09 | [Decisiones](09-decisiones.md) | Registro de decisiones tomadas, alternativas descartadas y su revisión al cierre |
 | 10 | [Migración a un VPS](10-migracion-contabo.md) | SQL Server, API y frontend en contenedores sobre un servidor propio |
-| 11 | [Auditoría y cierre](11-auditoria-y-cierre.md) | **Estado verificado, hallazgos, correcciones de cierre y checklist final** |
+| 11 | [Auditoría y cierre](11-auditoria-y-cierre.md) | **Estado verificado y lo que sigue abierto**; la auditoría de cierre completa está en el histórico |
 
 Los módulos de Lotes y Movimientos se documentan repartidos: modelo en el `03`, contratos en
 el `04`, pantallas en el `05` y las decisiones que los sostienen en el `09` (D-26 a D-31).

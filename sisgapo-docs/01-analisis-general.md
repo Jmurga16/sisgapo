@@ -131,8 +131,7 @@ servidor propio, en `10-migracion-contabo.md`.
 Cómo se encontró el proyecto al recuperarlo —infraestructura de Azure desaparecida,
 compilación con doce avisos, secretos en la copia local, sin control de versiones— está
 en [`historico/estado-inicial-2026-08.md`](historico/estado-inicial-2026-08.md). Es el
-punto de partida de la auditoría; el estado actual está en `11-auditoria-y-cierre.md`
-y `11-auditoria-y-cierre.md`.
+punto de partida de la auditoría; el estado actual está en `11-auditoria-y-cierre.md`.
 
 ## 5. Métricas del código
 
@@ -184,7 +183,7 @@ D-08 y D-09.
 
 **Lo que jugaba en contra en agosto de 2026, y su estado actual:**
 - Versiones fuera de soporte en las dos puntas (.NET 5, Angular 9) — ✅ el backend está en
-  .NET 10 LTS (H-01 en `11-auditoria-y-cierre.md`); Angular subió a la 14 y se queda ahí
+  .NET 10 LTS (H-01, en `historico/auditoria-cierre-2026-10.md`); Angular subió a la 14 y se queda ahí
   para no cambiar Material (D-51).
 - Autenticación decorativa y contraseñas en claro — ✅ corregido: bcrypt, JWT, `[Authorize]`
   y guards por rol (S-02 a S-04).

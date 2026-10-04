@@ -82,7 +82,7 @@ guardián y de contenedor a la vez— y explica por qué el árbol de rutas se v
 vista. El menú vuelve a leer la sesión en cada navegación, porque también puede cerrarla el
 interceptor ante un 401, y si hay sesión y la ruta es `/login`, lleva a `/inicio`. Hasta
 octubre de 2026 la ruta apuntaba al propio `NavMenuComponent` y, con la sesión abierta,
-pintaba la barra dentro de la barra (`11-auditoria-y-cierre.md`, H-11).
+pintaba la barra dentro de la barra (`historico/auditoria-cierre-2026-10.md`, H-11).
 
 ## 4. Sesión y control de acceso
 
@@ -286,16 +286,16 @@ Ver `06-infraestructura.md` y `11-auditoria-y-cierre.md`.
 | 12 | URL cableada en `InicioComponent` | 🟡 | `inicio.component.ts` | corregido |
 | 13 | Errores silenciosos al iniciar sesión | 🟡 | `login.component.ts` | corregido |
 | 14 | `.toPromise()` deprecado | 🟡 | cinco servicios | pendiente |
-| 15 | 8 `.spec.ts` sin adaptar | 🟡 | todo el proyecto | pendiente |
+| 15 | 11 `.spec.ts` que no compilan | 🟡 | todo el proyecto | pendiente |
 | 16 | Un solo módulo, sin carga diferida | 🟡 | `app.module.ts` | descartado — se midió y el bundle creció (D-45) |
-| 17 | Tres sistemas de estilos conviviendo | 🟡 | `styles.css` | mitigado — Bootstrap reducido a grid |
+| 17 | Tres sistemas de estilos conviviendo | 🟡 | `styles.css` | mitigado — Bootstrap reducido a grid y `@ng-bootstrap` retirado (D-51) |
 
-No quedan pendientes de gravedad alta en esta lista. La actualización de Angular, las
+No quedan pendientes de gravedad alta en esta lista. Subir Angular más allá de la 14, las
 pruebas de interfaz y la simplificación del stack visual son deuda de mantenimiento, no
 bloqueos para la demo.
 
 **Ojo con los dos «pendiente» de arriba.** Esta tabla es una lista local del frontend, no el
 inventario de la auditoría: `historico/hallazgos-2026.md` cierra sus 48 hallazgos y ninguno queda
-abierto. Las filas 14 y 15 —`.toPromise()` deprecado y los ocho `.spec.ts` sin adaptar— son
+abierto. Las filas 14 y 15 —`.toPromise()` deprecado y los once `.spec.ts` que no compilan— son
 mantenimiento menor que nunca entró en esos 48, y siguen ahí anotadas para no perderlas de
 vista.

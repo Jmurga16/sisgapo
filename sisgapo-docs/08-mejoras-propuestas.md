@@ -5,8 +5,8 @@ impacto para la demo y una recomendación explícita de **hacerla o no hacerla**
 
 Todo lo de aquí es **opcional**. El alcance original está completo —12 de 12 casos de uso—
 y encima hay tres módulos que no estaban en 2021. Lo que sí hay que hacer antes de archivar
-el proyecto no es una mejora sino mantenimiento, y está en `11-auditoria-y-cierre.md`
-(H-01 a H-03: el runtime y los paquetes).
+el proyecto no era una mejora sino mantenimiento, y quedó hecho al cerrarlo (`historico/auditoria-cierre-2026-10.md`,
+H-01 a H-03: el runtime y los paquetes).
 
 ## Cómo leer las recomendaciones
 
