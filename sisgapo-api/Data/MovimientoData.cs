@@ -45,14 +45,14 @@ namespace Data
                             {
                                 EListaMovimientos movEnt = new EListaMovimientos();
 
-                                movEnt.nIdMovimiento = Int32.Parse(Convert.ToString(dr["nIdMovimiento"]));
-                                movEnt.nIdDetProd = Int32.Parse(Convert.ToString(dr["nIdDetProd"]));
+                                movEnt.nIdMovimiento = Convert.ToInt32(dr["nIdMovimiento"]);
+                                movEnt.nIdDetProd = Convert.ToInt32(dr["nIdDetProd"]);
                                 movEnt.dFechaMov = Convert.ToString(dr["dFechaMov"]);
                                 movEnt.sTipo = Convert.ToString(dr["sTipo"]);
                                 movEnt.sTipoNombre = Convert.ToString(dr["sTipoNombre"]);
-                                movEnt.nEntrada = Int32.Parse(Convert.ToString(dr["nEntrada"]));
-                                movEnt.nSalida = Int32.Parse(Convert.ToString(dr["nSalida"]));
-                                movEnt.nSaldo = Int32.Parse(Convert.ToString(dr["nSaldo"]));
+                                movEnt.nEntrada = Convert.ToInt32(dr["nEntrada"]);
+                                movEnt.nSalida = Convert.ToInt32(dr["nSalida"]);
+                                movEnt.nSaldo = Convert.ToInt32(dr["nSaldo"]);
                                 movEnt.sMotivo = Convert.ToString(dr["sMotivo"]);
                                 movEnt.sNombrePersona = Convert.ToString(dr["sNombrePersona"]);
                                 movEnt.sNombreLote = Convert.ToString(dr["sNombreLote"]);
@@ -90,13 +90,13 @@ namespace Data
                             {
                                 EListaLoteMovimiento lotEnt = new EListaLoteMovimiento();
 
-                                lotEnt.nIdDetProd = Int32.Parse(Convert.ToString(dr["nIdDetProd"]));
+                                lotEnt.nIdDetProd = Convert.ToInt32(dr["nIdDetProd"]);
                                 lotEnt.sNombreLote = Convert.ToString(dr["sNombreLote"]);
-                                lotEnt.nIdProducto = Int32.Parse(Convert.ToString(dr["nIdProducto"]));
+                                lotEnt.nIdProducto = Convert.ToInt32(dr["nIdProducto"]);
                                 lotEnt.sNombreProducto = Convert.ToString(dr["sNombreProducto"]);
-                                lotEnt.nIdAlmacen = Int32.Parse(Convert.ToString(dr["nIdAlmacen"]));
+                                lotEnt.nIdAlmacen = Convert.ToInt32(dr["nIdAlmacen"]);
                                 lotEnt.sNombreAlmacen = Convert.ToString(dr["sNombreAlmacen"]);
-                                lotEnt.nCantidad = Int32.Parse(Convert.ToString(dr["nCantidad"]));
+                                lotEnt.nCantidad = Convert.ToInt32(dr["nCantidad"]);
                                 lotEnt.sNombreUM = Convert.ToString(dr["sNombreUM"]);
                                 lotEnt.dFechaVenc = Convert.ToString(dr["dFechaVenc"]);
 
@@ -121,10 +121,10 @@ namespace Data
                             {
                                 EResumenMovimientos resEnt = new EResumenMovimientos();
 
-                                resEnt.nMovimientos = Int32.Parse(Convert.ToString(dr["nMovimientos"]));
-                                resEnt.nEntradas = Int32.Parse(Convert.ToString(dr["nEntradas"]));
-                                resEnt.nSalidas = Int32.Parse(Convert.ToString(dr["nSalidas"]));
-                                resEnt.nAjustes = Int32.Parse(Convert.ToString(dr["nAjustes"]));
+                                resEnt.nMovimientos = Convert.ToInt32(dr["nMovimientos"]);
+                                resEnt.nEntradas = Convert.ToInt32(dr["nEntradas"]);
+                                resEnt.nSalidas = Convert.ToInt32(dr["nSalidas"]);
+                                resEnt.nAjustes = Convert.ToInt32(dr["nAjustes"]);
 
                                 listaResumen.Add(resEnt);
 

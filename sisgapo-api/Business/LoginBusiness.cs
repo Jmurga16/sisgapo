@@ -11,10 +11,6 @@ namespace Business
         private readonly ILoginData loginData;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public LoginBusiness() : this(new LoginData())
-        {
-        }
-
         public LoginBusiness(ILoginData loginData)
         {
             this.loginData = loginData ?? throw new ArgumentNullException(nameof(loginData));

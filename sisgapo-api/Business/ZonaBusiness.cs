@@ -13,10 +13,6 @@ namespace Business
     {
         private readonly IZonaData zonaData;
 
-        public ZonaBusiness() : this(new ZonaData())
-        {
-        }
-
         public ZonaBusiness(IZonaData zonaData)
         {
             this.zonaData = zonaData ?? throw new ArgumentNullException(nameof(zonaData));

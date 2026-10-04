@@ -45,19 +45,19 @@ namespace Data
                             {
                                 EListaLotes lotEnt = new EListaLotes();
 
-                                lotEnt.nIdDetProd = Int32.Parse(Convert.ToString(dr["nIdDetProd"]));
-                                lotEnt.nIdProducto = Int32.Parse(Convert.ToString(dr["nIdProducto"]));
+                                lotEnt.nIdDetProd = Convert.ToInt32(dr["nIdDetProd"]);
+                                lotEnt.nIdProducto = Convert.ToInt32(dr["nIdProducto"]);
                                 lotEnt.sNombreProducto = Convert.ToString(dr["sNombreProducto"]);
-                                lotEnt.nIdAlmacen = Int32.Parse(Convert.ToString(dr["nIdAlmacen"]));
+                                lotEnt.nIdAlmacen = Convert.ToInt32(dr["nIdAlmacen"]);
                                 lotEnt.sNombreAlmacen = Convert.ToString(dr["sNombreAlmacen"]);
-                                lotEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));
+                                lotEnt.nIdCategoria = Convert.ToInt32(dr["nIdCategoria"]);
                                 lotEnt.sNombreCategoria = Convert.ToString(dr["sNombreCategoria"]);
-                                lotEnt.nIdLote = Int32.Parse(Convert.ToString(dr["nIdLote"]));
+                                lotEnt.nIdLote = Convert.ToInt32(dr["nIdLote"]);
                                 lotEnt.sNombreLote = Convert.ToString(dr["sNombreLote"]);
                                 lotEnt.dFechaFab = Convert.ToString(dr["dFechaFab"]);
                                 lotEnt.dFechaVenc = Convert.ToString(dr["dFechaVenc"]);
-                                lotEnt.nDiasRestantes = Int32.Parse(Convert.ToString(dr["nDiasRestantes"]));
-                                lotEnt.nCantidad = Int32.Parse(Convert.ToString(dr["nCantidad"]));
+                                lotEnt.nDiasRestantes = Convert.ToInt32(dr["nDiasRestantes"]);
+                                lotEnt.nCantidad = Convert.ToInt32(dr["nCantidad"]);
                                 lotEnt.sNombreUM = Convert.ToString(dr["sNombreUM"]);
                                 lotEnt.nPrecio = Convert.ToDecimal(dr["nPrecio"]);
                                 lotEnt.sEstado = Convert.ToString(dr["sEstado"]);
@@ -83,15 +83,15 @@ namespace Data
                             {
                                 EListaLotesById lotEnt = new EListaLotesById();
 
-                                lotEnt.nIdDetProd = Int32.Parse(Convert.ToString(dr["nIdDetProd"]));
-                                lotEnt.nIdProducto = Int32.Parse(Convert.ToString(dr["nIdProducto"]));
+                                lotEnt.nIdDetProd = Convert.ToInt32(dr["nIdDetProd"]);
+                                lotEnt.nIdProducto = Convert.ToInt32(dr["nIdProducto"]);
                                 lotEnt.sNombreProducto = Convert.ToString(dr["sNombreProducto"]);
-                                lotEnt.nIdLote = Int32.Parse(Convert.ToString(dr["nIdLote"]));
+                                lotEnt.nIdLote = Convert.ToInt32(dr["nIdLote"]);
                                 lotEnt.sNombreLote = Convert.ToString(dr["sNombreLote"]);
                                 lotEnt.dFechaFab = Convert.ToString(dr["dFechaFab"]);
                                 lotEnt.dFechaVenc = Convert.ToString(dr["dFechaVenc"]);
-                                lotEnt.nIdUnidadMedida = Int32.Parse(Convert.ToString(dr["nIdUnidadMedida"]));
-                                lotEnt.nCantidad = Int32.Parse(Convert.ToString(dr["nCantidad"]));
+                                lotEnt.nIdUnidadMedida = Convert.ToInt32(dr["nIdUnidadMedida"]);
+                                lotEnt.nCantidad = Convert.ToInt32(dr["nCantidad"]);
                                 lotEnt.nPrecio = Convert.ToDecimal(dr["nPrecio"]);
                                 lotEnt.sDescripcion = Convert.ToString(dr["sDescripcion"]);
                                 lotEnt.bEstado = Convert.ToBoolean(dr["bEstado"]);
@@ -128,9 +128,9 @@ namespace Data
                             {
                                 EListaProductoLote prodEnt = new EListaProductoLote();
 
-                                prodEnt.nIdProducto = Int32.Parse(Convert.ToString(dr["nIdProducto"]));
+                                prodEnt.nIdProducto = Convert.ToInt32(dr["nIdProducto"]);
                                 prodEnt.sNombreProducto = Convert.ToString(dr["sNombreProducto"]);
-                                prodEnt.nIdAlmacen = Int32.Parse(Convert.ToString(dr["nIdAlmacen"]));
+                                prodEnt.nIdAlmacen = Convert.ToInt32(dr["nIdAlmacen"]);
                                 prodEnt.sNombreAlmacen = Convert.ToString(dr["sNombreAlmacen"]);
 
                                 listaProductos.Add(prodEnt);

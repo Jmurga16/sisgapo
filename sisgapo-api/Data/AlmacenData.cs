@@ -47,7 +47,7 @@ namespace Data
                                     EListaAlmacenes almEnt = new EListaAlmacenes();
 
 
-                                    almEnt.nIdAlmacen = Int32.Parse(Convert.ToString(dr["nIdAlmacen"]));
+                                    almEnt.nIdAlmacen = Convert.ToInt32(dr["nIdAlmacen"]);
                                     almEnt.sNombreZona = Convert.ToString(dr["sNombreZona"]);
                                     almEnt.sNombreAlmacen = Convert.ToString(dr["sNombreAlmacen"]);
                                     almEnt.sEstado = Convert.ToString(dr["sEstado"]);
@@ -73,12 +73,12 @@ namespace Data
                                {
                                    EListaAlmacenId almEnt = new EListaAlmacenId();
 
-                                   almEnt.nIdAlmacen = Int32.Parse(Convert.ToString(dr["nIdAlmacen"]));
+                                   almEnt.nIdAlmacen = Convert.ToInt32(dr["nIdAlmacen"]);
                                    almEnt.sNombre = Convert.ToString(dr["sNombre"]);
                                    almEnt.sDireccion = Convert.ToString(dr["sDireccion"]);
-                                   almEnt.nIdZona = Int32.Parse(Convert.ToString(dr["nIdZona"]));
-                                   almEnt.bEstado = Boolean.Parse(Convert.ToString(dr["bEstado"]));
-                                   almEnt.nIdSupervisor = Int32.Parse(Convert.ToString(dr["nIdSupervisor"]));
+                                   almEnt.nIdZona = Convert.ToInt32(dr["nIdZona"]);
+                                   almEnt.bEstado = Convert.ToBoolean(dr["bEstado"]);
+                                   almEnt.nIdSupervisor = Convert.ToInt32(dr["nIdSupervisor"]);
 
                                listaAlmacenId.Add(almEnt);
 
@@ -100,7 +100,7 @@ namespace Data
                                {
                                    EListaZonas zonEnt = new EListaZonas();
 
-                                   zonEnt.nIdZona = Int32.Parse(Convert.ToString(dr["nIdZona"]));
+                                   zonEnt.nIdZona = Convert.ToInt32(dr["nIdZona"]);
                                    zonEnt.sNombreZona = Convert.ToString(dr["sNombreZona"]);
 
                                    listaZonas.Add(zonEnt);
@@ -123,7 +123,7 @@ namespace Data
                                {
                                    EListaSupervisores almEnt = new EListaSupervisores();
 
-                                   almEnt.nIdSupervisor = Int32.Parse(Convert.ToString(dr["nIdSupervisor"]));
+                                   almEnt.nIdSupervisor = Convert.ToInt32(dr["nIdSupervisor"]);
                                    almEnt.sNombrePersona = Convert.ToString(dr["sNombrePersona"]);
 
                                    listaSupervisores.Add(almEnt);

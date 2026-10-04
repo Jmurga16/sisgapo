@@ -239,7 +239,7 @@ CREATE INDEX IX_DETPROD_PRODUCTO    ON TBL_DET_PRODUCTO(nIdProducto);
 CREATE INDEX IX_DETPROD_LOTE        ON TBL_DET_PRODUCTO(nIdLote);
 
 -- El panel filtra por fecha de vencimiento en tres de sus cuatro consultas y la
--- pantalla de lotes ordena por ella. Ver 06-hallazgos.md.
+-- pantalla de lotes ordena por ella. Ver historico/hallazgos-2026.md.
 CREATE INDEX IX_LOTE_VENCIMIENTO    ON TBL_LOTE(dFechaVenc);
 
 -- El kardex se consulta siempre por lote y por rango de fechas.

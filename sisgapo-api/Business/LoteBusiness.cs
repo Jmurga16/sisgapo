@@ -14,10 +14,6 @@ namespace Business
         private readonly ILoteData loteData;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public LoteBusiness() : this(new LoteData())
-        {
-        }
-
         public LoteBusiness(ILoteData loteData)
         {
             this.loteData = loteData ?? throw new ArgumentNullException(nameof(loteData));

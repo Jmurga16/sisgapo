@@ -43,7 +43,7 @@ namespace Data
                                     EntListaCategorias catEnt = new EntListaCategorias();
 
 
-                                    catEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));
+                                    catEnt.nIdCategoria = Convert.ToInt32(dr["nIdCategoria"]);
                                     catEnt.sNombre = Convert.ToString(dr["sNombre"]);
                                     catEnt.sDescripcion = Convert.ToString(dr["sDescripcion"]);
                                     catEnt.sEstado = Convert.ToString(dr["sEstado"]);
@@ -75,10 +75,10 @@ namespace Data
                             {
                                 EntListaCategorias catEnt = new EntListaCategorias();
 
-                                catEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));
+                                catEnt.nIdCategoria = Convert.ToInt32(dr["nIdCategoria"]);
                                 catEnt.sDescripcion = Convert.ToString(dr["sDescripcion"]);
                                 catEnt.sNombre = Convert.ToString(dr["sNombre"]);                                
-                                catEnt.bEstado = Boolean.Parse(Convert.ToString(dr["bEstado"]));
+                                catEnt.bEstado = Convert.ToBoolean(dr["bEstado"]);
 
                                 listaCategoriaId.Add(catEnt);
 

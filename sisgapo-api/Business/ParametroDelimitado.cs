@@ -7,6 +7,11 @@ namespace Business
     {
         public static string Preparar(string[] parametros, string pParametro, bool exigirParametros)
         {
+            if (!String.IsNullOrEmpty(pParametro))
+            {
+                throw new ArgumentException("pParametro ya no se admite: envia los valores en parametros.");
+            }
+
             if (parametros == null)
             {
                 if (exigirParametros)
@@ -14,7 +19,7 @@ namespace Business
                     throw new ArgumentException("La operacion requiere parametros estructurados.");
                 }
 
-                return pParametro ?? String.Empty;
+                return String.Empty;
             }
 
             if (parametros.Any(valor => valor != null && valor.Contains('|')))

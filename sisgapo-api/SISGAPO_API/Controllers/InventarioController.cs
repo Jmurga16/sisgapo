@@ -1,7 +1,5 @@
 using Business;
 using Entity;
-using Microsoft.AspNetCore.Cors;
-//using System.Web.Http.Cors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
@@ -42,7 +40,7 @@ namespace SISGAPO_API.Controllers
         #region Categoria
 
         [HttpPost, Route("Categoria")]
-        public async Task<IActionResult> CrudCategoria(GeneralEntity genEnt) // fnServCategoria
+        public async Task<IActionResult> CrudCategoria(GeneralEntity genEnt)
         {
 
             if (genEnt == null)
@@ -104,10 +102,10 @@ namespace SISGAPO_API.Controllers
 
         #endregion
 
-        #region Almacen
+        #region Producto
 
         [HttpPost, Route("Producto")]
-        public async Task<IActionResult> CrudProductos(GeneralEntity genEnt) // fnServProductos
+        public async Task<IActionResult> CrudProductos(GeneralEntity genEnt)
         {
 
             if (genEnt == null)
@@ -179,7 +177,7 @@ namespace SISGAPO_API.Controllers
         #region Lote
 
         [HttpPost, Route("Lote")]
-        public async Task<IActionResult> CrudLotes(GeneralEntity genEnt) // fnServLote
+        public async Task<IActionResult> CrudLotes(GeneralEntity genEnt)
         {
 
             if (genEnt == null)
@@ -251,7 +249,7 @@ namespace SISGAPO_API.Controllers
         #region Movimiento
 
         [HttpPost, Route("Movimiento")]
-        public async Task<IActionResult> CrudMovimientos(GeneralEntity genEnt) // fnServMovimiento
+        public async Task<IActionResult> CrudMovimientos(GeneralEntity genEnt)
         {
 
             if (genEnt == null)

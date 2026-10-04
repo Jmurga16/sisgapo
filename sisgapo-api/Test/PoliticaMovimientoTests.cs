@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Business;
+using Data;
 using Entity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -53,8 +55,10 @@ namespace Test
         [Fact]
         public async Task ElControllerDevuelveForbidSiUnAsistenteIntentaUnAjuste()
         {
+            DatosSinUso oDatos = new DatosSinUso();
             InventarioController oController = new InventarioController(
-                new CategoriaBusiness(), new ProductoBusiness(), new LoteBusiness(), new MovimientoBusiness())
+                new CategoriaBusiness(oDatos), new ProductoBusiness(oDatos),
+                new LoteBusiness(oDatos), new MovimientoBusiness(oDatos))
             {
                 ControllerContext = new ControllerContext
                 {
@@ -80,6 +84,14 @@ namespace Test
             };
 
             return new ClaimsPrincipal(new ClaimsIdentity(lstClaims, "Prueba"));
+        }
+
+        private sealed class DatosSinUso : ICategoriaData, IProductoData, ILoteData, IMovimientoData
+        {
+            public Task<object> DataCategoria(GeneralEntity genEnt) => throw new NotSupportedException();
+            public Task<object> DataProducto(GeneralEntity genEnt) => throw new NotSupportedException();
+            public Task<object> DataLote(GeneralEntity genEnt) => throw new NotSupportedException();
+            public Task<object> DataMovimiento(GeneralEntity genEnt) => throw new NotSupportedException();
         }
     }
 }

@@ -16,7 +16,9 @@
 **/coverage/
 
 # ---------- Herramientas e IDE ----------
-# Plantillas ARM que genera Visual Studio al publicar en Azure.
+# Plantillas ARM que genera Visual Studio al publicar en Azure. Las de 2021 de
+# SISGAPO_API/Properties/ServiceDependencies/ siguen versionadas como evidencia de
+# la infraestructura original (sisgapo-docs/01-analisis-general.md).
 **/ServiceDependencies/
 .vs/
 .sonarqube/

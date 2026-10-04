@@ -14,10 +14,6 @@ namespace Business
         private readonly ICategoriaData categoriaData;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public CategoriaBusiness() : this(new CategoriaData())
-        {
-        }
-
         public CategoriaBusiness(ICategoriaData categoriaData)
         {
             this.categoriaData = categoriaData ?? throw new ArgumentNullException(nameof(categoriaData));

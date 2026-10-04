@@ -11,10 +11,6 @@ namespace Business
         private readonly IPanelData panelData;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public PanelBusiness() : this(new PanelData())
-        {
-        }
-
         public PanelBusiness(IPanelData panelData)
         {
             this.panelData = panelData ?? throw new ArgumentNullException(nameof(panelData));

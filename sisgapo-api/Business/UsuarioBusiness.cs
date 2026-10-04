@@ -17,10 +17,6 @@ namespace Business
 
         private const char cSeparador = '|';
 
-        public UsuarioBusiness() : this(new UsuarioData())
-        {
-        }
-
         public UsuarioBusiness(IUsuarioData usuarioData)
         {
             this.usuarioData = usuarioData ?? throw new ArgumentNullException(nameof(usuarioData));

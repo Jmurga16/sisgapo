@@ -14,10 +14,6 @@ namespace Business
         private readonly IProductoData productoData;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public ProductoBusiness() : this(new ProductoData())
-        {
-        }
-
         public ProductoBusiness(IProductoData productoData)
         {
             this.productoData = productoData ?? throw new ArgumentNullException(nameof(productoData));

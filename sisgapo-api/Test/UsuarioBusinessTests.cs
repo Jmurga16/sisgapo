@@ -70,6 +70,18 @@ namespace Test
         }
 
         [Fact]
+        public async Task ElPParametroConcatenadoYaNoSeAdmite()
+        {
+            UsuarioDataFalso datos = new UsuarioDataFalso();
+            UsuarioBusiness negocio = new UsuarioBusiness(datos);
+            GeneralEntity consulta = new GeneralEntity { sOpcion = "03", pParametro = "1" };
+
+            ArgumentException error = await Assert.ThrowsAsync<ArgumentException>(() => negocio.LIS_UsuarioBusiness(consulta));
+            Assert.Contains("pParametro ya no se admite", error.Message);
+            Assert.Null(datos.UltimoParametro);
+        }
+
+        [Fact]
         public async Task ContraseniaCortaEsRechazada()
         {
             UsuarioBusiness negocio = new UsuarioBusiness(new UsuarioDataFalso());

@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Net;
-using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
@@ -48,7 +46,7 @@ namespace Data
                                 EListaAlmacenProd almEnt = new EListaAlmacenProd();
 
 
-                                almEnt.nIdAlmacen = Int32.Parse(Convert.ToString(dr["nIdAlmacen"]));                                
+                                almEnt.nIdAlmacen = Convert.ToInt32(dr["nIdAlmacen"]);                                
                                 almEnt.sNombreAlmacen = Convert.ToString(dr["sNombreAlmacen"]);                               
 
 
@@ -72,7 +70,7 @@ namespace Data
                             {
                                 EListaCategoriaProd catEnt = new EListaCategoriaProd();
 
-                                catEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));
+                                catEnt.nIdCategoria = Convert.ToInt32(dr["nIdCategoria"]);
                                 catEnt.sNombreCategoria = Convert.ToString(dr["sNombreCategoria"]);
 
 
@@ -96,15 +94,15 @@ namespace Data
                             {
                                 EListaProductos prodEnt = new EListaProductos();
 
-                                prodEnt.nIdCatProd = Int32.Parse(Convert.ToString(dr["nIdCatProd"]));
-                                prodEnt.nIdAlmacen = Int32.Parse(Convert.ToString(dr["nIdAlmacen"]));
+                                prodEnt.nIdCatProd = Convert.ToInt32(dr["nIdCatProd"]);
+                                prodEnt.nIdAlmacen = Convert.ToInt32(dr["nIdAlmacen"]);
                                 prodEnt.sNombreAlmacen = Convert.ToString(dr["sNombreAlmacen"]);
-                                prodEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));
+                                prodEnt.nIdCategoria = Convert.ToInt32(dr["nIdCategoria"]);
                                 prodEnt.sNombreCategoria = Convert.ToString(dr["sNombreCategoria"]);
-                                prodEnt.nIdProducto = Int32.Parse(Convert.ToString(dr["nIdProducto"]));
+                                prodEnt.nIdProducto = Convert.ToInt32(dr["nIdProducto"]);
                                 prodEnt.sNombreProducto = Convert.ToString(dr["sNombreProducto"]);
-                                prodEnt.nLotes = Int32.Parse(Convert.ToString(dr["nLotes"]));
-                                prodEnt.nCantidad = Int32.Parse(Convert.ToString(dr["nCantidad"]));
+                                prodEnt.nLotes = Convert.ToInt32(dr["nLotes"]);
+                                prodEnt.nCantidad = Convert.ToInt32(dr["nCantidad"]);
                                 prodEnt.sNombreUM = Convert.ToString(dr["sNombreUM"]);
                                 prodEnt.nValor = Convert.ToDecimal(dr["nValor"]);
                                 prodEnt.dFechaVenc = Convert.ToString(dr["dFechaVenc"]);
@@ -130,7 +128,7 @@ namespace Data
                             {
                                 EListaUnidadMedidaProd umEnt = new EListaUnidadMedidaProd();
 
-                                umEnt.nIdUnidadMedida = Int32.Parse(Convert.ToString(dr["nIdUnidadMedida"]));
+                                umEnt.nIdUnidadMedida = Convert.ToInt32(dr["nIdUnidadMedida"]);
                                 umEnt.sNombreUM = Convert.ToString(dr["sNombreUM"]);
 
                                 listaUnidadMedida.Add(umEnt);
@@ -153,10 +151,10 @@ namespace Data
                             {
                                 EListaProductosById prodEnt = new EListaProductosById();
 
-                                prodEnt.nIdCatProd = Int32.Parse(Convert.ToString(dr["nIdCatProd"]));
-                                prodEnt.nIdAlmacen = Int32.Parse(Convert.ToString(dr["nIdAlmacen"]));                                
-                                prodEnt.nIdCategoria = Int32.Parse(Convert.ToString(dr["nIdCategoria"]));                                
-                                prodEnt.nIdProducto = Int32.Parse(Convert.ToString(dr["nIdProducto"]));
+                                prodEnt.nIdCatProd = Convert.ToInt32(dr["nIdCatProd"]);
+                                prodEnt.nIdAlmacen = Convert.ToInt32(dr["nIdAlmacen"]);                                
+                                prodEnt.nIdCategoria = Convert.ToInt32(dr["nIdCategoria"]);                                
+                                prodEnt.nIdProducto = Convert.ToInt32(dr["nIdProducto"]);
                                 prodEnt.sNombreProducto = Convert.ToString(dr["sNombreProducto"]);      
                                 
 

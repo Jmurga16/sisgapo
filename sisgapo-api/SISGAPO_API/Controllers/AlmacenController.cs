@@ -28,7 +28,7 @@ namespace SISGAPO_API.Controllers
         #region Almacen
 
         [HttpPost]
-        public async Task<IActionResult> CrudAlmacen(GeneralEntity genEnt) // fnServAlmacenes
+        public async Task<IActionResult> CrudAlmacen(GeneralEntity genEnt)
         {
 
             if (genEnt == null)

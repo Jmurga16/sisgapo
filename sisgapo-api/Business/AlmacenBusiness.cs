@@ -14,10 +14,6 @@ namespace Business
         private readonly IAlmacenData almacenData;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public AlmacenBusiness() : this(new AlmacenData())
-        {
-        }
-
         public AlmacenBusiness(IAlmacenData almacenData)
         {
             this.almacenData = almacenData ?? throw new ArgumentNullException(nameof(almacenData));

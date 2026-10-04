@@ -24,7 +24,7 @@
       # Contenedor de docker compose (puerto 14330, ver docker-compose.yml)
       .\cargar-base.ps1 -Servidor "localhost,14330" -Usuario sa
 
-    Ver ../07-migracion-tier-free.md, seccion 7, y README.md de esta carpeta.
+    Ver ../06-infraestructura.md, seccion 7, y README.md de esta carpeta.
 #>
 param(
     [Parameter(Mandatory = $true)][string]$Servidor,
