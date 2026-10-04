@@ -12,11 +12,12 @@ los 48 cerrados— está en
 quedó abierto, corregido o descartado al cierre, en
 [`sisgapo-docs/11-auditoria-y-cierre.md`](sisgapo-docs/11-auditoria-y-cierre.md).
 
-**Estado:** cerrado como demo de portafolio el 2 de octubre de 2026. La demo sigue en línea.
+**Estado:** cerrado como demo de portafolio el 2 de octubre de 2026. Desde el 4 de octubre
+la demo corre en un VPS propio, en contenedores.
 
 ## Pruébala
 
-**Demo en vivo:** https://agreeable-smoke-0091c080f.3.azurestaticapps.net/
+**Demo en vivo:** https://sisgapo.devkora.com
 
 Entra con un clic desde la pantalla de acceso, o usa una de estas cuentas:
 
@@ -27,7 +28,7 @@ Entra con un clic desde la pantalla de acceso, o usa una de estas cuentas:
 | `demo.asistente` | `SisgapoDemo2026!` | Asistente — consulta y registra entradas y salidas |
 
 > Es una demo con datos de prueba: puedes crear, editar y mover inventario libremente.
-> El primer acceso puede tardar unos segundos si el servidor estaba inactivo.
+> Cada noche, a las 03:00 de Lima, los datos vuelven a su estado inicial.
 
 | Capa | Stack |
 |---|---|
@@ -131,8 +132,9 @@ quiere si alguna vez se filtra. Para generar una:
 openssl rand -base64 48
 ```
 
-En despliegue, `MSSQL_SA_PASSWORD` del `docker-compose.yml` deja de aplicar: ahí la base
-la da el proveedor y su contraseña vive dentro de `SISGAPO_CONNECTION_STRING`.
+En el VPS, `MSSQL_SA_PASSWORD` del `docker-compose.yml` deja de aplicar: la base la levanta
+`deploy/compose.yaml` con sus propias contraseñas, en un `.env` que no sale del servidor
+(plantilla en `deploy/env.example`).
 
 Para una demo pública, activa el modo de consulta con la variable
 `Demo__SoloLectura=true`. La API devolverá 403 ante cualquier escritura y el frontend
@@ -168,8 +170,9 @@ El workflow de GitHub Actions tiene tres trabajos: compila la solución .NET y e
 unitarias, levanta SQL Server con `docker compose` para las de integración, y genera el build
 de producción de Angular. Se ejecuta en cada push y pull request a `main`.
 
-El workflow es únicamente CI: no publica la aplicación. El despliegue de la demo se realiza
-manualmente después de comprobar que ambos jobs están en verde.
+El workflow es únicamente CI: no publica la aplicación. La demo se despliega a mano, con el
+CI en verde, mediante `bash deploy/deploy.sh`, que sube al VPS lo commiteado y se niega si hay
+cambios sin commit. Ver `sisgapo-docs/06-infraestructura.md`.
 
 ---
 
@@ -208,6 +211,6 @@ Empieza por [`sisgapo-docs/README.md`](sisgapo-docs/README.md).
 | `07-plan-demo.md` | Cómo presentarlo |
 | `08-mejoras-propuestas.md` | Roadmap: lo que sigue abierto |
 | `09-decisiones.md` | Decisiones tomadas y alternativas descartadas |
-| `10-migracion-contabo.md` | Propuesta para llevar la demo a un servidor propio |
+| `10-migracion-contabo.md` | Cómo se llevó la demo a un servidor propio, y qué cambió respecto al plan |
 | `11-auditoria-y-cierre.md` | Auditoría, correcciones aplicadas y estado final |
 | `historico/` | La auditoría de 2026 (48 hallazgos, todos cerrados), las mejoras aplicadas y el estado inicial |

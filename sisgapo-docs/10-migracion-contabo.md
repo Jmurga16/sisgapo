@@ -1,9 +1,32 @@
 # 10 — Migración a un VPS de Contabo
 
-> **Estado: aprobada, no ejecutada** (2 de octubre de 2026). Es el trabajo posterior al
-> despliegue de `06-infraestructura.md`. Nada de lo que hay aquí existe todavía en el
-> repositorio: ni `Dockerfile`, ni `docker-compose.prod.yml`, ni `Caddyfile`. Están
-> escritos para copiarlos cuando se decida (D-49).
+> **Estado: ejecutada el 4 de octubre de 2026.** La demo corre en
+> `https://sisgapo.devkora.com`. Lo desplegado no es exactamente lo que se escribe abajo: el
+> VPS ya tenía un proxy común, y eso cambió tres piezas. La sección 0 dice qué cambió; los
+> archivos que mandan son los de `deploy/`, `sisgapo-api/Dockerfile` y `sisgapo-web/Dockerfile`,
+> no los bocetos de la sección 4.
+
+## 0. Cómo quedó
+
+- **Sin Caddy propio.** El 80 y el 443 son de un Caddy común que reparte por subdominio a
+  todas las demos del servidor. SISGAPO se une a su red `edge`, deja su bloque en
+  `sites/sisgapo.caddy` y no publica ningún puerto.
+- **Un solo dominio, sin subdominio para la API.** La web reenvía `/api/*` a la API dentro de
+  la red de Compose y quita el prefijo, así que los endpoints no cambian: `/api/LoginService`
+  llega como `/LoginService`, y `/api/api/zona`, como `/api/zona`. `environment.prod.ts` usa la
+  ruta relativa `/api/`: mismo origen, sin CORS y con un solo registro A.
+- **Un login propio para la API.** `docker/init-db.sh` crea `sisgapo_app`, con permiso de
+  ejecución sobre `dbo`, cuando recibe su contraseña; `sa` lo usa únicamente la carga.
+- **Cada despliegue recarga la base** con `deploy/sembrar.sh`, el mismo script del cron.
+- **El cron va a las 10:00 del servidor**, que está en hora de Europa central: las 03:00 de Lima.
+- **La web es Caddy, no nginx**, como las demás demos del servidor, con la CSP y las cabeceras
+  en `sisgapo-web/deploy/Caddyfile`.
+
+Verificado ese día: certificado de Let's Encrypt; panel en menos de un segundo; el seed con
+«Lotes cuyo saldo no cuadra con su kardex = 0»; altas y cambios de estado con `sisgapo_app`;
+y H-05, porque seis intentos fallidos desde una IP bloquean esa IP y no otra, y una
+`X-Forwarded-For` inventada no cambia la cuenta. El porqué de los cambios está en
+`09-decisiones.md`, D-52.
 
 ## 1. Por qué plantearlo
 

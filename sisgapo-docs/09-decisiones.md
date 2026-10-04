@@ -1182,7 +1182,7 @@ documentos (`11-auditoria-y-cierre.md`, MC-11): son código y no se tocaron.
 
 ---
 
-## D-49 · Migrar la demo a un VPS propio — propuesta
+## D-49 · Migrar la demo a un VPS propio — ejecutada
 
 **La duda.** La demo cuesta US$ 0 en Azure y funciona. Pero arranca en frío —18 segundos
 medidos el 1 de octubre—, depende de dos ofertas gratuitas y no tiene dónde programar el
@@ -1212,9 +1212,10 @@ no desaparece.
 **Reconsidera si:** el VPS tiene menos de 4 GB de memoria libre, no hay un dominio al que
 colgarlo, o ya está cargado con otros servicios que compitan con SQL Server.
 
-**Estado:** confirmada el 2 de octubre de 2026. Se ejecutará en una rama separada después
-de crear un tag sobre el estado Azure + Hostinger. D-02 sigue describiendo el punto de
-retorno, no la infraestructura objetivo.
+**Estado:** confirmada el 2 de octubre de 2026 y ejecutada el 4, en la rama
+`migracion-contabo`, después de crear los tags `pre-contabo-azure-hostinger`, `demo-azure` y
+`demo-azure-hostinger`. D-02 describe ahora la vuelta atrás, no la infraestructura. Lo que
+cambió respecto al plan está en D-52.
 
 ---
 
@@ -1293,6 +1294,32 @@ D-39 y cierra lo que D-47 dejaba abierto.
 
 ---
 
+## D-52 · En el VPS, un solo dominio detrás del proxy común — ejecutada
+
+**La duda.** `10-migracion-contabo.md` suponía un servidor vacío: Caddy propio con el 80 y el
+443, la API en `api.sisgapo.<dominio>` y la conexión con `sa`. El VPS ya tenía cinco demos
+detrás de un Caddy común. ¿Se sigue el plan o el patrón del servidor?
+
+**Decisión: el patrón del servidor**, el mismo de las otras demos .NET que ya corren en él.
+
+- La web es un Caddy que sirve el build y reenvía `/api/*` a la API, quitando el prefijo. Los
+  endpoints no comparten prefijo, pero no hace falta reescribirlos: el prefijo solo existe
+  entre el navegador y la web. Un solo registro A, mismo origen y sin CORS.
+- La API entra con `sisgapo_app`, que solo ejecuta procedimientos. Todo el acceso a datos ya
+  pasa por procedimientos sin SQL dinámico, así que no necesita nada más.
+- Cada despliegue recarga la base. Los scripts de `sql/` recrean los objetos y no saben migrar
+  datos; para una demo que se reinicia cada noche, es lo coherente.
+
+**Lo que abre.** Con el mismo origen, el token podría pasar a una cookie `HttpOnly`, que D-24
+descartó por tener dos dominios. Sigue sin hacerse.
+
+**Reconsidera si:** el proxy común desaparece. Entonces vuelve el Caddy propio de la sección 3
+del documento 10.
+
+**Estado:** aplicada el 4 de octubre de 2026.
+
+---
+
 ## Resumen de las decisiones
 
 | # | Decisión | Nivel de duda |
@@ -1345,9 +1372,10 @@ D-39 y cierra lo que D-47 dejaba abierto.
 | D-46 | `OnPush` en los listados, descartado | Bajo — el riesgo (pantallas en blanco) pesa más que el ahorro, no medible en esta demo |
 | D-47 | El frontend se queda en Angular 9 | Bajo — matizada por D-51: se sube hasta donde Material no cambia |
 | D-48 | La documentación se reorganiza para el cierre: histórico, 06 nuevo, 12 y dos renombrados | Bajo — nada se borra y los identificadores del histórico no cambian |
-| D-49 | Migrar la demo a un VPS propio (propuesta) | **Medio** — resuelve el arranque en frío y el reinicio del seed a cambio de operar un servidor |
+| D-49 | Migrar la demo a un VPS propio (ejecutada) | **Medio** — resuelve el arranque en frío y el reinicio del seed a cambio de operar un servidor |
 | D-50 | .NET 10 antes del 10 de noviembre de 2026 (propuesta) | Ninguno — es mantenimiento con fecha |
 | D-51 | Angular sube a la 14, y no más | Bajo — la 14 es el techo antes de Material MDC |
+| D-52 | En el VPS, un solo dominio detrás del proxy común | Bajo — es el patrón que ya usan las otras demos del servidor |
 
 **Las tres que más merecen tu revisión: D-01, D-04 y D-09.**
 De las anteriores, la discutible es **D-24**: `localStorage` es la opción cómoda, no la

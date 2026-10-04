@@ -100,7 +100,7 @@ sin uso de la versión original —`Microsoft.EntityFrameworkCore.SqlServer`,
 
 ### Base de datos
 
-SQL Server: Azure SQL en la demo pública y SQL Server 2022 en Docker en local. **Casi toda
+SQL Server 2022: Express en un contenedor del VPS para la demo pública, y en Docker en local. **Casi toda
 la lógica de negocio está en nueve stored procedures** (`03-modelo-de-datos.md`, sección 3).
 El C# despacha llamadas y mapea `SqlDataReader` a DTOs; las únicas reglas que viven en C#
 son la verificación de contraseñas y la validación de los datos de un usuario.

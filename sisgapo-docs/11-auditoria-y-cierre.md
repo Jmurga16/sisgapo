@@ -120,7 +120,7 @@ en `package.json` como ya se hizo con `websocket-driver` (D-39); comprobar `npm 
 después de cada uno. Lo que no se pueda subir sin romper Webpack 4 es coste de D-47 y
 conviene decirlo en el README en una línea. **Esfuerzo:** 1–2 h.
 
-#### 🟠 H-05 · El límite de intentos de acceso depende de la IP de conexión
+#### ✅ H-05 · El límite de intentos de acceso depende de la IP de conexión — cerrado
 
 `sisgapo-api/SISGAPO_API/Startup.cs`, política `Login`
 
@@ -135,6 +135,10 @@ funcionar en silencio.
 contenedor —o `app.UseForwardedHeaders` en `Startup` con los proxies conocidos— y dejar
 escrita la comprobación: seis intentos fallidos desde una red no deben bloquear a otra.
 **Esfuerzo:** 15 min; es condición de la migración, no de hoy.
+
+**Cerrado el 4 de octubre de 2026** con la migración: `ASPNETCORE_FORWARDEDHEADERS_ENABLED`
+en `deploy/compose.yaml`. Comprobado en producción: seis intentos fallidos desde una IP
+devuelven 429 a esa IP y no a otra, y una `X-Forwarded-For` inventada no cambia la cuenta.
 
 #### ✅ H-06 · Swagger apagado en producción, pero en el guion de la demo — cerrado por decisión
 
@@ -208,7 +212,7 @@ recargue la página.
 solo marca la configuración como cargada cuando la petición termina bien; si falla,
 reintenta en la siguiente navegación.
 
-#### 🟡 H-11 · La ruta `login` carga la barra de navegación dentro de la barra de navegación
+#### ✅ H-11 · La ruta `login` carga la barra de navegación dentro de la barra de navegación — corregido
 
 `sisgapo-web/src/app/app-routing.module.ts`, `nav-menu.component.html`
 
@@ -223,6 +227,12 @@ navegador.
 redirija a `/inicio` cuando ya hay sesión, y que `NavMenuComponent` deje de decidir entre
 formulario y barra. **Esfuerzo:** 1 h; es el «patrón poco habitual» que
 `05-frontend.md` describe en la sección 3.
+
+**Corregido el 4 de octubre de 2026**, por otro camino que el propuesto: la ruta `login` ya no
+tiene componente y el menú del shell vuelve a leer la sesión en cada navegación. Eso cubre
+también el 401 del interceptor, que cerraba la sesión sin avisar al menú y dejaba la barra
+encima del formulario. Con sesión, `/login` lleva a `/inicio`. Esta vez sí se reprodujo en el
+navegador, en la demo pública.
 
 #### 🟡 H-12 · Usuarios responde `{ mensaje: "OK" }` y, cuando falla, `{ mensaje: "" }`
 
@@ -338,7 +348,7 @@ que se haría si el proyecto se reabre.
 | # | Recomendación | Por qué | Esfuerzo |
 |---|---|---|---|
 | R-01 | **Aplicar H-01, H-02 y H-03 antes de archivar — hecho** | El repositorio queda sobre un runtime con soporte y sin paquetes NuGet vulnerables conocidos | — |
-| R-02 | **Migrar al VPS en una rama separada** (`10-migracion-contabo.md`) | El estado Azure + Hostinger queda congelado primero en un tag; la migración no forma parte de este cierre | medio día |
+| R-02 | **Migrar al VPS en una rama separada** (`10-migracion-contabo.md`) — **hecho** | El estado Azure + Hostinger queda congelado primero en un tag; la migración no forma parte de este cierre | medio día |
 | R-03 | Si Azure se queda: programar el reinicio del seed con un workflow `schedule` que ejecute `cargar-base` contra Azure SQL | Es el único pendiente de infraestructura desde septiembre. Exige abrir el cortafuegos de Azure SQL a los *runners* de GitHub o usar OIDC con `az sql server firewall-rule`; no es gratis en complejidad | 2 h |
 | R-04 | Arreglos baratos con efecto visible: H-08, H-09, H-10 — **hechos** | Quedan cubiertos la baja con existencias, el despertar de Azure SQL y el reintento de configuración | — |
 | R-05 | Mantener Swagger solo en desarrollo — **decidido** | El guion distingue la demostración local de la pública | — |
@@ -350,7 +360,7 @@ que se haría si el proyecto se reabre.
 
 La demo queda cerrada el **2 de octubre de 2026** con login, panel, usuarios, zonas,
 almacenes, categorías, productos, lotes, movimientos y kardex; backend en .NET 10,
-frontend Angular 9 y SQL Server. La actualización de Angular, las mejoras MC y los
+frontend Angular 9 (14 desde el 4 de octubre, D-51) y SQL Server. La actualización de Angular, las mejoras MC y los
 hallazgos H-11 a H-16 son decisiones o mantenimiento para una reapertura, no requisitos
 de este cierre.
 
@@ -361,5 +371,5 @@ de este cierre.
 - [x] D-49: migración a Contabo aprobada como trabajo posterior y aislado.
 - [x] Estado Azure + Hostinger preparado como punto de retorno anterior a la migración.
 - [ ] Validar las 13 pruebas de integración en CI con SQL Server.
-- [ ] Programar el reinicio periódico del seed al ejecutar la migración a Contabo.
-- [ ] Actualizar el enlace público si cambia con la migración.
+- [x] Reinicio periódico del seed: cron nocturno en el VPS desde el 4 de octubre de 2026.
+- [x] Enlace público actualizado a `https://sisgapo.devkora.com`.

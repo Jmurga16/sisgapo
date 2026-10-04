@@ -58,7 +58,7 @@ dividir en módulos con carga diferida es la mejora obvia si el sistema creciera
 | Ruta | Componente | Protegida |
 |---|---|---|
 | `''` | redirige a `login` | — |
-| `login` | **`NavMenuComponent`** | no |
+| `login` | ninguno: el acceso lo pinta el menú del shell | no; con sesión lleva a `inicio` |
 | `inicio` | `InicioComponent` | sesión |
 | `usuarios` | `UsuariosListComponent` | administrador |
 | `almacenes` | `AlmacenesListComponent` | administrador o supervisor |
@@ -75,12 +75,14 @@ Las dos últimas aceptan un parámetro de consulta que preselecciona el filtro:
 `movimientos?lote=1` desde el botón «Kardex» del listado de lotes. Es el recorrido natural
 de la demo: catálogo → partidas → historia de una partida.
 
-**La ruta `login` apunta a `NavMenuComponent`, no a `LoginComponent`.** `NavMenuComponent`
-decide qué mostrar según la sesión: si no existe, renderiza el login dentro de su plantilla;
-si existe, muestra la barra lateral. Es un patrón poco habitual
-—el componente de navegación hace de guardián y de contenedor a la vez— y explica por qué el
-árbol de rutas se ve raro a primera vista. Tiene un efecto secundario: con la sesión
-abierta, `/login` pinta la barra dentro de la barra (`11-auditoria-y-cierre.md`, H-11).
+**La ruta `login` no tiene componente.** Lo que se ve lo decide `NavMenuComponent`, que vive
+en el shell (`app.component.html`): sin sesión pinta `LoginComponent`; con sesión, la barra,
+el menú y el `router-outlet`. Es un patrón poco habitual —el componente de navegación hace de
+guardián y de contenedor a la vez— y explica por qué el árbol de rutas se ve raro a primera
+vista. El menú vuelve a leer la sesión en cada navegación, porque también puede cerrarla el
+interceptor ante un 401, y si hay sesión y la ruta es `/login`, lleva a `/inicio`. Hasta
+octubre de 2026 la ruta apuntaba al propio `NavMenuComponent` y, con la sesión abierta,
+pintaba la barra dentro de la barra (`11-auditoria-y-cierre.md`, H-11).
 
 ## 4. Sesión y control de acceso
 
@@ -247,11 +249,13 @@ al formato que espera el backend.
 { production: false, API_URL_INV: "https://localhost:44360/" }
 
 // environment.prod.ts
-{ production: true,  API_URL_INV: "https://app-sisgapo-api-egbrd9hygfcsdvgf.eastus-01.azurewebsites.net/" }
+{ production: true,  API_URL_INV: "/api/" }
 ```
 
-El host de producción ya apunta al App Service real, por HTTPS, y no al eliminado en 2021 ni
-a `localhost`. Ver `historico/hallazgos-2026.md`, S-08.
+En producción la API es una ruta relativa: la web y la API comparten origen, y el Caddy de la
+web reenvía `/api/*` a la API (`09-decisiones.md`, D-52). Los builds de Azure y de Hostinger
+apuntaban al App Service por HTTPS (`historico/hallazgos-2026.md`, S-08); siguen en los tags
+`demo-azure` y `demo-azure-hostinger`.
 
 ## 9. Despliegue
 
@@ -260,8 +264,8 @@ compilación y pruebas del backend, pruebas de integración contra un SQL Server
 `docker compose`, y build de producción del frontend con Node 22 y el lockfile, en cada push
 y pull request. De los workflows de Azure Static Web Apps de 2021 queda uno en
 `sisgapo-web/.github/workflows/`, que no se ejecuta: GitHub solo lee los de la raíz del
-repositorio, y el recurso al que apuntaba ya no existe (`11-auditoria-y-cierre.md`, MC-05). El despliegue público ya existe, pero es manual: se hace a
-mano después de comprobar que ambos trabajos de CI están en verde, no desde este workflow.
+repositorio, y el recurso al que apuntaba ya no existe (`11-auditoria-y-cierre.md`, MC-05). El despliegue público es manual: `bash deploy/deploy.sh`,
+con el CI en verde; no sale de este workflow.
 Ver `06-infraestructura.md` y `11-auditoria-y-cierre.md`.
 
 ## 10. Resumen de problemas del frontend

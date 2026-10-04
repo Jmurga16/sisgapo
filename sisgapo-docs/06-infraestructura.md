@@ -3,34 +3,44 @@
 Cómo se pasó de ~US$ 78/mes a US$ 0/mes: qué se eligió, por qué, y cómo volver a desplegarlo
 si hiciera falta.
 
-> **Estado: ejecutado.** El backend corre en un App Service F1 y el frontend en Static Web
-> Apps, ambos gratuitos; el enlace está en el [README](../README.md). Lo que queda aquí es el
-> análisis que llevó a esa elección y la receta de despliegue, no una lista de tareas.
->
-> **Verificado el 1 de octubre de 2026:** el frontend responde en un segundo y la API en 18 s
-> cuando sale de la pausa (`11-auditoria-y-cierre.md`, sección 2). La alternativa a este
-> despliegue —llevar el sistema a un servidor propio— está en `10-migracion-contabo.md`.
+> **Estado: la demo corre en el VPS de Contabo desde el 4 de octubre de 2026**, en
+> `https://sisgapo.devkora.com`. La sección 1 describe lo que corre y cómo se redespliega.
+> Las secciones 2 a 7 cuentan la etapa anterior en Azure —App Service F1, Static Web Apps y
+> Azure SQL gratuitos—, que sigue en pie como vuelta atrás con los tags `demo-azure` y
+> `demo-azure-hostinger`. Cómo se llegó al VPS, en `10-migracion-contabo.md`.
 
 ## 1. Qué corre hoy
 
-| Capa | Servicio | SKU | Costo |
-|---|---|---|---|
-| Frontend | Azure Static Web Apps | Free | US$ 0 |
-| API | Azure App Service, Linux, .NET 10 | F1 (Free) | US$ 0 |
-| Base de datos | Azure SQL | Oferta gratuita, serverless con auto-pausa | US$ 0 |
-| Desarrollo y demos presenciales | SQL Server 2022 en Docker | — | US$ 0 |
+Un VPS de Contabo que ya se pagaba para otras demos, así que el costo adicional es US$ 0. Los
+tres contenedores son el proyecto de Compose `sisgapo-demo` (`deploy/compose.yaml`):
 
-El despliegue es **manual**: se publica a mano después de comprobar que los dos trabajos de
-CI están en verde. No hay entrega continua (`11-auditoria-y-cierre.md`).
+| Capa | Dónde | Memoria máxima |
+|---|---|---|
+| Proxy y TLS | El Caddy común del servidor, que reparte por subdominio a todas las demos | — |
+| Frontend | `web`: Caddy con el build de Angular; reenvía `/api/*` a la API | 128 MB |
+| API | `api`: .NET 10 en el puerto 8080, sin publicar | 512 MB |
+| Base de datos | `db`: SQL Server 2022 Express, sin publicar | 2,5 GB |
+| Desarrollo y demos presenciales | SQL Server 2022 en Docker (`docker-compose.yml`) | — |
 
-Las dos capas gratuitas se duermen tras un rato sin tráfico, así que la primera petición
-después de una pausa tarda. Los listados lo enseñan con el componente `app-estado-carga` y su
-botón de reintento (`historico/hallazgos-2026.md`, C-21); para una demo en vivo, lo que mejor funciona
-sigue siendo abrir el enlace un par de minutos antes.
+En reposo los tres ocupan unos 650 MB. **Nada se duerme**: el panel responde en menos de un
+segundo (medido el 4 de octubre de 2026), y el arranque en frío de Azure deja de existir.
 
-Los límites de las dos ofertas gratuitas, por si cambian: el plan F1 da 60 minutos de CPU al
-día y 1 GB de memoria; la oferta gratuita de Azure SQL, 100 000 segundos de vCore y 32 GB al
-mes, y al agotarlos la base se pausa hasta el mes siguiente.
+**Redesplegar.** `bash deploy/deploy.sh` desde la raíz del repositorio. Se niega si hay
+cambios sin commit, sube lo commiteado a `/opt/sisgapo/src` por una sola conexión SSH,
+recarga la base, reconstruye la API y la web, reescribe el bloque `sites/sisgapo.caddy` del
+proxy común y espera a que la API responda. **Cada despliegue recarga la base**: los scripts de
+`sql/` solo saben recrear los objetos, así que los datos vuelven al seed, igual que cada noche.
+
+**Reinicio nocturno.** Un cron del usuario de despliegue ejecuta `deploy/sembrar.sh` a las
+10:00 del servidor, que está en hora de Europa central: las 03:00 de Lima (las 04:00 cuando
+Europa pasa al horario de invierno). Deja su registro en `/opt/sisgapo/sembrar.log`.
+
+**Secretos.** `/opt/sisgapo/.env`, con permisos 600 y generado en el propio servidor; la
+plantilla es `deploy/env.example`. La API entra a SQL Server con `sisgapo_app`, que solo puede
+ejecutar procedimientos; `sa` lo usa únicamente la carga (`09-decisiones.md`, D-52).
+
+El acceso al servidor, las demás demos y la bitácora de cambios se documentan fuera de este
+repositorio, en la ficha del VPS.
 
 ## 2. De dónde venía el costo
 
@@ -156,7 +166,7 @@ Y en paralelo, para desarrollo y demos presenciales: `docker compose up`.
 | Autenticación real | bcrypt, JWT con el rol como *claim*, `[Authorize]`, guards por rol y menú filtrado | `historico/hallazgos-2026.md`, S-02 a S-04 |
 | Despliegue | App Service F1 + Static Web Apps + Azure SQL gratuito | Sección 7 |
 
-## 7. Cómo repetir el despliegue
+## 7. Cómo repetir el despliegue en Azure (vuelta atrás)
 
 **Base de datos.** Crear la base en Azure SQL con la oferta gratuita, **marcando la opción de
 auto-pausar** al agotar la asignación. Añadir la IP propia al firewall y activar «Permitir que
@@ -257,8 +267,8 @@ directamente a SQLite (opción D), que además elimina el servidor de base de da
 
 **Hay una tercera vía que en agosto no se consideró: un servidor que ya se paga.** En un
 VPS, SQL Server Express en contenedor conserva el T-SQL entero, no tiene arranque en frío y
-deja programar el reinicio del seed con una línea de cron. La propuesta completa está en
-`10-migracion-contabo.md`.
+deja programar el reinicio del seed con una línea de cron. Es la que se ejecutó el 4 de
+octubre de 2026: `10-migracion-contabo.md` y la sección 1.
 
 Ver `09-decisiones.md`, D-02.
 
@@ -272,3 +282,5 @@ Ver `09-decisiones.md`, D-02.
 4. **El arranque en frío es el precio del tier gratuito.** Se paga con un aviso honesto en la
    interfaz y abriendo el enlace antes de enseñarlo, no con dinero.
 5. **US$ 0/mes, y el enlace público funciona.**
+6. **Desde octubre de 2026, un servidor que ya se pagaba.** El mismo T-SQL en SQL Server
+   Express, sin arranque en frío y con el reinicio nocturno resuelto.

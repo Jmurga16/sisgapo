@@ -95,8 +95,8 @@ Elige **dos** y cuéntalos bien:
 **Minuto 9–10 · Costos**
 
 > "Estaba desplegado en Azure por unos 78 dólares al mes, y el 94 % era un App Service Plan
-> Standard sobredimensionado para una demo. Hoy corre en local con un solo comando de Docker
-> y el despliegue público está diseñado para un tier gratuito."
+> Standard sobredimensionado para una demo. Lo llevé a cero: primero con las ofertas gratuitas
+> de Azure y después en contenedores, en un servidor que ya pagaba y sin arranque en frío."
 
 Cerrar con costos es deliberado: es el único apartado que un cliente no técnico entiende
 completo, y demuestra que piensas en su factura.
@@ -154,7 +154,7 @@ enlace está frío, arranca Docker mientras se despierta y no pierdes el ritmo.
 - [ ] Recorrido completo en el navegador, con la consola abierta y en móvil
 
 **Cinco minutos antes de cada reunión**
-- [ ] Abrir el enlace público para despertar el App Service y la base de datos
+- [ ] Abrir el enlace público: ya no se duerme, pero confirma que el servidor responde
 - [ ] Comprobar que el login funciona
 - [ ] `docker compose up -d` como plan B
 - [ ] Tener `historico/hallazgos-2026.md` abierto en otra pestaña

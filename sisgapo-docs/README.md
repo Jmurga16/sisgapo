@@ -80,7 +80,8 @@ También en esta carpeta:
    claro desde 2021 y se retiró reescribiendo el historial. La lección está escrita: la
    primera verificación buscaba cinco cadenas conocidas en vez del patrón de una credencial.
 9. La infraestructura original costaba unos US$ 78 al mes, y el 94 % era un App Service
-   Plan sobredimensionado. El estado anterior a Contabo queda identificado con un tag para
-   poder volver a él sin reconstruirlo de memoria.
+   Plan sobredimensionado. Desde el 4 de octubre de 2026 la demo corre en un VPS propio, en
+   contenedores; el estado anterior queda en tags para volver a él sin reconstruirlo de
+   memoria.
 10. Lo que más valor aporta como pieza de portafolio no es el hosting: es la auditoría
     —la cerrada y la de cierre— y el registro de decisiones del documento 09.
