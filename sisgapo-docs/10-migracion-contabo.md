@@ -21,6 +21,8 @@
 - **El cron va a las 10:00 del servidor**, que está en hora de Europa central: las 03:00 de Lima.
 - **La web es Caddy, no nginx**, como las demás demos del servidor, con la CSP y las cabeceras
   en `sisgapo-web/deploy/Caddyfile`.
+- **Azure no se borra.** Se queda en sus planes gratuitos como prueba de concepto y vuelta
+  atrás; la copia del frontend en Hostinger sí se retiró.
 
 Verificado ese día: certificado de Let's Encrypt; panel en menos de un segundo; el seed con
 «Lotes cuyo saldo no cuadra con su kardex = 0»; altas y cambios de estado con `sisgapo_app`;
@@ -347,7 +349,7 @@ Lo que en Azure venía puesto y aquí hay que poner:
 | 5 | La lista de verificación de `06-infraestructura.md`, sección 7, más la comprobación de H-05 y la de zona horaria (un movimiento registrado ahora aparece bajo «Hoy») | Todo en verde |
 | 6 | Cron de la sección 6; esperar una noche y comprobar `sisgapo-seed.log` | Conteos correctos y «Lotes cuyo saldo no cuadra con su kardex = 0» |
 | 7 | README con el enlace nuevo; `06-infraestructura.md` pasa a describir el VPS y Azure queda como histórico | — |
-| 8 | Una semana después, borrar los recursos de Azure: el App Service **y su plan**, la base y su servidor, la Static Web App | *Cost Management* en US$ 0 y sin recursos en el grupo |
+| 8 | ~~Una semana después, borrar los recursos de Azure~~. **Cambiado al ejecutarlo:** Azure se conserva como prueba de concepto del tier gratuito y como vuelta atrás; lo que se retira es la copia del frontend en Hostinger | *Cost Management* en US$ 0, con los recursos en sus planes gratuitos |
 
 **Vuelta atrás:** hasta el paso 8 Azure sigue intacto; volver es cambiar el enlace del
 README y, si se cambió, el DNS. Por eso el paso 8 espera una semana.

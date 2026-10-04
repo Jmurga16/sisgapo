@@ -353,7 +353,7 @@ que se haría si el proyecto se reabre.
 | R-04 | Arreglos baratos con efecto visible: H-08, H-09, H-10 — **hechos** | Quedan cubiertos la baja con existencias, el despertar de Azure SQL y el reintento de configuración | — |
 | R-05 | Mantener Swagger solo en desarrollo — **decidido** | El guion distingue la demostración local de la pública | — |
 | R-06 | Dejar H-11 a H-16 y las MC documentadas, sin hacer | Son ruido para el visitante; valen si se reabre el proyecto, no para cerrarlo | — |
-| R-07 | Sacar `cred.fake` y `SISGAPO.7z` del clon | Están ignorados por Git y no salen del equipo, pero una nota con datos de conexión no debería vivir dentro de un clon, y el `.7z` son 13 MB de una copia cuyo contenido ya está en el repositorio. Un gestor de contraseñas y una carpeta aparte | 5 min |
+| R-07 | Sacar `cred.fake` y `SISGAPO.7z` del clon — **hecho** el 4 de octubre de 2026: la nota fue a la carpeta de claves del equipo y el `.7z`, a una de respaldos fuera del repositorio | Están ignorados por Git y no salen del equipo, pero una nota con datos de conexión no debería vivir dentro de un clon, y el `.7z` son 13 MB de una copia cuyo contenido ya está en el repositorio. Un gestor de contraseñas y una carpeta aparte | 5 min |
 | R-08 | Fechar el cierre en el README y en este documento; no archivar el repositorio en GitHub mientras la demo esté en línea | Un repositorio archivado no ejecuta workflows ni admite cambios, y la demo seguirá necesitando un parche de vez en cuando | 5 min |
 
 ## 8. Estado final y lista de cierre
@@ -370,6 +370,7 @@ de este cierre.
 - [x] H-06: Swagger se conserva solo para desarrollo y el guion lo indica.
 - [x] D-49: migración a Contabo aprobada como trabajo posterior y aislado.
 - [x] Estado Azure + Hostinger preparado como punto de retorno anterior a la migración.
-- [ ] Validar las 13 pruebas de integración en CI con SQL Server.
+- [x] Las 13 pruebas de integración corren en el CI contra SQL Server: el trabajo `sql` ejecuta
+  las 39 sin omitir ninguna (validado el 4 de octubre de 2026).
 - [x] Reinicio periódico del seed: cron nocturno en el VPS desde el 4 de octubre de 2026.
 - [x] Enlace público actualizado a `https://sisgapo.devkora.com`.

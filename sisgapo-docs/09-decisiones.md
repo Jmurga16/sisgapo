@@ -1215,7 +1215,8 @@ colgarlo, o ya está cargado con otros servicios que compitan con SQL Server.
 **Estado:** confirmada el 2 de octubre de 2026 y ejecutada el 4, en la rama
 `migracion-contabo`, después de crear los tags `pre-contabo-azure-hostinger`, `demo-azure` y
 `demo-azure-hostinger`. D-02 describe ahora la vuelta atrás, no la infraestructura. Lo que
-cambió respecto al plan está en D-52.
+cambió respecto al plan está en D-52. Azure no se borra, como proponía el plan: se queda en sus
+planes gratuitos como prueba de concepto.
 
 ---
 

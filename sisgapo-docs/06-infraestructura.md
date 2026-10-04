@@ -6,8 +6,9 @@ si hiciera falta.
 > **Estado: la demo corre en el VPS de Contabo desde el 4 de octubre de 2026**, en
 > `https://sisgapo.devkora.com`. La sección 1 describe lo que corre y cómo se redespliega.
 > Las secciones 2 a 7 cuentan la etapa anterior en Azure —App Service F1, Static Web Apps y
-> Azure SQL gratuitos—, que sigue en pie como vuelta atrás con los tags `demo-azure` y
-> `demo-azure-hostinger`. Cómo se llegó al VPS, en `10-migracion-contabo.md`.
+> Azure SQL gratuitos—, que se conserva a propósito como prueba de concepto del tier gratuito y
+> como vuelta atrás, con los tags `demo-azure` y `demo-azure-hostinger`. La copia del frontend
+> en Hostinger se retiró. Cómo se llegó al VPS, en `10-migracion-contabo.md`.
 
 ## 1. Qué corre hoy
 
