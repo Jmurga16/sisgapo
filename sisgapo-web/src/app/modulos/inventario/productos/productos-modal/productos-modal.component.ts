@@ -205,6 +205,9 @@ export class ProductosModalComponent implements OnInit {
 
     if (!valido) {
       Swal.fire({ title: 'La cantidad y el precio deben ser mayores que cero.', icon: 'warning', timer: 1500 });
+    } else if (!Number.isInteger(cantidad)) {
+      Swal.fire({ title: 'La cantidad debe ser un número entero.', icon: 'warning', timer: 1500 });
+      return false;
     }
 
     return valido;

@@ -159,6 +159,11 @@ export class MovimientosModalComponent implements OnInit {
       return;
     }
 
+    if (!Number.isInteger(nCantidad)) {
+      await Swal.fire({ title: 'La cantidad debe ser un número entero.', icon: 'warning', timer: 1500 });
+      return;
+    }
+
     const parametros: ParametroApi[] = [
       this.oLote.nIdDetProd,
       this.formMovimiento.get('sTipo').value,

@@ -79,7 +79,7 @@
                 <div class="col-md-6">
                     <mat-form-field appearance="outline" class="campo-formulario">
                         <mat-label>{{sRotuloCantidad}}</mat-label>
-                        <input matInput type="number" min="0" formControlName="nCantidad" autocomplete="nope"
+                        <input matInput type="number" min="0" step="1" formControlName="nCantidad" autocomplete="nope"
                             name="Cantidad">
                         <span matSuffix class="sufijo-um" *ngIf="oLote">{{oLote.sNombreUM}}</span>
                     </mat-form-field>
