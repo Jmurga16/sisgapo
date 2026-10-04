@@ -36,8 +36,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSortModule } from '@angular/material/sort';
 import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgSelectModule } from '@ng-select/ng-select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ZonaListComponent } from './modulos/zona/zona-list/zona-list.component';
@@ -107,10 +105,7 @@ import { TokenInterceptor } from './shared/services/token.interceptor';
     MatTableModule,
     MatToolbarModule,
     MatTooltipModule,
-    NoopAnimationsModule,
-    NgbModule,
-    NgSelectModule
-
+    NoopAnimationsModule
   ],
   providers: [
     AlmacenesService,

@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -43,8 +43,8 @@ export class ProductosComponent implements OnInit, AfterViewInit {
 
   listaAlmacenes: AlmacenCombo[] = [];
   listaCategorias: CategoriaCombo[] = [];
-  fAlmacen = new FormControl(0);
-  fCategoria = new FormControl(0);
+  fAlmacen = new UntypedFormControl(0);
+  fCategoria = new UntypedFormControl(0);
   dsProducto = new MatTableDataSource<ProductoListado>([]);
   bCargando: boolean = false;
   sError: string = '';

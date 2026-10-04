@@ -4,7 +4,7 @@ import { InventarioService } from './../../inventario.service';
 
 import { HttpClient } from '@angular/common/http';
 
-import { FormBuilder, } from "@angular/forms";
+import { UntypedFormBuilder, } from "@angular/forms";
 import { MatDialogRef, } from "@angular/material/dialog";
 import { DatosModal } from 'src/app/shared/models';
 
@@ -18,7 +18,7 @@ describe('CategoriaModalComponent', () => {
 
     let dialogRef: MatDialogRef<CategoriaModalComponent>;
     let data: DatosModal;
-    let fB: FormBuilder;
+    let fB: UntypedFormBuilder;
 
 
     beforeEach(() => {

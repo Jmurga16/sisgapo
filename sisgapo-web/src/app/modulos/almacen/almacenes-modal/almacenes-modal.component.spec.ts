@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { AlmacenesModalComponent } from './almacenes-modal.component';
 import { AlmacenesService } from './../almacenes.service';
-import { FormBuilder, } from "@angular/forms";
+import { UntypedFormBuilder, } from "@angular/forms";
 import { HttpClient } from '@angular/common/http';
 
 import { MatDialogRef, } from "@angular/material/dialog";
@@ -18,7 +18,7 @@ describe('AlmacenesModalComponent', () => {
 
     let dialogRef: MatDialogRef<AlmacenesModalComponent>;
     let data: DatosModal;
-    let fB: FormBuilder;
+    let fB: UntypedFormBuilder;
 
 
     beforeEach(() => {

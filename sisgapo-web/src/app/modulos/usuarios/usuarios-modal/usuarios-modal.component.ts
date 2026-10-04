@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
@@ -32,7 +32,7 @@ interface EventoFecha {
 })
 export class UsuariosModalComponent implements OnInit {
   nIdUsuario: number = 0;
-  formUsuario: FormGroup;
+  formUsuario: UntypedFormGroup;
   sAccionModal: string;
   dFechaNacimiento: string = '';
   dFechaMaxima: Date = new Date(
@@ -61,7 +61,7 @@ export class UsuariosModalComponent implements OnInit {
     public dialogRef: MatDialogRef<UsuariosModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DatosModal,
     private usuariosService: UsuariosService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     public configuracionService: ConfiguracionService,
   ) { }
 

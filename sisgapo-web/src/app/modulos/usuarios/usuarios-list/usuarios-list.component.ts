@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -48,9 +48,9 @@ export class UsuariosListComponent implements OnInit, AfterViewInit, OnDestroy {
     { valor: 3, nombre: 'Asistente' },
   ];
 
-  fNombre = new FormControl('');
-  fRol = new FormControl(0);
-  fEstado = new FormControl(2);
+  fNombre = new UntypedFormControl('');
+  fRol = new UntypedFormControl(0);
+  fEstado = new UntypedFormControl(2);
   dsUsuarios = new MatTableDataSource<UsuarioListado>([]);
   bCargando: boolean = false;
   sError: string = '';

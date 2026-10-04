@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
 import {
@@ -20,7 +20,7 @@ import { ConfiguracionService } from 'src/app/shared/services/configuracion.serv
 })
 export class CategoriaModalComponent implements OnInit {
   nIdCategoria: number = 0;
-  formCategoria: FormGroup;
+  formCategoria: UntypedFormGroup;
   sAccionModal: string;
   bGuardando: boolean = false;
 
@@ -28,7 +28,7 @@ export class CategoriaModalComponent implements OnInit {
     public dialogRef: MatDialogRef<CategoriaModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DatosModal,
     private inventarioService: InventarioService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     public configuracionService: ConfiguracionService,
   ) { }
 

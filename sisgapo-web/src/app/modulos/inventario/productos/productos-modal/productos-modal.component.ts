@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
@@ -35,7 +35,7 @@ export class ProductosModalComponent implements OnInit {
   nIdCatProd: number = 0;
   nIdProducto: number = 0;
   bEsAlta: boolean = true;
-  formProducto: FormGroup;
+  formProducto: UntypedFormGroup;
   sAccionModal: string;
   lAlmacenes: AlmacenCombo[] = [];
   lCategorias: CategoriaCombo[] = [];
@@ -47,7 +47,7 @@ export class ProductosModalComponent implements OnInit {
     public dialogRef: MatDialogRef<ProductosModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DatosModal,
     private inventarioService: InventarioService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     public configuracionService: ConfiguracionService,
   ) { }
 

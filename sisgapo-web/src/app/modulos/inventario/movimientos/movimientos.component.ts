@@ -1,7 +1,7 @@
 import { MediaMatcher } from '@angular/cdk/layout';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
@@ -59,12 +59,12 @@ export class MovimientosComponent implements OnInit, AfterViewInit {
   listaAlmacenes: AlmacenCombo[] = [];
   listaProductos: ProductoCombo[] = [];
   listaLotes: LoteCombo[] = [];
-  fAlmacen = new FormControl(0);
-  fProducto = new FormControl(0);
-  fLote = new FormControl(0);
-  fTipo = new FormControl('');
-  fDesde = new FormControl('');
-  fHasta = new FormControl('');
+  fAlmacen = new UntypedFormControl(0);
+  fProducto = new UntypedFormControl(0);
+  fLote = new UntypedFormControl(0);
+  fTipo = new UntypedFormControl('');
+  fDesde = new UntypedFormControl('');
+  fHasta = new UntypedFormControl('');
   dDesde: string = '';
   dHasta: string = '';
   oResumen: ResumenMovimientos = { nMovimientos: 0, nEntradas: 0, nSalidas: 0, nAjustes: 0 };

@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
@@ -39,7 +39,7 @@ function fnProductoSeleccionado(control: AbstractControl): ValidationErrors | nu
 export class LotesModalComponent implements OnInit {
   nIdDetProd: number = 0;
   bEsAlta: boolean = true;
-  formLote: FormGroup;
+  formLote: UntypedFormGroup;
   sAccionModal: string;
   sNombreProducto: string = '';
   lProductos: ProductoCombo[] = [];
@@ -52,7 +52,7 @@ export class LotesModalComponent implements OnInit {
     public dialogRef: MatDialogRef<LotesModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DatosModal,
     private inventarioService: InventarioService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     public configuracionService: ConfiguracionService,
   ) { }
 

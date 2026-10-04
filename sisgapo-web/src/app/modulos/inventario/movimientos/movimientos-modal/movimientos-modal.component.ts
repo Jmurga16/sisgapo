@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
 import {
@@ -28,7 +28,7 @@ function fnLoteSeleccionado(control: AbstractControl): ValidationErrors | null {
   styleUrls: ['./movimientos-modal.component.css']
 })
 export class MovimientosModalComponent implements OnInit {
-  formMovimiento: FormGroup;
+  formMovimiento: UntypedFormGroup;
   lLotes: LoteCombo[] = [];
   lLotesFiltrados: LoteCombo[] = [];
 
@@ -36,7 +36,7 @@ export class MovimientosModalComponent implements OnInit {
     public dialogRef: MatDialogRef<MovimientosModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DatosMovimiento,
     private inventarioService: InventarioService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     public configuracionService: ConfiguracionService,
     public sesionService: SesionService,
   ) { }

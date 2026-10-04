@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { RespuestaApi, ZonaGuardar, ZonaListado } from 'src/app/shared/models';
@@ -19,8 +19,8 @@ export class ZonaFormComponent implements OnInit {
   bEditar: boolean = false;
   readonly urlNoImagen: string = '../../../../assets/no-image.png';
 
-  fNombre = new FormControl();
-  fRutaImagen = new FormControl();
+  fNombre = new UntypedFormControl();
+  fRutaImagen = new UntypedFormControl();
 
   constructor(
     private zonaService: ZonaService,

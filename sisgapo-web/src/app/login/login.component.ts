@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Sesion } from 'src/app/shared/models';
@@ -19,8 +19,8 @@ interface CuentaDemo {
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  sUser = new FormControl();
-  sPassword = new FormControl();
+  sUser = new UntypedFormControl();
+  sPassword = new UntypedFormControl();
   nRol: number = 0;
   bIngresando: boolean = false;
   sTextoIngresando: string = 'Ingresando…';

@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
 import {
@@ -22,7 +22,7 @@ import { ConfiguracionService } from 'src/app/shared/services/configuracion.serv
 })
 export class AlmacenesModalComponent implements OnInit {
   nIdAlmacen: number = 0;
-  formAlmacen: FormGroup;
+  formAlmacen: UntypedFormGroup;
   sAccionModal: string;
   lZonas: ZonaCombo[] = [];
   lSupervisores: SupervisorCombo[] = [];
@@ -31,7 +31,7 @@ export class AlmacenesModalComponent implements OnInit {
     public dialogRef: MatDialogRef<AlmacenesModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DatosModal,
     private almacenesService: AlmacenesService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     public configuracionService: ConfiguracionService,
   ) { }
 
